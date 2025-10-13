@@ -1,0 +1,58 @@
+﻿# --- Unity (bazuje na github/gitignore: Unity.gitignore) ---
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# Cache, auto-pliki, bazy VS/Unity
+*.pidb
+*.opendb
+*.VC.db
+*.pdb
+*.mdb
+*.svd
+
+# Unity Cloud / crash/profiler
+sysinfo.txt
+*.stacktrace
+*.dmp
+*.log
+
+# Eksporty paczek i buildów
+*.unitypackage
+*.apk
+*.aab
+*.app
+*.exe
+*.zip
+
+# --- Package Manager ---
+# NIE ignoruj całego Packages – zostaw manifesty (wersje paczek odtworzą się na innym PC)
+!Packages/manifest.json
+!Packages/packages-lock.json
+# Lokalne paczki wewnętrzne zwykle nie są potrzebne w repo (opcjonalnie)
+# Packages/com.*
+
+# --- JetBrains Rider / IDE ---
+.idea/
+*.sln.iml
+*.dotCover
+# Czasem Rider tworzy lokalne cache
+*.Rider/
+.jetbrains/
+
+# --- Visual Studio / VS Code (gdy ktoś użyje) ---
+.vs/
+.vscode/
+*.user
+*.suo
+*.csproj.user
+*.sln.docstates
+
+# --- Systemowe śmieci ---
+.DS_Store
+Thumbs.db
