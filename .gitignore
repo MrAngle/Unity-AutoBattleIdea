@@ -56,3 +56,6 @@ sysinfo.txt
 # --- Systemowe śmieci ---
 .DS_Store
 Thumbs.db
+
+*.sln
+.vsconfig
