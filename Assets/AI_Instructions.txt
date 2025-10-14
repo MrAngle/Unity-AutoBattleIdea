@@ -91,8 +91,22 @@
       - "Każda nowa funkcja: krótki opis w komentarzu XML lub nad klasą."
       - "Zmiany w pakietach i ustawieniach: wpis w CHANGELOG oraz README projektu."
 
+Mój pomysł na gre to mieszanka kilku gatunków: 
+
+Autobitewniak - z elementami jak w backpack battles (trzon rozgrywki)
+Kazda postac ma swoj backpack, ktory oddzialowuje na rozgrywkę
+RPG - drużyna składajaca sie z około 6 postaci, gdzie kazda ma swój backpack (Troche w postaci Siralim Ultimate)
+Rozgrywka w postaci RogueLike, gdzie wybierasz sie na misje z konkretnym zbiorem postaci
+
+Innymi slowy nie spodziewam sie rozbudowanej fizyki, 
+Tworze tez gre 2d, wstepnie z ubogimi/brak animacji
+
+
   Unity version: 6.2 6000.2.7f2
   C# version: 9
+  Krytykuj wszystko co proponuje, sugeruj rozwiazania najlepsze.
+  Nie mam doświadczenia z Unity, ale robiłem troche w gamemakerze. Mozesz posługiwac sie analogiami z gamemakerem.
+  Nie mam doświadczenia z C# ale jestem developerem JAVA. Możesz posługiwac sie analogiami z JAVA.
 
 AI_Properties:
 
