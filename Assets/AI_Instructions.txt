@@ -1,0 +1,112 @@
+﻿AI_Instruction:
+  - ProjectName: "MrAngleGame"
+  - Description: >
+      Gra tworzona w silniku Unity. Główny język programowania: C#.
+      Projekt wykorzystuje standardową strukturę Unity (Assets/Scenes, Assets/Scripts, ustawienia URP i Input System).
+      Celem instrukcji jest ujednolicenie stylu kodu, kompatybilności wersji i sposobu korzystania z narzędzi AI.
+
+  - TechStack:
+      Engine: "Unity"
+      RenderingPipeline: "Universal Render Pipeline (URP)"
+      ProgrammingLanguage: "C#"
+      InputSystem: "Unity Input System (InputAction Asset)"
+      ScriptingBackend: "Mono/.NET (typowe dla Unity; używaj API UnityEngine i UnityEditor tam, gdzie ma to sens)"
+      AssetTypes:
+        - "Scenes (*.unity)"
+        - "Scripts (*.cs)"
+        - "URP Settings (*.asset)"
+        - "Input Actions (*.inputactions)"
+
+  - VersioningGuidelines:
+      UnityVersion: >
+        Utrzymuj kompatybilność z aktualnie używaną wersją projektu.
+        Unikaj API oznaczonych jako deprecated w najnowszych stabilnych wydaniach Unity LTS.
+      CSharpVersion: "Dostosuj do wersji C# wspieranej przez daną wersję Unity (zwykle C# 8/9 dla LTS)."
+      Packages: >
+        Przy dodawaniu zależności preferuj oficjalne pakiety Unity (Package Manager).
+        Podawaj minimalne wersje zgodne z LTS oraz notuj zmiany w dokumentacji projektu.
+
+  - CodeStyle:
+      Naming:
+        - "Klasy i struktury: PascalCase"
+        - "Metody i właściwości: PascalCase"
+        - "Pola prywatne: _camelCase"
+        - "Stałe: SCREAMING_SNAKE_CASE"
+      Organization:
+        - "Każdy MonoBehaviour w osobnym pliku o tej samej nazwie."
+        - "Publiczne pola tylko wtedy, gdy muszą być widoczne w Inspector; w innym wypadku używaj [SerializeField] i właściwości."
+        - "Unikaj logiki w konstruktorach MonoBehaviour; używaj Awake/OnEnable/Start."
+      UnityLifecycle:
+        - "Preferuj Update tylko gdy niezbędne; w przeciwnym razie korzystaj z eventów, coroutines lub input callbacks."
+        - "FixedUpdate do fizyki, LateUpdate do post-processingu transformacji."
+      Safety:
+        - "Sprawdzaj null dla komponentów pobieranych GetComponent."
+        - "Unikaj alokacji w Update (GC)."
+
+  - InputSystemGuidelines:
+      - "Konfiguruj akcje w pliku *.inputactions i generuj klasy C#."
+      - "Subskrybuj/odsubskrybuj callbacki w OnEnable/OnDisable."
+      - "Utrzymuj mapy akcji rozdzielone wg kontekstu (np. Gameplay, UI)."
+
+  - URPGuidelines:
+      - "Ustawienia URP przechowuj w dedykowanych assetach (*.asset)."
+      - "Efekty post-process i oświetlenie zgodne z URP; unikaj funkcji HDRP."
+      - "Optymalizuj materiał i shader pod URP (Shader Graph lub Lit)."
+
+  - ScenesAndAssets:
+      - "Trzymaj sceny w Assets/Scenes."
+      - "Używaj Addressables tylko jeśli wymagane; w przeciwnym razie tradycyjne referencje."
+      - "Konsekwentne nazewnictwo scen: 00_Boot, 01_Menu, 02_Gameplay itd."
+
+  - ErrorHandlingAndLogging:
+      - "Używaj Debug.Log/Warning/Error oszczędnie; w produkcji rozważ flagi kompilacji."
+      - "Waliduj referencje w OnValidate lub custom editorach."
+
+  - Testing:
+      - "Dla logiki niezależnej od Unity używaj testów edytora (NUnit)."
+      - "Logikę MonoBehaviour testuj przez PlayMode Tests, minimalizując zależności."
+
+  - Performance:
+      - "Profiluj w Profilerze Unity; skup się na GC.Alloc i wątkach głównych."
+      - "Korzystaj z pooling’u obiektów i pamiętaj o Time.deltaTime."
+      - "Unikaj odwołań FindObjectOfType w runtime; cache’uj referencje."
+
+  - AI_Coding_Prompts:
+      Do:
+        - "Generuj kod w C#, kompatybilny z Unity i URP."
+        - "Umieszczaj komentarze z krótkim wyjaśnieniem decyzji projektowych."
+        - "Proponuj podziały na komponenty i ScriptableObject tam, gdzie ma to sens."
+      Don’t:
+        - "Nie używaj API spoza Unity bez uzasadnienia."
+        - "Nie wprowadzaj zmian w wersjach pakietów bez uzgodnienia."
+        - "Nie zakładaj obecności zewnętrznych pluginów."
+
+  - FileStructureConventions:
+      - "Assets/Scripts: kod C# (MonoBehaviour, ScriptableObject, Utilities)."
+      - "Assets/Scenes: sceny gry."
+      - "Assets/Settings: profile URP, konfiguracje globalne."
+      - "Assets/…: dodatkowe assety (materiały, prefaby, dźwięki) zgodnie z potrzebą."
+
+  - Documentation:
+      - "Każda nowa funkcja: krótki opis w komentarzu XML lub nad klasą."
+      - "Zmiany w pakietach i ustawieniach: wpis w CHANGELOG oraz README projektu."
+
+  Unity version: 6.2 6000.2.7f2
+  C# version: 9
+
+AI_Properties:
+
+  project.type: "Unity"
+  project.language: "C#"
+  project.rendering: "URP"
+  project.input: "Unity Input System"
+  project.scriptingBackend: "Mono/.NET (Unity)"
+  project.scenes.path: "Assets/Scenes"
+  project.scripts.path: "Assets/Scripts"
+  project.settings.path: "Assets/Settings"
+  code.style.naming: "PascalCase (public), _camelCase (private fields)"
+  code.lifecycle: "Awake/OnEnable/Start/Update/FixedUpdate/LateUpdate"
+  code.serialization: "[SerializeField] dla pól prywatnych wymagających w Inspector"
+  testing.framework: "Unity Test Framework (NUnit)"
+  logging: "Debug.Log/Warning/Error (warunkowo)"
+  performance.focus: "Minimalizacja alokacji, pooling, profilowanie"
