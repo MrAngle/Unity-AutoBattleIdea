@@ -2,24 +2,36 @@
 {
     public class CharacterData
     {
-        public string Name;
-        public int MaxHp;
-        public int CurrentHp;
+        internal string Name;
+        internal int MaxHp;
+        private int _currentHp;
+        internal int CurrentHp
+        {
+            get => _currentHp;
+            private set
+            {
+                if (_currentHp == value) return;
+                _currentHp = value;
+                OnHpChanged?.Invoke(this, _currentHp);
+            }
+        }
 
-        public CharacterData(string name, int maxHP)
+        internal event System.Action<CharacterData, int> OnHpChanged;
+        
+        internal CharacterData(string name, int maxHP)
         {
             Name = name;
             MaxHp = maxHP;
             CurrentHp = maxHP;
         }
 
-        public void TakeDamage(int dmg)
+        internal void TakeDamage(int dmg)
         {
             CurrentHp -= dmg;
             if (CurrentHp < 0) CurrentHp = 0;
         }
 
-        public void Heal(int amount)
+        internal void Heal(int amount)
         {
             CurrentHp += amount;
             if (CurrentHp > MaxHp) CurrentHp = MaxHp;

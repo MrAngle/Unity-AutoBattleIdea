@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 8191093297744758104}
   - component: {fileID: 2818712659610079312}
   - component: {fileID: 2955251990443631779}
+  - component: {fileID: 2340152810732015653}
   m_Layer: 5
   m_Name: Character
   m_TagString: Untagged
@@ -228,6 +229,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI.CharacterSlotUI
   nameText: {fileID: 2238515775398999072}
   hpBarImage: {fileID: 5064693187318448600}
+--- !u!114 &2340152810732015653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5308845842056547202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0dd95b8be4f43f6aff1339795b35f62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character.CharacterAggregate
+  _renderer: {fileID: 0}
+  _animator: {fileID: 0}
 --- !u!1 &6526491432946556270
 GameObject:
   m_ObjectHideFlags: 0
