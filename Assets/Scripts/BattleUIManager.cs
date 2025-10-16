@@ -1,20 +1,16 @@
 ﻿using Character;
 using UnityEngine;
 
-namespace UI
-{
-    public class BattleUIManager : MonoBehaviour
-    {
-        public CharacterPrefabAggregate slotPrefab;   // prefab slotu, podłącz w Inspectorze
-        public Transform slotParent;         // np. Panel / Content w Canvas
+namespace UI {
+    public class BattleUIManager : MonoBehaviour {
+        public CharacterPrefabAggregate slotPrefab; // prefab slotu, podłącz w Inspectorze
+        public Transform slotParent; // np. Panel / Content w Canvas
 
         private CharacterData[] team;
 
-        void Start()
-        {
+        private void Start() {
             // Przykładowe dane drużyny
-            team = new CharacterData[]
-            {
+            team = new CharacterData[] {
                 new("Warrior", 120),
                 new("Mage", 80),
                 new("Archer", 100)
@@ -23,12 +19,9 @@ namespace UI
             CreateSlots();
         }
 
-        void CreateSlots()
-        {
-            for (int i = 0; i < team.Length; i++)
-            {
+        private void CreateSlots() {
+            for (var i = 0; i < team.Length; i++)
                 CharacterPrefabAggregate.Create(slotPrefab, slotParent, new CharacterAggregate(team[i], Team.TeamA));
-            }
         }
     }
 }
