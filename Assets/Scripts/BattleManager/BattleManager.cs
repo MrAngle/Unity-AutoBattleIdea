@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using Character;
 using Registry;
 using UnityEngine;
 
@@ -9,12 +7,8 @@ namespace BattleManager {
         [SerializeField] private float turnInterval = 1.5f; // co ile sekund tura
 
         private bool _battleRunning;
-        private List<CharacterAggregate> _teamA;
-        private List<CharacterAggregate> _teamB;
 
         private void Start() {
-            _teamA = CharacterRegistry.Instance.GetTeamA();
-            _teamB = CharacterRegistry.Instance.GetTeamB();
             // Na razie testowo – można w przyszłości inicjalizować z prefabu
             StartBattle();
         }
@@ -29,9 +23,12 @@ namespace BattleManager {
             while (_battleRunning) {
                 yield return new WaitForSeconds(turnInterval);
 
+                var teamA = CharacterRegistry.Instance.GetTeamA();
+                var teamB = CharacterRegistry.Instance.GetTeamB();
+
                 // wybierz losowego atakującego z drużyny A
-                var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, _teamA.Count)];
-                var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, _teamB.Count)];
+                var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, teamA.Count)];
+                var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, teamB.Count)];
 
                 var dmg = Random.Range(5, 15);
                 target.TakeDamage(dmg);
