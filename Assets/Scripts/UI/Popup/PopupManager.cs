@@ -2,78 +2,111 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UI.Popup {
-    public class PopupManager : MonoBehaviour {
-        private Dictionary<PopupType, Queue<PopupBase>> _pools;
-        [SerializeField] private const int InitialPoolPerType = 5;
-        [SerializeField] private RectTransform parentCanvas;
-
-        [SerializeField] private List<PopupPrefabEntry> popupPrefabs;
+namespace UI.Popup
+{
+    public class PopupManager : MonoBehaviour
+    {
         public static PopupManager Instance { get; private set; }
 
-        private void Awake() {
-            if (Instance != null && Instance != this) {
-                Destroy(gameObject);
-                return;
-            }
+        [Header("Parent (root Canvas)")]
+        [SerializeField] private Canvas parentCanvas;            // główny Canvas sceny
+        [SerializeField] private RectTransform parentRect;       // jego RectTransform
 
+        [Header("Prefab & Pool")]
+        [SerializeField] private PopupBase popupPrefab;          // prefab pojedynczego popupu (bez Canvas!)
+        [SerializeField] private int initialPoolSize = 10;
+
+        private readonly Queue<PopupBase> _pool = new();
+        private Camera _uiCam = null; // for now
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
 
-            _pools = new Dictionary<PopupType, Queue<PopupBase>>();
-            foreach (var entry in popupPrefabs) {
-                var q = new Queue<PopupBase>();
-                for (var i = 0; i < InitialPoolPerType; i++) {
-                    var inst = Instantiate(entry.prefab, parentCanvas);
-                    inst.gameObject.SetActive(false);
-                    q.Enqueue(inst);
-                }
+            // Auto-wire jeśli nie ustawiono w Inspektorze
+            // if (!parentCanvas) parentCanvas = FindObjectOfType<Canvas>();
+            // if (!parentRect && parentCanvas) parentRect = (RectTransform)parentCanvas.transform;
 
-                _pools[entry.type] = q;
+            // for now - poki jest overlay
+            // _uiCam = parentCanvas && parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+            //     ? null
+            //     : (parentCanvas ? parentCanvas.worldCamera : null);
+
+            // Wstępne wypełnienie puli
+            for (int i = 0; i < initialPoolSize; i++)
+            {
+                var p = Instantiate(popupPrefab, parentRect);
+                p.gameObject.SetActive(false);
+                _pool.Enqueue(p);
             }
         }
 
-        public PopupBase GetFromPool(PopupType type) {
-            if (!_pools.ContainsKey(type)) {
-                Debug.LogWarning($"PopupManager: brak puli dla typu {type}");
-                return null;
-            }
-
-            var q = _pools[type];
-            if (q.Count > 0) {
-                var p = q.Dequeue();
+        private PopupBase GetPopupBase()
+        {
+            if (_pool.Count > 0)
+            {
+                var p = _pool.Dequeue();
+                p.gameObject.SetActive(true);
                 return p;
             }
-
-            // utwórz nowy egzemplarz, jeśli pula pusta
-            var prefab = popupPrefabs.Find(e => e.type == type).prefab;
-            var inst = Instantiate(prefab, parentCanvas);
-            inst.gameObject.SetActive(false);
-            return inst;
+            return Instantiate(popupPrefab, parentRect);
         }
 
-        public void ReturnToPool(PopupBase popup) {
+        public void ReturnToPool(PopupBase popup)
+        {
             popup.gameObject.SetActive(false);
-            // wpisz z powrotem do odpowiedniej kolejki
-            // założenie: popup ma jakiś typ — musisz wiedzieć typ
-            // możesz mieć pole popup.CurrentType lub coś takiego
-            var t = /* pobierz typ z popup */ PopupType.Damage; // zmień wg implementacji
-            _pools[t].Enqueue(popup);
+            _pool.Enqueue(popup);
         }
 
-        /// Wygodna metoda „na zewnątrz”:
-        public void ShowPopup(PopupType type, string textToShow, Vector2 pos, Color col) {
-            var popupBase = GetFromPool(type);
-            // popupBase.Show(textToShow, pos, type, col);
+        public void ShowHPChangeDamage(Component ownerTransform, int hpChange) {
+            if (hpChange > 0) {
+                Show(ownerTransform, $"+{hpChange}", Color.green, offset: null, moveY: 50f, duration: 2f);
+            }
+            else if (hpChange < 0) {
+                Show(ownerTransform, $"{hpChange}", Color.red, offset: null, moveY: 50f, duration: 2f);
+            }
+            else {
+                Show(ownerTransform, "0", Color.white, offset: null, moveY: 50f, duration: 2f);
+            }
         }
 
-        public void ShowDamage(int dmg, Vector2 pos, Color col) {
-            ShowPopup(PopupType.Damage, "-" + dmg, pos, col);
+        /// <summary>
+        /// Pokaż popup na środku komponentu, który wywołuje (UI: środek Recta, inne: Transform.position).
+        /// </summary>
+        public void Show(Component owner, string textToShow, Color color, Vector2? offset = null, float moveY = 50f, float duration = 1f) {
+            Show(owner.transform, textToShow, color, offset, moveY, duration);
         }
+        
+        public void Show(Transform ownerTransform, string textToShow, Color color, Vector2? offset = null, float moveY = 200f, float duration = 1f)
+        {
+            // Vector3 worldPos = ownertransform is RectTransform rectTransform
+            //     ? rectTransform.TransformPoint(rectTransform.rect.center)
+            //     : ownertransform.position;
+            Vector3 worldPos;
+            if (ownerTransform is RectTransform rectTransform)
+                worldPos = rectTransform.TransformPoint(rectTransform.rect.center);
+            else
+                worldPos = ownerTransform.position;
 
-        [Serializable]
-        public struct PopupPrefabEntry {
-            public PopupType type;
-            public PopupBase prefab;
+            // przelicz na ekran + lokalne UI
+            Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(_uiCam, worldPos);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPos, _uiCam,
+                out Vector2 localPos);
+
+            // dodaj offset w lokalnych współrzędnych UI
+            Vector2 finalPos = localPos + (offset ?? Vector2.zero);
+
+            Show(textToShow, finalPos + (offset ?? Vector2.zero), color, moveY, duration);
+        }
+        
+        /// <summary>
+        /// Pokaż popup w zadanej pozycji (układ rodzica canvasa – anchored).
+        /// </summary>
+        public void Show(string text, Vector2 anchoredPos, Color color, float moveY = 50f, float duration = 1f)
+        {
+            var popupBase = GetPopupBase();
+            popupBase.Show(text, anchoredPos, color, moveY, duration);
         }
     }
 }

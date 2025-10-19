@@ -68,7 +68,6 @@
     <Compile Include="Assets\Scripts\Character\CharacterAggregate.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
-    <Compile Include="Assets\Scripts\UI\Popup\PopupManagerV2.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />

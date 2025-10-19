@@ -103,7 +103,7 @@ namespace UI.Popup {
             _seq.OnComplete(() =>
             {
                 _seq.Kill(); _seq = null;
-                PopupManagerV2.Instance.ReturnToPool(this);
+                PopupManager.Instance.ReturnToPool(this);
             });
         }
     }

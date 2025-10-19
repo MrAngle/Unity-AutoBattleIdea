@@ -15,13 +15,16 @@ namespace Character {
         internal int CurrentHp {
             get => _currentHp;
             private set {
-                if (_currentHp == value) return;
+                if (_currentHp == value) {
+                    return;
+                }
+                int _hpBeforeChange = _currentHp;
                 _currentHp = value;
-                OnHpChanged?.Invoke(this, _currentHp);
+                OnHpChanged?.Invoke(this, _currentHp, _hpBeforeChange);
             }
         }
 
-        internal event Action<CharacterData, int> OnHpChanged;
+        internal event Action<CharacterData, int, int> OnHpChanged;
 
         internal void TakeDamage(int dmg) {
             CurrentHp -= dmg;

@@ -25,7 +25,7 @@ namespace Character {
 
         public Team Team { get; }
 
-        public event Action<CharacterAggregate, int> OnHpChanged;
+        public event Action<CharacterAggregate, int, int> OnHpChanged;
         public event Action<CharacterAggregate> OnDeath;
 
         ~CharacterAggregate() {
@@ -33,15 +33,17 @@ namespace Character {
             _data.OnHpChanged -= HandleDataHpChanged;
         }
 
-        private void HandleDataHpChanged(CharacterData data, int newHp) {
-            OnHpChanged?.Invoke(this, newHp);
+        private void HandleDataHpChanged(CharacterData data, int newHp, int previousHpValue) {
+            OnHpChanged?.Invoke(this, newHp, previousHpValue);
         }
 
 
         // Metody przepuszczające do _data
         public void TakeDamage(int dmg) {
             _data.TakeDamage(dmg);
-            if (_data.CurrentHp <= 0) OnDeath?.Invoke(this);
+            if (_data.CurrentHp <= 0) {
+                OnDeath?.Invoke(this);
+            }
         }
 
         public void Heal(int amount) {

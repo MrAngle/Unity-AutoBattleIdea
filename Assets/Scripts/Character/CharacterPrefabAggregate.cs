@@ -10,7 +10,6 @@ namespace Character {
     public class CharacterPrefabAggregate : MonoBehaviour {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
-        private RectTransform _rectTransform;
 
         private CharacterAggregate _character;
 
@@ -32,7 +31,6 @@ namespace Character {
 
         private void Setup(CharacterAggregate character) {
             _character = character;
-            _rectTransform = GetComponent<RectTransform>();
 
             if (_character != null) {
                 _character.OnHpChanged += HandleHpChanged;
@@ -43,9 +41,8 @@ namespace Character {
             RefreshUI();
         }
 
-        private void HandleHpChanged(CharacterAggregate ch, int newHp) {
-            // tutaj odśwież UI
-            PopupManagerV2.Instance.Show(this, "-25", Color.red, new Vector2(0, 24));
+        private void HandleHpChanged(CharacterAggregate ch, int newHp, int previousHpValue) {
+            PopupManager.Instance.ShowHPChangeDamage(this, newHp - previousHpValue);
             RefreshUI();
         }
 
