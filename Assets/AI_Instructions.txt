@@ -1,10 +1,44 @@
-﻿AI_Instruction:
+﻿AI_Instruction V2 (potwierdzaj ze przeczytales ta konkretna wersje):
   - ProjectName: "MrAngleGame"
   - Description: >
-      Gra tworzona w silniku Unity. Główny język programowania: C#.
-      Projekt wykorzystuje standardową strukturę Unity (Assets/Scenes, Assets/Scripts, ustawienia URP i Input System).
-      Celem instrukcji jest ujednolicenie stylu kodu, kompatybilności wersji i sposobu korzystania z narzędzi AI.
+Chce stworzyć gre z połączeniem gatunku Backbacks Battle (autobattler) oraz gier takich jak np. path of exile w odniesieniu do sposobu zbierania sprzętu. Mowa o grze 2d singleplayer
 
+Główna rozgrywka ma polegać na układaniu ekwipunku w taki sposób, aby jak najbardziej optymalizować statystyki itp. - główna rozgrywka to panel ekwipunku i analizowanie jego działania.
+
+Gre chciałem nazwac coś w stylu "Mages enginners", gdzie jako magowie składają artefakt służący do walki z innymi grupami magów lub innymi stworzeniami
+
+Panel ekwipunktu to siatka dostępnych pól. Dostępne pola nie musza miec regularnych ksztaltów, odblokowanie tych pól to równiez element rozgrytki i rozwoju "postaci"/artefaktu
+
+Wstepnie logikę rozgrywki widzę jako:
+(na siatce ekwipunku)
+- input power(albo damage, jeszcze tutaj zastanawiam sie nad nazwa)
+- input defence
+
+Rozgrywka polega na manipulacją inputu power oraz inputu defence aby wykonywac jak najbardziej opłacalne i najbardziej uniwersalne "comba" liczbowe.
+
+Przykładowo do inputu power, co 1 sec wchodzi "10" jednostek mocy, kazdy, nastepnie ta wartosc liczbowa jest przetwarzana. Np. jak na lini przetwarzania o nieregularnych ksztaltach (która jest tworzona przez gracza) pojawi się przedmiot "kula ognia" to zamienia te obrażenia na ogien oraz np. powoduje podpalenie. To powoduje ze na wyjsciu power jest przeksztalcane na 10 obrażen od ognia z efektem podpalenie. Kolejnym elementem moze byc np. wzmocenienie ataku o 5, czyli zwieksza tą moc do wartosci 15 + efekt podpalenia. Przewiduje też opcje podziału tej lini np. na 2 niezalezne kanały, czyli jak leci 10mocy to moze to zostać "rozdzielone" na 2 niezalezne sciezki po 5mocy. Oczywisice to bardzo uproszczona logika.
+
+Analogicznie do inputu defence, gdzie jest przetwarzana wartosc ktora otrzymuje gracz i stara sie ja zbic do minimum na podstawie roznych przedmiotów co analogicznie mogą dzialac jak w przypadku inputu power/damage. 
+
+Przewiduje też mieszanie tych wlasciwosci, tzn, nic nie stoi na przeszkodzie zeby np. zamienic obrazenia przychodzące na obrazenia od ognia, bo np. ma się odpornosc na ogien.
+Przewiduje tez przedmioty, co do aktywacji potrzebuja zarowno mocy z inputu defence i power(damage)
+ 
+zastanawiam sie jeszcze nad elementem Many, tzn, koniecznosci zasilania przedmiotów. Kazdy przedmiot wymaga zasilania poprzez maga i mana moglaby przeplywac pomiedyz przemdiotami i je "zasilac" - to powinno umozliwic lepsze balansowanie przedmiotów i konieczosc dokladniejszego zarządzania, aby nie przesadzic z wstawianiem zbyt silnych przedmiotow itp. Np. uniqalne pzredmioty powinny byc na swoj sposob bardzo silne ale nie tak łatwe do uzycia, a w niektorych przypadkach wrecz nieoplacalne (np. jak w path of exile)
+
+To jak widziałem układ ekwipunku to siatka
+
+Jest na zdjeciu png
+
+Gdzie:
+- szare tło to pola ktore sa dostepne pod przedmioty
+- elementy bez tla to miejsca gdzie nie mozna nalozyc ekwipunku
+- fioletowe elementy to przedmioty (rozne odcienie to rozne przedmioty)
+- czerwone to input power (damage)
+- niebieska kratka input defence
+- niebieskie linie pomiedzy indeksami to przepływ many, ktory bedzie zasilal te przedmioty
+ 
+Spodziewam sie ze wrogowie beda mieli taką sama logike, ale uproszczona i bardziej sztywną (bez mozliwosci modyfikacji ekwipunku)
+  
   - TechStack:
       Engine: "Unity"
       RenderingPipeline: "Universal Render Pipeline (URP)"
