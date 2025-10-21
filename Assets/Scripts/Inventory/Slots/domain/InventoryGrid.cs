@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UI.Inventory.Items.Domain;
 using UnityEngine;
 
 namespace Inventory.Slots {
@@ -54,6 +55,36 @@ namespace Inventory.Slots {
                     if (_cells.TryGetValue(p, out var c))
                         yield return (p, c);
                 }
+            }
+        }
+        
+        public bool CanPlace(ItemData data, Vector2Int origin)
+        {
+            foreach (var off in data.Shape.Cells)
+            {
+                var p = origin + off;
+                if (p.x < 0 || p.x >= _width || p.y < 0 || p.y >= _height) return false;
+                if (!_cells.TryGetValue(p, out var c)) return false;
+                if (!c.IsAvailableForPlacement) return false;
+            }
+            return true;
+        }
+
+        public void Place(ItemData data, Vector2Int origin)
+        {
+            foreach (var off in data.Shape.Cells)
+            {
+                var p = origin + off;
+                _cells[p].State = CellState.Occupied;
+            }
+        }
+
+        public void Remove(ItemData data, Vector2Int origin)
+        {
+            foreach (var off in data.Shape.Cells)
+            {
+                var p = origin + off;
+                if (_cells.TryGetValue(p, out var c)) c.State = CellState.Empty;
             }
         }
         

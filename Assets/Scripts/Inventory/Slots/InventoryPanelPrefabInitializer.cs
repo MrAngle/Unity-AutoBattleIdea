@@ -1,4 +1,5 @@
-﻿using Inventory.Slots.View;
+﻿using System;
+using Inventory.Slots.View;
 using UnityEngine;
 
 namespace Inventory.Slots {
@@ -14,11 +15,17 @@ namespace Inventory.Slots {
 
         private InventoryGridView _gridView;
         private InventoryGrid _model;
+        public event Action<InventoryGrid> OnReady;
+        public bool IsReady { get; private set; }
 
+        private void Awake() {
+            _model = new InventoryGrid(width, height);
+        }
+        
         private void Start()
         {
             // 1) Model
-            _model = new InventoryGrid(width, height);
+            // _model = new InventoryGrid(width, height);
 
             // 2) Widok – instancja jako dziecko InventorySection
             _gridView = Instantiate(gridViewPrefab, transform, false);
@@ -38,6 +45,9 @@ namespace Inventory.Slots {
             rt.anchorMax = Vector2.one;
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
+            
+            IsReady = true;
+            OnReady?.Invoke(_model);
         }
     }
 }
