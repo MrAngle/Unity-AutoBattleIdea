@@ -53,6 +53,7 @@ sysinfo.txt
 *.csproj.user
 *.sln.docstates
 
+
 # --- Systemowe śmieci ---
 .DS_Store
 Thumbs.db
@@ -60,5 +61,9 @@ Thumbs.db
 *.sln
 .vsconfig
 
+### ASSETS
 # TextMesh Pro example / extras folder
 Assets/TextMesh Pro/Examples & Extras/
+
+Assets/Plugins/Zenject/OptionalExtras/
+Assets/Plugins/Zenject/Tests/

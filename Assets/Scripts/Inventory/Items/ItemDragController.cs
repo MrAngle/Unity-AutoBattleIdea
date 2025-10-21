@@ -29,13 +29,15 @@ namespace Inventory.Items {
         }
         
         private void OnEnable() {
-            if (panelInit != null)
+            if (panelInit != null) {
                 panelInit.OnReady += HandlePanelReady;
+            }
         }
 
         private void OnDisable() {
-            if (panelInit != null)
+            if (panelInit != null) {
                 panelInit.OnReady -= HandlePanelReady;
+            }
         }
         
         private void HandlePanelReady(InventoryGrid model) {

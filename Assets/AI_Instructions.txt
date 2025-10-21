@@ -50,6 +50,9 @@ Spodziewam sie ze wrogowie beda mieli taką sama logike, ale uproszczona i bardz
         - "Scripts (*.cs)"
         - "URP Settings (*.asset)"
         - "Input Actions (*.inputactions)"
+      Najwazniejsze uzywane Biblioteki:
+        Extenject Dependency Injection IOC
+        DOTween (HOTween v2)
 
   - VersioningGuidelines:
       UnityVersion: >
