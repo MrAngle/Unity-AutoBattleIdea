@@ -15,8 +15,12 @@ namespace Inventory.Items {
         private ItemView _ghost;
 
         private InventoryGrid _model;
+        // [Inject] private InventoryGrid _model;
+        
         [SerializeField] private ItemView dragGhostPrefab;
         [SerializeField] private ItemView itemViewPrefab;
+        
+        
 
         private void Start() {
             // model zbudowany w Start() panelInit

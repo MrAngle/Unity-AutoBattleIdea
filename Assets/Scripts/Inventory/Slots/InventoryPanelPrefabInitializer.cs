@@ -15,6 +15,8 @@ namespace Inventory.Slots {
 
         private InventoryGridView _gridView;
         private InventoryGrid _model;
+        // [Inject] private InventoryGrid _model;
+        
         public event Action<InventoryGrid> OnReady;
         public bool IsReady { get; private set; }
 
