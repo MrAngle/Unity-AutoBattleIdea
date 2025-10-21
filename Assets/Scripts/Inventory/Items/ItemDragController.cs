@@ -1,9 +1,11 @@
 ﻿using System.Reflection;
 using Inventory.Slots;
+using Inventory.Slots.Context;
 using UI.Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Inventory.Items {
     public class ItemDragController : MonoBehaviour {
@@ -14,8 +16,8 @@ namespace Inventory.Items {
         private ItemData _dragData;
         private ItemView _ghost;
 
-        private InventoryGrid _model;
-        // [Inject] private InventoryGrid _model;
+        // private InventoryGrid _model;
+        [Inject] private InventoryGridContext _inventoryGridContext;
         
         [SerializeField] private ItemView dragGhostPrefab;
         [SerializeField] private ItemView itemViewPrefab;
@@ -32,22 +34,22 @@ namespace Inventory.Items {
             _ghost.gameObject.SetActive(false);
         }
         
-        private void OnEnable() {
-            if (panelInit != null) {
-                panelInit.OnReady += HandlePanelReady;
-            }
-        }
-
-        private void OnDisable() {
-            if (panelInit != null) {
-                panelInit.OnReady -= HandlePanelReady;
-            }
-        }
+        // private void OnEnable() {
+        //     if (panelInit != null) {
+        //         panelInit.OnReady += HandlePanelReady;
+        //     }
+        // }
+        //
+        // private void OnDisable() {
+        //     if (panelInit != null) {
+        //         panelInit.OnReady -= HandlePanelReady;
+        //     }
+        // }
         
-        private void HandlePanelReady(InventoryGrid model) {
-            _model = model;
-            // jeśli ghost/preview wymaga modelu do inicjalizacji – zrób to tutaj
-        }
+        // private void HandlePanelReady(InventoryGrid model) {
+        //     _model = model;
+        //     // jeśli ghost/preview wymaga modelu do inicjalizacji – zrób to tutaj
+        // }
 
         public void BeginDrag(ItemData data, PointerEventData e) {
             _dragData = data;
@@ -74,8 +76,10 @@ namespace Inventory.Items {
 
             var origin = new Vector2Int(x, y);
 
+            var inventoryGrid = _inventoryGridContext.GetInventoryGrid();
+
             // 3) validacja
-            var can = _model != null && _model.CanPlace(_dragData, origin);
+            var can = inventoryGrid != null && inventoryGrid.CanPlace(_dragData, origin);
             _ghost.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -96,9 +100,11 @@ namespace Inventory.Items {
             var x = Mathf.FloorToInt(localPos.x / (cell.x + spacing.x));
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
+            
+            var inventoryGrid = _inventoryGridContext.GetInventoryGrid();
 
-            if (_model != null && _model.CanPlace(_dragData, origin)) {
-                _model.Place(_dragData, origin);
+            if (inventoryGrid != null && inventoryGrid.CanPlace(_dragData, origin)) {
+                inventoryGrid.Place(_dragData, origin);
                 var view = Instantiate(itemViewPrefab, itemsLayer, false);
                 view.Build(_dragData, cell);
                 view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);

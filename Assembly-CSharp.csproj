@@ -54,6 +54,8 @@
     <Compile Include="Assets\Scripts\Inventory\Items\ItemView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryGrid.cs" />
+    <Compile Include="Assets\Scripts\IInjected.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Slots\Context\InventoryGridContext.cs" />
     <Compile Include="Assets\Scripts\Registry\CharacterRegistry.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterAggregate.cs" />
+    <Compile Include="Assets\Scripts\Config\DependencyInjectionConfig.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterData.cs" />

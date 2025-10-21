@@ -1,6 +1,8 @@
 ﻿using System;
+using Inventory.Slots.Context;
 using Inventory.Slots.View;
 using UnityEngine;
+using Zenject;
 
 namespace Inventory.Slots {
     public class InventoryPanelPrefabInitializer : MonoBehaviour
@@ -14,14 +16,15 @@ namespace Inventory.Slots {
         [SerializeField] private int height = 6;
 
         private InventoryGridView _gridView;
-        private InventoryGrid _model;
-        // [Inject] private InventoryGrid _model;
+        // private InventoryGrid _model;
+        [Inject] private InventoryGridContext _inventoryGridContext;
         
-        public event Action<InventoryGrid> OnReady;
-        public bool IsReady { get; private set; }
+        // public event Action<InventoryGrid> OnReady;
+        // public bool IsReady { get; private set; }
 
         private void Awake() {
-            _model = new InventoryGrid(width, height);
+            var inventoryGrid = new InventoryGrid(width, height);
+            _inventoryGridContext.SetInventoryGrid(inventoryGrid);
         }
         
         private void Start()
@@ -39,7 +42,7 @@ namespace Inventory.Slots {
                 field.SetValue(_gridView, cellViewPrefab);
 
             // 3) Zbuduj siatkę
-            _gridView.Build(_model);
+            _gridView.Build(_inventoryGridContext.GetInventoryGrid());
 
             // 4) na wszelki wypadek rozciągnij widok do panelu
             var rt = (RectTransform)_gridView.transform;
@@ -47,9 +50,9 @@ namespace Inventory.Slots {
             rt.anchorMax = Vector2.one;
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
-            
-            IsReady = true;
-            OnReady?.Invoke(_model);
+            //
+            // IsReady = true;
+            // OnReady?.Invoke(_model);
         }
     }
 }
