@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Inventory.Items {
+namespace Inventory.Items.View {
     [RequireComponent(typeof(RectTransform), typeof(Image))]
-    public class ItemCellTile : MonoBehaviour {
+    public class ItemCellTileView : MonoBehaviour {
         [SerializeField] private Image _image;
 
         private void Awake() {

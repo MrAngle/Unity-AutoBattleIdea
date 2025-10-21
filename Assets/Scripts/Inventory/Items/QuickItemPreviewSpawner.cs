@@ -1,11 +1,11 @@
-﻿using Inventory.Items;
+﻿using Inventory.Items.View;
 using UI.Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Inventory.Items {
 
-
+    // TODO: set items by config
     public class QuickItemPreviewSpawner : MonoBehaviour
     {
         [Header("Refs")]

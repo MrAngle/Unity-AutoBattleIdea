@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using Inventory.Items.Config;
 using UI.Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Inventory.Items {
+namespace Inventory.Items.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
         [Header("Config")] public string itemId; // np. "l_bracket" z ItemConfig
 

@@ -16,11 +16,9 @@ namespace Inventory.Slots {
         [SerializeField] private int height = 6;
 
         private InventoryGridView _gridView;
-        // private InventoryGrid _model;
+
         [Inject] private InventoryGridContext _inventoryGridContext;
-        
-        // public event Action<InventoryGrid> OnReady;
-        // public bool IsReady { get; private set; }
+
 
         private void Awake() {
             var inventoryGrid = new InventoryGrid(width, height);
@@ -50,9 +48,6 @@ namespace Inventory.Slots {
             rt.anchorMax = Vector2.one;
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
-            //
-            // IsReady = true;
-            // OnReady?.Invoke(_model);
         }
     }
 }

@@ -47,11 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\ItemDraggable.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Items\Config\ItemConfig.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\PlacedItem.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\ItemView.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Items\View\ItemCellTileView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryGrid.cs" />
     <Compile Include="Assets\Scripts\IInjected.cs" />
@@ -61,12 +61,10 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\Scripts\BattleUIManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\ItemCellTile.cs" />
     <Compile Include="Assets\Scripts\BattleManager\BattleManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\View\InventoryCellView.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\ItemShape.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterPrefabAggregate.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\ItemConfig.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
@@ -77,8 +75,10 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterAggregate.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Items\Controller\ItemDragController.cs" />
     <Compile Include="Assets\Scripts\Config\DependencyInjectionConfig.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Items\View\ItemView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
@@ -91,6 +91,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\View\InventoryGridView.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Items\Controller\ItemDraggable.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\ItemData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
@@ -106,7 +107,6 @@
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryCell.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\ItemViewDemoSpawner.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\ItemDragController.cs" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Roboto-Bold - License.txt" />

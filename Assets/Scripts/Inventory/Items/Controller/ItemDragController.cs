@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
 using UI.Inventory.Items.Domain;
@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Inventory.Items {
+namespace Inventory.Items.Controller {
     public class ItemDragController : MonoBehaviour {
         [Header("Refs")] [SerializeField] private RectTransform itemsLayer;
 

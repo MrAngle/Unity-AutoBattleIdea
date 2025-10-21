@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UI.Inventory.Items.Domain;
 
-namespace Inventory.Items
+namespace Inventory.Items.Config
 {
     /// <summary>
     /// “Twardo” skonfigurowane przykładowe przedmioty (bez ScriptableObjectów).

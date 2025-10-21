@@ -4,7 +4,7 @@ using UI.Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Inventory.Items
+namespace Inventory.Items.View
 {
     /// Widok przedmiotu złożony z kafelków (tego samego rozmiaru co komórki gridu).
     /// Pivot kontenera = (0,1) (lewy-górny).
@@ -14,7 +14,7 @@ namespace Inventory.Items
         [SerializeField] private Color cellColor = new(0.4f, 0.7f, 1f, 0.85f);
         [SerializeField] private float cellSpacing = 2f; // odstęp między kafelkami (px)
 
-        private readonly List<ItemCellTile> _tiles = new();
+        private readonly List<ItemCellTileView> _tiles = new();
         private Vector2 _cellSize;
         private Vector2Int[] _shapeOffsets;
 
@@ -27,10 +27,10 @@ namespace Inventory.Items
             foreach (var offset in _shapeOffsets)
             {
                 var go = new GameObject($"Tile_{offset.x}_{offset.y}",
-                    typeof(RectTransform), typeof(Image), typeof(ItemCellTile));
+                    typeof(RectTransform), typeof(Image), typeof(ItemCellTileView));
                 go.transform.SetParent(transform, false);
 
-                var tile = go.GetComponent<ItemCellTile>();
+                var tile = go.GetComponent<ItemCellTileView>();
                 tile.SetupVisual(cellColor);
                 tile.SetSize(_cellSize);
 
