@@ -1,4 +1,5 @@
-﻿using Inventory.Slots;
+﻿using Config.Semantics;
+using Inventory.Slots;
 using Inventory.Slots.Context;
 using UnityEngine;
 using Zenject;
@@ -6,7 +7,9 @@ using Zenject;
 namespace Config {
     public class DependencyInjectionConfig: MonoInstaller {
         // [SerializeField] private int width = 8;
-        // [SerializeField] private int height = 6;
+
+        [SerializeField] private RectTransform itemsLayerRectTransform;
+
 
         public override void InstallBindings()
         {
@@ -18,6 +21,11 @@ namespace Config {
             //
             Container.Bind<InventoryGridContext>()
                 .FromMethod(_ => InventoryGridContext.Create())
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<ItemsLayerRectTransform>()
+                .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
                 .AsSingle()
                 .NonLazy();
         }

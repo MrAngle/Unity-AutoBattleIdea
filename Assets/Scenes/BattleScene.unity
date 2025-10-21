@@ -960,7 +960,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3162dde13045425fac6818150f4cb538, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.Items.ItemDragController
-  itemsLayer: {fileID: 302993218}
   gridLayout: {fileID: 5796400925352824949, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
   panelInit: {fileID: 1035400458}
   dragGhostPrefab: {fileID: 7547035701108130449, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
@@ -1350,6 +1349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85a60087045f4d9587c30ec9ad305463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Config.DependencyInjectionConfig
+  itemsLayerRectTransform: {fileID: 302993218}
 --- !u!4 &1251469101
 Transform:
   m_ObjectHideFlags: 0
@@ -1559,7 +1559,7 @@ GameObject:
   - component: {fileID: 2062791749}
   - component: {fileID: 2062791751}
   m_Layer: 5
-  m_Name: ItemsPanel
+  m_Name: ItemsStashPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

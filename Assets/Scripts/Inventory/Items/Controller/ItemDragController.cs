@@ -1,4 +1,5 @@
-﻿using Inventory.Items.View;
+﻿using Config.Semantics;
+using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
 using UI.Inventory.Items.Domain;
@@ -9,7 +10,8 @@ using Zenject;
 
 namespace Inventory.Items.Controller {
     public class ItemDragController : MonoBehaviour {
-        [Header("Refs")] [SerializeField] private RectTransform itemsLayer;
+        // [Header("Refs")] [SerializeField] private RectTransform itemsLayer;
+        [Inject] private ItemsLayerRectTransform _itemsLayer;
 
         [SerializeField] private GridLayoutGroup gridLayout;
         [SerializeField] private InventoryPanelPrefabInitializer panelInit;
@@ -30,7 +32,7 @@ namespace Inventory.Items.Controller {
             //     .GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance);
             // _model = (InventoryGrid)field.GetValue(panelInit);
 
-            _ghost = Instantiate(dragGhostPrefab, itemsLayer, false);
+            _ghost = Instantiate(dragGhostPrefab, _itemsLayer.Get(), false);
             _ghost.gameObject.SetActive(false);
         }
         
@@ -66,7 +68,7 @@ namespace Inventory.Items.Controller {
 
             // 1) pozycja kursora w układzie ItemsLayer
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                itemsLayer, e.position, e.pressEventCamera, out var localPos);
+                _itemsLayer.Get(), e.position, e.pressEventCamera, out var localPos);
 
             // 2) zamiana na origin komórkowy
             var cell = gridLayout.cellSize;
@@ -93,7 +95,7 @@ namespace Inventory.Items.Controller {
             }
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                itemsLayer, e.position, e.pressEventCamera, out var localPos);
+                _itemsLayer.Get(), e.position, e.pressEventCamera, out var localPos);
 
             var cell = gridLayout.cellSize;
             var spacing = gridLayout.spacing;
@@ -105,7 +107,7 @@ namespace Inventory.Items.Controller {
 
             if (inventoryGrid != null && inventoryGrid.CanPlace(_dragData, origin)) {
                 inventoryGrid.Place(_dragData, origin);
-                var view = Instantiate(itemViewPrefab, itemsLayer, false);
+                var view = Instantiate(itemViewPrefab, _itemsLayer.Get(), false);
                 view.Build(_dragData, cell);
                 view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
             }
