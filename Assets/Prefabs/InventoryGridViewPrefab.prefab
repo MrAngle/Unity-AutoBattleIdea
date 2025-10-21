@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5796400925352824949}
   - component: {fileID: 2602901976082349797}
   m_Layer: 5
-  m_Name: InventoryGridView
+  m_Name: InventoryGridViewPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

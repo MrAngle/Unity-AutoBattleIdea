@@ -18,13 +18,10 @@ namespace Inventory.Items.Controller {
         private ItemData _dragData;
         private ItemView _ghost;
 
-        // private InventoryGrid _model;
         [Inject] private InventoryGridContext _inventoryGridContext;
         
-        [SerializeField] private ItemView dragGhostPrefab;
-        [SerializeField] private ItemView itemViewPrefab;
-        
-        
+        [Inject] private DragGhostPrefabItemView _dragGhostPrefabItemView;
+        [Inject] private ItemViewPrefabItemView _itemViewPrefabItemView;
 
         private void Start() {
             // model zbudowany w Start() panelInit
@@ -32,7 +29,7 @@ namespace Inventory.Items.Controller {
             //     .GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance);
             // _model = (InventoryGrid)field.GetValue(panelInit);
 
-            _ghost = Instantiate(dragGhostPrefab, _itemsLayer.Get(), false);
+            _ghost = Instantiate(_dragGhostPrefabItemView.Get(), _itemsLayer.Get(), false);
             _ghost.gameObject.SetActive(false);
         }
         
@@ -107,7 +104,7 @@ namespace Inventory.Items.Controller {
 
             if (inventoryGrid != null && inventoryGrid.CanPlace(_dragData, origin)) {
                 inventoryGrid.Place(_dragData, origin);
-                var view = Instantiate(itemViewPrefab, _itemsLayer.Get(), false);
+                var view = Instantiate(_itemViewPrefabItemView.Get(), _itemsLayer.Get(), false);
                 view.Build(_dragData, cell);
                 view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
             }

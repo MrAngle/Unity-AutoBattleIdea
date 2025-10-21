@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Config.Semantics;
 using UI.Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Inventory.Items.View
 {
@@ -10,6 +12,8 @@ namespace Inventory.Items.View
     /// Pivot kontenera = (0,1) (lewy-górny).
     public class ItemView : MonoBehaviour
     {
+        public class Factory : PlaceholderFactory<ItemViewPrefabItemView> {}
+        
         [Header("Visual")]
         [SerializeField] private Color cellColor = new(0.4f, 0.7f, 1f, 0.85f);
         [SerializeField] private float cellSpacing = 2f; // odstęp między kafelkami (px)

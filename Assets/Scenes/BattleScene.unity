@@ -962,8 +962,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.Items.ItemDragController
   gridLayout: {fileID: 5796400925352824949, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
   panelInit: {fileID: 1035400458}
-  dragGhostPrefab: {fileID: 7547035701108130449, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
-  itemViewPrefab: {fileID: 5897542128176508331, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
 --- !u!1 &961739749
 GameObject:
   m_ObjectHideFlags: 0
@@ -1349,6 +1347,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85a60087045f4d9587c30ec9ad305463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Config.DependencyInjectionConfig
+  itemViewPrefab: {fileID: 5897542128176508331, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
+  dragGhostPrefab: {fileID: 7547035701108130449, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
   itemsLayerRectTransform: {fileID: 302993218}
 --- !u!4 &1251469101
 Transform:
