@@ -591,7 +591,7 @@ GameObject:
   m_Component:
   - component: {fileID: 302993218}
   m_Layer: 5
-  m_Name: ItemsLayer
+  m_Name: InventoryItemsLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -774,7 +774,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.Items.QuickItemPreviewSpawner
   itemsLayer: {fileID: 302993218}
-  gridLayout: {fileID: 1143051222}
+  gridLayout: {fileID: 0}
   itemViewPrefab: {fileID: 5897542128176508331, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
   origin: {x: 1, y: 1}
 --- !u!1 &814658336
@@ -1107,8 +1107,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1035400457}
   - component: {fileID: 1035400458}
+  - component: {fileID: 1035400459}
   m_Layer: 5
-  m_Name: GridLayer
+  m_Name: InventoryGridLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1149,6 +1150,30 @@ MonoBehaviour:
   cellViewPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
   width: 16
   height: 6
+--- !u!114 &1035400459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035400456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 96, y: 96}
+  m_Spacing: {x: 8, y: 8}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &1143051220
 GameObject:
   m_ObjectHideFlags: 0
@@ -1160,8 +1185,6 @@ GameObject:
   - component: {fileID: 1143051221}
   - component: {fileID: 1143051224}
   - component: {fileID: 1143051223}
-  - component: {fileID: 1143051222}
-  - component: {fileID: 1143051225}
   m_Layer: 5
   m_Name: InventoryPanel
   m_TagString: Untagged
@@ -1190,30 +1213,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -194.88}
   m_SizeDelta: {x: -192, y: -389.77}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1143051222
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1143051220}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 96, y: 96}
-  m_Spacing: {x: 8, y: 8}
-  m_Constraint: 0
-  m_ConstraintCount: 2
 --- !u!114 &1143051223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1252,22 +1251,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1143051220}
   m_CullTransparentMesh: 1
---- !u!114 &1143051225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1143051220}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05a80f2f81c542f9bf2ae86b22c4a731, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory.Slots.InventoryPanelInitializer
-  gridViewPrefab: {fileID: 2602901976082349797, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
-  cellViewPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
-  width: 16
-  height: 6
 --- !u!1 &1213847998
 GameObject:
   m_ObjectHideFlags: 0
@@ -1348,8 +1331,8 @@ MonoBehaviour:
   itemViewPrefab: {fileID: 5897542128176508331, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
   dragGhostPrefab: {fileID: 7547035701108130449, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
   itemsLayerRectTransform: {fileID: 302993218}
-  inventoryGridLayout: {fileID: 1143051222}
-  _inventoryPanelPrefabInitializer: {fileID: 1143051225}
+  inventoryGridLayout: {fileID: 1035400459}
+  _inventoryPanelPrefabInitializer: {fileID: 1035400458}
 --- !u!4 &1251469101
 Transform:
   m_ObjectHideFlags: 0

@@ -12,8 +12,8 @@ namespace Inventory.Items.Controller {
     public class ItemDragController : MonoBehaviour {
         [Inject] private readonly ItemsLayerRectTransform _itemsLayer;
 
-        [Inject] private InventoryGridLayoutGroup _inventoryGridLayout;
-        [Inject] private InventoryPanelPrefabInitializer _inventoryPanelInitializer;
+        [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
+        [Inject] private readonly InventoryPanelPrefabInitializer _inventoryPanelInitializer;
 
         [Inject] private readonly InventoryGridContext _inventoryGridContext;
         
