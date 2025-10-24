@@ -2,6 +2,7 @@
 using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
+using Inventory.Slots.View;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -13,12 +14,8 @@ namespace Config {
         [Header("Prefabs")]
         [SerializeField] private ItemView itemViewPrefab;
         [SerializeField] private ItemView dragGhostPrefab;
-
-        
-        // [Header("Prefabs")]
-        // [SerializeField] private InventoryGridView gridViewPrefab;
-        // [SerializeField] private InventoryCellView cellViewPrefab;
-        
+        [SerializeField] private InventoryGridView gridViewPrefab; 
+        [SerializeField] private InventoryCellView cellViewPrefab;
         
         [Header("RectTransforms")]
         [SerializeField] private RectTransform itemsLayerRectTransform;
@@ -50,6 +47,14 @@ namespace Config {
                 .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
                 .AsSingle()
                 .NonLazy();
+            
+            Container.Bind<GridViewPrefabInventoryGridView>()
+                .FromMethod(_ => new GridViewPrefabInventoryGridView(gridViewPrefab))
+                .AsSingle();
+
+            Container.Bind<CellViewPrefabInventoryCellView>()
+                .FromMethod(_ => new CellViewPrefabInventoryCellView(cellViewPrefab))
+                .AsSingle();
 
  
             // GRID LAYOUT

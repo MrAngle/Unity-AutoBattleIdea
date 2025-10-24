@@ -1,4 +1,5 @@
 ﻿using Inventory.Items.View;
+using Inventory.Slots.View;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -20,6 +21,16 @@ namespace Config.Semantics {
     public sealed class InventoryGridLayoutGroup : Semantic<GridLayoutGroup>
     {
         public InventoryGridLayoutGroup(GridLayoutGroup value) : base(value) {}
+    }
+    
+    public sealed class GridViewPrefabInventoryGridView : Semantic<InventoryGridView>
+    {
+        public GridViewPrefabInventoryGridView(InventoryGridView value) : base(value) {}
+    }
+
+    public sealed class CellViewPrefabInventoryCellView : Semantic<InventoryCellView>
+    {
+        public CellViewPrefabInventoryCellView(InventoryCellView value) : base(value) {}
     }
     
     public abstract class Semantic<T>

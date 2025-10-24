@@ -1108,6 +1108,7 @@ GameObject:
   - component: {fileID: 1035400457}
   - component: {fileID: 1035400458}
   - component: {fileID: 1035400459}
+  - component: {fileID: 1035400460}
   m_Layer: 5
   m_Name: InventoryGridLayer
   m_TagString: Untagged
@@ -1146,8 +1147,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a80f2f81c542f9bf2ae86b22c4a731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.Slots.InventoryPanelPrefabInitializer
-  gridViewPrefab: {fileID: 2602901976082349797, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
-  cellViewPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
   width: 16
   height: 6
 --- !u!114 &1035400459
@@ -1174,6 +1173,55 @@ MonoBehaviour:
   m_Spacing: {x: 8, y: 8}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &1035400460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035400456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Scrollbar
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 814658340}
+  m_HandleRect: {fileID: 0}
+  m_Direction: 0
+  m_Value: 0
+  m_Size: 0.2
+  m_NumberOfSteps: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1143051220
 GameObject:
   m_ObjectHideFlags: 0
@@ -1330,6 +1378,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Config.DependencyInjectionConfig
   itemViewPrefab: {fileID: 5897542128176508331, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
   dragGhostPrefab: {fileID: 7547035701108130449, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
+  gridViewPrefab: {fileID: 2602901976082349797, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
+  cellViewPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
   itemsLayerRectTransform: {fileID: 302993218}
   inventoryGridLayout: {fileID: 1035400459}
   _inventoryPanelPrefabInitializer: {fileID: 1035400458}
@@ -1613,7 +1663,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2062791747}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
   m_Name: 
