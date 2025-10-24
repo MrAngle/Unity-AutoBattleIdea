@@ -3,6 +3,7 @@ using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Config {
@@ -12,30 +13,31 @@ namespace Config {
         [Header("Prefabs")]
         [SerializeField] private ItemView itemViewPrefab;
         [SerializeField] private ItemView dragGhostPrefab;
+
+        
+        // [Header("Prefabs")]
+        // [SerializeField] private InventoryGridView gridViewPrefab;
+        // [SerializeField] private InventoryCellView cellViewPrefab;
+        
         
         [Header("RectTransforms")]
         [SerializeField] private RectTransform itemsLayerRectTransform;
 
+        [Header("GridLayoutGroup")]
+        [SerializeField] private GridLayoutGroup inventoryGridLayout;
+        
+        [Header("Scripts")]
+        [SerializeField] private InventoryPanelPrefabInitializer _inventoryPanelPrefabInitializer;
         
 
         public override void InstallBindings()
         {
-            // Jeden model siatki na scenę (lub kontekst)
-            // Container.Bind<InventoryGrid>()
-            //     .FromMethod(_ => new InventoryGrid(width, height))
-            //     .AsSingle()
-            //     .NonLazy();            
-            //
             Container.Bind<InventoryGridContext>()
                 .FromMethod(_ => InventoryGridContext.Create())
                 .AsSingle()
                 .NonLazy();
             
-            Container.Bind<ItemsLayerRectTransform>()
-                .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
-                .AsSingle()
-                .NonLazy();
-
+            // PREFAB INITIALIZER
             Container.Bind<ItemViewPrefabItemView>()
                 .FromMethod(_ => new ItemViewPrefabItemView(itemViewPrefab))
                 .AsSingle();
@@ -44,15 +46,22 @@ namespace Config {
                 .FromMethod(_ => new DragGhostPrefabItemView(dragGhostPrefab))
                 .AsSingle();
             
-            // Container.BindFactory<ItemViewPrefabItemView, ItemView.Factory>()
-            //     .FromComponentInNewPrefab(itemViewPrefab)
-            //     .UnderTransform(itemsLayerRectTransform) // od razu podpinamy do ItemsLayer
-            //     .AsTransient();
+            Container.Bind<ItemsLayerRectTransform>()
+                .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
+                .AsSingle()
+                .NonLazy();
+
+ 
+            // GRID LAYOUT
+            Container.Bind<InventoryGridLayoutGroup>()
+                .FromMethod(_ => new InventoryGridLayoutGroup(inventoryGridLayout))
+                .AsSingle()
+                .NonLazy();
             
-            // Container.BindFactory<ItemView, ItemView.Factory>()
-            //     .FromComponentInNewPrefab(dragGhostPrefab)
-            //     .UnderTransform(itemsLayerRectTransform)
-            //     .AsTransient();
+            // SCRIPTS
+            Container.Bind<InventoryPanelPrefabInitializer>()
+                .FromComponentInHierarchy()
+                .AsSingle();
         }
     }
 }

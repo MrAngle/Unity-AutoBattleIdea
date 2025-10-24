@@ -1,5 +1,6 @@
 ﻿using Inventory.Items.View;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Config.Semantics {
@@ -14,6 +15,11 @@ namespace Config.Semantics {
     
     public sealed class DragGhostPrefabItemView : Semantic<ItemView> {
         public DragGhostPrefabItemView(ItemView value) : base(value) {}
+    }
+    
+    public sealed class InventoryGridLayoutGroup : Semantic<GridLayoutGroup>
+    {
+        public InventoryGridLayoutGroup(GridLayoutGroup value) : base(value) {}
     }
     
     public abstract class Semantic<T>
