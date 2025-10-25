@@ -144,6 +144,7 @@ Tworze tez gre 2d, wstepnie z ubogimi/brak animacji
   Krytykuj wszystko co proponuje, sugeruj rozwiazania najlepsze.
   Nie mam doświadczenia z Unity, ale robiłem troche w gamemakerze. Mozesz posługiwac sie analogiami z gamemakerem.
   Nie mam doświadczenia z C# ale jestem developerem JAVA. Możesz posługiwac sie analogiami z JAVA.
+    WAZNE: Uzywam Zenject do przekazywania komponentów
 
 AI_Properties:
 
