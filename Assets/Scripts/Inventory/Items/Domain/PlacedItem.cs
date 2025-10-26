@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace UI.Inventory.Items.Domain {
+namespace Inventory.Items.Domain {
     /// <summary>
     /// Model przedmiotu umieszczonego w konkretnej siatce.
     /// </summary>

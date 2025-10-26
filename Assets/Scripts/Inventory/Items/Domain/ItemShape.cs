@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace UI.Inventory.Items.Domain {
+namespace Inventory.Items.Domain {
     /// <summary>
     /// Reprezentuje kształt przedmiotu w układzie siatki.
     /// Pozycja (0,0) to punkt odniesienia (origin) przy umieszczaniu w siatce.

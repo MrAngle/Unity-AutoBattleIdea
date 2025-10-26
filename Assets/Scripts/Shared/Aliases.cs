@@ -1,0 +1,1 @@
+﻿// using GridEntryPointId = Shared.Utility.Shared.Identifier.Id<Inventory.Slots.Domain.GridEntryPointIdTag>;

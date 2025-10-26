@@ -2,7 +2,7 @@
 using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
-using UI.Inventory.Items.Domain;
+using Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

@@ -1,17 +1,25 @@
 ﻿using System.Collections.Generic;
-using UI.Inventory.Items.Domain;
+using Inventory.Items.Domain;
+using Shared.Utility;
 
 namespace Inventory.Items.Config
 {
+    public sealed class ItemDataId : ConstantId<ItemDataId>
+    {
+        public static readonly ItemDataId GEM_SHARD         = Define(1);
+        public static readonly ItemDataId SHIELD_PLATE_2X2  = Define(2);
+        public static readonly ItemDataId L_BRACKET         = Define(3);
+    }
+    
     /// <summary>
     /// “Twardo” skonfigurowane przykładowe przedmioty (bez ScriptableObjectów).
     /// W dowolnym momencie możesz to zastąpić odczytem z SO/JSON, a interfejs pozostanie ten sam (ItemData).
     /// </summary>
-    public static class ItemConfig
-    {
+    public static class ItemConfig {
+        
         // 1x1
         public static readonly ItemData GemShard = new(
-            id: "gem_shard",
+            itemDataId: ItemDataId.GEM_SHARD,
             displayName: "Gem Shard",
             shape: ItemShape.SingleCell(),
             iconId: "Icons/GemShard"
@@ -19,7 +27,7 @@ namespace Inventory.Items.Config
 
         // 2x2
         public static readonly ItemData ShieldPlate2x2 = new(
-            id: "shield_plate_2x2",
+            itemDataId: ItemDataId.SHIELD_PLATE_2X2,
             displayName: "Shield Plate (2x2)",
             shape: ItemShape.Square2x2(),
             iconId: "Icons/ShieldPlate"
@@ -27,7 +35,8 @@ namespace Inventory.Items.Config
 
         // L z 4 pól
         public static readonly ItemData LBracket = new(
-            id: "l_bracket",
+            itemDataId: ItemDataId.L_BRACKET,
+            // itemDataId: ItemDataId.,
             displayName: "L-Bracket",
             shape: ItemShape.LShape(),
             iconId: "Icons/LBracket"

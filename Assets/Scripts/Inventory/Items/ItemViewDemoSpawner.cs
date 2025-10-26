@@ -1,6 +1,6 @@
 ﻿using Inventory.Items.Config;
 using Inventory.Items.View;
-using UI.Inventory.Items.Domain;
+using Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.UI;
 

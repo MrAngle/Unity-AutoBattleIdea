@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
-using UI.Inventory.Items.Domain;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Combat.Flow.Domain.Aggregate;
+using Inventory.Slots.Domain;
+using Inventory.Items.Domain;
 using UnityEngine;
 
 namespace Inventory.Slots {
@@ -8,11 +12,14 @@ namespace Inventory.Slots {
         private readonly int _width;
         private readonly int _height;
         
+        private readonly List<GridEntryPoint> _entryPoints = new();
+        public ReadOnlyCollection<GridEntryPoint> EntryPoints => _entryPoints.AsReadOnly();
+        
         public int Width => _width;
         public int Height => _height;
         
 
-        public InventoryGrid(int width, int height)
+        public InventoryGrid(int width, int height, GridEntryPoint entryPoint)
         {
             _width = Mathf.Max(0, width);
             _height = Mathf.Max(0, height);
@@ -25,6 +32,8 @@ namespace Inventory.Slots {
                     _cells[new Vector2Int(xIndex, yIndex)] = new InventoryCell(CellState.Empty);
                 }
             }
+            
+            TryAddEntryPoint(entryPoint);
         }
         
         public CellState GetState(Vector2Int coord)
@@ -87,6 +96,30 @@ namespace Inventory.Slots {
                 if (_cells.TryGetValue(p, out var c)) c.State = CellState.Empty;
             }
         }
+        
+        private bool IsWithinBounds(Vector2Int p)
+            => p.x >= 0 && p.x < _width && p.y >= 0 && p.y < _height;
+
+        /// Dodaj punkt wejścia (np. Damage) pod warunkiem, że mieści się w siatce.
+        public bool TryAddEntryPoint(GridEntryPoint entry)
+        {
+            if (!IsWithinBounds(entry.Position)) return false;
+            _entryPoints.Add(entry);
+            return true;
+        }
+
+        /// Usuń po Id (zwraca true, jeśli coś usunięto)
+        // public bool RemoveEntryPoint(string id)
+        // {
+        //     var idx = _entryPoints.FindIndex(e => e.Id == id);
+        //     if (idx < 0) return false;
+        //     _entryPoints.RemoveAt(idx);
+        //     return true;
+        // }
+
+        /// Zwraca wszystkie wejścia danego typu (Damage/Defense).
+        public IEnumerable<GridEntryPoint> GetEntryPoints(FlowKind kind)
+            => _entryPoints.Where(e => e.Kind == kind);
         
         // public bool CanPlace(ItemShape shape, Vector2Int origin)
         // {

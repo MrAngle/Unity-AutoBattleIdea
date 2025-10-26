@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Config.Semantics;
-using UI.Inventory.Items.Domain;
+using Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;

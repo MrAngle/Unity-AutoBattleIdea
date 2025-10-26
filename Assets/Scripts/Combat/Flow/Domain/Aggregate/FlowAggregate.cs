@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using Combat.Flow.Domain.Router;
 using Shared.Utility;
 using UnityEngine;
 
@@ -34,38 +35,38 @@ namespace Combat.Flow.Domain.Aggregate
             
             return new FlowAggregate(model, startNode);
         }
+        
+        public FlowModel GetModel() => _flowModel;
 
         /// Wykonuje logikę bieżącego węzła (mutuje Model).
         public void Process()
         {
             if (_currentNode == null || _flowModel == null) return;
 
-            _currentNode.Process(_flowModel);
+            _currentNode.Process(this);
             _visitedNodeIds.Add(_currentNode.GetId());
         }
 
         public void GoNext()
         {
             if (_currentNode == null || _flowModel == null) return;
-            if (_router.ShouldStop(_currentNode, _flowModel)) { _currentNode = null; return; }
 
-            var next = _router.GetNextNodes(_currentNode, _flowModel);
-            using var e = next.GetEnumerator();
-            if (e.MoveNext())
+            var decision = _router.DecideNext(_currentNode, _flowModel, _visitedNodeIds);
+            if (decision is null)
             {
-                _currentNode = e.Current;
-                _flowModel.FlowContext.NextStep();
+                _currentNode = null; // koniec
+                return;
             }
-            else
-            {
-                // brak wyjść — zakończ
-                _currentNode = null;
-            }
+
+            // (opcjonalnie) możesz logować decision.Value.EntryCell do debug
+            _currentNode = decision.Value.NextNode;
+            _flowModel.FlowContext.NextStep();
         }
 
         public void Step()
         {
-            if (_currentNode == null || _flowModel == null) return;
+            if (_currentNode == null || _flowModel == null) 
+                return;
             Process();
             GoNext();
         }

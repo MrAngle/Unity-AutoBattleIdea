@@ -1,6 +1,8 @@
 ﻿using System;
+using Combat.Flow.Domain.Aggregate;
 using Config.Semantics;
 using Inventory.Slots.Context;
+using Inventory.Slots.Domain;
 using Inventory.Slots.View;
 using UnityEngine;
 using Zenject;
@@ -23,7 +25,9 @@ namespace Inventory.Slots {
 
 
         private void Awake() {
-            var inventoryGrid = new InventoryGrid(width, height);
+            GridEntryPoint gridEntryPoint = new GridEntryPoint(FlowKind.Damage, new Vector2Int(0, 0));
+
+            var inventoryGrid = new InventoryGrid(width, height, gridEntryPoint);
             _inventoryGridContext.SetInventoryGrid(inventoryGrid);
         }
         

@@ -6,10 +6,9 @@ namespace Combat.Flow.Domain.Aggregate
     {
         Damage,
         Defense
-        // w przyszłości: Mana/Energy
     }
 
-    internal class FlowSeed
+    public class FlowSeed
     {
         public long Power { get; }
 
@@ -17,7 +16,7 @@ namespace Combat.Flow.Domain.Aggregate
 
     }
     
-    internal class FlowPayload
+    public class FlowPayload
     {
         public long Power { get; private set; }
 
@@ -27,8 +26,7 @@ namespace Combat.Flow.Domain.Aggregate
 
     }
 
-    /// Kontekst przepływu – metadane niezależne od payloadu.
-    internal class FlowContext
+    public class FlowContext
     {
         public FlowKind Kind { get; }
         public string SourceId { get; }
@@ -42,20 +40,5 @@ namespace Combat.Flow.Domain.Aggregate
         }
 
         public void NextStep() => StepIndex++;
-    }
-
-    /// Model przekazywany między krokami – łączy Payload + Context.
-    internal class FlowModel
-    {
-        public FlowSeed FlowSeed { get; }
-        public FlowPayload FlowPayload { get; }
-        public FlowContext FlowContext { get; }
-
-        public FlowModel(FlowSeed flowSeed, FlowContext flowContext)
-        {
-            FlowSeed = flowSeed;
-            FlowPayload = new FlowPayload(flowSeed.Power);
-            FlowContext = flowContext;
-        }
     }
 }

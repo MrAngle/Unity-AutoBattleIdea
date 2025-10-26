@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Inventory.Items.Config;
-using UI.Inventory.Items.Domain;
+using Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Inventory.Items.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
-        [Header("Config")] public string itemId; // np. "l_bracket" z ItemConfig
+        [Header("Config")] public ItemDataId itemId = ItemDataId.SHIELD_PLATE_2X2;
 
         private ItemDragController _controller;
         private ItemData _data;
@@ -15,7 +15,7 @@ namespace Inventory.Items.Controller {
         private void Awake() {
             _controller = FindObjectOfType<ItemDragController>(true);
             // Prosty lookup z Twojej statycznej konfiguracji:
-            _data = Array.Find(ItemConfig.All.ToArray(), d => d.Id == itemId);
+            _data = Array.Find(ItemConfig.All.ToArray(), d => d.ItemDataId == itemId);
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
