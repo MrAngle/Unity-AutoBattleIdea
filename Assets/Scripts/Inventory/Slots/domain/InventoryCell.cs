@@ -8,7 +8,7 @@ namespace Inventory.Slots {
         Occupied      // dozwolone ale zajęte
         // (możesz dodać: Locked / Reserved)
     }
-    public class InventoryCell {
+    internal class InventoryCell {
         public CellState State { get; set; }
 
         public InventoryCell(CellState state = CellState.Unreachable)

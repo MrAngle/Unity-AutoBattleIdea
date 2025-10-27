@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Inventory.Slots.Domain;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,19 +18,19 @@ namespace Inventory.Slots.View {
             if (!gridLayout) gridLayout = GetComponent<GridLayoutGroup>();
         }
 
-        public void Build(InventoryGrid model)
+        public void Build(IInventoryGrid inventoryGrid)
         {
             Clear();
 
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            gridLayout.constraintCount = model.Width;
+            gridLayout.constraintCount = inventoryGrid.Width;
 
-            for (int y = 0; y < model.Height; y++)
-            for (int x = 0; x < model.Width; x++)
+            for (int y = 0; y < inventoryGrid.Height; y++)
+            for (int x = 0; x < inventoryGrid.Width; x++)
             {
                 var coord = new Vector2Int(x, y);
                 var v = Instantiate(cellPrefab, transform);
-                v.Init(coord, model.GetState(coord));
+                v.Init(coord, inventoryGrid.GetState(coord));
                 _views[coord] = v;
             }
         }

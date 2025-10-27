@@ -1,13 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using Combat.Flow.Domain.Aggregate;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
 using UnityEngine;
 
-namespace Inventory.Slots {
-    public class InventoryGrid {
+namespace Inventory.Slots.Domain {
+    
+    public interface IInventoryGrid
+    {
+        int Width { get; }
+        int Height { get; }
+        CellState GetState(Vector2Int coord);
+
+        bool CanPlace(ItemData data, Vector2Int origin);
+        void Place(ItemData data, Vector2Int origin);
+        
+        public static IInventoryGrid CreateInventoryGrid(int width, int height, IEntryPointFacade entryPoint) {
+            return new InventoryGrid(width, height, entryPoint);
+        }
+    }
+
+    
+    class InventoryGrid : IInventoryGrid {
         private readonly Dictionary<Vector2Int, InventoryCell> _cells;
         private readonly int _width;
         private readonly int _height;
@@ -17,9 +31,8 @@ namespace Inventory.Slots {
         
         public int Width => _width;
         public int Height => _height;
-        
 
-        public InventoryGrid(int width, int height, IEntryPointFacade entryPoint)
+        internal InventoryGrid(int width, int height, IEntryPointFacade entryPoint)
         {
             _width = Mathf.Max(0, width);
             _height = Mathf.Max(0, height);
@@ -81,6 +94,10 @@ namespace Inventory.Slots {
 
         public void Place(ItemData data, Vector2Int origin)
         {
+            if (!CanPlace(data, origin)) {
+                throw new System.ArgumentException("Cannot place item");
+            }
+
             foreach (var off in data.Shape.Cells)
             {
                 var p = origin + off;

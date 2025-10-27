@@ -5,7 +5,6 @@ using Inventory.Slots.Context;
 using Inventory.Items.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using Zenject;
 
 namespace Inventory.Items.Controller {
@@ -15,7 +14,8 @@ namespace Inventory.Items.Controller {
         [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
         [Inject] private readonly InventoryPanelPrefabInitializer _inventoryPanelInitializer;
 
-        [Inject] private readonly InventoryGridContext _inventoryGridContext;
+        // [Inject] private readonly InventoryGridContext _inventoryGridContext;
+        [Inject] private readonly InventoryAggregateContext _inventoryAggregateContext;
         
         [Inject] private readonly DragGhostPrefabItemView _dragGhostPrefabItemView;
         [Inject] private readonly ItemViewPrefabItemView _itemViewPrefabItemView;
@@ -58,24 +58,24 @@ namespace Inventory.Items.Controller {
 
             var origin = new Vector2Int(x, y);
 
-            var inventoryGrid = _inventoryGridContext.GetInventoryGrid();
+            InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
             // 3) validacja
-            var can = inventoryGrid != null && inventoryGrid.CanPlace(_dragData, origin);
+            var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_dragData, origin);
             _ghostItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
             _ghostItem.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
         }
 
-        public void EndDrag(PointerEventData e) {
+        public void EndDrag(PointerEventData pointerEventData) {
             if (_dragData == null) {
                 _ghostItem.gameObject.SetActive(false);
                 return;
             }
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _itemsLayer.Get(), e.position, e.pressEventCamera, out var localPos);
+                _itemsLayer.Get(), pointerEventData.position, pointerEventData.pressEventCamera, out var localPos);
 
             var cell = _inventoryGridLayout.Get().cellSize;
             var spacing = _inventoryGridLayout.Get().spacing;
@@ -83,10 +83,10 @@ namespace Inventory.Items.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
             
-            var inventoryGrid = _inventoryGridContext.GetInventoryGrid();
+            InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
-            if (inventoryGrid != null && inventoryGrid.CanPlace(_dragData, origin)) {
-                inventoryGrid.Place(_dragData, origin);
+            if (inventoryAggregate != null && inventoryAggregate.CanPlace(_dragData, origin)) {
+                inventoryAggregate.Place(_dragData, origin);
                 var view = Instantiate(_itemViewPrefabItemView.Get(), _itemsLayer.Get(), false);
                 view.Build(_dragData, cell);
                 view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);

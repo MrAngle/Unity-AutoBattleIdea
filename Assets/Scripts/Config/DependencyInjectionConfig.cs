@@ -1,4 +1,5 @@
 ﻿using Config.Semantics;
+using Inventory;
 using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
@@ -31,6 +32,11 @@ namespace Config {
         {
             Container.Bind<InventoryGridContext>()
                 .FromMethod(_ => InventoryGridContext.Create())
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<InventoryAggregateContext>()
+                .FromMethod(_ => InventoryAggregateContext.Create())
                 .AsSingle()
                 .NonLazy();
             

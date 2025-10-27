@@ -28,7 +28,7 @@ namespace Inventory.Slots {
         private void Awake() {
             IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
 
-            var inventoryGrid = new InventoryGrid(width, height, entryPoint);
+            IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
             _inventoryGridContext.SetInventoryGrid(inventoryGrid);
         }
         

@@ -1,6 +1,10 @@
-﻿namespace Inventory.Slots.Context {
+﻿using Inventory.Slots.Domain;
+using Inventory.Slots.Domain.Api;
+
+namespace Inventory.Slots.Context {
     public class InventoryGridContext : IInjected {
-        private InventoryGrid _inventoryGrid;
+        private IInventoryGrid _inventoryGrid;
+        private InventoryAggregate inventoryAggregate;
 
         private InventoryGridContext() {}
 
@@ -8,12 +12,16 @@
             return new InventoryGridContext();
         }
         
-        public void SetInventoryGrid(InventoryGrid inventoryGrid)
+        public InventoryAggregate CreateNewContext() {
+            return InventoryAggregate.Create();
+        }
+        
+        public void SetInventoryGrid(IInventoryGrid inventoryGrid)
         {
             _inventoryGrid = inventoryGrid;
         }
         
-        public InventoryGrid GetInventoryGrid() {
+        public IInventoryGrid GetInventoryGrid() {
             return _inventoryGrid;
         }
     }
