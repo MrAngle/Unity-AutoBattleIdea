@@ -1,13 +1,14 @@
 ﻿
 using System.Collections.Generic;
 using Combat.Flow.Domain.Router;
+using Inventory.EntryPoints;
 using Shared.Utility;
 using UnityEngine;
 
 namespace Combat.Flow.Domain.Aggregate
 {
     /// Agregat odpowiedzialny za przeprowadzenie modelu przez kolejne kroki.
-    public class FlowAggregate
+    public class FlowAggregate : IFlowAggregateFacade
     {
         private readonly IFlowRouter _router;
         private readonly FlowModel _flowModel;
@@ -25,18 +26,22 @@ namespace Combat.Flow.Domain.Aggregate
         }
 
         /// Inicjuje przepływ od węzła startowego.
-        public static FlowAggregate Start(FlowKind kind, long power, Vector2Int startNodeCoordination, string sourceId)
+        public static IFlowAggregateFacade Create(IEntryPointFacade entryPointFacade, long power)
         {
-            sourceId ??= CorrelationId.NextString();
+            // sourceId ??= CorrelationId.NextString();
             var payload = new FlowSeed(power);
-            var context = new FlowContext(kind, sourceId);
+            var context = new FlowContext(entryPointFacade);
             var model = new FlowModel(payload, context);
-            var startNode = new DummyFlowNode(startNodeCoordination, 2222);
+            var startNode = new DummyFlowNode(context.getEntryPointCoordination(), 2222);
             
             return new FlowAggregate(model, startNode);
         }
         
         public FlowModel GetModel() => _flowModel;
+        
+        public void Start() {
+            Process();
+        }
 
         /// Wykonuje logikę bieżącego węzła (mutuje Model).
         public void Process()
@@ -72,5 +77,6 @@ namespace Combat.Flow.Domain.Aggregate
         }
 
         public bool IsFinished => _currentNode == null || _flowModel == null;
+
     }
 }

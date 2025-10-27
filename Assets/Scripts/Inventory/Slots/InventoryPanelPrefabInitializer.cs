@@ -1,6 +1,7 @@
 ﻿using System;
 using Combat.Flow.Domain.Aggregate;
 using Config.Semantics;
+using Inventory.EntryPoints;
 using Inventory.Slots.Context;
 using Inventory.Slots.Domain;
 using Inventory.Slots.View;
@@ -25,9 +26,9 @@ namespace Inventory.Slots {
 
 
         private void Awake() {
-            GridEntryPoint gridEntryPoint = new GridEntryPoint(FlowKind.Damage, new Vector2Int(0, 0));
+            IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
 
-            var inventoryGrid = new InventoryGrid(width, height, gridEntryPoint);
+            var inventoryGrid = new InventoryGrid(width, height, entryPoint);
             _inventoryGridContext.SetInventoryGrid(inventoryGrid);
         }
         

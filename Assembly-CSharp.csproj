@@ -47,12 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Config\Semantics\SemanticClasses.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\domain\GridEntryPoint.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Config\ItemConfig.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\PlacedItem.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
+    <Compile Include="Assets\Scripts\Inventory\EntryPoints\IEntryPointFacade.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\View\ItemCellTileView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryGrid.cs" />
@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\ItemShape.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterPrefabAggregate.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
+    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\IFlowAggregateFacade.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Assets\Scripts\Inventory\Items\View\ItemView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Scripts\Character\CharacterData.cs" />
+    <Compile Include="Assets\Scripts\Inventory\InventoryAggregate.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
@@ -117,12 +119,12 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\Scripts\Shared\Utility\CorrelationId.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\DamageInputManager.cs" />
     <Compile Include="Assets\Scripts\Combat\Flow\Domain\ApiFlow.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryCell.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
     <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowModel.cs" />
     <Compile Include="Assets\Scripts\Shared\Globals.cs" />
+    <Compile Include="Assets\Scripts\Inventory\EntryPoints\GridEntryPoint.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\ItemViewDemoSpawner.cs" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />

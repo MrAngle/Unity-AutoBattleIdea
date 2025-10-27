@@ -1,4 +1,7 @@
 ﻿
+using Inventory.EntryPoints;
+using UnityEngine;
+
 namespace Combat.Flow.Domain.Aggregate
 {
     /// Kanał przepływu – damage/defense itd.
@@ -28,15 +31,16 @@ namespace Combat.Flow.Domain.Aggregate
 
     public class FlowContext
     {
-        public FlowKind Kind { get; }
-        public string SourceId { get; }
+        public IEntryPointFacade EntryPointFacade { get; }
+
+        public Vector2Int getEntryPointCoordination() {
+            return EntryPointFacade.GetPosition();
+        }
+
         public int StepIndex { get; private set; }
 
-        public FlowContext(FlowKind kind, string sourceId)
-        {
-            Kind = kind;
-            SourceId = sourceId;
-            StepIndex = 0;
+        public FlowContext(IEntryPointFacade entryPointFacade) {
+            EntryPointFacade = entryPointFacade;
         }
 
         public void NextStep() => StepIndex++;
