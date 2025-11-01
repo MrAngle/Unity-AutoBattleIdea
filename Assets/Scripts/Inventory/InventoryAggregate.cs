@@ -6,25 +6,47 @@ using Inventory.Slots.Domain;
 using UnityEngine;
 
 namespace Inventory {
-    public class InventoryAggregate {
+    public class InventoryAggregate : IGridInspector {
         private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
-        private readonly HashSet<PlacedEntryPoint> _entryPoints = new();
+        private readonly HashSet<IPlacedEntryPoint> _entryPoints = new();
         private readonly IInventoryGrid _inventoryGrid;
         private readonly HashSet<IPlacedItem> _items = new();
 
         private InventoryAggregate(IInventoryGrid inventoryGrid,
-            HashSet<PlacedEntryPoint> entryPoints,
+            HashSet<IPlacedEntryPoint> entryPoints,
             HashSet<IPlacedItem> items) {
             _inventoryGrid = inventoryGrid;
             _entryPoints = entryPoints;
             _items = items;
         }
 
-        public static InventoryAggregate Create() {
-            var placedEntryPoint = PlacedEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
-            var inventoryGrid = IInventoryGrid.CreateInventoryGrid(8, 6, placedEntryPoint);
-            return new InventoryAggregate(inventoryGrid, new HashSet<PlacedEntryPoint> { placedEntryPoint }, null);
+        // public static InventoryAggregate Create() {
+        //     IPlacedEntryPoint placedEntryPoint = PlacedEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0), this);
+        //     var inventoryGrid = IInventoryGrid.CreateInventoryGrid(8, 6, placedEntryPoint);
+        //     return new InventoryAggregate(inventoryGrid, new HashSet<IPlacedEntryPoint> { placedEntryPoint }, null);
+        // }
+        //
+        public static InventoryAggregate Create()
+        {
+            IInventoryGrid grid = IInventoryGrid.CreateInventoryGrid(12, 4);
+
+            InventoryAggregate aggregate = new InventoryAggregate(
+                grid,
+                new HashSet<IPlacedEntryPoint>(),
+                new HashSet<IPlacedItem>()
+            );
+
+            IPlacedEntryPoint placedEntryPoint = PlacedEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0), aggregate);
+            aggregate.RegisterEntryPoint(placedEntryPoint);
+
+            return aggregate;
         }
+
+        private void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint) {
+            _entryPoints.Add(placedEntryPoint);
+            _inventoryGrid.RegisterEntryPoint(placedEntryPoint);
+        }
+
 
         public IInventoryGrid GetInventoryGrid() {
             return _inventoryGrid;

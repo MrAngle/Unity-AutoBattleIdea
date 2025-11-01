@@ -13,7 +13,7 @@ using Zenject;
 namespace Combat.Flow.Domain.Router
 {
     public class GridAdjacencyRouter : IFlowRouter {
-        private readonly InventoryAggregate _inventoryAggregate;
+        private readonly IGridInspector _gridInspector;
         
         // private readonly InventoryGridContext _gridCtx;
         // private readonly IGridItemIndex _itemIndex;
@@ -29,9 +29,13 @@ namespace Combat.Flow.Domain.Router
         //
         
         // [Inject]
-        public GridAdjacencyRouter(InventoryAggregate aggregateContext)
+        private GridAdjacencyRouter(IGridInspector gridInspector)
         {
-            _inventoryAggregate = aggregateContext;
+            _gridInspector = gridInspector;
+        }
+
+        public static IFlowRouter Create(IGridInspector gridInspector) {
+            return new GridAdjacencyRouter(gridInspector);
         }
 
         public IPlacedItem DecideNext(IPlacedItem current, FlowModel model, IReadOnlyCollection<long> visitedNodeIds)
@@ -44,7 +48,7 @@ namespace Combat.Flow.Domain.Router
             // 2) Zbierz sąsiednie kratki do całego shape’u ortogonalnie
             // var grid = _gridCtx.GetInventoryGrid();
             // if (grid == null) return null;
-
+            Debug.Log("Init DecideNext for flow");
             var dirs = new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
             var boundary = new HashSet<Vector2Int>();
 
@@ -60,9 +64,10 @@ namespace Combat.Flow.Domain.Router
             // 3) Kandydaci: kratki Occupied, należące do innego itemu
             // var candidates = new List<(ItemData item, Vector2Int origin, Vector2Int entryCell)>();
             var candidates = new Dictionary<Vector2Int, IPlacedItem>();
+            Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
             foreach (Vector2Int vector2Int in boundary)
             {
-                if (_inventoryAggregate.TryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
+                if (_gridInspector.TryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
                     if (placedItem == current) continue; // ta sama bryła
                     // var neighborNodeId = $"Item:{neighborItem.Id}"; // TODO
                     if (visitedNodeIds.Contains(placedItem.GetId())) continue; // już odwiedzony item
@@ -77,6 +82,7 @@ namespace Combat.Flow.Domain.Router
                 // }
             }
 
+            Debug.Log("Candidates Count DecideNext for flow:" + $" {candidates}");
             if (candidates.Count == 0)
                 return null;
             
@@ -89,6 +95,7 @@ namespace Combat.Flow.Domain.Router
 
             // Zwróć też kratkę wejścia (debug/telemetria)
             // return new RouteDecision(nextNodeToHandle, pick.entryCell);
+            Debug.Log("DecideNext - nextNodeToHandle:" + $" {nextNodeToHandle}");
             return nextNodeToHandle;
         }
     }

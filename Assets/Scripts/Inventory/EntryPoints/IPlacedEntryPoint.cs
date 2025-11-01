@@ -2,7 +2,7 @@
 using UnityEngine;
 
 namespace Inventory.EntryPoints {
-    public interface IPlacedEntryPoint {
+    public interface IPlacedEntryPoint : IPlacedItem {
         void StartBattle();
     }
 }

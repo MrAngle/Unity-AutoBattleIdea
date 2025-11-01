@@ -16,7 +16,9 @@ namespace Inventory.Slots.Domain {
         bool CanPlace(ItemData data, Vector2Int origin);
         void Place(ItemData data, Vector2Int origin);
         
-        public static IInventoryGrid CreateInventoryGrid(int width, int height, PlacedEntryPoint placedEntryPoint) {
+        void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint);
+        
+        public static IInventoryGrid CreateInventoryGrid(int width, int height, IPlacedEntryPoint placedEntryPoint = null) {
             return new InventoryGrid(width, height, placedEntryPoint);
         }
     }
@@ -27,13 +29,13 @@ namespace Inventory.Slots.Domain {
         private readonly int _width;
         private readonly int _height;
         
-        private readonly List<PlacedEntryPoint> _entryPoints = new();
-        public ReadOnlyCollection<PlacedEntryPoint> EntryPoints => _entryPoints.AsReadOnly();
+        private readonly List<IPlacedEntryPoint> _entryPoints = new();
+        public ReadOnlyCollection<IPlacedEntryPoint> EntryPoints => _entryPoints.AsReadOnly();
         
         public int Width => _width;
         public int Height => _height;
 
-        internal InventoryGrid(int width, int height, PlacedEntryPoint placedEntryPoint)
+        internal InventoryGrid(int width, int height, IPlacedEntryPoint placedEntryPoint = null)
         {
             _width = Mathf.Max(0, width);
             _height = Mathf.Max(0, height);
@@ -46,8 +48,10 @@ namespace Inventory.Slots.Domain {
                     _cells[new Vector2Int(xIndex, yIndex)] = new InventoryCell(CellState.Empty);
                 }
             }
-            
-            TryAddEntryPoint(placedEntryPoint);
+
+            if (placedEntryPoint != null) {
+                TryAddEntryPoint(placedEntryPoint);
+            }
         }
         
         public CellState GetState(Vector2Int coord)
@@ -106,6 +110,11 @@ namespace Inventory.Slots.Domain {
             }
         }
 
+        public void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint) {
+            TryAddEntryPoint(placedEntryPoint);
+            // throw new System.NotImplementedException();
+        }
+
         public void Remove(ItemData data, Vector2Int origin)
         {
             foreach (var off in data.Shape.Cells)
@@ -119,7 +128,7 @@ namespace Inventory.Slots.Domain {
             => p.x >= 0 && p.x < _width && p.y >= 0 && p.y < _height;
 
         /// Dodaj punkt wejścia (np. Damage) pod warunkiem, że mieści się w siatce.
-        public void TryAddEntryPoint(PlacedEntryPoint placedEntry)
+        public void TryAddEntryPoint(IPlacedEntryPoint placedEntry)
         {
             if (!IsWithinBounds(placedEntry.GetOccupiedCells().First() /*for now*/)) throw new System.ArgumentException("Entry point is out of bounds");
             _entryPoints.Add(placedEntry);

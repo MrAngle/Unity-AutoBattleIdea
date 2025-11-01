@@ -18,9 +18,9 @@ namespace Inventory.Slots {
         [Inject] private InventoryGridContext _inventoryGridContext;
         [Inject] private InventoryAggregateContext _inventoryAggregateContext;
         
-        [Header("Grid Size")]
-        [SerializeField] private int width = 8;
-        [SerializeField] private int height = 6;
+        // [Header("Grid Size")]
+        // [SerializeField] private int width = 8;
+        // [SerializeField] private int height = 6;
 
         private InventoryGridView _gridView;
 
