@@ -19,13 +19,13 @@ namespace Character {
 
         public string Name => _data.Name;
 
-        public int MaxHp => _data.MaxHp;
+        public long MaxHp => _data.MaxHp;
 
-        public int CurrentHp => _data.CurrentHp;
+        public long CurrentHp => _data.CurrentHp;
 
         public Team Team { get; }
 
-        public event Action<CharacterAggregate, int, int> OnHpChanged;
+        public event Action<CharacterAggregate, long, long> OnHpChanged;
         public event Action<CharacterAggregate> OnDeath;
 
         ~CharacterAggregate() {
@@ -33,20 +33,20 @@ namespace Character {
             _data.OnHpChanged -= HandleDataHpChanged;
         }
 
-        private void HandleDataHpChanged(CharacterData data, int newHp, int previousHpValue) {
+        private void HandleDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
             OnHpChanged?.Invoke(this, newHp, previousHpValue);
         }
 
 
         // Metody przepuszczające do _data
-        public void TakeDamage(int dmg) {
+        public void TakeDamage(long dmg) {
             _data.TakeDamage(dmg);
             if (_data.CurrentHp <= 0) {
                 OnDeath?.Invoke(this);
             }
         }
 
-        public void Heal(int amount) {
+        public void Heal(long amount) {
             _data.Heal(amount);
         }
 

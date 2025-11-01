@@ -62,7 +62,10 @@ namespace Combat.Flow.Domain.Aggregate
             if (decision is null)
             {
                 _currentNode = null; // koniec
-                throw new NotImplementedException();
+
+                FlowCompletionDispatcher.Finish(_flowModel);
+                
+                // throw new NotImplementedException();
                 return;
             }
 

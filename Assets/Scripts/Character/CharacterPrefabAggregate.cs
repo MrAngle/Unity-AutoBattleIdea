@@ -41,8 +41,8 @@ namespace Character {
             RefreshUI();
         }
 
-        private void HandleHpChanged(CharacterAggregate ch, int newHp, int previousHpValue) {
-            PopupManager.Instance.ShowHPChangeDamage(this, newHp - previousHpValue);
+        private void HandleHpChanged(CharacterAggregate ch, long newHp, long previousHpValue) {
+            PopupManager.Instance.ShowHpChangeDamage(this, newHp - previousHpValue);
             RefreshUI();
         }
 

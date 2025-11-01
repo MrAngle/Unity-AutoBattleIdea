@@ -2,7 +2,7 @@
 
 namespace Character {
     public class CharacterData {
-        private int _currentHp;
+        private long _currentHp;
         internal int MaxHp;
         internal string Name;
 
@@ -12,26 +12,26 @@ namespace Character {
             CurrentHp = maxHP;
         }
 
-        internal int CurrentHp {
+        internal long CurrentHp {
             get => _currentHp;
             private set {
                 if (_currentHp == value) {
                     return;
                 }
-                int _hpBeforeChange = _currentHp;
+                long _hpBeforeChange = _currentHp;
                 _currentHp = value;
                 OnHpChanged?.Invoke(this, _currentHp, _hpBeforeChange);
             }
         }
 
-        internal event Action<CharacterData, int, int> OnHpChanged;
+        internal event Action<CharacterData, long, long> OnHpChanged;
 
-        internal void TakeDamage(int dmg) {
+        internal void TakeDamage(long dmg) {
             CurrentHp -= dmg;
             if (CurrentHp < 0) CurrentHp = 0;
         }
 
-        internal void Heal(int amount) {
+        internal void Heal(long amount) {
             CurrentHp += amount;
             if (CurrentHp > MaxHp) CurrentHp = MaxHp;
         }

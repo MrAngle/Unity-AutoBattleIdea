@@ -8,7 +8,7 @@
         public FlowModel(FlowSeed flowSeed, FlowContext flowContext)
         {
             FlowSeed = flowSeed;
-            FlowPayload = new FlowPayload(flowSeed.Power);
+            FlowPayload = new FlowPayload(flowSeed.Power());
             FlowContext = flowContext;
         }
     }

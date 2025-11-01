@@ -11,12 +11,16 @@ namespace Combat.Flow.Domain.Aggregate
         Defense
     }
 
-    public class FlowSeed
-    {
-        public long Power { get; }
+    public class FlowSeed {
+        private readonly long _initPower;
+        
+        public long Power() {
+            return _initPower;
+        }
 
-        public FlowSeed(long power) => Power = power;
-
+        public FlowSeed(long power) {
+            _initPower = power;
+        }
     }
     
     public class FlowPayload

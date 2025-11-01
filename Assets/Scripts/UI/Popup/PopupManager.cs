@@ -59,7 +59,7 @@ namespace UI.Popup
             _pool.Enqueue(popup);
         }
 
-        public void ShowHPChangeDamage(Component ownerTransform, int hpChange) {
+        public void ShowHpChangeDamage(Component ownerTransform, long hpChange) {
             if (hpChange > 0) {
                 Show(ownerTransform, $"+{hpChange}", Color.green, offset: null, moveY: 50f, duration: 2f);
             }
