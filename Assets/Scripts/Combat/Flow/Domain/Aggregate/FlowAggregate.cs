@@ -1,7 +1,9 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using Combat.Flow.Domain.Router;
 using Inventory.EntryPoints;
+using Inventory.Items.Domain;
 using Shared.Utility;
 using UnityEngine;
 
@@ -12,13 +14,12 @@ namespace Combat.Flow.Domain.Aggregate
     {
         private readonly IFlowRouter _router;
         private readonly FlowModel _flowModel;
+        private IPlacedItem _currentNode;
 
         public IReadOnlyList<long> VisitedNodeIds => _visitedNodeIds;
         private readonly List<long> _visitedNodeIds = new();
         
-        private IFlowNode _currentNode;
-        
-        private FlowAggregate(FlowModel model, IFlowNode startNode)
+        private FlowAggregate(FlowModel model, PlacedEntryPoint startNode)
         {
             _flowModel = model;
             _currentNode = startNode;
@@ -26,13 +27,13 @@ namespace Combat.Flow.Domain.Aggregate
         }
 
         /// Inicjuje przepływ od węzła startowego.
-        public static IFlowAggregateFacade Create(IEntryPointFacade entryPointFacade, long power)
+        public static IFlowAggregateFacade Create(PlacedEntryPoint placedEntryPoint, long power)
         {
             // sourceId ??= CorrelationId.NextString();
             var payload = new FlowSeed(power);
-            var context = new FlowContext(entryPointFacade);
+            var context = new FlowContext(placedEntryPoint);
             var model = new FlowModel(payload, context);
-            var startNode = new DummyFlowNode(context.getEntryPointCoordination(), 2222);
+            var startNode = placedEntryPoint;
             
             return new FlowAggregate(model, startNode);
         }
@@ -60,11 +61,12 @@ namespace Combat.Flow.Domain.Aggregate
             if (decision is null)
             {
                 _currentNode = null; // koniec
+                throw new NotImplementedException();
                 return;
             }
 
             // (opcjonalnie) możesz logować decision.Value.EntryCell do debug
-            _currentNode = decision.Value.NextNode;
+            _currentNode = decision;
             _flowModel.FlowContext.NextStep();
         }
 

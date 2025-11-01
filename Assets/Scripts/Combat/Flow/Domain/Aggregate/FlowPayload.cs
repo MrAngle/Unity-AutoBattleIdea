@@ -31,16 +31,12 @@ namespace Combat.Flow.Domain.Aggregate
 
     public class FlowContext
     {
-        public IEntryPointFacade EntryPointFacade { get; }
-
-        public Vector2Int getEntryPointCoordination() {
-            return EntryPointFacade.GetPosition();
-        }
+        public IPlacedEntryPoint PlacedEntryPoint { get; }
 
         public int StepIndex { get; private set; }
 
-        public FlowContext(IEntryPointFacade entryPointFacade) {
-            EntryPointFacade = entryPointFacade;
+        public FlowContext(IPlacedEntryPoint placedEntryPoint) {
+            PlacedEntryPoint = placedEntryPoint;
         }
 
         public void NextStep() => StepIndex++;

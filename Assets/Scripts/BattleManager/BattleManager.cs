@@ -16,7 +16,7 @@ namespace BattleManager {
         public void StartBattle() {
             if (_battleRunning) return;
             _battleRunning = true;
-            StartCoroutine(BattleLoop());
+            // StartCoroutine(BattleLoop());
         }
 
         // private IEnumerator BattleLoop() {

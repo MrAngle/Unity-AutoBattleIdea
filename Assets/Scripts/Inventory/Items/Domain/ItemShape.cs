@@ -15,6 +15,14 @@ namespace Inventory.Items.Domain {
         {
             Cells = cells.ToList().AsReadOnly();
         }
+        
+        public IEnumerable<Vector2Int> GetCellsAt(Vector2Int origin)
+        {
+            foreach (var off in Cells)
+                yield return origin + off;
+        }
+
+        public HashSet<Vector2Int> GetCellSetAt(Vector2Int origin) => new(GetCellsAt(origin));
 
         public static ItemShape SingleCell() =>
             new ItemShape(new[] { Vector2Int.zero });

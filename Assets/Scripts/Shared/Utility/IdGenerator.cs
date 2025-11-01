@@ -2,7 +2,7 @@
 using System.Threading;
 
 namespace Shared.Utility {
-    public static class CorrelationId
+    public static class IdGenerator
     {
         private static long _counter;
 

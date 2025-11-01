@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
 using UnityEngine;
@@ -15,8 +16,8 @@ namespace Inventory.Slots.Domain {
         bool CanPlace(ItemData data, Vector2Int origin);
         void Place(ItemData data, Vector2Int origin);
         
-        public static IInventoryGrid CreateInventoryGrid(int width, int height, IEntryPointFacade entryPoint) {
-            return new InventoryGrid(width, height, entryPoint);
+        public static IInventoryGrid CreateInventoryGrid(int width, int height, PlacedEntryPoint placedEntryPoint) {
+            return new InventoryGrid(width, height, placedEntryPoint);
         }
     }
 
@@ -26,13 +27,13 @@ namespace Inventory.Slots.Domain {
         private readonly int _width;
         private readonly int _height;
         
-        private readonly List<IEntryPointFacade> _entryPoints = new();
-        public ReadOnlyCollection<IEntryPointFacade> EntryPoints => _entryPoints.AsReadOnly();
+        private readonly List<PlacedEntryPoint> _entryPoints = new();
+        public ReadOnlyCollection<PlacedEntryPoint> EntryPoints => _entryPoints.AsReadOnly();
         
         public int Width => _width;
         public int Height => _height;
 
-        internal InventoryGrid(int width, int height, IEntryPointFacade entryPoint)
+        internal InventoryGrid(int width, int height, PlacedEntryPoint placedEntryPoint)
         {
             _width = Mathf.Max(0, width);
             _height = Mathf.Max(0, height);
@@ -46,7 +47,7 @@ namespace Inventory.Slots.Domain {
                 }
             }
             
-            TryAddEntryPoint(entryPoint);
+            TryAddEntryPoint(placedEntryPoint);
         }
         
         public CellState GetState(Vector2Int coord)
@@ -118,10 +119,10 @@ namespace Inventory.Slots.Domain {
             => p.x >= 0 && p.x < _width && p.y >= 0 && p.y < _height;
 
         /// Dodaj punkt wejścia (np. Damage) pod warunkiem, że mieści się w siatce.
-        public void TryAddEntryPoint(IEntryPointFacade entry)
+        public void TryAddEntryPoint(PlacedEntryPoint placedEntry)
         {
-            if (!IsWithinBounds(entry.GetPosition())) throw new System.ArgumentException("Entry point is out of bounds");
-            _entryPoints.Add(entry);
+            if (!IsWithinBounds(placedEntry.GetOccupiedCells().First() /*for now*/)) throw new System.ArgumentException("Entry point is out of bounds");
+            _entryPoints.Add(placedEntry);
         }
 
         // Usuń po Id (zwraca true, jeśli coś usunięto)

@@ -46,7 +46,7 @@ namespace Shared.Utility
         public static TSelf From(long value) => FromCore(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TSelf New() => FromCore(CorrelationId.Next());
+        public static TSelf New() => FromCore(IdGenerator.Next());
 
         public static bool TryParse(ReadOnlySpan<char> text, out TSelf id)
         {

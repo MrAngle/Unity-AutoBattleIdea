@@ -5,6 +5,7 @@ using Inventory.Slots;
 using Inventory.Slots.Context;
 using Inventory.Slots.View;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zenject;
 
@@ -23,9 +24,9 @@ namespace Config {
 
         [Header("GridLayoutGroup")]
         [SerializeField] private GridLayoutGroup inventoryGridLayout;
-        
-        [Header("Scripts")]
-        [SerializeField] private InventoryPanelPrefabInitializer _inventoryPanelPrefabInitializer;
+
+        // [Header("Scripts")]
+        // [SerializeField] private InventoryPanelPrefabInitializer inventoryPanelPrefabInitializer;
         
 
         public override void InstallBindings()
@@ -70,9 +71,9 @@ namespace Config {
                 .NonLazy();
             
             // SCRIPTS
-            Container.Bind<InventoryPanelPrefabInitializer>()
-                .FromComponentInHierarchy()
-                .AsSingle();
+            // Container.Bind<InventoryPanelPrefabInitializer>()
+            //     .FromComponentInHierarchy()
+            //     .AsSingle();
         }
     }
 }

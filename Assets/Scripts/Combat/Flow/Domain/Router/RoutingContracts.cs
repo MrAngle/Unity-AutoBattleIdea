@@ -2,26 +2,27 @@
 
 using Combat.Flow.Domain;
 using Combat.Flow.Domain.Aggregate;
+using Inventory.Items.Domain;
 using UnityEngine;
 
 namespace Combat.Flow.Domain.Router
 {
-    public readonly struct RouteDecision
-    {
-        public IFlowNode NextNode { get; }
-        public Vector2Int EntryCell { get; } // kratka, przez którą wchodzimy do kolejnego itemu
-
-        public RouteDecision(IFlowNode nextNode, Vector2Int entryCell)
-        {
-            NextNode = nextNode;
-            EntryCell = entryCell;
-        }
-    }
+    // public readonly struct RouteDecision
+    // {
+    //     public IFlowNode NextNode { get; }
+    //     public Vector2Int EntryCell { get; } // kratka, przez którą wchodzimy do kolejnego itemu
+    //
+    //     public RouteDecision(IFlowNode nextNode, Vector2Int entryCell)
+    //     {
+    //         NextNode = nextNode;
+    //         EntryCell = entryCell;
+    //     }
+    // }
 
     public interface IFlowRouter
     {
         /// Zwraca null — jeśli brak kandydata (koniec).
-        RouteDecision? DecideNext(IFlowNode current, FlowModel model, System.Collections.Generic.IReadOnlyCollection<long> visitedNodeIds);
+        IPlacedItem DecideNext(IPlacedItem current, FlowModel model, System.Collections.Generic.IReadOnlyCollection<long> visitedNodeIds);
     }
 }
 

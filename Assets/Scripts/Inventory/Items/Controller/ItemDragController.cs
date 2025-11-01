@@ -12,7 +12,7 @@ namespace Inventory.Items.Controller {
         [Inject] private readonly ItemsLayerRectTransform _itemsLayer;
 
         [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
-        [Inject] private readonly InventoryPanelPrefabInitializer _inventoryPanelInitializer;
+        // [Inject] private readonly InventoryPanelPrefabInitializer _inventoryPanelInitializer;
 
         // [Inject] private readonly InventoryGridContext _inventoryGridContext;
         [Inject] private readonly InventoryAggregateContext _inventoryAggregateContext;
@@ -43,12 +43,12 @@ namespace Inventory.Items.Controller {
             UpdateDrag(e);
         }
 
-        public void UpdateDrag(PointerEventData e) {
+        public void UpdateDrag(PointerEventData pointerEventData) {
             if (_dragData == null) return;
 
             // 1) pozycja kursora w układzie ItemsLayer
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _itemsLayer.Get(), e.position, e.pressEventCamera, out var localPos);
+                _itemsLayer.Get(), pointerEventData.position, pointerEventData.pressEventCamera, out var localPos);
 
             // 2) zamiana na origin komórkowy
             var cell = _inventoryGridLayout.Get().cellSize;

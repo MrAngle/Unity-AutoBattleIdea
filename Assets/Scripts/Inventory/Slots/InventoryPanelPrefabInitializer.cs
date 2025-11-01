@@ -16,6 +16,7 @@ namespace Inventory.Slots {
         [Inject] private CellViewPrefabInventoryCellView _cellViewPrefab;
 
         [Inject] private InventoryGridContext _inventoryGridContext;
+        [Inject] private InventoryAggregateContext _inventoryAggregateContext;
         
         [Header("Grid Size")]
         [SerializeField] private int width = 8;
@@ -25,11 +26,13 @@ namespace Inventory.Slots {
 
 
 
-        private void Awake() {
-            IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
+        public void Awake() {
+            InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
-            IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
-            _inventoryGridContext.SetInventoryGrid(inventoryGrid);
+            // IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
+            //
+            // IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
+            _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
         }
         
         private void Start()

@@ -810,7 +810,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -2}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &814658338
@@ -1377,7 +1377,6 @@ MonoBehaviour:
   cellViewPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
   itemsLayerRectTransform: {fileID: 302993218}
   inventoryGridLayout: {fileID: 1035400459}
-  _inventoryPanelPrefabInitializer: {fileID: 1035400458}
 --- !u!4 &1251469101
 Transform:
   m_ObjectHideFlags: 0
@@ -1608,10 +1607,10 @@ RectTransform:
   - {fileID: 814658337}
   m_Father: {fileID: 191347992}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 499.048, y: 448.65}
-  m_SizeDelta: {x: -998.097, y: -897.3}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 481, y: 280.23}
+  m_SizeDelta: {x: 883.1389, y: -660.46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2062791749
 MonoBehaviour:

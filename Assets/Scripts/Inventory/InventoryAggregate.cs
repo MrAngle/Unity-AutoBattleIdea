@@ -8,37 +8,41 @@ using UnityEngine;
 namespace Inventory {
     public class InventoryAggregate {
         private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
-        private readonly HashSet<IEntryPointFacade> _entryPoints = new();
-        private readonly HashSet<IPlacedItem> _items = new();
+        private readonly HashSet<PlacedEntryPoint> _entryPoints = new();
         private readonly IInventoryGrid _inventoryGrid;
+        private readonly HashSet<IPlacedItem> _items = new();
 
         private InventoryAggregate(IInventoryGrid inventoryGrid,
-                                HashSet<IEntryPointFacade> entryPoints,
-                                HashSet<IPlacedItem> items) {
+            HashSet<PlacedEntryPoint> entryPoints,
+            HashSet<IPlacedItem> items) {
             _inventoryGrid = inventoryGrid;
             _entryPoints = entryPoints;
             _items = items;
         }
 
         public static InventoryAggregate Create() {
-            IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
-            IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(8, 6, entryPoint);
-            return new InventoryAggregate(inventoryGrid, null, null);
+            var placedEntryPoint = PlacedEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
+            var inventoryGrid = IInventoryGrid.CreateInventoryGrid(8, 6, placedEntryPoint);
+            return new InventoryAggregate(inventoryGrid, new HashSet<PlacedEntryPoint> { placedEntryPoint }, null);
         }
 
-        private bool TryGetAt(Vector2Int cell, out IPlacedItem item) {
+        public IInventoryGrid GetInventoryGrid() {
+            return _inventoryGrid;
+        }
+
+        public bool TryGetItemAtCell(Vector2Int cell, out IPlacedItem item) {
             return _cellToItem.TryGetValue(cell, out item);
         }
 
         private bool TryRegister(IPlacedItem item) {
             // 1) Walidacja kolizji
-            foreach (var c in item.getOccupiedCells())
+            foreach (var c in item.GetOccupiedCells())
                 if (_cellToItem.ContainsKey(c))
                     return false;
 
             // 2) Commit
             _items.Add(item);
-            foreach (var c in item.getOccupiedCells())
+            foreach (var c in item.GetOccupiedCells())
                 _cellToItem[c] = item;
 
             return true;
@@ -47,7 +51,7 @@ namespace Inventory {
         public bool Unregister(IPlacedItem item) {
             if (!_items.Remove(item)) return false;
 
-            foreach (var c in item.getOccupiedCells())
+            foreach (var c in item.GetOccupiedCells())
                 _cellToItem.Remove(c);
 
             return true;
@@ -60,8 +64,8 @@ namespace Inventory {
 
         public bool CanPlace(ItemData data, Vector2Int origin) {
             return _inventoryGrid.CanPlace(data, origin);
-        }      
-        
+        }
+
         public void Place(ItemData data, Vector2Int origin) {
             _inventoryGrid.Place(data, origin);
         }
