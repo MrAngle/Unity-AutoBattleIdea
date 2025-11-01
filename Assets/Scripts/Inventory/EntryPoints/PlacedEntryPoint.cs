@@ -11,7 +11,7 @@ using Shared.Utility;
 using UnityEngine;
 
 namespace Inventory.EntryPoints {
-    public class PlacedEntryPoint : IPlacedItem, IPlacedEntryPoint, IDisposable {
+    public class PlacedEntryPoint : IPlacedEntryPoint, IDisposable {
         // private readonly float _turnInterval; // sekundy
         // private readonly InventoryPosition _inventoryPosition;
         // private readonly FlowKind _kind;

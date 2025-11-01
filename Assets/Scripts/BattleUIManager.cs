@@ -12,8 +12,8 @@ namespace UI {
             // Przykładowe dane drużyny
             team = new CharacterData[] {
                 new("Warrior", 120),
-                new("Mage", 80),
-                new("Archer", 100)
+                new("Mage", 220),
+                new("Archer", 300)
             };
 
             CreateSlots();

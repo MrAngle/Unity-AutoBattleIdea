@@ -82,9 +82,13 @@ namespace Combat.Flow.Domain.Router
                 // }
             }
 
-            Debug.Log("Candidates Count DecideNext for flow:" + $" {candidates}");
-            if (candidates.Count == 0)
+            
+            if (candidates.Count == 0) {
+                Debug.Log("DecideNext - no candidates, return null");
                 return null;
+            }
+            Debug.Log("Candidates Count DecideNext for flow:" + $" {candidates.Count}");
+                
             
             int index = Random.Range(0, candidates.Count);
             IPlacedItem nextNodeToHandle = candidates.ElementAt(index).Value;

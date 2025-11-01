@@ -4,6 +4,7 @@ using Combat.Flow.Domain.Aggregate;
 using Inventory.Position;
 using Shared.Utility;
 using UnityEngine;
+using Random = System.Random;
 
 namespace Inventory.Items.Domain {
     // public interface IPlacedItem : IFlowNode {
@@ -40,54 +41,17 @@ namespace Inventory.Items.Domain {
             return _inventoryPosition.GetOccupiedCells();
         }
 
-        // public ICollection<Vector2Int> GetOccupiedCells() {
-        //     return _cellToItem.Keys.ToHashSet();
-        //     // return Data.Shape.Cells.Select(offset => Origin + offset);
-        // }
-
-        // public bool TryGetItemAtCell(Vector2Int cell, out ItemData item, out Vector2Int origin)
-        // {
-        //     if (_cellToItem.TryGetValue(cell, out item) && _itemToOrigin.TryGetValue(item, out origin))
-        //         return true;
-        //
-        //     item = null;
-        //     origin = default;
-        //     return false;
-        // }
-
-        // public IEnumerable<Vector2Int> GetOccupiedCells(ItemData item, Vector2Int origin)
-        // {
-        //     // Bazuje na Shape.Cells ItemData (offsety względem origin).
-        //     foreach (var off in item.Shape.Cells)
-        //         yield return origin + off;
-        // }
-
-        // public void Register(ItemData item, Vector2Int origin)
-        // {
-        //     _itemToOrigin[item] = origin;
-        //     foreach (var cell in GetOccupiedCells(item, origin))
-        //         _cellToItem[cell] = item;
-        // }
-
-        // public void Unregister(ItemData item)
-        // {
-        //     if (!_itemToOrigin.TryGetValue(item, out var origin))
-        //         return;
-        //
-        //     foreach (var cell in GetOccupiedCells(item, origin))
-        //         _cellToItem.Remove(cell);
-        //
-        //     _itemToOrigin.Remove(item);
-        // }
-
         public long GetId() {
             return _id;
         }
 
         public void Process(FlowAggregate flowAggregate) {
             // Na ten moment na tym poziomie, ale byc moze do wyciagniecia na aggregate
+            Debug.Log("Processing battle item");
 
-            throw new NotImplementedException();
+            flowAggregate.AddPower(5);
+            
+            // throw new NotImplementedException();
         }
     }
 }

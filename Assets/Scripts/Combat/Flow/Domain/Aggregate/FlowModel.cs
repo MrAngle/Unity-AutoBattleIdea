@@ -11,5 +11,9 @@
             FlowPayload = new FlowPayload(flowSeed.Power());
             FlowContext = flowContext;
         }
+
+        public void AddPower(long power) {
+            FlowPayload.Add(power);
+        }
     }
 }

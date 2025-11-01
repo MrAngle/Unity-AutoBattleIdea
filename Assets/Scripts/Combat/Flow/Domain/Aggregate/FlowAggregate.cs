@@ -72,6 +72,7 @@ namespace Combat.Flow.Domain.Aggregate
             // (opcjonalnie) możesz logować decision.Value.EntryCell do debug
             _currentNode = decision;
             _flowModel.FlowContext.NextStep();
+            Step();
         }
 
         public void Step()
@@ -84,5 +85,8 @@ namespace Combat.Flow.Domain.Aggregate
 
         public bool IsFinished => _currentNode == null || _flowModel == null;
 
+        public void AddPower(long power) {
+            _flowModel.AddPower(power);
+        }
     }
 }

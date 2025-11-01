@@ -28,7 +28,7 @@ namespace Inventory {
         //
         public static InventoryAggregate Create()
         {
-            IInventoryGrid grid = IInventoryGrid.CreateInventoryGrid(12, 4);
+            IInventoryGrid grid = IInventoryGrid.CreateInventoryGrid(12, 8);
 
             InventoryAggregate aggregate = new InventoryAggregate(
                 grid,
@@ -89,6 +89,22 @@ namespace Inventory {
         }
 
         public void Place(ItemData data, Vector2Int origin) {
+            if (!_inventoryGrid.CanPlace(data, origin)) {
+                throw new System.ArgumentException("Cannot place item");
+            }
+
+            IPlacedItem item = IPlacedItem.CreateBattleItem(data, origin);
+            foreach (var c in item.GetOccupiedCells()) {
+                if (_cellToItem.ContainsKey(c)) {
+                    throw new System.ArgumentException("Cannot place item");
+                }
+            }
+
+            _items.Add(item);
+            foreach (var c in item.GetOccupiedCells()) {
+                _cellToItem[c] = item;
+            }
+
             _inventoryGrid.Place(data, origin);
         }
 

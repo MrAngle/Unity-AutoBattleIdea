@@ -29,7 +29,7 @@ namespace Inventory.EntryPoints {
             _kind = kind;
             // _position = position;
             // _inventoryPosition = InventoryPosition.Create(position, ItemShape.SingleCell());
-            _turnInterval = Mathf.Max(0.01f, 5.5f);
+            _turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
         public static GridEntryPoint Create(FlowKind kind) {
