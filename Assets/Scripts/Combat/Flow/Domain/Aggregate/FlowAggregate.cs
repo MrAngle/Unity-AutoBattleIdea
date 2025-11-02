@@ -4,32 +4,39 @@ using System.Collections.Generic;
 using Combat.Flow.Domain.Router;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
+using Inventory.Items.View;
 using Shared.Utility;
 using UnityEngine;
+using Zenject;
 
 namespace Combat.Flow.Domain.Aggregate
 {
+    
     /// Agregat odpowiedzialny za przeprowadzenie modelu przez kolejne kroki.
     public class FlowAggregate : IFlowAggregateFacade
     {
         private readonly IFlowRouter _router;
         private readonly FlowModel _flowModel;
+        private readonly SignalBus _signalBus;
         private IPlacedItem _currentNode;
 
         public IReadOnlyList<long> VisitedNodeIds => _visitedNodeIds;
         private readonly List<long> _visitedNodeIds = new();
         
-        private FlowAggregate(FlowModel flowModel, PlacedEntryPoint startNode, IFlowRouter flowRouter)
+        // public event Action<FlowPowerDeltaApplied> OnPowerDeltaApplied;
+        
+        private FlowAggregate(FlowModel flowModel, PlacedEntryPoint startNode, IFlowRouter flowRouter, SignalBus signalBus)
         {
             _router    = NullGuard.NotNullOrThrow(flowRouter);
             _flowModel = NullGuard.NotNullOrThrow(flowModel);
             _currentNode = NullGuard.NotNullOrThrow(startNode);
+            _signalBus = NullGuard.NotNullOrThrow(signalBus);
 
             _visitedNodeIds.Clear();
         }
 
         /// Inicjuje przepływ od węzła startowego.
-        public static IFlowAggregateFacade Create(PlacedEntryPoint placedEntryPoint, long power, IFlowRouter flowRouter)
+        public static IFlowAggregateFacade Create(PlacedEntryPoint placedEntryPoint, long power, IFlowRouter flowRouter, SignalBus signalBus)
         {
             // sourceId ??= CorrelationId.NextString();
             var payload = new FlowSeed(power);
@@ -37,10 +44,8 @@ namespace Combat.Flow.Domain.Aggregate
             var model = new FlowModel(payload, context);
             var startNode = placedEntryPoint;
             
-            return new FlowAggregate(model, startNode, flowRouter);
+            return new FlowAggregate(model, startNode, flowRouter, signalBus);
         }
-        
-        public FlowModel GetModel() => _flowModel;
         
         public void Start() {
             Step();
@@ -87,6 +92,8 @@ namespace Combat.Flow.Domain.Aggregate
 
         public void AddPower(long power) {
             _flowModel.AddPower(power);
+            
+            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), power));
         }
     }
 }

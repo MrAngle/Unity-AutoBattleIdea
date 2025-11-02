@@ -8,22 +8,59 @@ using Zenject;
 
 namespace Inventory.Items.View
 {
-    /// Widok przedmiotu złożony z kafelków (tego samego rozmiaru co komórki gridu).
-    /// Pivot kontenera = (0,1) (lewy-górny).
+    public interface IItemViewFactory
+    {
+        ItemView Create(ItemData data, Vector2Int origin);
+    }
+    
+    public sealed class ItemViewFactory : IItemViewFactory
+    {
+        private readonly ItemView _prefab;
+        private readonly ItemsLayerRectTransform _itemsLayer;
+        private readonly GridLayoutGroup _grid;
+
+        [Inject]
+        public ItemViewFactory(
+            ItemViewPrefabItemView prefabProvider,
+            ItemsLayerRectTransform itemsLayer,
+            InventoryGridLayoutGroup gridLayoutGroup)
+        {
+            _prefab = prefabProvider.Get();
+            _itemsLayer = itemsLayer;
+            _grid = gridLayoutGroup.Get();
+        }
+
+        public ItemView Create(ItemData data, Vector2Int origin)
+        {
+            var view = Object.Instantiate(_prefab, _itemsLayer.Get(), false);
+
+            var cell = _grid.cellSize;
+            var spacing = _grid.spacing;
+
+            view.Build(data, cell);
+            view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+
+            return view;
+        }
+    }
+    
+    
     public class ItemView : MonoBehaviour
     {
-        public class Factory : PlaceholderFactory<ItemViewPrefabItemView> {}
-        
         [Header("Visual")]
         [SerializeField] private Color cellColor = new(0.4f, 0.7f, 1f, 0.85f);
         [SerializeField] private float cellSpacing = 2f; // odstęp między kafelkami (px)
+        private Vector2 _cellSize;
 
         private readonly List<ItemCellTileView> _tiles = new();
-        private Vector2 _cellSize;
+        private readonly IPlacedItem _placedItem;
+
         private Vector2Int[] _shapeOffsets;
 
         public void Build(ItemData data, Vector2 cellSize)
         {
+            // _placedItem = IPlacedItem.CreateBattleItem(data); 
+            
             Clear();
             _cellSize = cellSize;
             _shapeOffsets = data.Shape.Cells.ToArray();

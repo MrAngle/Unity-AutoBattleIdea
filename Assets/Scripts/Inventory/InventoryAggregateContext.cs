@@ -1,20 +1,15 @@
-﻿namespace Inventory {
-    public class InventoryAggregateContext {
-        private InventoryAggregate _inventoryAggregate;
+﻿using Inventory.Items;
+using Zenject;
 
-        private InventoryAggregateContext(InventoryAggregate inventoryAggregate) {
-            _inventoryAggregate = inventoryAggregate;
+namespace Inventory {
+    public class InventoryAggregateContext {
+        private readonly InventoryAggregate _inventoryAggregate;
+
+        [Inject]
+        public InventoryAggregateContext(IInventoryAggregateFactory inventoryAggregateFactory) {
+            _inventoryAggregate = inventoryAggregateFactory.Create();
         }
-        
-        public static InventoryAggregateContext Create() {
-            return new InventoryAggregateContext(InventoryAggregate.Create()); // for now
-        }
-        
-        // public void SetInventoryGrid(IInventoryGrid inventoryGrid)
-        // {
-        //     _inventoryGrid = inventoryGrid;
-        // }
-        //
+
         public InventoryAggregate GetInventoryAggregate() {
             return _inventoryAggregate;
         }

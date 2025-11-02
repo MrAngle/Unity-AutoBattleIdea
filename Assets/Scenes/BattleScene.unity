@@ -1142,8 +1142,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a80f2f81c542f9bf2ae86b22c4a731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory.Slots.InventoryPanelPrefabInitializer
-  width: 16
-  height: 6
 --- !u!114 &1035400459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1609,8 +1607,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 481, y: 280.23}
-  m_SizeDelta: {x: 883.1389, y: -660.46}
+  m_AnchoredPosition: {x: 481, y: 362.57}
+  m_SizeDelta: {x: 883.1389, y: -825.15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2062791749
 MonoBehaviour:

@@ -1,8 +1,12 @@
-﻿using Config.Semantics;
+﻿using Combat.Flow.Domain.Aggregate;
+using Config.Semantics;
 using Inventory;
+using Inventory.EntryPoints;
+using Inventory.Items;
 using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
+using Inventory.Slots.Domain;
 using Inventory.Slots.View;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -31,13 +35,23 @@ namespace Config {
 
         public override void InstallBindings()
         {
+            InstallSignals();
+            
+            BindItemsLayerRectTransform();
+            
+            BindInventoryGridLayoutGroup();
+            
+            Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
+                .AsSingle();
+
             Container.Bind<InventoryGridContext>()
                 .FromMethod(_ => InventoryGridContext.Create())
                 .AsSingle()
                 .NonLazy();
             
+            BindFactories();
+            
             Container.Bind<InventoryAggregateContext>()
-                .FromMethod(_ => InventoryAggregateContext.Create())
                 .AsSingle()
                 .NonLazy();
             
@@ -50,10 +64,7 @@ namespace Config {
                 .FromMethod(_ => new DragGhostPrefabItemView(dragGhostPrefab))
                 .AsSingle();
             
-            Container.Bind<ItemsLayerRectTransform>()
-                .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
-                .AsSingle()
-                .NonLazy();
+
             
             Container.Bind<GridViewPrefabInventoryGridView>()
                 .FromMethod(_ => new GridViewPrefabInventoryGridView(gridViewPrefab))
@@ -65,15 +76,56 @@ namespace Config {
 
  
             // GRID LAYOUT
-            Container.Bind<InventoryGridLayoutGroup>()
-                .FromMethod(_ => new InventoryGridLayoutGroup(inventoryGridLayout))
-                .AsSingle()
-                .NonLazy();
+  
             
             // SCRIPTS
             // Container.Bind<InventoryPanelPrefabInitializer>()
             //     .FromComponentInHierarchy()
             //     .AsSingle();
+
+
+        }
+
+        private void BindFactories() {
+            Container.Bind<IFlowFactory>()
+                .To<FlowFactory>()
+                .AsSingle();
+
+            Container.Bind<IEntryPointFactory>()
+                .To<EntryPointFactory>()
+                .AsSingle();
+
+            Container.Bind<IInventoryAggregateFactory>()
+                .To<InventoryAggregateFactory>()
+                .AsSingle();
+            
+            
+            Container.Bind<IItemViewFactory>()
+                .To<ItemViewFactory>()
+                .AsSingle();
+        }
+
+        private void BindInventoryGridLayoutGroup() {
+            Container.Bind<InventoryGridLayoutGroup>()
+                .FromMethod(_ => new InventoryGridLayoutGroup(inventoryGridLayout))
+                .AsSingle()
+                .NonLazy();
+        }
+
+        private void BindItemsLayerRectTransform() {
+            Container.Bind<ItemsLayerRectTransform>()
+                .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
+                .AsSingle()
+                .NonLazy();
+        }
+
+        void InstallSignals() {
+            SignalBusInstaller.Install(Container);
+            Container.DeclareSignal<ItemPlacedDtoEvent>();
+            Container.DeclareSignal<ItemRemovedDtoEvent>();
+            Container.DeclareSignal<ItemPowerChangedDtoEvent>();
+
+
         }
     }
 }

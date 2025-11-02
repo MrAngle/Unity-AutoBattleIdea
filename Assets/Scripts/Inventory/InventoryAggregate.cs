@@ -2,51 +2,60 @@
 using Combat.Flow.Domain.Aggregate;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
+using Inventory.Items.View;
 using Inventory.Slots.Domain;
+using Shared.Utility;
 using UnityEngine;
+using Zenject;
 
 namespace Inventory {
     public class InventoryAggregate : IGridInspector {
-        private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
-        private readonly HashSet<IPlacedEntryPoint> _entryPoints = new();
+        private readonly SignalBus _signalBus;
+        private readonly HashSet<IPlacedEntryPoint> _entryPoints;
         private readonly IInventoryGrid _inventoryGrid;
-        private readonly HashSet<IPlacedItem> _items = new();
+        private readonly HashSet<IPlacedItem> _items;
+        private readonly IEntryPointFactory _entryPointFactory;
+        
+        private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
 
         private InventoryAggregate(IInventoryGrid inventoryGrid,
             HashSet<IPlacedEntryPoint> entryPoints,
-            HashSet<IPlacedItem> items) {
+            HashSet<IPlacedItem> items,
+            SignalBus signalBus,
+            IEntryPointFactory entryPointFactory) {
+            NullGuard.NotNullCheckOrThrow(inventoryGrid, entryPoints, items, signalBus, entryPointFactory);
             _inventoryGrid = inventoryGrid;
             _entryPoints = entryPoints;
             _items = items;
+            _signalBus = signalBus;
+            _entryPointFactory = entryPointFactory;
+            NullGuard.NotNullCheckOrThrow(_inventoryGrid, _entryPoints, _items, _signalBus, _entryPointFactory);
         }
 
-        // public static InventoryAggregate Create() {
-        //     IPlacedEntryPoint placedEntryPoint = PlacedEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0), this);
-        //     var inventoryGrid = IInventoryGrid.CreateInventoryGrid(8, 6, placedEntryPoint);
-        //     return new InventoryAggregate(inventoryGrid, new HashSet<IPlacedEntryPoint> { placedEntryPoint }, null);
-        // }
-        //
-        public static InventoryAggregate Create()
+        public static InventoryAggregate Create(SignalBus signalBus, IEntryPointFactory entryPointFactory)
         {
             IInventoryGrid grid = IInventoryGrid.CreateInventoryGrid(12, 8);
 
             InventoryAggregate aggregate = new InventoryAggregate(
                 grid,
                 new HashSet<IPlacedEntryPoint>(),
-                new HashSet<IPlacedItem>()
+                new HashSet<IPlacedItem>(),
+                signalBus,
+                entryPointFactory
             );
-
-            IPlacedEntryPoint placedEntryPoint = PlacedEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0), aggregate);
-            aggregate.RegisterEntryPoint(placedEntryPoint);
 
             return aggregate;
         }
 
-        private void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint) {
+        public void Place(GridEntryPoint entryPoint, Vector2Int origin) {
+            IPlacedEntryPoint placedEntryPoint = _entryPointFactory.CreatePlacedEntryPoint(entryPoint.GetFlowKind(), origin, this);
+
             _entryPoints.Add(placedEntryPoint);
             _inventoryGrid.RegisterEntryPoint(placedEntryPoint);
+            
+            // TODO
+            // _signalBus.Fire(new ItemPlacedDtoEvent(placedEntryPoint.GetId(), data, origin));
         }
-
 
         public IInventoryGrid GetInventoryGrid() {
             return _inventoryGrid;
@@ -56,39 +65,11 @@ namespace Inventory {
             return _cellToItem.TryGetValue(cell, out item);
         }
 
-        private bool TryRegister(IPlacedItem item) {
-            // 1) Walidacja kolizji
-            foreach (var c in item.GetOccupiedCells())
-                if (_cellToItem.ContainsKey(c))
-                    return false;
-
-            // 2) Commit
-            _items.Add(item);
-            foreach (var c in item.GetOccupiedCells())
-                _cellToItem[c] = item;
-
-            return true;
-        }
-
-        public bool Unregister(IPlacedItem item) {
-            if (!_items.Remove(item)) return false;
-
-            foreach (var c in item.GetOccupiedCells())
-                _cellToItem.Remove(c);
-
-            return true;
-        }
-
-        private static IEnumerable<Vector2Int> CellsAt(ItemData data, Vector2Int origin) {
-            foreach (var off in data.Shape.Cells)
-                yield return origin + off;
-        }
-
         public bool CanPlace(ItemData data, Vector2Int origin) {
             return _inventoryGrid.CanPlace(data, origin);
         }
 
-        public void Place(ItemData data, Vector2Int origin) {
+        public IPlacedItem Place(ItemData data, Vector2Int origin) {
             if (!_inventoryGrid.CanPlace(data, origin)) {
                 throw new System.ArgumentException("Cannot place item");
             }
@@ -106,40 +87,8 @@ namespace Inventory {
             }
 
             _inventoryGrid.Place(data, origin);
+            _signalBus.Fire(new ItemPlacedDtoEvent(item.GetId(), data, origin));
+            return item;
         }
-
-        // --- MOVE (atomowo, bez alokacji zbędnych struktur) ---
-
-        // public bool TryMove(IPlacedItem item, Vector2Int newOrigin)
-        // {
-        //     if (!_itemToOrigin.ContainsKey(item)) return false;
-        //
-        //     // Zbierz stare i nowe komórki
-        //     var oldCells = item.getOccupiedCells().ToArray();
-        //
-        //     // Tymczasowo przestaw origin (bez commitu do słowników)
-        //     var oldOrigin = item.Origin;
-        //     item.SetOrigin(newOrigin);
-        //     var newCells = item.getOccupiedCells().ToArray();
-        //
-        //     // 1) Walidacja kolizji (pozwól „nakładać się” na samego siebie)
-        //     foreach (var c in newCells)
-        //         if (_cellToItem.TryGetValue(c, out var other) && other != item)
-        //         {
-        //             // rollback origin
-        //             item.SetOrigin(oldOrigin);
-        //             return false;
-        //         }
-        //
-        //     // 2) Commit: zdejmij stare wpisy, załóż nowe
-        //     foreach (var c in oldCells)
-        //         _cellToItem.Remove(c);
-        //
-        //     foreach (var c in newCells)
-        //         _cellToItem[c] = item;
-        //
-        //     _itemToOrigin[item] = newOrigin;
-        //     return true;
-        // }
     }
 }

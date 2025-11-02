@@ -20,7 +20,7 @@ namespace Inventory.Items.Controller {
         [Inject] private readonly DragGhostPrefabItemView _dragGhostPrefabItemView;
         [Inject] private readonly ItemViewPrefabItemView _itemViewPrefabItemView;
         
-        private ItemData _dragData;
+        private ItemData _itemData;
         private ItemView _ghostItem;
 
         private void Start() {
@@ -33,18 +33,18 @@ namespace Inventory.Items.Controller {
             _ghostItem.gameObject.SetActive(false);
         }
 
-        public void BeginDrag(ItemData data, PointerEventData e) {
-            _dragData = data;
+        public void BeginDrag(ItemData data, PointerEventData eventData) {
+            _itemData = data;
             var cellSize = _inventoryGridLayout.Get().cellSize;
-            _ghostItem.Build(_dragData, cellSize);
+            _ghostItem.Build(_itemData, cellSize);
             _ghostItem.SetColor(new Color(1f, 1f, 1f, 0.6f));
             _ghostItem.gameObject.SetActive(true);
 
-            UpdateDrag(e);
+            UpdateDrag(eventData);
         }
 
         public void UpdateDrag(PointerEventData pointerEventData) {
-            if (_dragData == null) return;
+            if (_itemData == null) return;
 
             // 1) pozycja kursora w układzie ItemsLayer
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -57,11 +57,10 @@ namespace Inventory.Items.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-
             InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
             // 3) validacja
-            var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_dragData, origin);
+            var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_itemData, origin);
             _ghostItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -69,7 +68,7 @@ namespace Inventory.Items.Controller {
         }
 
         public void EndDrag(PointerEventData pointerEventData) {
-            if (_dragData == null) {
+            if (_itemData == null) {
                 _ghostItem.gameObject.SetActive(false);
                 return;
             }
@@ -85,15 +84,12 @@ namespace Inventory.Items.Controller {
             
             InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
-            if (inventoryAggregate != null && inventoryAggregate.CanPlace(_dragData, origin)) {
-                inventoryAggregate.Place(_dragData, origin);
-                var view = Instantiate(_itemViewPrefabItemView.Get(), _itemsLayer.Get(), false);
-                view.Build(_dragData, cell);
-                view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            if (inventoryAggregate != null && inventoryAggregate.CanPlace(_itemData, origin)) {
+                IPlacedItem placedItem = inventoryAggregate.Place(_itemData, origin);
             }
 
             _ghostItem.gameObject.SetActive(false);
-            _dragData = null;
+            _itemData = null;
         }
     }
 }
