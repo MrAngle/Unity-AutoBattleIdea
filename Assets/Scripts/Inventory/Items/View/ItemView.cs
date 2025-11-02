@@ -10,7 +10,7 @@ namespace Inventory.Items.View
 {
     public interface IItemViewFactory
     {
-        ItemView Create(ItemData data, Vector2Int origin);
+        ItemView Create(ShapeArchetype data, Vector2Int origin);
     }
     
     public sealed class ItemViewFactory : IItemViewFactory
@@ -30,7 +30,7 @@ namespace Inventory.Items.View
             _grid = gridLayoutGroup.Get();
         }
 
-        public ItemView Create(ItemData data, Vector2Int origin)
+        public ItemView Create(ShapeArchetype data, Vector2Int origin)
         {
             var view = Object.Instantiate(_prefab, _itemsLayer.Get(), false);
 
@@ -57,7 +57,7 @@ namespace Inventory.Items.View
 
         private Vector2Int[] _shapeOffsets;
 
-        public void Build(ItemData data, Vector2 cellSize)
+        public void Build(ShapeArchetype data, Vector2 cellSize)
         {
             // _placedItem = IPlacedItem.CreateBattleItem(data); 
             

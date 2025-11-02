@@ -9,15 +9,16 @@ using Random = System.Random;
 namespace Inventory.Items.Domain {
 
     internal class BattleItem : IPlacedItem {
-        private readonly ItemData _data;
+        // private readonly ShapeArchetype _shapeArchetype;
         private readonly long _id;
+        private readonly ItemArchetype _itemArchetype;
         private readonly InventoryPosition _inventoryPosition;
 
         
-        internal BattleItem(ItemData data, Vector2Int origin) {
+        internal BattleItem(ItemArchetype itemArchetype, Vector2Int origin) {
             _id = IdGenerator.Next();
-            _data = data;
-            _inventoryPosition = InventoryPosition.Create(origin, _data.Shape);
+            _itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
+            _inventoryPosition = InventoryPosition.Create(origin, _itemArchetype.GetShape().Shape);
             // Register(Data, Origin);
         }
 
@@ -31,6 +32,14 @@ namespace Inventory.Items.Domain {
 
         public void Process(FlowAggregate flowAggregate) {
             flowAggregate.AddPower(5);
+        }
+
+        public ShapeArchetype GetShape() {
+            return _itemArchetype.GetShape();
+        }
+
+        public IPlacedItem ToPlacedItem() {
+            throw new NotImplementedException();
         }
     }
 }

@@ -25,21 +25,21 @@ namespace Inventory.EntryPoints {
         
         
         private readonly InventoryPosition _inventoryPosition;
-        private readonly GridEntryPoint _entryPoint;
+        private readonly EntryPointArchetype _entryPointArchetype;
         private readonly IGridInspector _gridInspector;
         private readonly long _id;
         
-        private PlacedEntryPoint(GridEntryPoint entryPoint, Vector2Int origin, IGridInspector gridInspector, IFlowFactory flowFactory) {
+        private PlacedEntryPoint(EntryPointArchetype entryPointArchetype, Vector2Int origin, IGridInspector gridInspector, IFlowFactory flowFactory) {
             _id = IdGenerator.Next();
-            _entryPoint = entryPoint;
+            _entryPointArchetype = entryPointArchetype;
             _gridInspector = gridInspector;
             _flowFactory = flowFactory;
             _inventoryPosition = InventoryPosition.Create(origin, ItemShape.SingleCell());
         }
         
-        public static IPlacedEntryPoint Create(FlowKind kind, Vector2Int position, IGridInspector gridInspector, IFlowFactory flowFactory) {
-            GridEntryPoint entryPoint = GridEntryPoint.Create(kind);
-            PlacedEntryPoint placedEntryPoint = new PlacedEntryPoint(entryPoint, position, gridInspector, flowFactory);
+        internal static IPlacedEntryPoint Create(EntryPointArchetype archetype, Vector2Int position, IGridInspector gridInspector, IFlowFactory flowFactory) {
+            // GridEntryPoint entryPoint = GridEntryPoint.Create(kind);
+            PlacedEntryPoint placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
 
             placedEntryPoint.StartBattle(); // for now
             return placedEntryPoint;
@@ -47,6 +47,10 @@ namespace Inventory.EntryPoints {
 
         public void Process(FlowAggregate flowAggregate) {
             flowAggregate.AddPower(3); // FOR NOW
+        }
+
+        public ShapeArchetype GetShape() {
+            return _entryPointArchetype.GetShape();
         }
 
         public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
@@ -78,7 +82,7 @@ namespace Inventory.EntryPoints {
 
         private async Task BattleLoopAsync(CancellationToken ct) {
             while (_battleRunning && !ct.IsCancellationRequested) {
-                await Task.Delay(TimeSpan.FromSeconds(_entryPoint.GetTurnInterval()), ct);
+                await Task.Delay(TimeSpan.FromSeconds(_entryPointArchetype.GetTurnInterval()), ct);
 
                 Debug.Log("Init proces for flow");
                 if (ct.IsCancellationRequested || !_battleRunning) break;
@@ -111,7 +115,7 @@ namespace Inventory.EntryPoints {
         }
 
         public override string ToString() {
-            return $"({_entryPoint.GetFlowKind()})";
+            return $"({_entryPointArchetype.GetFlowKind()})";
         }
     }
 }

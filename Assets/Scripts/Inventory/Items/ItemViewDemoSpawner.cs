@@ -28,12 +28,12 @@ namespace Inventory.Items {
             var cellSize = gridLayout.cellSize;
             var spacing = gridLayout.spacing.x;
 
-            SpawnAt(ItemConfig.GemShard, new Vector2Int(1, 1), cellSize, spacing);
-            SpawnAt(ItemConfig.ShieldPlate2x2, new Vector2Int(4, 1), cellSize, spacing);
-            SpawnAt(ItemConfig.LBracket, new Vector2Int(1, 4), cellSize, spacing);
+            SpawnAt(ShapeCatalog.Square1x1, new Vector2Int(1, 1), cellSize, spacing);
+            SpawnAt(ShapeCatalog.Square2x2, new Vector2Int(4, 1), cellSize, spacing);
+            SpawnAt(ShapeCatalog.LBracket, new Vector2Int(1, 4), cellSize, spacing);
         }
 
-        private void SpawnAt(ItemData data, Vector2Int origin, Vector2 cellSize, float spacing) {
+        private void SpawnAt(ShapeArchetype data, Vector2Int origin, Vector2 cellSize, float spacing) {
             var view = Instantiate(itemViewPrefab, itemsLayer, false);
             view.Build(data, cellSize);
 

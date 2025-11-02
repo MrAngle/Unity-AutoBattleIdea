@@ -9,8 +9,11 @@ namespace Inventory.Items.Domain {
         public long GetId();
         public void Process(FlowAggregate flowAggregate);
         
-        public static IPlacedItem CreateBattleItem(ItemData data, Vector2Int origin) {
-            return new BattleItem(data, origin);
-        }
+        public ShapeArchetype GetShape();
+    }
+    
+    public interface IPlaceableItem {
+        IPlacedItem ToPlacedItem(IGridInspector gridInspector /*do zastanowienia czy potrzebne*/, Vector2Int origin);
+        ShapeArchetype GetShape();
     }
 }

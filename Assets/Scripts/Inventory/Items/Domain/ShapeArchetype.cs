@@ -6,15 +6,15 @@ namespace Inventory.Items.Domain {
     /// <summary>
     ///     Logiczny model przedmiotu w ekwipunku.
     /// </summary>
-    public class ItemData {
-        public ItemData(ItemDataId itemDataId, string displayName, ItemShape shape, string iconId = null) {
-            ItemDataId = itemDataId;
+    public class ShapeArchetype {
+        public ShapeArchetype(ShapeArchetypeId shapeArchetypeId, string displayName, ItemShape shape, string iconId = null) {
+            ShapeArchetypeId = shapeArchetypeId;
             DisplayName = displayName;
             Shape = shape;
             IconPath = iconId;
         }
 
-        public ItemDataId ItemDataId { get; }
+        public ShapeArchetypeId ShapeArchetypeId { get; }
         public string DisplayName { get; }
         public ItemShape Shape { get; }
         public string IconPath { get; } // opcjonalnie

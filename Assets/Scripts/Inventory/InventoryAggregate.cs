@@ -47,16 +47,6 @@ namespace Inventory {
             return aggregate;
         }
 
-        public void Place(GridEntryPoint entryPoint, Vector2Int origin) {
-            IPlacedEntryPoint placedEntryPoint = _entryPointFactory.CreatePlacedEntryPoint(entryPoint.GetFlowKind(), origin, this);
-
-            _entryPoints.Add(placedEntryPoint);
-            _inventoryGrid.RegisterEntryPoint(placedEntryPoint);
-            
-            // TODO
-            // _signalBus.Fire(new ItemPlacedDtoEvent(placedEntryPoint.GetId(), data, origin));
-        }
-
         public IInventoryGrid GetInventoryGrid() {
             return _inventoryGrid;
         }
@@ -65,30 +55,30 @@ namespace Inventory {
             return _cellToItem.TryGetValue(cell, out item);
         }
 
-        public bool CanPlace(ItemData data, Vector2Int origin) {
-            return _inventoryGrid.CanPlace(data, origin);
+        public bool CanPlace(IPlaceableItem placeableItem, Vector2Int origin) {
+            return _inventoryGrid.CanPlace(placeableItem.GetShape(), origin);
         }
 
-        public IPlacedItem Place(ItemData data, Vector2Int origin) {
-            if (!_inventoryGrid.CanPlace(data, origin)) {
+        public IPlacedItem Place(IPlaceableItem placeableItem, Vector2Int origin) {
+            if (!_inventoryGrid.CanPlace(placeableItem.GetShape(), origin)) {
                 throw new System.ArgumentException("Cannot place item");
             }
-
-            IPlacedItem item = IPlacedItem.CreateBattleItem(data, origin);
-            foreach (var c in item.GetOccupiedCells()) {
+            
+            IPlacedItem placedItem = placeableItem.ToPlacedItem(this, origin);
+            foreach (var c in placedItem.GetOccupiedCells()) {
                 if (_cellToItem.ContainsKey(c)) {
                     throw new System.ArgumentException("Cannot place item");
                 }
             }
 
-            _items.Add(item);
-            foreach (var c in item.GetOccupiedCells()) {
-                _cellToItem[c] = item;
+            _items.Add(placedItem);
+            foreach (var c in placedItem.GetOccupiedCells()) {
+                _cellToItem[c] = placedItem;
             }
 
-            _inventoryGrid.Place(data, origin);
-            _signalBus.Fire(new ItemPlacedDtoEvent(item.GetId(), data, origin));
-            return item;
+            _inventoryGrid.Place(placedItem.GetShape(), origin);
+            _signalBus.Fire(new ItemPlacedDtoEvent(placedItem.GetId(), placedItem.GetShape(), origin));
+            return placedItem;
         }
     }
 }

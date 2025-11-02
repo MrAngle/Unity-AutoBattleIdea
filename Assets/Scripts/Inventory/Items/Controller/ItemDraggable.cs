@@ -7,29 +7,33 @@ using UnityEngine.EventSystems;
 
 namespace Inventory.Items.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
-        [Header("Config")] public ItemDataId itemId = ItemDataId.SHIELD_PLATE_2X2;
+        [Header("Config")] public ShapeArchetypeId itemId = ShapeArchetypeId.SQUARE_2X2;
 
         private ItemDragController _controller;
-        private ItemData _data;
+        // private ShapeArchetype _data;
+        private IPlaceableItem _placeableItem;
 
         private void Awake() {
             _controller = FindObjectOfType<ItemDragController>(true);
             // Prosty lookup z Twojej statycznej konfiguracji:
-            _data = Array.Find(ItemConfig.All.ToArray(), d => d.ItemDataId == itemId);
+            ShapeArchetype shapeArchetype = Array.Find(ShapeCatalog.All.ToArray(), d => d.ShapeArchetypeId == itemId);
+            ItemArchetype itemArchetype = new ItemArchetype(shapeArchetype);
+
+            _placeableItem = itemArchetype;
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
-            if (_data == null) return;
-            _controller?.BeginDrag(_data, eventData);
+            if (_placeableItem == null) return;
+            _controller?.BeginDrag(_placeableItem, eventData);
         }
 
         public void OnDrag(PointerEventData eventData) {
-            if (_data == null) return;
+            if (_placeableItem == null) return;
             _controller?.UpdateDrag(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
-            if (_data == null) return;
+            if (_placeableItem == null) return;
             _controller?.EndDrag(eventData);
         }
     }

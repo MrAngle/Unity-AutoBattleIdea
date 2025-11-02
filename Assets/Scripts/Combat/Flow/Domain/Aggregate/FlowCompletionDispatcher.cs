@@ -10,18 +10,6 @@ namespace Combat.Flow.Domain.Aggregate {
             
             // TODO: change it
             flowCompletionDispatcher.Handle();
-            
-            // var teamA = CharacterRegistry.Instance.GetTeamA();
-            // var teamB = CharacterRegistry.Instance.GetTeamB();
-            //
-            // // wybierz losowego atakującego z drużyny A
-            // var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, teamA.Count)];
-            // var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, teamB.Count)];
-            //
-            // var dmg = Random.Range(5, 15);
-            // target.TakeDamage(dmg);
-            //
-            // Debug.Log($"{attacker.Name} zadał {dmg} obrażeń {target.Name}");
         }
         
         private FlowCompletionDispatcher(FlowModel flowModel)

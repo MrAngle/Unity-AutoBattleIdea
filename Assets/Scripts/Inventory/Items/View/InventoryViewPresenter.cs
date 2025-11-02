@@ -21,10 +21,10 @@ namespace Inventory.Items.View {
     public readonly struct ItemPlacedDtoEvent
     {
         public long PlacedItemId { get; }
-        public ItemData Data { get; }
+        public ShapeArchetype Data { get; }
         public Vector2Int Origin { get; }
 
-        public ItemPlacedDtoEvent(long id, ItemData data, Vector2Int origin)
+        public ItemPlacedDtoEvent(long id, ShapeArchetype data, Vector2Int origin)
         {
             PlacedItemId = id; Data = data; Origin = origin;
         }

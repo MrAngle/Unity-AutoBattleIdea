@@ -13,8 +13,8 @@ namespace Inventory.Slots.Domain {
         int Height { get; }
         CellState GetState(Vector2Int coord);
 
-        bool CanPlace(ItemData data, Vector2Int origin);
-        void Place(ItemData data, Vector2Int origin);
+        bool CanPlace(ShapeArchetype data, Vector2Int origin);
+        void Place(ShapeArchetype data, Vector2Int origin);
         
         void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint);
         
@@ -85,7 +85,7 @@ namespace Inventory.Slots.Domain {
             }
         }
         
-        public bool CanPlace(ItemData data, Vector2Int origin)
+        public bool CanPlace(ShapeArchetype data, Vector2Int origin)
         {
             foreach (var off in data.Shape.Cells)
             {
@@ -97,7 +97,7 @@ namespace Inventory.Slots.Domain {
             return true;
         }
 
-        public void Place(ItemData data, Vector2Int origin)
+        public void Place(ShapeArchetype data, Vector2Int origin)
         {
             if (!CanPlace(data, origin)) {
                 throw new System.ArgumentException("Cannot place item");
@@ -115,7 +115,7 @@ namespace Inventory.Slots.Domain {
             // throw new System.NotImplementedException();
         }
 
-        public void Remove(ItemData data, Vector2Int origin)
+        public void Remove(ShapeArchetype data, Vector2Int origin)
         {
             foreach (var off in data.Shape.Cells)
             {

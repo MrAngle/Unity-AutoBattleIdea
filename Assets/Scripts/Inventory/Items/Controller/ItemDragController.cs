@@ -12,31 +12,24 @@ namespace Inventory.Items.Controller {
         [Inject] private readonly ItemsLayerRectTransform _itemsLayer;
 
         [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
-        // [Inject] private readonly InventoryPanelPrefabInitializer _inventoryPanelInitializer;
-
-        // [Inject] private readonly InventoryGridContext _inventoryGridContext;
         [Inject] private readonly InventoryAggregateContext _inventoryAggregateContext;
         
         [Inject] private readonly DragGhostPrefabItemView _dragGhostPrefabItemView;
         [Inject] private readonly ItemViewPrefabItemView _itemViewPrefabItemView;
         
-        private ItemData _itemData;
+        // private ShapeArchetype _shapeArchetype;
+        private IPlaceableItem _placeableItem;
         private ItemView _ghostItem;
 
         private void Start() {
-            // model zbudowany w Start() panelInit
-            // var field = typeof(InventoryPanelPrefabInitializer)
-            //     .GetField("_model", BindingFlags.NonPublic | BindingFlags.Instance);
-            // _model = (InventoryGrid)field.GetValue(panelInit);
-
             _ghostItem = Instantiate(_dragGhostPrefabItemView.Get(), _itemsLayer.Get(), false);
             _ghostItem.gameObject.SetActive(false);
         }
 
-        public void BeginDrag(ItemData data, PointerEventData eventData) {
-            _itemData = data;
+        public void BeginDrag(IPlaceableItem data, PointerEventData eventData) {
+            _placeableItem = data;
             var cellSize = _inventoryGridLayout.Get().cellSize;
-            _ghostItem.Build(_itemData, cellSize);
+            _ghostItem.Build(_placeableItem.GetShape(), cellSize);
             _ghostItem.SetColor(new Color(1f, 1f, 1f, 0.6f));
             _ghostItem.gameObject.SetActive(true);
 
@@ -44,7 +37,7 @@ namespace Inventory.Items.Controller {
         }
 
         public void UpdateDrag(PointerEventData pointerEventData) {
-            if (_itemData == null) return;
+            if (_placeableItem == null) return;
 
             // 1) pozycja kursora w układzie ItemsLayer
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -60,7 +53,7 @@ namespace Inventory.Items.Controller {
             InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
             // 3) validacja
-            var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_itemData, origin);
+            var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_placeableItem, origin);
             _ghostItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -68,7 +61,7 @@ namespace Inventory.Items.Controller {
         }
 
         public void EndDrag(PointerEventData pointerEventData) {
-            if (_itemData == null) {
+            if (_placeableItem == null) {
                 _ghostItem.gameObject.SetActive(false);
                 return;
             }
@@ -84,12 +77,12 @@ namespace Inventory.Items.Controller {
             
             InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
-            if (inventoryAggregate != null && inventoryAggregate.CanPlace(_itemData, origin)) {
-                IPlacedItem placedItem = inventoryAggregate.Place(_itemData, origin);
+            if (inventoryAggregate != null && inventoryAggregate.CanPlace(_placeableItem, origin)) {
+                IPlacedItem placedItem = inventoryAggregate.Place(_placeableItem, origin);
             }
 
             _ghostItem.gameObject.SetActive(false);
-            _itemData = null;
+            _placeableItem = null;
         }
     }
 }

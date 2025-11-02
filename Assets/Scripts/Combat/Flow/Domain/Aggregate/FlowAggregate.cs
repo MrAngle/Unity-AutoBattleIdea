@@ -66,11 +66,7 @@ namespace Combat.Flow.Domain.Aggregate
             var decision = _router.DecideNext(_currentNode, _flowModel, _visitedNodeIds);
             if (decision is null)
             {
-                _currentNode = null; // koniec
-
                 FlowCompletionDispatcher.Finish(_flowModel);
-                
-                // throw new NotImplementedException();
                 return;
             }
 
