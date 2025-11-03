@@ -51,6 +51,7 @@ Spodziewam sie ze wrogowie beda mieli taką sama logike, ale uproszczona i bardz
         - "URP Settings (*.asset)"
         - "Input Actions (*.inputactions)"
       Najwazniejsze uzywane Biblioteki:
+        MEC (More Effective Coroutines)
         Extenject Dependency Injection IOC
         DOTween (HOTween v2)
 
