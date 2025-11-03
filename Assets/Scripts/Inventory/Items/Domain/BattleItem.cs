@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Combat.Flow.Domain.Aggregate;
 using Inventory.Position;
 using Shared.Utility;
+using TimeSystem;
 using UnityEngine;
 
 namespace Inventory.Items.Domain {
@@ -32,7 +35,13 @@ namespace Inventory.Items.Domain {
             return _id;
         }
 
-        public void Process(FlowAggregate flowAggregate) {
+        async public void Process(FlowAggregate flowAggregate) {
+            await TimeModule.ContinueIn(5f); 
+            flowAggregate.AddPower(5);
+        }
+        
+        public async Task ProcessAsync(FlowAggregate flowAggregate, CancellationToken ct = default) {
+            await TimeModule.ContinueIn(0.1f, ct);
             flowAggregate.AddPower(5);
         }
 

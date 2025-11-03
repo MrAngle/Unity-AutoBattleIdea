@@ -48,7 +48,7 @@ namespace Combat.Flow.Domain.Router
             // 2) Zbierz sąsiednie kratki do całego shape’u ortogonalnie
             // var grid = _gridCtx.GetInventoryGrid();
             // if (grid == null) return null;
-            Debug.Log("Init DecideNext for flow");
+            // Debug.Log("Init DecideNext for flow");
             var dirs = new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
             var boundary = new HashSet<Vector2Int>();
 
@@ -64,7 +64,7 @@ namespace Combat.Flow.Domain.Router
             // 3) Kandydaci: kratki Occupied, należące do innego itemu
             // var candidates = new List<(ItemData item, Vector2Int origin, Vector2Int entryCell)>();
             var candidates = new Dictionary<Vector2Int, IPlacedItem>();
-            Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
+            // Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
             foreach (Vector2Int vector2Int in boundary)
             {
                 if (_gridInspector.TryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
@@ -84,10 +84,10 @@ namespace Combat.Flow.Domain.Router
 
             
             if (candidates.Count == 0) {
-                Debug.Log("DecideNext - no candidates, return null");
+                // Debug.Log("DecideNext - no candidates, return null");
                 return null;
             }
-            Debug.Log("Candidates Count DecideNext for flow:" + $" {candidates.Count}");
+            // Debug.Log("Candidates Count DecideNext for flow:" + $" {candidates.Count}");
                 
             
             int index = Random.Range(0, candidates.Count);
@@ -99,7 +99,7 @@ namespace Combat.Flow.Domain.Router
 
             // Zwróć też kratkę wejścia (debug/telemetria)
             // return new RouteDecision(nextNodeToHandle, pick.entryCell);
-            Debug.Log("DecideNext - nextNodeToHandle:" + $" {nextNodeToHandle}");
+            // Debug.Log("DecideNext - nextNodeToHandle:" + $" {nextNodeToHandle}");
             return nextNodeToHandle;
         }
     }

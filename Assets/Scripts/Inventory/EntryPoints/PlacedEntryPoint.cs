@@ -8,6 +8,7 @@ using Inventory.Items.Domain;
 using Inventory.Position;
 using Registry;
 using Shared.Utility;
+using TimeSystem;
 using UnityEngine;
 using Zenject;
 
@@ -48,7 +49,12 @@ namespace Inventory.EntryPoints {
         public void Process(FlowAggregate flowAggregate) {
             flowAggregate.AddPower(3); // FOR NOW
         }
-        
+
+        public async Task ProcessAsync(FlowAggregate flowAggregate, CancellationToken ct = default) {
+            await TimeModule.ContinueIn(1f, ct);
+            flowAggregate.AddPower(3);
+        }
+
         public Vector2Int GetOrigin() {
             return _inventoryPosition.GetOrigin();
         }

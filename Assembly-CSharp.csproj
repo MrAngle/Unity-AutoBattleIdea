@@ -51,6 +51,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
+    <Compile Include="Assets\Scripts\TimeSystem\MecClock.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\View\ItemCellTileView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryGrid.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\QuickItemPreviewSpawner.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
+    <Compile Include="Assets\Scripts\TimeSystem\TimeModule.cs" />
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\Api\IGridItemIndex.cs" />
     <Compile Include="Assets\Scripts\Inventory\EntryPoints\PlacedEntryPoint.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowPayload.cs" />
     <Compile Include="Assets\Scripts\Inventory\Position\IInventoryPosition.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\TimeSystem\UI\ProcessTimer.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\BattleItem.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventoryAggregateFactory.cs" />
