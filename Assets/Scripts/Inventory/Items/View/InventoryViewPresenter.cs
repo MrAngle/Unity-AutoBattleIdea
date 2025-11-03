@@ -43,8 +43,7 @@ namespace Inventory.Items.View {
         
         private readonly SignalBus _signalBus;
         private readonly IItemViewFactory _factory;
-        // private readonly  RectTransform _itemsLayer;
-        // private readonly GridLayoutGroup _gridLayout;
+        private readonly InventoryAggregateContext _aggregateContext;
 
         private readonly Dictionary<long, ItemView> _views = new();
 
@@ -53,10 +52,12 @@ namespace Inventory.Items.View {
             SignalBus signalBus,
             IItemViewFactory factory,
             ItemsLayerRectTransform itemsLayer,
-            InventoryGridLayoutGroup gridLayout)
+            InventoryGridLayoutGroup gridLayout,
+            InventoryAggregateContext aggregateContext)
         {
             _signalBus = signalBus;
             _factory = factory;
+            _aggregateContext = aggregateContext;
             // _itemsLayerRectTransform = itemsLayer.Get();
             // _inventoryGridLayout = gridLayout.Get();
         }
@@ -66,6 +67,25 @@ namespace Inventory.Items.View {
             _signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
+            
+            RefreshView();
+        }
+
+        private void RefreshView() {
+            // TODO
+            // Its possible that some items are already placed in the aggregate
+            // but not yet in the view.
+            // Thats not true that is "refresh" but "re-create"
+            // But its solution for now, remember to fix it later and prepare a proper diff update
+            var agg = _aggregateContext.GetInventoryAggregate();
+            foreach (IPlacedItem placedItem in agg.GetPlacedSnapshot())
+            {
+                if (_views.ContainsKey(placedItem.GetId())) {
+                    continue;
+                }
+                ItemView view = _factory.Create(placedItem.GetShape(), placedItem.GetOrigin());
+                _views[placedItem.GetId()] = view;
+            }
         }
 
         public void Dispose()

@@ -4,7 +4,6 @@ using Combat.Flow.Domain.Aggregate;
 using Inventory.Position;
 using Shared.Utility;
 using UnityEngine;
-using Random = System.Random;
 
 namespace Inventory.Items.Domain {
 
@@ -13,7 +12,6 @@ namespace Inventory.Items.Domain {
         private readonly long _id;
         private readonly ItemArchetype _itemArchetype;
         private readonly InventoryPosition _inventoryPosition;
-
         
         internal BattleItem(ItemArchetype itemArchetype, Vector2Int origin) {
             _id = IdGenerator.Next();
@@ -24,6 +22,10 @@ namespace Inventory.Items.Domain {
 
         public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
             return _inventoryPosition.GetOccupiedCells();
+        }
+
+        public Vector2Int GetOrigin() {
+            return _inventoryPosition.GetOrigin();
         }
 
         public long GetId() {
@@ -38,8 +40,5 @@ namespace Inventory.Items.Domain {
             return _itemArchetype.GetShape();
         }
 
-        public IPlacedItem ToPlacedItem() {
-            throw new NotImplementedException();
-        }
     }
 }

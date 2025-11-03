@@ -24,11 +24,12 @@ namespace Inventory.Items.Domain {
 
         public HashSet<Vector2Int> GetCellSetAt(Vector2Int origin) => new(GetCellsAt(origin));
 
-        public static ItemShape SingleCell() =>
-            new ItemShape(new[] { Vector2Int.zero });
+        public static ItemShape SingleCell() => new(
+            new[] { Vector2Int.zero }
+            );
 
         public static ItemShape LShape() =>
-            new ItemShape(new[] {
+            new(new[] {
                 Vector2Int.zero,
                 new(1, 0),
                 new(0, 1),
@@ -36,7 +37,7 @@ namespace Inventory.Items.Domain {
             });
 
         public static ItemShape Square2x2() =>
-            new ItemShape(new[] {
+            new(new[] {
                 Vector2Int.zero,
                 new(1, 0),
                 new(0, 1),

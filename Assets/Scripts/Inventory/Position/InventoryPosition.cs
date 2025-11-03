@@ -27,7 +27,11 @@ namespace Inventory.Position {
             return _occupiedCells;
             // return Data.Shape.Cells.Select(offset => Origin + offset);
         }
-        
+
+        public Vector2Int GetOrigin() {
+            return _origin;
+        }
+
         private HashSet<Vector2Int> CalculateOccupiedCellsByOrigin() {
             return _itemShape.GetCellSetAt(_origin);
             // var set = new HashSet<Vector2Int>();

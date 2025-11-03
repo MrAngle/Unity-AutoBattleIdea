@@ -48,6 +48,10 @@ namespace Inventory.EntryPoints {
         public void Process(FlowAggregate flowAggregate) {
             flowAggregate.AddPower(3); // FOR NOW
         }
+        
+        public Vector2Int GetOrigin() {
+            return _inventoryPosition.GetOrigin();
+        }
 
         public ShapeArchetype GetShape() {
             return _entryPointArchetype.GetShape();

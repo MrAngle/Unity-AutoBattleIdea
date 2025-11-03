@@ -11,7 +11,7 @@ using Zenject;
 namespace Inventory {
     public class InventoryAggregate : IGridInspector {
         private readonly SignalBus _signalBus;
-        private readonly HashSet<IPlacedEntryPoint> _entryPoints;
+        // private readonly HashSet<IPlacedEntryPoint> _entryPoints;
         private readonly IInventoryGrid _inventoryGrid;
         private readonly HashSet<IPlacedItem> _items;
         private readonly IEntryPointFactory _entryPointFactory;
@@ -25,11 +25,11 @@ namespace Inventory {
             IEntryPointFactory entryPointFactory) {
             NullGuard.NotNullCheckOrThrow(inventoryGrid, entryPoints, items, signalBus, entryPointFactory);
             _inventoryGrid = inventoryGrid;
-            _entryPoints = entryPoints;
+            // _entryPoints = entryPoints;
             _items = items;
             _signalBus = signalBus;
             _entryPointFactory = entryPointFactory;
-            NullGuard.NotNullCheckOrThrow(_inventoryGrid, _entryPoints, _items, _signalBus, _entryPointFactory);
+            NullGuard.NotNullCheckOrThrow(_inventoryGrid, _items, _signalBus, _entryPointFactory);
         }
 
         public static InventoryAggregate Create(SignalBus signalBus, IEntryPointFactory entryPointFactory)
@@ -45,6 +45,13 @@ namespace Inventory {
             );
 
             return aggregate;
+        }
+        
+        public IEnumerable<IPlacedItem> GetPlacedSnapshot()
+        {
+            // jeśli trzymasz IPlacedItem, dodaj na nim gettery albo mapuj z posiadanych struktur
+            foreach (var item in _items)
+                yield return item;
         }
 
         public IInventoryGrid GetInventoryGrid() {
