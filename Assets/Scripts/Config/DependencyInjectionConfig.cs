@@ -1,4 +1,5 @@
-﻿using Combat.Flow.Domain.Aggregate;
+﻿using Combat.ActionExecutor;
+using Combat.Flow.Domain.Aggregate;
 using Config.Semantics;
 using Inventory;
 using Inventory.EntryPoints;
@@ -103,6 +104,10 @@ namespace Config {
             
             Container.Bind<IItemViewFactory>()
                 .To<ItemViewFactory>()
+                .AsSingle();
+            
+            Container.Bind<IActionExecutor>()
+                .To<ActionExecutor>()
                 .AsSingle();
         }
 

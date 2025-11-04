@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Combat.Flow.Domain.Aggregate;
-using Inventory.Position;
-using Shared.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Inventory.Items.Domain {
     public class ItemArchetype : IPlaceableItem {
         private readonly ShapeArchetype _shapeArchetype;
+        private readonly float _castTime = 0.05f; // for now
         
         public ItemArchetype(ShapeArchetype shapeArchetype) {
             _shapeArchetype = shapeArchetype;
         }
-
-        public void Process(FlowAggregate flowAggregate) {
-            flowAggregate.AddPower(5);
-        }
-
   
         public IPlacedItem ToPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
             return new BattleItem(this, origin);
@@ -24,6 +15,10 @@ namespace Inventory.Items.Domain {
 
         public ShapeArchetype GetShape() {
             return _shapeArchetype;
+        }
+        
+        public float GetCastTime() {
+            return _castTime;
         }
     }
 }

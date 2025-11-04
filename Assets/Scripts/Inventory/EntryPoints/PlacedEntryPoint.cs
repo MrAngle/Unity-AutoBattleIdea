@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Combat.Flow.Domain.Router;
 using Inventory.Items.Domain;
@@ -9,6 +10,7 @@ using Inventory.Position;
 using Registry;
 using Shared.Utility;
 using TimeSystem;
+using UI.Combat.Action;
 using UnityEngine;
 using Zenject;
 
@@ -39,21 +41,29 @@ namespace Inventory.EntryPoints {
         }
         
         internal static IPlacedEntryPoint Create(EntryPointArchetype archetype, Vector2Int position, IGridInspector gridInspector, IFlowFactory flowFactory) {
-            // GridEntryPoint entryPoint = GridEntryPoint.Create(kind);
             PlacedEntryPoint placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
 
             placedEntryPoint.StartBattle(); // for now
             return placedEntryPoint;
         }
-
-        public void Process(FlowAggregate flowAggregate) {
-            flowAggregate.AddPower(3); // FOR NOW
+        
+        public IActionSpecification GetAction() {
+            ActionSpecification actionSpecification = new ActionSpecification(
+                PrepareActionTiming(),
+                PrepareActionCommandDescriptor());
+            
+            return actionSpecification;
         }
+        
+        private ActionTiming PrepareActionTiming() {
+            return new ActionTiming(2f); // for now
+        } 
 
-        public async Task ProcessAsync(FlowAggregate flowAggregate, CancellationToken ct = default) {
-            await TimeModule.ContinueIn(1f, ct);
-            flowAggregate.AddPower(3);
-        }
+        private ActionCommandDescriptor PrepareActionCommandDescriptor() {
+            return new ActionCommandDescriptor(
+                new AddPower(3)
+            );
+        } 
 
         public Vector2Int GetOrigin() {
             return _inventoryPosition.GetOrigin();

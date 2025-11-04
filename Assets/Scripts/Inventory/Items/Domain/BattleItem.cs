@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Inventory.Position;
 using Shared.Utility;
 using TimeSystem;
+using UI.Combat.Action;
 using UnityEngine;
 
 namespace Inventory.Items.Domain {
 
     internal class BattleItem : IPlacedItem {
-        // private readonly ShapeArchetype _shapeArchetype;
         private readonly long _id;
         private readonly ItemArchetype _itemArchetype;
         private readonly InventoryPosition _inventoryPosition;
@@ -35,15 +36,23 @@ namespace Inventory.Items.Domain {
             return _id;
         }
 
-        async public void Process(FlowAggregate flowAggregate) {
-            await TimeModule.ContinueIn(5f); 
-            flowAggregate.AddPower(5);
+        public IActionSpecification GetAction() {
+            ActionSpecification actionSpecification = new ActionSpecification(
+                PrepareActionTiming(),
+                PrepareActionCommandDescriptor());
+            
+            return actionSpecification;
         }
         
-        public async Task ProcessAsync(FlowAggregate flowAggregate, CancellationToken ct = default) {
-            await TimeModule.ContinueIn(0.1f, ct);
-            flowAggregate.AddPower(5);
-        }
+        private ActionTiming PrepareActionTiming() {
+            return new ActionTiming(_itemArchetype.GetCastTime());
+        } 
+
+        private ActionCommandDescriptor PrepareActionCommandDescriptor() {
+            return new ActionCommandDescriptor(
+                new AddPower(5)
+            );
+        } 
 
         public ShapeArchetype GetShape() {
             return _itemArchetype.GetShape();

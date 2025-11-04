@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Inventory.Position;
 using UnityEngine;
@@ -7,9 +8,11 @@ using UnityEngine;
 namespace Inventory.Items.Domain {
     public interface IPlacedItem : IInventoryPosition {
         public long GetId();
-        public void Process(FlowAggregate flowAggregate);
+        // public void Process(FlowAggregate flowAggregate);
 
-        public Task ProcessAsync(FlowAggregate flowAggregate, CancellationToken ct = default);
+        public IActionSpecification GetAction();
+
+        // public Task ProcessAsync(FlowAggregate flowAggregate, CancellationToken ct = default);
 
         public ShapeArchetype GetShape();
     }

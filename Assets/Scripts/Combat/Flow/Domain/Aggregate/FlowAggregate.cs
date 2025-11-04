@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Combat.ActionExecutor;
 using Combat.Flow.Domain.Router;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
@@ -13,13 +14,16 @@ using Zenject;
 
 namespace Combat.Flow.Domain.Aggregate
 {
-    
-    /// Agregat odpowiedzialny za przeprowadzenie modelu przez kolejne kroki.
-    public class FlowAggregate : IFlowAggregateFacade
+    public interface IFlowContext {
+        void AddPower(long power);
+    }
+
+    public class FlowAggregate : IFlowAggregateFacade, IFlowContext
     {
         private readonly IFlowRouter _router;
         private readonly FlowModel _flowModel;
         private readonly SignalBus _signalBus;
+        private readonly IActionExecutor _actionExecutor;
         private IPlacedItem _currentNode;
 
         public IReadOnlyList<long> VisitedNodeIds => _visitedNodeIds;
@@ -30,18 +34,18 @@ namespace Combat.Flow.Domain.Aggregate
         
         // public event Action<FlowPowerDeltaApplied> OnPowerDeltaApplied;
         
-        private FlowAggregate(FlowModel flowModel, PlacedEntryPoint startNode, IFlowRouter flowRouter, SignalBus signalBus)
+        private FlowAggregate(FlowModel flowModel, PlacedEntryPoint startNode, IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor actionExecutor)
         {
             _router    = NullGuard.NotNullOrThrow(flowRouter);
             _flowModel = NullGuard.NotNullOrThrow(flowModel);
             _currentNode = NullGuard.NotNullOrThrow(startNode);
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
-
+            _actionExecutor = NullGuard.NotNullOrThrow(actionExecutor);
+            
             _visitedNodeIds.Clear();
         }
 
-        /// Inicjuje przepływ od węzła startowego.
-        public static IFlowAggregateFacade Create(PlacedEntryPoint placedEntryPoint, long power, IFlowRouter flowRouter, SignalBus signalBus)
+        public static IFlowAggregateFacade Create(PlacedEntryPoint placedEntryPoint, long power, IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor _actionExecutor)
         {
             // sourceId ??= CorrelationId.NextString();
             var payload = new FlowSeed(power);
@@ -49,46 +53,12 @@ namespace Combat.Flow.Domain.Aggregate
             var model = new FlowModel(payload, context);
             var startNode = placedEntryPoint;
             
-            return new FlowAggregate(model, startNode, flowRouter, signalBus);
+            return new FlowAggregate(model, startNode, flowRouter, signalBus, _actionExecutor);
         }
         
         public void Start() {
             _ = StartAsync(); 
-            // Step();
         }
-
-        /// Wykonuje logikę bieżącego węzła (mutuje Model).
-        // public void Process()
-        // {
-        //     if (_currentNode == null || _flowModel == null) return;
-        //
-        //     _currentNode.Process(this);
-        //     _visitedNodeIds.Add(_currentNode.GetId());
-        // }
-
-        // public void GoNext() {
-        //     NullGuard.NotNullCheckOrThrow(_currentNode, _flowModel);
-        //
-        //     var decision = _router.DecideNext(_currentNode, _flowModel, _visitedNodeIds);
-        //     if (decision is null)
-        //     {
-        //         FlowCompletionDispatcher.Finish(_flowModel);
-        //         return;
-        //     }
-        //
-        //     // (opcjonalnie) możesz logować decision.Value.EntryCell do debug
-        //     _currentNode = decision;
-        //     _flowModel.FlowContext.NextStep();
-        //     Step();
-        // }
-
-        // public void Step()
-        // {
-        //     if (_currentNode == null || _flowModel == null) 
-        //         throw new NotImplementedException();
-        //     Process();
-        //     GoNext();
-        // }
 
         public bool IsFinished => _currentNode == null || _flowModel == null;
 
@@ -97,8 +67,6 @@ namespace Combat.Flow.Domain.Aggregate
             
             _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), power));
         }
-        
-        
                 
         public Task StartAsync()
         {
@@ -124,16 +92,20 @@ namespace Combat.Flow.Domain.Aggregate
             finally { _running = false; }
         }
         
-        private async Task ProcessAsync(CancellationToken ct)
-        {
+        private async Task ProcessAsync(CancellationToken cancellationToken) {
+            IActionSpecification actionSpecification = _currentNode.GetAction();
+
+            IPreparedAction preparedAction = actionSpecification.ToPreparedAction(this);
+            
             try {
-            await _currentNode.ProcessAsync(this, ct);
+                await _actionExecutor.ExecuteAsync(preparedAction, cancellationToken);
             } catch (OperationCanceledException) {
                 throw; // for now
             } catch (Exception  ex) {
                 Debug.LogException(ex);
                 throw; // for now
             }
+
             _visitedNodeIds.Add(_currentNode.GetId());
         }
 
@@ -163,4 +135,6 @@ namespace Combat.Flow.Domain.Aggregate
             _cts = null;
         }
     }
+
+
 }
