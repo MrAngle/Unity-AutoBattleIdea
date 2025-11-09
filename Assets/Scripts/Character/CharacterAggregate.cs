@@ -1,4 +1,5 @@
 ﻿using System;
+using Combat.Flow.Domain.Shared;
 
 namespace Character {
     public enum Team {
@@ -37,17 +38,12 @@ namespace Character {
             OnHpChanged?.Invoke(this, newHp, previousHpValue);
         }
 
-
         // Metody przepuszczające do _data
-        public void TakeDamage(long dmg) {
-            _data.TakeDamage(dmg);
+        public void Apply(DamageAmount damageAmount) {
+            _data.Apply(damageAmount);
             if (_data.CurrentHp <= 0) {
                 OnDeath?.Invoke(this);
             }
-        }
-
-        public void Heal(long amount) {
-            _data.Heal(amount);
         }
 
         // Jeśli chcesz ręcznie posprzątać (usunąć subskrypcję),

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Combat.ActionExecutor;
 using Combat.Flow.Domain.Router;
+using Combat.Flow.Domain.Shared;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
 using Inventory.Items.View;
@@ -15,7 +16,8 @@ using Zenject;
 namespace Combat.Flow.Domain.Aggregate
 {
     public interface IFlowContext {
-        void AddPower(long power);
+        void AddPower(DamageAmount damageAmount);
+        // void AddPower(DamageToReceive damageToDeal);
     }
 
     public class FlowAggregate : IFlowAggregateFacade, IFlowContext
@@ -62,10 +64,10 @@ namespace Combat.Flow.Domain.Aggregate
 
         public bool IsFinished => _currentNode == null || _flowModel == null;
 
-        public void AddPower(long power) {
-            _flowModel.AddPower(power);
+        public void AddPower(DamageAmount damageAmount) {
+            _flowModel.AddPower(damageAmount);
             
-            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), power));
+            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), damageAmount.GetPower()));
         }
                 
         public Task StartAsync()

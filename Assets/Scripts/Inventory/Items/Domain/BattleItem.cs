@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
+using Combat.Flow.Domain.Shared;
 using Inventory.Position;
 using Shared.Utility;
 using TimeSystem;
@@ -50,7 +51,7 @@ namespace Inventory.Items.Domain {
 
         private ActionCommandDescriptor PrepareActionCommandDescriptor() {
             return new ActionCommandDescriptor(
-                new AddPower(5)
+                new AddPower(new DamageToDeal(5))
             );
         } 
 

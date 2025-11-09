@@ -1,48 +1,78 @@
-﻿
+﻿using System;
+using Combat.Flow.Domain.Shared;
 using Inventory.EntryPoints;
-using UnityEngine;
 
-namespace Combat.Flow.Domain.Aggregate
-{
+namespace Combat.Flow.Domain.Aggregate {
     /// Kanał przepływu – damage/defense itd.
-    public enum FlowKind
-    {
+    public enum FlowKind {
         Damage,
         Defense
     }
 
     public class FlowSeed {
         private readonly long _initPower;
-        
-        public long Power() {
-            return _initPower;
-        }
 
         public FlowSeed(long power) {
             _initPower = power;
         }
-    }
-    
-    public class FlowPayload
-    {
-        public long Power { get; private set; }
 
-        public FlowPayload(long power) => Power = power;
+        public long Power() {
+            return _initPower;
+        }
+    }
+
+    public class FlowPayload {
+        private DamageToReceive _damageToReceiveToReceive;
+        private DamageToDeal _damageToDeal;
+
+        public FlowPayload(long power, DamageToReceive damageToReceiveToReceive = null, DamageToDeal damageToDeal = null) {
+            _damageToReceiveToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
+            _damageToDeal = damageToDeal ?? new DamageToDeal(0);
+        }
+
+        public void Add(DamageAmount damageAmount) {
+            switch (damageAmount)
+            {
+                case DamageToDeal deal:
+                    _damageToDeal.Add(deal);
+                    break;
+                case DamageToReceive receive:
+                    damageAmount.Add(receive);
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
+            }
+            
+            _damageToReceiveToReceive.Add(damageAmount);
+        }
         
-        public void Add(long amount) => Power += amount;
+        public void Add(DamageToDeal damageToDeal) {
+            _damageToReceiveToReceive.Add(damageToDeal);
+        }
+        
+
+        public DamageToReceive GetIncomingDamageAmount() {
+            return _damageToReceiveToReceive;
+        }
+        
+        public DamageToDeal GetOutgoingDamageAmount() {
+            return _damageToDeal;
+        }
+
 
     }
 
-    public class FlowContext
-    {
-        public IPlacedEntryPoint PlacedEntryPoint { get; }
-
-        public int StepIndex { get; private set; }
-
+    public class FlowContext {
         public FlowContext(IPlacedEntryPoint placedEntryPoint) {
             PlacedEntryPoint = placedEntryPoint;
         }
 
-        public void NextStep() => StepIndex++;
+        public IPlacedEntryPoint PlacedEntryPoint { get; }
+
+        public int StepIndex { get; private set; }
+
+        public void NextStep() {
+            StepIndex++;
+        }
     }
 }

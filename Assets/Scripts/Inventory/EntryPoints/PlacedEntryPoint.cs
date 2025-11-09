@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Combat.Flow.Domain.Router;
+using Combat.Flow.Domain.Shared;
 using Inventory.Items.Domain;
 using Inventory.Position;
 using Registry;
@@ -61,7 +62,7 @@ namespace Inventory.EntryPoints {
 
         private ActionCommandDescriptor PrepareActionCommandDescriptor() {
             return new ActionCommandDescriptor(
-                new AddPower(3)
+                new AddPower(new DamageToDeal(3))
             );
         } 
 

@@ -128,6 +128,7 @@
     <Compile Include="Assets\Scripts\UI\Popup\PopupManager.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Domain\IPlacedItem.cs" />
     <Compile Include="Assets\Scripts\Shared\Aliases.cs" />
+    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Shared\DamageAmount.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
     <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\GridItemNode.cs" />

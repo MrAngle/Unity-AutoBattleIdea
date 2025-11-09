@@ -103,9 +103,9 @@ namespace Inventory.Items.View {
 
         private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent)
         {
-            if (_views.TryGetValue(itemRemovedEvent.PlacedItemId, out var v))
+            if (_views.TryGetValue(itemRemovedEvent.PlacedItemId, out var itemView))
             {
-                Object.Destroy(v.gameObject);
+                Object.Destroy(itemView.gameObject);
                 _views.Remove(itemRemovedEvent.PlacedItemId);
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Combat.Flow.Domain.Aggregate;
+using Combat.Flow.Domain.Shared;
 
 namespace UI.Combat.Action {
     public interface IEffectDescriptor
@@ -8,18 +9,33 @@ namespace UI.Combat.Action {
     }
     
     public sealed class AddPower : IEffectDescriptor {
-        private long _amount;
-        public AddPower(long amount) {
-            _amount = amount;
+        private DamageAmount _amount;
+        public AddPower(DamageAmount damageAmount) {
+            _amount = damageAmount;
         }
 
         public void Execute(IFlowContext flow) {
             flow.AddPower(_amount);
         }
-
-        // public IEffectInstance Bind(FlowAggregate aggregate)
-        //     => new AddPowerEffectInstance(aggregate, Amount);
     }
+    
+    // public sealed class AddPower<TDamage> : IEffectDescriptor 
+    //     where TDamage : DamageAmount
+    // {
+    //     private TDamage _amount;
+    //     public AddPower(long amount) {
+    //         switch (expression) {
+    //             
+    //         }
+    //         
+    //         
+    //         _amount = new TDamage(amount);
+    //     }
+    //
+    //     public void Execute(IFlowContext flow) {
+    //         flow.AddPower( _amount);
+    //     }
+    // }
     
     // public interface IEffectInstance {
     //     void Execute();

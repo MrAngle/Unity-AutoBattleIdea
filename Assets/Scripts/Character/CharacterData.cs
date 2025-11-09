@@ -1,4 +1,5 @@
 ﻿using System;
+using Combat.Flow.Domain.Shared;
 
 namespace Character {
     public class CharacterData {
@@ -26,12 +27,25 @@ namespace Character {
 
         internal event Action<CharacterData, long, long> OnHpChanged;
 
-        internal void TakeDamage(long dmg) {
+        internal void Apply(DamageAmount damageAmount) {
+            switch (damageAmount) {
+                case DamageToDeal deal:
+                    TakeDamage(deal.GetPower());
+                    break;
+                case DamageToReceive receive:
+                    Heal(receive.GetPower());
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
+            }
+        }
+        
+        private void TakeDamage(long dmg) {
             CurrentHp -= dmg;
             if (CurrentHp < 0) CurrentHp = 0;
         }
 
-        internal void Heal(long amount) {
+        private void Heal(long amount) {
             CurrentHp += amount;
             if (CurrentHp > MaxHp) CurrentHp = MaxHp;
         }

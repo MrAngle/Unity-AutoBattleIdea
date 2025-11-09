@@ -1,4 +1,6 @@
-﻿namespace Combat.Flow.Domain.Aggregate {
+﻿using Combat.Flow.Domain.Shared;
+
+namespace Combat.Flow.Domain.Aggregate {
     public class FlowModel
     {
         public FlowSeed FlowSeed { get; }
@@ -12,8 +14,8 @@
             FlowContext = flowContext;
         }
 
-        public void AddPower(long power) {
-            FlowPayload.Add(power);
+        public void AddPower(DamageAmount damageAmount) {
+            FlowPayload.Add(damageAmount);
         }
     }
 }

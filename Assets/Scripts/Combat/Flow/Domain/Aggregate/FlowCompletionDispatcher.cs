@@ -26,10 +26,10 @@ namespace Combat.Flow.Domain.Aggregate {
             var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, teamA.Count)];
             var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, teamB.Count)];
 
-            var dmg = _flowModel.FlowPayload.Power;
-            target.TakeDamage(dmg);
+            var dmg = _flowModel.FlowPayload.GetOutgoingDamageAmount();
+            target.Apply(dmg);
 
-            Debug.Log($"{attacker.Name} zadał {dmg} obrażeń {target.Name}");
+            Debug.Log($"{attacker.Name} zadał {dmg.GetPower()} obrażeń {target.Name}");
         }
         
 
