@@ -4,14 +4,18 @@ using Zenject;
 
 namespace Context {
     public class InventoryAggregateContext {
-        private readonly ICharacterInventoryFacade _inventoryAggregate;
+        private ICharacterInventoryFacade _inventoryAggregate;
 
         [Inject]
         public InventoryAggregateContext(IInventoryAggregateFactory inventoryAggregateFactory) {
-            _inventoryAggregate = inventoryAggregateFactory.CreateCharacterInventory();
+            // _inventoryAggregate = inventoryAggregateFactory.CreateCharacterInventory();
         }
 
-        public ICharacterInventoryFacade GetInventoryAggregate() {
+        public void SetInventoryAggregateContext(ICharacterInventoryFacade inventoryAggregate) {
+            _inventoryAggregate = inventoryAggregate;
+        }
+        
+        public ICharacterInventoryFacade GetInventoryAggregateContext() {
             return _inventoryAggregate;
         }
     }

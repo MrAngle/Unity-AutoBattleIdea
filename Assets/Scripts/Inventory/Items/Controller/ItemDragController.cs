@@ -12,17 +12,39 @@ using Zenject;
 
 namespace Inventory.Items.Controller {
     public class ItemDragController : MonoBehaviour {
-        [Inject] private readonly ItemsLayerRectTransform _itemsLayer;
-
-        [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
-        [Inject] private readonly InventoryAggregateContext _inventoryAggregateContext;
+        // [Inject] private readonly ItemsLayerRectTransform _itemsLayer;
+        //
+        // [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
+        // [Inject] private readonly InventoryAggregateContext _inventoryAggregateContext;
+        //
+        // [Inject] private readonly DragGhostPrefabItemView _dragGhostPrefabItemView;
+        // [Inject] private readonly ItemViewPrefabItemView _itemViewPrefabItemView;
         
-        [Inject] private readonly DragGhostPrefabItemView _dragGhostPrefabItemView;
-        [Inject] private readonly ItemViewPrefabItemView _itemViewPrefabItemView;
+        private ItemsLayerRectTransform _itemsLayer;
+        private InventoryGridLayoutGroup _inventoryGridLayout;
+        private CharacterAggregateContext _characterAggregateContext;
+        private DragGhostPrefabItemView _dragGhostPrefabItemView;
+        private ItemViewPrefabItemView _itemViewPrefabItemView;
         
         // private ShapeArchetype _shapeArchetype;
         private IPlaceableItem _placeableItem;
         private ItemView _ghostItem;
+        
+        [Inject]
+        public void Construct(
+            ItemsLayerRectTransform itemsLayer,
+            InventoryGridLayoutGroup inventoryGridLayout,
+            CharacterAggregateContext characterAggregateContext,
+            DragGhostPrefabItemView dragGhostPrefabItemView,
+            ItemViewPrefabItemView itemViewPrefabItemView
+        ) {
+            _itemsLayer = NullGuard.NotNullOrThrow(itemsLayer);
+            _inventoryGridLayout = NullGuard.NotNullOrThrow(inventoryGridLayout);
+            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
+            _dragGhostPrefabItemView = NullGuard.NotNullOrThrow(dragGhostPrefabItemView);
+            _itemViewPrefabItemView = NullGuard.NotNullOrThrow(itemViewPrefabItemView);
+        }
+        
 
         private void Start() {
             _ghostItem = Instantiate(_dragGhostPrefabItemView.Get(), _itemsLayer.Get(), false);
@@ -53,10 +75,10 @@ namespace Inventory.Items.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-            ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
+            ICharacterAggregateFacade characterAggregateContext = _characterAggregateContext.GetCharacterAggregateContext();
 
             // 3) validacja
-            var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_placeableItem, origin);
+            var can = characterAggregateContext != null && characterAggregateContext.CanPlaceItem(_placeableItem, origin);
             _ghostItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -78,7 +100,7 @@ namespace Inventory.Items.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            ICharacterAggregateFacade characterAggregateContext = CharacterAggregateContext.GetCharacterAggregateContext();
+            ICharacterAggregateFacade characterAggregateContext = _characterAggregateContext.GetCharacterAggregateContext();
 
             
             

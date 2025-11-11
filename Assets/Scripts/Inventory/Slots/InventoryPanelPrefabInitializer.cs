@@ -38,7 +38,7 @@ namespace Inventory.Slots {
         
         private void Start()
         {
-            ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
+            ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregateContext();
             _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
 
             // 2) Widok – instancja jako dziecko InventorySection

@@ -1,20 +1,26 @@
 ﻿using Character;
+using Inventory;
+using Shared.Utility;
+using Zenject;
 
 namespace Context {
     
-    public static class CharacterAggregateContext {
-        private static ICharacterAggregateFacade _characterAggregateFacade;
-
-        // [Inject]
-        // public InventoryAggregateContext(IInventoryAggregateFactory inventoryAggregateFactory) {
-        //     _characterAggregateFacade = inventoryAggregateFactory.CreateCharacterInventory();
-        // }
+    public class CharacterAggregateContext {
+        private readonly InventoryAggregateContext _inventoryAggregateContext;
         
-        public static void SetCharacterAggregateContext(ICharacterAggregateFacade characterAggregateFacade) {
+        private ICharacterAggregateFacade _characterAggregateFacade;
+
+        [Inject]
+        public CharacterAggregateContext(InventoryAggregateContext inventoryAggregateContext) {
+            _inventoryAggregateContext = NullGuard.NotNullOrThrow(inventoryAggregateContext);
+        }
+        
+        public void SetCharacterAggregateContext(ICharacterAggregateFacade characterAggregateFacade) {
             _characterAggregateFacade = characterAggregateFacade;
+            _inventoryAggregateContext.SetInventoryAggregateContext(_characterAggregateFacade.GetInventoryAggregate());
         }
 
-        public static ICharacterAggregateFacade GetCharacterAggregateContext() {
+        public ICharacterAggregateFacade GetCharacterAggregateContext() {
             return _characterAggregateFacade;
         }
     }

@@ -49,14 +49,8 @@ namespace Config {
             
             BindInventoryGridLayoutGroup();
 
-            Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
-                .AsSingle()
-                .NonLazy();
 
-            Container.Bind<InventoryGridContext>()
-                .FromMethod(_ => InventoryGridContext.Create())
-                .AsSingle()
-                .NonLazy();
+            BindContexts();
             
             BindFactories();
 
@@ -77,11 +71,16 @@ namespace Config {
             Container.Bind<CellViewPrefabInventoryCellView>()
                 .FromMethod(_ => new CellViewPrefabInventoryCellView(cellViewPrefab))
                 .AsSingle();
-
             
-            Container.Bind<InventoryAggregateContext>()
+            Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
                 .AsSingle()
                 .NonLazy();
+
+
+            
+            // Container.Bind<InventoryAggregateContext>()
+            //     .AsSingle()
+            //     .NonLazy();
 
  
             // GRID LAYOUT
@@ -93,6 +92,21 @@ namespace Config {
             //     .AsSingle();
 
 
+        }
+
+        private void BindContexts() {
+            Container.Bind<InventoryGridContext>()
+                .FromMethod(_ => new InventoryGridContext())
+                .AsSingle()
+                .NonLazy();
+            
+            Container.Bind<InventoryAggregateContext>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<CharacterAggregateContext>()
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindFactories() {

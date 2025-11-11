@@ -68,8 +68,12 @@ namespace Inventory.Items.View {
             _signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
-            
-            RefreshView();
+
+            // Start();
+        }
+
+        private void Start() {
+            RefreshView(); // to remove?
         }
 
         private void RefreshView() {
@@ -78,7 +82,7 @@ namespace Inventory.Items.View {
             // but not yet in the view.
             // Thats not true that is "refresh" but "re-create"
             // But its solution for now, remember to fix it later and prepare a proper diff update
-            var agg = _aggregateContext.GetInventoryAggregate();
+            var agg = _aggregateContext.GetInventoryAggregateContext();
             foreach (IPlacedItem placedItem in agg.GetPlacedSnapshot())
             {
                 if (_views.ContainsKey(placedItem.GetId())) {

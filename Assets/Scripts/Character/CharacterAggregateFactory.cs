@@ -29,10 +29,13 @@ namespace Character {
             ICharacterInventoryFacade characterInventory = _inventoryAggregateFactory.CreateCharacterInventory();
 
             CharacterAggregate characterAggregate = new CharacterAggregate(characterData, characterInventory, team);
-            
-            EntryPointArchetype entryPointArchetype =
-                _entryPointFactory.CreateArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
-            characterAggregate.TryEquipItem(entryPointArchetype, new Vector2Int(0, 0), out _);
+
+            if (team == Team.TeamA) { //for now
+                EntryPointArchetype entryPointArchetype =
+                    _entryPointFactory.CreateArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
+                characterAggregate.TryEquipItem(entryPointArchetype, new Vector2Int(0, 0), out _);
+
+            }
 
             return characterAggregate;
         }

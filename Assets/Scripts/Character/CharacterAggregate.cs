@@ -22,6 +22,9 @@ namespace Character {
         public event Action<CharacterAggregate> OnDeath;
 
         bool TryEquipItem(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem);
+        bool CanPlaceItem(IPlaceableItem item, Vector2Int origin);
+        
+        ICharacterInventoryFacade GetInventoryAggregate();
 
         public long GetMaxHp();
 
@@ -51,7 +54,11 @@ namespace Character {
         public string GetName() {
             return _data.Name;
         }
-        
+
+        public ICharacterInventoryFacade GetInventoryAggregate() {
+            return _characterInventoryFacade;
+        }
+
         public long GetMaxHp() {
             return _data.MaxHp;
         }
@@ -87,11 +94,14 @@ namespace Character {
                 OnDeath?.Invoke(this);
             }
         }
+
+        public bool CanPlaceItem(IPlaceableItem item, Vector2Int origin) {
+            return _characterInventoryFacade.CanPlace(item, origin);
+        }
         
         public bool TryEquipItem(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem) {
-            if (!_characterInventoryFacade.CanPlace(item, origin)) {
-                placedItem = null;
-                return false;
+            if (!CanPlaceItem(item, origin)) {
+                throw new ArgumentException("Cannot equip item");
             }
 
             placedItem = _characterInventoryFacade.Place(this, item, origin);

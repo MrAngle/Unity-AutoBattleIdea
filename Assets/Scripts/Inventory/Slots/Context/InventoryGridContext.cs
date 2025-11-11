@@ -5,11 +5,7 @@ namespace Inventory.Slots.Context {
     public class InventoryGridContext : IInjected {
         private IInventoryGrid _inventoryGrid;
 
-        private InventoryGridContext() {}
-
-        public static InventoryGridContext Create() {
-            return new InventoryGridContext();
-        }
+        public InventoryGridContext() {}
         
         public void SetInventoryGrid(IInventoryGrid inventoryGrid)
         {
