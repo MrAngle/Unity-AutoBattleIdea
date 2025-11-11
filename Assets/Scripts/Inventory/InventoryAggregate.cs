@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Character;
 using Combat.Flow.Domain.Aggregate;
 using Inventory.EntryPoints;
 using Inventory.Items.Domain;
@@ -9,7 +10,16 @@ using UnityEngine;
 using Zenject;
 
 namespace Inventory {
-    public class InventoryAggregate : IGridInspector {
+    
+    // TODO: rozdzielic characterInventoryFacade od inventoryAggregate
+    public interface ICharacterInventoryFacade {
+        IEnumerable<IPlacedItem> GetPlacedSnapshot();
+        IInventoryGrid GetInventoryGrid();
+        public IPlacedItem Place(IPlacedItemOwner placedItemOwner, IPlaceableItem placeableItem, Vector2Int origin);
+        public bool CanPlace(IPlaceableItem placeableItem, Vector2Int origin);
+    }
+    
+    public class InventoryAggregate : IGridInspector, ICharacterInventoryFacade {
         private readonly SignalBus _signalBus;
         // private readonly HashSet<IPlacedEntryPoint> _entryPoints;
         private readonly IInventoryGrid _inventoryGrid;
@@ -32,7 +42,7 @@ namespace Inventory {
             NullGuard.NotNullCheckOrThrow(_inventoryGrid, _items, _signalBus, _entryPointFactory);
         }
 
-        public static InventoryAggregate Create(SignalBus signalBus, IEntryPointFactory entryPointFactory)
+        public static ICharacterInventoryFacade Create(SignalBus signalBus, IEntryPointFactory entryPointFactory)
         {
             IInventoryGrid grid = IInventoryGrid.CreateInventoryGrid(12, 8);
 
@@ -66,12 +76,12 @@ namespace Inventory {
             return _inventoryGrid.CanPlace(placeableItem.GetShape(), origin);
         }
 
-        public IPlacedItem Place(IPlaceableItem placeableItem, Vector2Int origin) {
+        public IPlacedItem Place(IPlacedItemOwner placedItemOwner, IPlaceableItem placeableItem, Vector2Int origin) {
             if (!_inventoryGrid.CanPlace(placeableItem.GetShape(), origin)) {
                 throw new System.ArgumentException("Cannot place item");
             }
             
-            IPlacedItem placedItem = placeableItem.ToPlacedItem(this, origin);
+            IPlacedItem placedItem = placeableItem.ToPlacedItem(placedItemOwner, this, origin);
             foreach (var c in placedItem.GetOccupiedCells()) {
                 if (_cellToItem.ContainsKey(c)) {
                     throw new System.ArgumentException("Cannot place item");

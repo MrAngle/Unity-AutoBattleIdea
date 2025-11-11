@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Character;
+using UnityEngine;
 
 namespace Inventory.Items.Domain {
     public class ItemArchetype : IPlaceableItem {
@@ -9,9 +10,10 @@ namespace Inventory.Items.Domain {
             _shapeArchetype = shapeArchetype;
         }
   
-        public IPlacedItem ToPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
-            return new BattleItem(this, origin);
+        public IPlacedItem ToPlacedItem(IPlacedItemOwner placedItemOwner, IGridInspector gridInspector, Vector2Int origin) {
+            return new BattleItem(this, origin); // TODO
         }
+
 
         public ShapeArchetype GetShape() {
             return _shapeArchetype;

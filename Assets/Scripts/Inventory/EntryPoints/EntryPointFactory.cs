@@ -1,11 +1,12 @@
-﻿using Combat.Flow.Domain.Aggregate;
+﻿using Character;
+using Combat.Flow.Domain.Aggregate;
 using Inventory.Items.Domain;
 using UnityEngine;
 using Zenject;
 
 namespace Inventory.EntryPoints {
     public interface IEntryPointFactory {
-        IPlacedEntryPoint CreatePlacedEntryPoint(EntryPointArchetype archetype, Vector2Int position,
+        IPlacedEntryPoint CreatePlacedEntryPoint(IPlacedItemOwner placedItemOwner, EntryPointArchetype archetype, Vector2Int position,
             IGridInspector gridInspector);
 
         EntryPointArchetype CreateArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype);
@@ -19,15 +20,15 @@ namespace Inventory.EntryPoints {
             _flowFactory = flowFactory;
         }
 
-        public IPlacedEntryPoint CreatePlacedEntryPoint(EntryPointArchetype archetype, Vector2Int position,
+        public IPlacedEntryPoint CreatePlacedEntryPoint(IPlacedItemOwner placedItemOwner, EntryPointArchetype archetype, Vector2Int position,
             IGridInspector gridInspector) {
-            var placedEntryPoint = PlacedEntryPoint.Create(archetype, position, gridInspector, _flowFactory);
+            var placedEntryPoint = PlacedEntryPoint.Create(placedItemOwner, archetype, position, gridInspector, _flowFactory);
 
             return placedEntryPoint;
         }
 
         public EntryPointArchetype CreateArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
-            return EntryPointArchetype.Create(kind, shapeArchetype, this);
+            return new TickEntryPoint(kind, shapeArchetype, this);
         }
     }
 }

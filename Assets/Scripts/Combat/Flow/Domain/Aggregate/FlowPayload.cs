@@ -22,11 +22,11 @@ namespace Combat.Flow.Domain.Aggregate {
     }
 
     public class FlowPayload {
-        private DamageToReceive _damageToReceiveToReceive;
+        private DamageToReceive _damageToReceive;
         private DamageToDeal _damageToDeal;
 
         public FlowPayload(long power, DamageToReceive damageToReceiveToReceive = null, DamageToDeal damageToDeal = null) {
-            _damageToReceiveToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
+            _damageToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
             _damageToDeal = damageToDeal ?? new DamageToDeal(0);
         }
 
@@ -43,19 +43,19 @@ namespace Combat.Flow.Domain.Aggregate {
                     throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
             }
             
-            _damageToReceiveToReceive.Add(damageAmount);
+            _damageToReceive.Add(damageAmount);
         }
         
         public void Add(DamageToDeal damageToDeal) {
-            _damageToReceiveToReceive.Add(damageToDeal);
+            _damageToReceive.Add(damageToDeal);
         }
         
 
-        public DamageToReceive GetIncomingDamageAmount() {
-            return _damageToReceiveToReceive;
+        public DamageToReceive GetDamageToReceive() {
+            return _damageToReceive;
         }
         
-        public DamageToDeal GetOutgoingDamageAmount() {
+        public DamageToDeal GetDamageToDeal() {
             return _damageToDeal;
         }
 

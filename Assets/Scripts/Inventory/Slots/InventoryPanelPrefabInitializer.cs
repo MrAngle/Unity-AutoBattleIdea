@@ -1,6 +1,7 @@
 ﻿using System;
 using Combat.Flow.Domain.Aggregate;
 using Config.Semantics;
+using Context;
 using Inventory.EntryPoints;
 using Inventory.Slots.Context;
 using Inventory.Slots.Domain;
@@ -27,18 +28,18 @@ namespace Inventory.Slots {
 
 
         public void Awake() {
-            InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
-
-            // IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
+            // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
             //
-            // IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
-            _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
+            // // IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
+            // //
+            // // IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
+            // _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
         }
         
         private void Start()
         {
-            // 1) Model
-            // _model = new InventoryGrid(width, height);
+            ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
+            _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
 
             // 2) Widok – instancja jako dziecko InventorySection
             _gridView = Instantiate(_gridViewPrefab.Get(), transform, false);

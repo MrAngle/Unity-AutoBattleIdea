@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Character;
+using Combat.ActionExecutor;
 using Combat.Flow.Domain;
 using Combat.Flow.Domain.Aggregate;
+using Combat.Flow.Domain.Router;
 using Inventory.Items.Domain;
 using Inventory.Position;
 using Registry;
@@ -15,7 +18,14 @@ namespace Inventory.EntryPoints {
     public sealed class GridEntryPointId : StrongId<GridEntryPointId> {
     }
     
-    public sealed class EntryPointArchetype : IPlaceableItem {
+    public interface IEntryPointContext {
+        IEntryPointOwner Owner { get; }
+        IGridInspector Grid { get; }
+        IFlowRouter FlowRouter { get; }
+        // ewentualnie RNG, info o drużynach, itd.
+    }
+    
+    public abstract class EntryPointArchetype : IPlaceableItem {
 
         private readonly IEntryPointFactory _entryPointFactory; // separate in future
         
@@ -26,7 +36,7 @@ namespace Inventory.EntryPoints {
         private bool _battleRunning;
         private CancellationTokenSource _cts;
 
-        private EntryPointArchetype(FlowKind kind, ShapeArchetype shapeArchetype, IEntryPointFactory entryPointFactory) {
+        protected EntryPointArchetype(FlowKind kind, ShapeArchetype shapeArchetype, IEntryPointFactory entryPointFactory) {
             _entryPointFactory = NullGuard.NotNullOrThrow(entryPointFactory);
             
             _kind = kind;
@@ -35,12 +45,12 @@ namespace Inventory.EntryPoints {
             _turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
-        public static EntryPointArchetype Create(FlowKind kind, ShapeArchetype shapeArchetype, IEntryPointFactory entryPointFactory) {
-            return new EntryPointArchetype(kind, shapeArchetype, entryPointFactory);
-        }
+        // public static EntryPointArchetype Create(FlowKind kind, ShapeArchetype shapeArchetype, IEntryPointFactory entryPointFactory) {
+        //     return new EntryPointArchetype(kind, shapeArchetype, entryPointFactory);
+        // }
 
-        public IPlacedItem ToPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
-            return _entryPointFactory.CreatePlacedEntryPoint(this, origin, gridInspector);
+        public IPlacedItem ToPlacedItem(IPlacedItemOwner placedItemOwner, IGridInspector gridInspector, Vector2Int origin) {
+            return _entryPointFactory.CreatePlacedEntryPoint(placedItemOwner, this, origin, gridInspector);
         }
 
         public ShapeArchetype GetShape() {
@@ -54,6 +64,25 @@ namespace Inventory.EntryPoints {
         public float GetTurnInterval() {
             return _turnInterval;
         }
+        
+        public IActionSpecification GetAction(IEntryPointContext entryPointContext) {
+            ActionSpecification actionSpecification = new ActionSpecification(
+                PrepareActionTiming(),
+                PrepareActionCommandDescriptor(entryPointContext));
+            
+            return actionSpecification;
+        }
+        
+        private ActionTiming PrepareActionTiming() {
+            return new ActionTiming(2f); // for now
+        }
+
+        protected abstract ActionCommandDescriptor PrepareActionCommandDescriptor(IEntryPointContext entryPointContext);
+        // {
+        //     // return new ActionCommandDescriptor(
+        //     //     new AddPower(new DamageToDeal(3))
+        //     // );
+        // } 
 
         public override string ToString() {
             return $"({_kind})";

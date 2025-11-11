@@ -1,6 +1,8 @@
-﻿using Combat.ActionExecutor;
+﻿using Character;
+using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Config.Semantics;
+using Context;
 using Inventory;
 using Inventory.EntryPoints;
 using Inventory.Items;
@@ -9,6 +11,7 @@ using Inventory.Slots;
 using Inventory.Slots.Context;
 using Inventory.Slots.Domain;
 using Inventory.Slots.View;
+using UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -29,6 +32,10 @@ namespace Config {
 
         [Header("GridLayoutGroup")]
         [SerializeField] private GridLayoutGroup inventoryGridLayout;
+        
+        [Header("Battle UI")]
+        [SerializeField] private CharacterPrefabAggregate battleSlotPrefab;
+        [SerializeField] private Transform battleSlotParent;
 
         // [Header("Scripts")]
         // [SerializeField] private InventoryPanelPrefabInitializer inventoryPanelPrefabInitializer;
@@ -109,6 +116,12 @@ namespace Config {
             Container.Bind<IActionExecutor>()
                 .To<ActionExecutor>()
                 .AsSingle();
+            
+            Container.Bind<ICharacterAggregateFactory>()
+                .To<CharacterAggregateFactory>()
+                .AsSingle();
+            
+            BindCharactersAndBattleUI();
         }
 
         private void BindInventoryGridLayoutGroup() {
@@ -123,6 +136,24 @@ namespace Config {
                 .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
                 .AsSingle()
                 .NonLazy();
+        }
+        
+        private void BindCharactersAndBattleUI() {
+            // prefab slotu
+            Container.Bind<CharacterPrefabAggregate>()
+                .FromInstance(battleSlotPrefab)
+                .AsSingle();
+
+            // parent do slotów – identyfikujemy go ID, bo Transformów jest mnóstwo
+            Container.Bind<Transform>()
+                .WithId("BattleSlotParent")
+                .FromInstance(battleSlotParent)
+                .AsSingle();
+
+            // sam manager z hierarchii sceny
+            Container.Bind<BattleUIManager>()
+                .FromComponentInHierarchy()
+                .AsSingle();
         }
 
         void InstallSignals() {

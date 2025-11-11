@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Character;
 using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Combat.Flow.Domain.Router;
@@ -28,21 +29,25 @@ namespace Inventory.EntryPoints {
         private CancellationTokenSource _cts;
         
         
+        private readonly IPlacedItemOwner _placedItemOwner;
         private readonly InventoryPosition _inventoryPosition;
         private readonly EntryPointArchetype _entryPointArchetype;
+        
         private readonly IGridInspector _gridInspector;
         private readonly long _id;
         
-        private PlacedEntryPoint(EntryPointArchetype entryPointArchetype, Vector2Int origin, IGridInspector gridInspector, IFlowFactory flowFactory) {
+        private PlacedEntryPoint(IPlacedItemOwner placedItemOwner, EntryPointArchetype entryPointArchetype, Vector2Int origin, IGridInspector gridInspector, IFlowFactory flowFactory) {
             _id = IdGenerator.Next();
-            _entryPointArchetype = entryPointArchetype;
-            _gridInspector = gridInspector;
-            _flowFactory = flowFactory;
+            _placedItemOwner = NullGuard.NotNullOrThrow(placedItemOwner);
+            _entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
+            _gridInspector = NullGuard.NotNullOrThrow(gridInspector);
+            _flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             _inventoryPosition = InventoryPosition.Create(origin, ItemShape.SingleCell());
+            NullGuard.NotNullCheckOrThrow(_inventoryPosition);
         }
         
-        internal static IPlacedEntryPoint Create(EntryPointArchetype archetype, Vector2Int position, IGridInspector gridInspector, IFlowFactory flowFactory) {
-            PlacedEntryPoint placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
+        internal static IPlacedEntryPoint Create(IPlacedItemOwner placedItemOwner, EntryPointArchetype archetype, Vector2Int position, IGridInspector gridInspector, IFlowFactory flowFactory) {
+            PlacedEntryPoint placedEntryPoint = new PlacedEntryPoint(placedItemOwner, archetype, position, gridInspector, flowFactory);
 
             placedEntryPoint.StartBattle(); // for now
             return placedEntryPoint;

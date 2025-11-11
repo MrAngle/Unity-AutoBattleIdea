@@ -1,5 +1,11 @@
 ﻿using System;
 using Combat.Flow.Domain.Shared;
+using Inventory;
+using Inventory.EntryPoints;
+using Inventory.Items.Domain;
+using Shared.Utility;
+using UnityEngine;
+using Zenject;
 
 namespace Character {
     public enum Team {
@@ -7,18 +13,52 @@ namespace Character {
         TeamB
     }
 
-    public class CharacterAggregate {
-        private readonly CharacterData _data;
+    public interface IPlacedItemOwner {
+        
+    }
+    
+    public interface ICharacterAggregateFacade {
+        public event Action<CharacterAggregate, long, long> OnHpChanged;
+        public event Action<CharacterAggregate> OnDeath;
 
-        public CharacterAggregate(CharacterData data, Team team) {
-            _data = data ?? throw new ArgumentNullException(nameof(data));
+        bool TryEquipItem(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem);
+
+        public long GetMaxHp();
+
+        public long GetCurrentHp();
+        
+        void Apply(DamageAmount damageAmount);
+        
+        string GetName();
+
+        void Cleanup();
+    }
+    
+
+    public class CharacterAggregate : ICharacterAggregateFacade, IPlacedItemOwner {
+        private readonly CharacterData _data;
+        private readonly ICharacterInventoryFacade _characterInventoryFacade;
+
+        public CharacterAggregate(CharacterData data, ICharacterInventoryFacade characterInventoryFacade, Team team) {
+            _data = NullGuard.NotNullOrThrow(data);
+            _characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
             Team = team;
 
             // Subskrybuj event z danych, by przekazywać go dalej
             _data.OnHpChanged += HandleDataHpChanged;
         }
 
-        public string Name => _data.Name;
+        public string GetName() {
+            return _data.Name;
+        }
+        
+        public long GetMaxHp() {
+            return _data.MaxHp;
+        }
+
+        public long GetCurrentHp() {
+            return _data.CurrentHp;
+        }
 
         public long MaxHp => _data.MaxHp;
 
@@ -39,12 +79,25 @@ namespace Character {
         }
 
         // Metody przepuszczające do _data
+
+
         public void Apply(DamageAmount damageAmount) {
             _data.Apply(damageAmount);
             if (_data.CurrentHp <= 0) {
                 OnDeath?.Invoke(this);
             }
         }
+        
+        public bool TryEquipItem(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem) {
+            if (!_characterInventoryFacade.CanPlace(item, origin)) {
+                placedItem = null;
+                return false;
+            }
+
+            placedItem = _characterInventoryFacade.Place(this, item, origin);
+            return true;
+        }
+        
 
         // Jeśli chcesz ręcznie posprzątać (usunąć subskrypcję),
         // np. gdy obiekt jest niszczony

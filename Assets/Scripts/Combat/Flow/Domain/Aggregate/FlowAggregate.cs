@@ -44,7 +44,7 @@ namespace Combat.Flow.Domain.Aggregate
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
             _actionExecutor = NullGuard.NotNullOrThrow(actionExecutor);
             
-            _visitedNodeIds.Clear();
+            _visitedNodeIds.Clear(); // shouldn't be needed
         }
 
         public static IFlowAggregateFacade Create(PlacedEntryPoint placedEntryPoint, long power, IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor _actionExecutor)

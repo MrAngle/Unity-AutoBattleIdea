@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Inventory {
     public interface IInventoryAggregateFactory {
-        InventoryAggregate Create();
+        ICharacterInventoryFacade CreateCharacterInventory();
     }
 
 
@@ -23,14 +23,20 @@ namespace Inventory {
         }
 
 
-        public InventoryAggregate Create() {
-            var inventoryAggregate = InventoryAggregate.Create(_signalBus, _entryPointFactory);
+        // public InventoryAggregate Create() {
+        //     var inventoryAggregate = InventoryAggregate.Create(_signalBus, _entryPointFactory);
+        //
+        //     EntryPointArchetype entryPointArchetype =
+        //         _entryPointFactory.CreateArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
+        //         // EntryPointArchetype.Create(FlowKind.Damage, ShapeCatalog.Square1x1, _entryPointFactory);
+        //
+        //     inventoryAggregate.Place(entryPointArchetype, new Vector2Int(0, 0)); // for now
+        //
+        //     return inventoryAggregate;
+        // }
 
-            EntryPointArchetype entryPointArchetype = EntryPointArchetype.Create(FlowKind.Damage, ShapeCatalog.Square1x1, _entryPointFactory);
-
-            inventoryAggregate.Place(entryPointArchetype, new Vector2Int(0, 0)); // for now
-
-            return inventoryAggregate;
+        public ICharacterInventoryFacade CreateCharacterInventory() {
+            return InventoryAggregate.Create(_signalBus, _entryPointFactory);
         }
     }
 }

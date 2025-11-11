@@ -11,7 +11,7 @@ namespace Character {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
-        private CharacterAggregate _character;
+        private ICharacterAggregateFacade _character;
 
         private void OnDisable() {
             Cleanup();
@@ -22,14 +22,14 @@ namespace Character {
         }
 
         public static CharacterPrefabAggregate Create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-            CharacterAggregate characterData) {
+            ICharacterAggregateFacade characterData) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
             prefab.Setup(characterData);
 
             return prefab;
         }
 
-        private void Setup(CharacterAggregate character) {
+        private void Setup(ICharacterAggregateFacade character) {
             _character = character;
 
             if (_character != null) {
@@ -46,7 +46,7 @@ namespace Character {
             RefreshUI();
         }
 
-        private void OnDeath(CharacterAggregate ch) {
+        private void OnDeath(ICharacterAggregateFacade ch) {
             CharacterRegistry.Instance.Unregister(_character);
             Destroy(gameObject);
         }
@@ -54,11 +54,11 @@ namespace Character {
         public void RefreshUI() {
             if (_character == null) return;
 
-            nameText.text = _character.Name;
+            nameText.text = _character.GetName();
 
             var ratio = 0f;
-            if (_character.MaxHp > 0)
-                ratio = (float)_character.CurrentHp / _character.MaxHp;
+            if (_character.GetMaxHp() > 0)
+                ratio = (float)_character.GetCurrentHp() / _character.GetMaxHp();
 
             hpBarImage.fillAmount = ratio;
         }

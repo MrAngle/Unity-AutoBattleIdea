@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Character;
 using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Inventory.Position;
@@ -18,7 +19,7 @@ namespace Inventory.Items.Domain {
     }
 
     public interface IPlaceableItem {
-        IPlacedItem ToPlacedItem(IGridInspector gridInspector /*do zastanowienia czy potrzebne*/, Vector2Int origin);
+        IPlacedItem ToPlacedItem(IPlacedItemOwner placedItemOwner, IGridInspector gridInspector /*do zastanowienia czy potrzebne*/, Vector2Int origin);
         ShapeArchetype GetShape();
     }
 }

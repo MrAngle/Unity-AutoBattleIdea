@@ -1,8 +1,11 @@
-﻿using Config.Semantics;
+﻿using Character;
+using Config.Semantics;
+using Context;
 using Inventory.Items.View;
 using Inventory.Slots;
 using Inventory.Slots.Context;
 using Inventory.Items.Domain;
+using Shared.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -50,7 +53,7 @@ namespace Inventory.Items.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-            InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
+            ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
             // 3) validacja
             var can = inventoryAggregate != null && inventoryAggregate.CanPlace(_placeableItem, origin);
@@ -74,12 +77,21 @@ namespace Inventory.Items.Controller {
             var x = Mathf.FloorToInt(localPos.x / (cell.x + spacing.x));
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
-            
-            InventoryAggregate inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
 
-            if (inventoryAggregate != null && inventoryAggregate.CanPlace(_placeableItem, origin)) {
-                IPlacedItem placedItem = inventoryAggregate.Place(_placeableItem, origin);
+            ICharacterAggregateFacade characterAggregateContext = CharacterAggregateContext.GetCharacterAggregateContext();
+
+            
+            
+            if (characterAggregateContext != null
+                && characterAggregateContext.TryEquipItem(_placeableItem, origin, out var placedItem))
+            {
+                NullGuard.NotNullCheckOrThrow(placedItem);
             }
+            
+// ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
+            // if (characterAggregateContext != null && characterAggregateContext.CanPlace(_placeableItem, origin)) {
+            //     IPlacedItem placedItem = inventoryAggregate.Place(_placeableItem, origin);
+            // }
 
             _ghostItem.gameObject.SetActive(false);
             _placeableItem = null;

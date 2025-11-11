@@ -26,11 +26,15 @@ namespace Combat.Flow.Domain.Aggregate {
             var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, teamA.Count)];
             var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, teamB.Count)];
 
-            var dmg = _flowModel.FlowPayload.GetOutgoingDamageAmount();
-            target.Apply(dmg);
+            var damageToDeal = _flowModel.FlowPayload.GetDamageToDeal();
+            var damageToReceive = _flowModel.FlowPayload.GetDamageToReceive();
+            target.Apply(damageToDeal);
+            attacker.Apply(damageToReceive);
 
-            Debug.Log($"{attacker.Name} zadał {dmg.GetPower()} obrażeń {target.Name}");
+            Debug.Log($"{attacker.GetName()} zadał {damageToDeal.GetPower()} obrażeń {target.GetName()}");
         }
+        
+        
         
 
     }
