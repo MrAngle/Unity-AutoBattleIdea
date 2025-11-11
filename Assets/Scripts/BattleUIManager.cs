@@ -6,18 +6,11 @@ using Zenject;
 
 namespace UI {
     public class BattleUIManager : MonoBehaviour {
-        // public CharacterPrefabAggregate slotPrefab; // prefab slotu, podłącz w Inspectorze
-        // public Transform slotParent; // np. Panel / Content w Canvas
-        //
-        // private CharacterData[] team;
-        // private ICharacterAggregateFactory _characterAggregateFactory;
-        
         private CharacterPrefabAggregate _slotPrefab;
         private Transform _slotParent;
         private CharacterData[] _team;
         private ICharacterAggregateFactory _characterAggregateFactory;
         private CharacterAggregateContext _characterAggregateContext;
-        
         
         [Inject]
         public void Construct(
@@ -25,7 +18,6 @@ namespace UI {
             CharacterPrefabAggregate slotPrefab,
             [Inject(Id = "BattleSlotParent")] Transform slotParent,
             CharacterAggregateContext characterAggregateContext
-            // CharacterData[] team
         ) {
             _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
             _characterAggregateFactory = NullGuard.NotNullOrThrow(characterAggregateFactory);
@@ -37,15 +29,6 @@ namespace UI {
                 new("Archer", 1300)
             };
         }
-        
-
-        // [Inject]
-        // public BattleUIManager(ICharacterAggregateFactory characterAggregateFactory, CharacterPrefabAggregate slotPrefab, Transform slotParent, CharacterData[] team) {
-        //     this.slotPrefab = NullGuard.NotNullOrThrow(slotPrefab);
-        //     this.slotParent = NullGuard.NotNullOrThrow(slotParent);
-        //     _characterAggregateFactory = NullGuard.NotNullOrThrow(characterAggregateFactory);
-        //     this.team = team;
-        // }
 
         private void Start() {
             CreateSlots();
@@ -59,17 +42,13 @@ namespace UI {
                 if (i == 0) {
                     characterAggregateFacade = _characterAggregateFactory.Create(_team[i], Team.TeamA);
                     _characterAggregateContext.SetCharacterAggregateContext(characterAggregateFacade); // for now
-                    _characterAggregateContext.SetCharacterAggregateContext(characterAggregateFacade); // for now
                 }
                 else {
                     characterAggregateFacade = _characterAggregateFactory.Create(_team[i], Team.TeamB);
                 }
                 CharacterPrefabAggregate.Create(_slotPrefab, _slotParent,
-                    characterAggregateFacade);
+                    characterAggregateFacade, _characterAggregateContext);
             }
-                
-
-            // new CharacterAggregate(team[i], Team.TeamA));
         }
     }
 }

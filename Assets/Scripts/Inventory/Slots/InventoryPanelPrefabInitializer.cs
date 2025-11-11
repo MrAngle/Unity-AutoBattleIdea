@@ -27,33 +27,68 @@ namespace Inventory.Slots {
 
 
 
-        public void Awake() {
-            // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
-            //
-            // // IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
-            // //
-            // // IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
-            // _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
-        }
+        // public void Awake() {
+        //     // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
+        //     //
+        //     // // IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
+        //     // //
+        //     // // IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
+        //     // _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
+        // }
         
-        private void Start()
-        {
-            ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregateContext();
-            _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
-
-            // 2) Widok – instancja jako dziecko InventorySection
+        
+        private void Awake() {
+            // jeśli chcesz – stworzenie widoku raz
             _gridView = Instantiate(_gridViewPrefab.Get(), transform, false);
 
-            // wstrzyknij referencje do prefabu komórki (jeśli nie ustawione w prefabie)
             var field = _gridView.GetType()
                 .GetField("cellPrefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (field != null && field.GetValue(_gridView) == null)
                 field.SetValue(_gridView, _cellViewPrefab.Get());
 
-            // 3) Zbuduj siatkę
-            _gridView.Build(_inventoryGridContext.GetInventoryGrid());
+            // początkowe podpięcie inventory (np. aktualnie wybranego charactera)
+            // var inventory = _inventoryAggregateContext.GetInventoryAggregateContext()
+            //     .GetInventoryGrid();
+            //
+            // _inventoryGridContext.SetInventoryGrid(inventory);
+        }
+        
+        private void Start() {
+            // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregateContext();
+            // _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
+            //
+            // _gridView = Instantiate(_gridViewPrefab.Get(), transform, false);
+            //
+            // var field = _gridView.GetType()
+            //     .GetField("cellPrefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            // if (field != null && field.GetValue(_gridView) == null)
+            //     field.SetValue(_gridView, _cellViewPrefab.Get());
+            //
+            // _gridView.Build(_inventoryGridContext.GetInventoryGrid());
+            //
+            // var rt = (RectTransform)_gridView.transform;
+            // rt.anchorMin = Vector2.zero;
+            // rt.anchorMax = Vector2.one;
+            // rt.offsetMin = Vector2.zero;
+            // rt.offsetMax = Vector2.zero;
+        }
+        
+        private void OnEnable()
+        {
+            _inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
 
-            // 4) na wszelki wypadek rozciągnij widok do panelu
+            var current = _inventoryGridContext.GetInventoryGrid();
+            if (current != null)
+                OnInventoryGridChanged(current);
+        }
+
+        private void OnDisable() {
+            _inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
+        }
+
+        private void OnInventoryGridChanged(IInventoryGrid grid) {
+            _gridView.Build((InventoryGrid)grid);
+            
             var rt = (RectTransform)_gridView.transform;
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = Vector2.one;

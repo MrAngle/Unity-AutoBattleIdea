@@ -59,6 +59,9 @@ namespace Inventory.Items.View {
             _signalBus = signalBus;
             _factory = factory;
             _aggregateContext = aggregateContext;
+
+
+            _aggregateContext.OnInventoryAggregateSet += PrintInventoryItems;
             // _itemsLayerRectTransform = itemsLayer.Get();
             // _inventoryGridLayout = gridLayout.Get();
         }
@@ -71,19 +74,47 @@ namespace Inventory.Items.View {
 
             // Start();
         }
+        
+        // private void OnEnable()
+        // {
+        //     _inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
+        //
+        //     var current = _inventoryGridContext.GetInventoryGrid();
+        //     if (current != null)
+        //         OnInventoryGridChanged(current);
+        // }
+        //
+        // private void OnDisable() {
+        //     _inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
+        // }
 
         private void Start() {
             RefreshView(); // to remove?
         }
 
         private void RefreshView() {
-            // TODO
-            // Its possible that some items are already placed in the aggregate
-            // but not yet in the view.
-            // Thats not true that is "refresh" but "re-create"
-            // But its solution for now, remember to fix it later and prepare a proper diff update
-            var agg = _aggregateContext.GetInventoryAggregateContext();
-            foreach (IPlacedItem placedItem in agg.GetPlacedSnapshot())
+            PrintInventoryItems(_aggregateContext.GetInventoryAggregateContext());
+            // return;
+            
+            /*TODO
+            Its possible that some items are already placed in the aggregate
+            but not yet in the view.
+            Thats not true that is "refresh" but "re-create"
+            But its solution for now, remember to fix it later and prepare a proper diff update*/
+            // var agg = _aggregateContext.GetInventoryAggregateContext();
+            // foreach (IPlacedItem placedItem in agg.GetPlacedSnapshot())
+            // {
+            //     if (_views.ContainsKey(placedItem.GetId())) {
+            //         continue;
+            //     }
+            //     ItemView view = _factory.Create(placedItem.GetShape(), placedItem.GetOrigin());
+            //     _views[placedItem.GetId()] = view;
+            // }
+        }
+        
+        private void PrintInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
+            Clear();
+            foreach (IPlacedItem placedItem in characterInventoryFacade.GetPlacedSnapshot())
             {
                 if (_views.ContainsKey(placedItem.GetId())) {
                     continue;
@@ -91,6 +122,17 @@ namespace Inventory.Items.View {
                 ItemView view = _factory.Create(placedItem.GetShape(), placedItem.GetOrigin());
                 _views[placedItem.GetId()] = view;
             }
+        }
+        
+        public void Clear()
+        {
+            foreach (var view in _views.Values) {
+                if (view != null) {
+                    Object.Destroy(view.gameObject);
+                }
+            }
+
+            _views.Clear();
         }
 
         public void Dispose()
@@ -102,6 +144,7 @@ namespace Inventory.Items.View {
 
         private void OnItemPlaced(ItemPlacedDtoEvent itemPlacedDtoEvent)
         {
+            // return;
             ItemView view = _factory.Create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
             _views[itemPlacedDtoEvent.PlacedItemId] = view;
         }

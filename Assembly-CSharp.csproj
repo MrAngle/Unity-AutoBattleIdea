@@ -58,7 +58,6 @@
     <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryGrid.cs" />
     <Compile Include="Assets\Scripts\Inventory\EntryPoints\EntryPointFactory.cs" />
     <Compile Include="Assets\Scripts\IInjected.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\Context\InventoryGridContext.cs" />
     <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowAggregate.cs" />
     <Compile Include="Assets\Scripts\Registry\CharacterRegistry.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
@@ -92,6 +91,7 @@
     <Compile Include="Assets\Scripts\Config\DependencyInjectionConfig.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\View\InventoryViewPresenter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
+    <Compile Include="Assets\Scripts\Context\InventoryGridContext.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\View\ItemView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Scripts\Inventory\Items\Config\ShapeCatalog.cs" />

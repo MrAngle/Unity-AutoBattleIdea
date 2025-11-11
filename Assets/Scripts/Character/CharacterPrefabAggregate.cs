@@ -1,17 +1,31 @@
 ﻿using System;
+using Context;
 using Registry;
+using Shared.Utility;
 using TMPro;
 using UI.Popup;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Zenject;
 
 namespace Character {
 
-    public class CharacterPrefabAggregate : MonoBehaviour {
+    public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler  {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
         private ICharacterAggregateFacade _character;
+        
+        private CharacterAggregateContext _characterAggregateContext;
+        
+        [Inject]
+        public void Construct(
+            CharacterAggregateContext characterAggregateContext
+        ) {
+            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
+        }
+        
 
         private void OnDisable() {
             Cleanup();
@@ -22,15 +36,16 @@ namespace Character {
         }
 
         public static CharacterPrefabAggregate Create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-            ICharacterAggregateFacade characterData) {
+            ICharacterAggregateFacade characterData, CharacterAggregateContext characterAggregateContext) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
-            prefab.Setup(characterData);
+            prefab.Setup(characterData, characterAggregateContext);
 
             return prefab;
         }
 
-        private void Setup(ICharacterAggregateFacade character) {
-            _character = character;
+        private void Setup(ICharacterAggregateFacade character, CharacterAggregateContext characterAggregateContext) {
+            _character = NullGuard.NotNullOrThrow(character);
+            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
 
             if (_character != null) {
                 _character.OnHpChanged += HandleHpChanged;
@@ -61,6 +76,17 @@ namespace Character {
                 ratio = (float)_character.GetCurrentHp() / _character.GetMaxHp();
 
             hpBarImage.fillAmount = ratio;
+        }
+        
+        public void OnPointerClick(PointerEventData eventData) {
+            if (_character == null) return;
+
+            Debug.Log($"Kliknięto postać: {_character.GetName()}");
+            
+            _characterAggregateContext.SetCharacterAggregateContext(_character);
+
+            // np. pokaż szczegóły, zaznacz postać itd.
+            // OnClicked?.Invoke(this, _character);
         }
 
         private void Cleanup() {

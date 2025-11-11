@@ -1,18 +1,32 @@
-﻿using Inventory;
+﻿using System;
+using Inventory;
 using Inventory.Items;
+using Inventory.Slots.Context;
+using Inventory.Slots.Domain;
+using Shared.Utility;
 using Zenject;
 
 namespace Context {
     public class InventoryAggregateContext {
+        private readonly InventoryGridContext _inventoryGridContext;
+        
         private ICharacterInventoryFacade _inventoryAggregate;
+        
+        public event Action<ICharacterInventoryFacade> OnInventoryAggregateSet;
 
         [Inject]
-        public InventoryAggregateContext(IInventoryAggregateFactory inventoryAggregateFactory) {
+        public InventoryAggregateContext(IInventoryAggregateFactory inventoryAggregateFactory, InventoryGridContext inventoryGridContext) {
             // _inventoryAggregate = inventoryAggregateFactory.CreateCharacterInventory();
+            _inventoryGridContext = NullGuard.NotNullOrThrow(inventoryGridContext);
         }
 
         public void SetInventoryAggregateContext(ICharacterInventoryFacade inventoryAggregate) {
+            if (_inventoryAggregate == inventoryAggregate) 
+                return; // should nothing to do
+
             _inventoryAggregate = inventoryAggregate;
+            _inventoryGridContext.SetInventoryGrid(_inventoryAggregate.GetInventoryGrid());
+            OnInventoryAggregateSet?.Invoke(_inventoryAggregate);
         }
         
         public ICharacterInventoryFacade GetInventoryAggregateContext() {

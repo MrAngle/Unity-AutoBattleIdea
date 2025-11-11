@@ -96,7 +96,6 @@ namespace Config {
 
         private void BindContexts() {
             Container.Bind<InventoryGridContext>()
-                .FromMethod(_ => new InventoryGridContext())
                 .AsSingle()
                 .NonLazy();
             
