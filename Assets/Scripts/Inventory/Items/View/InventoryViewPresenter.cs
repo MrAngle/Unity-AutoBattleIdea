@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Config.Semantics;
 using Context;
 using Inventory.Items.Domain;
+using Shared.Utility;
 using UI.Popup;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,14 +57,11 @@ namespace Inventory.Items.View {
             InventoryGridLayoutGroup gridLayout,
             InventoryAggregateContext aggregateContext)
         {
-            _signalBus = signalBus;
-            _factory = factory;
-            _aggregateContext = aggregateContext;
-
+            _signalBus = NullGuard.NotNullOrThrow(signalBus);
+            _factory = NullGuard.NotNullOrThrow(factory);
+            _aggregateContext = NullGuard.NotNullOrThrow(aggregateContext);
 
             _aggregateContext.OnInventoryAggregateSet += PrintInventoryItems;
-            // _itemsLayerRectTransform = itemsLayer.Get();
-            // _inventoryGridLayout = gridLayout.Get();
         }
 
         public void Initialize()
@@ -71,22 +69,7 @@ namespace Inventory.Items.View {
             _signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
-
-            // Start();
         }
-        
-        // private void OnEnable()
-        // {
-        //     _inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
-        //
-        //     var current = _inventoryGridContext.GetInventoryGrid();
-        //     if (current != null)
-        //         OnInventoryGridChanged(current);
-        // }
-        //
-        // private void OnDisable() {
-        //     _inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
-        // }
 
         private void Start() {
             RefreshView(); // to remove?
@@ -94,22 +77,6 @@ namespace Inventory.Items.View {
 
         private void RefreshView() {
             PrintInventoryItems(_aggregateContext.GetInventoryAggregateContext());
-            // return;
-            
-            /*TODO
-            Its possible that some items are already placed in the aggregate
-            but not yet in the view.
-            Thats not true that is "refresh" but "re-create"
-            But its solution for now, remember to fix it later and prepare a proper diff update*/
-            // var agg = _aggregateContext.GetInventoryAggregateContext();
-            // foreach (IPlacedItem placedItem in agg.GetPlacedSnapshot())
-            // {
-            //     if (_views.ContainsKey(placedItem.GetId())) {
-            //         continue;
-            //     }
-            //     ItemView view = _factory.Create(placedItem.GetShape(), placedItem.GetOrigin());
-            //     _views[placedItem.GetId()] = view;
-            // }
         }
         
         private void PrintInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
@@ -124,8 +91,7 @@ namespace Inventory.Items.View {
             }
         }
         
-        public void Clear()
-        {
+        public void Clear() {
             foreach (var view in _views.Values) {
                 if (view != null) {
                     Object.Destroy(view.gameObject);
@@ -135,24 +101,19 @@ namespace Inventory.Items.View {
             _views.Clear();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             _signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
-        private void OnItemPlaced(ItemPlacedDtoEvent itemPlacedDtoEvent)
-        {
-            // return;
+        private void OnItemPlaced(ItemPlacedDtoEvent itemPlacedDtoEvent) {
             ItemView view = _factory.Create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
             _views[itemPlacedDtoEvent.PlacedItemId] = view;
         }
 
-        private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent)
-        {
-            if (_views.TryGetValue(itemRemovedEvent.PlacedItemId, out var itemView))
-            {
+        private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent) {
+            if (_views.TryGetValue(itemRemovedEvent.PlacedItemId, out var itemView)) {
                 Object.Destroy(itemView.gameObject);
                 _views.Remove(itemRemovedEvent.PlacedItemId);
             }

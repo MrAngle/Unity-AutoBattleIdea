@@ -3,6 +3,7 @@ using Combat.Flow.Domain.Aggregate;
 using Config.Semantics;
 using Context;
 using Inventory.EntryPoints;
+using Inventory.Items.View;
 using Inventory.Slots.Context;
 using Inventory.Slots.Domain;
 using Inventory.Slots.View;
@@ -18,63 +19,46 @@ namespace Inventory.Slots {
 
         [Inject] private InventoryGridContext _inventoryGridContext;
         [Inject] private InventoryAggregateContext _inventoryAggregateContext;
-        
-        // [Header("Grid Size")]
-        // [SerializeField] private int width = 8;
-        // [SerializeField] private int height = 6;
+        [Inject] private readonly SignalBus _signalBus;
 
         private InventoryGridView _gridView;
-
-
-
-        // public void Awake() {
-        //     // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
-        //     //
-        //     // // IEntryPointFacade entryPoint = GridEntryPoint.Create(FlowKind.Damage, new Vector2Int(0, 0));
-        //     // //
-        //     // // IInventoryGrid inventoryGrid = IInventoryGrid.CreateInventoryGrid(width, height, entryPoint);
-        //     // _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
-        // }
         
+        public void Initialize()
+        {
+            _signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
+            _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
+            _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
+        }
+
+        private void OnItemPlaced() {
+            throw new NotImplementedException();
+        }
+        
+        private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent) {
+            throw new NotImplementedException();
+        }
+        
+        private void OnPowerChanged(ItemPowerChangedDtoEvent changedDtoEvent) {
+            throw new NotImplementedException();
+        }
+
+
+        public void Dispose() {
+            _signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);
+            _signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
+            _signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
+        }
         
         private void Awake() {
-            // jeśli chcesz – stworzenie widoku raz
             _gridView = Instantiate(_gridViewPrefab.Get(), transform, false);
 
             var field = _gridView.GetType()
                 .GetField("cellPrefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (field != null && field.GetValue(_gridView) == null)
                 field.SetValue(_gridView, _cellViewPrefab.Get());
-
-            // początkowe podpięcie inventory (np. aktualnie wybranego charactera)
-            // var inventory = _inventoryAggregateContext.GetInventoryAggregateContext()
-            //     .GetInventoryGrid();
-            //
-            // _inventoryGridContext.SetInventoryGrid(inventory);
         }
         
-        private void Start() {
-            // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregateContext();
-            // _inventoryGridContext.SetInventoryGrid(inventoryAggregate.GetInventoryGrid());
-            //
-            // _gridView = Instantiate(_gridViewPrefab.Get(), transform, false);
-            //
-            // var field = _gridView.GetType()
-            //     .GetField("cellPrefab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            // if (field != null && field.GetValue(_gridView) == null)
-            //     field.SetValue(_gridView, _cellViewPrefab.Get());
-            //
-            // _gridView.Build(_inventoryGridContext.GetInventoryGrid());
-            //
-            // var rt = (RectTransform)_gridView.transform;
-            // rt.anchorMin = Vector2.zero;
-            // rt.anchorMax = Vector2.one;
-            // rt.offsetMin = Vector2.zero;
-            // rt.offsetMax = Vector2.zero;
-        }
-        
-        private void OnEnable()
-        {
+        private void OnEnable() {
             _inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
 
             var current = _inventoryGridContext.GetInventoryGrid();
