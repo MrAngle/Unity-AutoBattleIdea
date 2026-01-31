@@ -1,0 +1,12 @@
+﻿{
+  "name": "MageFactory.Inventory",
+  "rootNamespace": "Inventory",
+  "references": [
+    "MageFactory.Shared",
+    "MageFactory.TimeSystem",
+    "MageFactory.Contracts",
+    "MageFactory.Semantics",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}

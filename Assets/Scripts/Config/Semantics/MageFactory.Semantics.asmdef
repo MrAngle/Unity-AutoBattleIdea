@@ -1,0 +1,10 @@
+﻿{
+  "name": "MageFactory.Semantics",
+  "rootNamespace": "Semantics",
+  "references": [
+    "MageFactory.Shared",
+    "MageFactory.Contracts",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}

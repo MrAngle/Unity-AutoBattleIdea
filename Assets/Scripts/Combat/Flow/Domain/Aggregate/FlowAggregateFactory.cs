@@ -1,12 +1,12 @@
 ﻿using Combat.ActionExecutor;
-using Combat.Flow.Domain.Router;
-using Inventory.EntryPoints;
+using Contracts.Flow;
+using Contracts.Inventory;
 using Zenject;
 
 namespace Combat.Flow.Domain.Aggregate {
-    public interface IFlowFactory {
-        IFlowAggregateFacade Create(PlacedEntryPoint startNode, long power, IFlowRouter router);
-    }
+    // public interface IFlowFactory {
+    //     IFlowAggregateFacade Create(PlacedEntryPoint startNode, long power, IFlowRouter router);
+    // }
 
     public sealed class FlowFactory : IFlowFactory {
         private readonly SignalBus _signalBus;
@@ -15,10 +15,10 @@ namespace Combat.Flow.Domain.Aggregate {
         [Inject]
         public FlowFactory(SignalBus signalBus, IActionExecutor actionExecutor) {
             _signalBus = signalBus;
-            _actionExecutor = actionExecutor;       
+            _actionExecutor = actionExecutor;
         }
 
-        public IFlowAggregateFacade Create(PlacedEntryPoint startNode, long power, IFlowRouter router) {
+        public IFlowAggregateFacade Create(IPlacedEntryPoint startNode, long power, IFlowRouter router) {
             var flow = (FlowAggregate)FlowAggregate.Create(startNode, power, router, _signalBus, _actionExecutor);
 
             return flow;

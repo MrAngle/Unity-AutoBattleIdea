@@ -1,12 +1,6 @@
 ﻿// Assets/Scripts/Combat/Flow/RoutingContracts.cs
 
-using Combat.Flow.Domain;
-using Combat.Flow.Domain.Aggregate;
-using Inventory.Items.Domain;
-using UnityEngine;
-
-namespace Combat.Flow.Domain.Router
-{
+namespace Combat.Flow.Domain.Router {
     // public readonly struct RouteDecision
     // {
     //     public IFlowNode NextNode { get; }
@@ -19,11 +13,10 @@ namespace Combat.Flow.Domain.Router
     //     }
     // }
 
-    public interface IFlowRouter
-    {
-        /// Zwraca null — jeśli brak kandydata (koniec).
-        IPlacedItem DecideNext(IPlacedItem current, FlowModel model, System.Collections.Generic.IReadOnlyCollection<long> visitedNodeIds);
-    }
+    // public interface IFlowRouter {
+    //     /// Zwraca null — jeśli brak kandydata (koniec).
+    //     IPlacedItem DecideNext(IPlacedItem current, FlowModel model, IReadOnlyCollection<long> visitedNodeIds);
+    // }
 }
 
 

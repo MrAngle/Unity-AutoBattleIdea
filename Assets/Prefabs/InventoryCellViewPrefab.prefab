@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 7067542165509631016}
   - component: {fileID: 2799686613141908511}
   - component: {fileID: 8056113603969453022}
-  - component: {fileID: 4888551313860806528}
+  - component: {fileID: 59291655769982536}
   m_Layer: 5
   m_Name: InventoryCellViewPrefab
   m_TagString: Untagged
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6459162567763725502}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -242,7 +242,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &4888551313860806528
+--- !u!114 &59291655769982536
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6459162567763725502}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a2bec7f2840452796db0b3ea2e2ec73, type: 3}
+  m_Script: {fileID: 11500000, guid: 420f151a32ad4db4b64309f97ad0670b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory.Slots.View.InventoryCellView
-  _image: {fileID: 767604194908465241}
+  m_EditorClassIdentifier: MageFactory.Contracts::Contracts.Inventory.InventoryCellView
+  _image: {fileID: 2096755059396417295}

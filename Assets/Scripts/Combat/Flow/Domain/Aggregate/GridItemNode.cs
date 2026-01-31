@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using Inventory.Items.Domain;
-using UnityEngine;
-
-namespace Combat.Flow.Domain.Aggregate {
+﻿namespace Combat.Flow.Domain.Aggregate {
     // public sealed class GridStartNode : IFlowNode {
     //     public GridStartNode(string startId, Vector2Int position) {
     //         NodeId = $"Start:{startId}@{position.x},{position.y}";

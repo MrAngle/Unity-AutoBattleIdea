@@ -1418,10 +1418,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85a60087045f4d9587c30ec9ad305463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Config.DependencyInjectionConfig
-  itemViewPrefab: {fileID: 5897542128176508331, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
-  dragGhostPrefab: {fileID: 7547035701108130449, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
-  gridViewPrefab: {fileID: 2602901976082349797, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
-  cellViewPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
+  itemViewPrefab: {fileID: 2468486391429541002, guid: 4965a4bfa73563a46bd6747016efdb73, type: 3}
+  dragGhostPrefab: {fileID: 2924487675875916044, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
+  gridViewPrefab: {fileID: 9180358797817463057, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
+  cellViewPrefab: {fileID: 59291655769982536, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
   itemsLayerRectTransform: {fileID: 302993218}
   inventoryGridLayout: {fileID: 1035400459}
   battleSlotPrefab: {fileID: 2955251990443631779, guid: 04cc8323b825a554fb124dc61506c22e, type: 3}

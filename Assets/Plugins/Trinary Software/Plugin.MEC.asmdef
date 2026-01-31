@@ -1,0 +1,7 @@
+﻿{
+  "name": "Plugin.MEC",
+  "rootNamespace": "MEC",
+  "references": [
+  ],
+  "autoReferenced": true
+}

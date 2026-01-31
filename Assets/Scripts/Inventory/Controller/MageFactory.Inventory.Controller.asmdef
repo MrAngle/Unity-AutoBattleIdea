@@ -1,0 +1,16 @@
+﻿{
+  "name": "MageFactory.Inventory.Controller",
+  "rootNamespace": "Inventory.Controller",
+  "references": [
+    "MageFactory.Inventory",
+    "MageFactory.Shared",
+    "MageFactory.Character",
+    "MageFactory.Context",
+    "MageFactory.Combat",
+    "MageFactory.UI",
+    "Zenject",
+    "MageFactory.Contracts",
+    "MageFactory.Semantics"
+  ],
+  "autoReferenced": true
+}

@@ -1,0 +1,10 @@
+﻿{
+  "name": "MageFactory.UI",
+  "rootNamespace": "UI",
+  "references": [
+    "Unity.TextMeshPro",
+    "Plugin.DOTween",
+    "Plugin.MEC"
+  ],
+  "autoReferenced": true
+}

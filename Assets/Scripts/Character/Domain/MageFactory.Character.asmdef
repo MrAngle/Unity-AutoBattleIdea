@@ -1,0 +1,11 @@
+﻿{
+  "name": "MageFactory.Character",
+  "rootNamespace": "Character.Domain",
+  "references": [
+    "MageFactory.Inventory",
+    "MageFactory.Shared",
+    "MageFactory.Contracts",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}

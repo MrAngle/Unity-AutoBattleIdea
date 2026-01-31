@@ -1,0 +1,16 @@
+﻿{
+  "name": "MageFactory.BattleManager",
+  "rootNamespace": "BattleManager",
+  "references": [
+    "MageFactory.Inventory",
+    "MageFactory.Combat",
+    "MageFactory.Context",
+    "MageFactory.Contracts",
+    "MageFactory.Controller.Character",
+    "MageFactory.Registry",
+    "MageFactory.Shared",
+    "MageFactory.UI",
+    "MageFactory.Character"
+  ],
+  "autoReferenced": true
+}

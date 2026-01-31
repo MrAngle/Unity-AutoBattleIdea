@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using Registry;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace BattleManager {
     public class BattleManager : MonoBehaviour {
@@ -39,7 +37,7 @@ namespace BattleManager {
         //     }
         // }       
         //
-        
+
         // private IEnumerator BattleLoop() {
         //     while (_battleRunning) {
         //         yield return new WaitForSeconds(turnInterval);

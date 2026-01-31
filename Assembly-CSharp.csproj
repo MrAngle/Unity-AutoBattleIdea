@@ -46,111 +46,42 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Config\Semantics\SemanticClasses.cs" />
-    <Compile Include="Assets\Scripts\Context\InventoryAggregateContext.cs" />
-    <Compile Include="Assets\Scripts\UI\Popup\PopupEventListener.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
-    <Compile Include="Assets\Scripts\TimeSystem\MecClock.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\View\ItemCellTileView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryGrid.cs" />
-    <Compile Include="Assets\Scripts\Inventory\EntryPoints\EntryPointFactory.cs" />
     <Compile Include="Assets\Scripts\IInjected.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowAggregate.cs" />
-    <Compile Include="Assets\Scripts\Registry\CharacterRegistry.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
-    <Compile Include="Assets\Scripts\BattleUIManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
-    <Compile Include="Assets\Scripts\Shared\Utility\Identifier.cs" />
-    <Compile Include="Assets\Scripts\Config\GlobalExceptionHooks.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Router\GridAdjacencyRouter.cs" />
-    <Compile Include="Assets\Scripts\BattleManager\BattleManager.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\View\InventoryCellView.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Domain\ItemShape.cs" />
-    <Compile Include="Assets\Scripts\Character\CharacterPrefabAggregate.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\IFlowAggregateFacade.cs" />
-    <Compile Include="Assets\Scripts\Inventory\IGridInspector.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\InventoryPanelPrefabInitializer.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
-    <Compile Include="Assets\Scripts\Character\CharacterAggregate.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowAggregateFactory.cs" />
-    <Compile Include="Assets\Scripts\Inventory\EntryPoints\EntryPointArchetype.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Router\RoutingContracts.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Controller\ItemDragController.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Position\InventoryPosition.cs" />
-    <Compile Include="Assets\Scripts\Config\DependencyInjectionConfig.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\View\InventoryViewPresenter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
-    <Compile Include="Assets\Scripts\Context\InventoryGridContext.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\View\ItemView.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Config\ShapeCatalog.cs" />
-    <Compile Include="Assets\Scripts\Character\CharacterData.cs" />
-    <Compile Include="Assets\Scripts\Inventory\InventoryAggregate.cs" />
-    <Compile Include="Assets\Scripts\Shared\Utility\NullGuard.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\QuickItemPreviewSpawner.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
-    <Compile Include="Assets\Scripts\TimeSystem\TimeModule.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\domain\Api\IGridItemIndex.cs" />
-    <Compile Include="Assets\Scripts\Inventory\EntryPoints\PlacedEntryPoint.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_FrameRateCounter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
-    <Compile Include="Assets\Scripts\Shared\Utility\IdGenerator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\View\InventoryGridView.cs" />
-    <Compile Include="Assets\Scripts\Context\CharacterAggregateContext.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Controller\ItemDraggable.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowPayload.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Position\IInventoryPosition.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
-    <Compile Include="Assets\Scripts\TimeSystem\UI\ProcessTimer.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
-    <Compile Include="Assets\Scripts\Combat\ActionExecutor\ActionExecutor.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Domain\BattleItem.cs" />
-    <Compile Include="Assets\Scripts\Inventory\InventoryAggregateFactory.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\domain\SimpleGridItemIndex.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
-    <Compile Include="Assets\Scripts\UI\Popup\PopupManager.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Domain\IPlacedItem.cs" />
-    <Compile Include="Assets\Scripts\Shared\Aliases.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Shared\DamageAmount.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\GridItemNode.cs" />
-    <Compile Include="Assets\Scripts\Character\CharacterAggregateFactory.cs" />
-    <Compile Include="Assets\Scripts\UI\Popup\PopupBase.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
-    <Compile Include="Assets\Scripts\Inventory\EntryPoints\EventEntryPoint.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
-    <Compile Include="Assets\Scripts\Combat\ActionExecutor\Action.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowCompletionDispatcher.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\ApiFlow.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Slots\domain\InventoryCell.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
-    <Compile Include="Assets\Scripts\Combat\Flow\Domain\Aggregate\FlowModel.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Domain\ItemArchetype.cs" />
-    <Compile Include="Assets\Scripts\Shared\Globals.cs" />
-    <Compile Include="Assets\Scripts\Inventory\EntryPoints\IPlacedEntryPoint.cs" />
-    <Compile Include="Assets\Scripts\Inventory\EntryPoints\TickEntryPoint.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\ItemViewDemoSpawner.cs" />
-    <Compile Include="Assets\Scripts\Combat\Action\EffectDescriptor.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Items\Domain\ShapeArchetype.cs" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Roboto-Bold - License.txt" />
@@ -162,6 +93,7 @@
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
+      <None Include="Assets\Scripts\Plan.txt"/>
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl" />
     <None Include="Assets\AI_Instructions.txt" />
@@ -1147,9 +1079,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{6fac85f1-6e1a-fcb2-3223-4e60708c99d8}</Project>
-      <Name>Assembly-CSharp-firstpass</Name>
+      <ProjectReference Include="MageFactory.Inventory.csproj">
+          <Project>{478b55ed-73f4-eb1f-9e93-1f107e11324c}</Project>
+          <Name>MageFactory.Inventory</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Context.csproj">
+          <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
+          <Name>MageFactory.Context</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Combat.csproj">
+          <Project>{feaf1a10-0c18-53d5-ae74-ce24f4c2d2be}</Project>
+          <Name>MageFactory.Combat</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Config.csproj">
+          <Project>{73dccb57-6c42-6948-013a-0207e57d7f06}</Project>
+          <Name>MageFactory.Config</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Character.csproj">
+          <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
+          <Name>MageFactory.Character</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
+          <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
+          <Name>MageFactory.Inventory.Controller</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.BattleManager.csproj">
+          <Project>{9ae902f5-4d39-12a9-d64b-bdd4eab4e173}</Project>
+          <Name>MageFactory.BattleManager</Name>
     </ProjectReference>
     <ProjectReference Include="Zenject-Editor.csproj">
       <Project>{32d25bd9-ce4a-3838-298e-03da1528c748}</Project>
@@ -1159,6 +1115,26 @@
       <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
       <Name>Zenject</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.Shared.csproj">
+          <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
+          <Name>MageFactory.Shared</Name>
+      </ProjectReference>
+      <ProjectReference Include="Plugin.MEC.csproj">
+          <Project>{d43a18b2-8a53-360e-50dc-04876e8a32a1}</Project>
+          <Name>Plugin.MEC</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.TimeSystem.csproj">
+          <Project>{2b5b6e5b-92f7-6d66-6fa8-5174d74d9819}</Project>
+          <Name>MageFactory.TimeSystem</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.UI.csproj">
+          <Project>{7aaa46dd-f5af-3d59-3491-f91232500383}</Project>
+          <Name>MageFactory.UI</Name>
+      </ProjectReference>
+      <ProjectReference Include="Plugin.DOTween.csproj">
+          <Project>{e1d99a99-6880-f92f-e6dd-1174f1c455f9}</Project>
+          <Name>Plugin.DOTween</Name>
+      </ProjectReference>
     <ProjectReference Include="Zenject-ReflectionBaking-Editor.csproj">
       <Project>{56ed9065-1623-a8e2-a3e9-586b43e7f2ff}</Project>
       <Name>Zenject-ReflectionBaking-Editor</Name>
@@ -1166,6 +1142,22 @@
     <ProjectReference Include="Zenject-PoolMonitor-Editor.csproj">
       <Project>{aa897244-018e-4536-ebf4-14676da43ff6}</Project>
       <Name>Zenject-PoolMonitor-Editor</Name>
+    </ProjectReference>
+      <ProjectReference Include="MageFactory.Registry.csproj">
+          <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
+          <Name>MageFactory.Registry</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Contracts.csproj">
+          <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
+          <Name>MageFactory.Contracts</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Controller.Character.csproj">
+          <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
+          <Name>MageFactory.Controller.Character</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Semantics.csproj">
+          <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
+          <Name>MageFactory.Semantics</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

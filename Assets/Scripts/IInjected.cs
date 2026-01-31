@@ -1,2 +1,3 @@
-﻿public interface IInjected {
-}
+﻿// public interface IInjected {
+// }
+

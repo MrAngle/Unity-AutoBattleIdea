@@ -1,0 +1,3 @@
+﻿- Add Plan
+- add damage endpoint as button to trigger flow
+- add receive damage endpoint

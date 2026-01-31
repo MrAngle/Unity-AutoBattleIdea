@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 472579551691940985}
   - component: {fileID: 8559452294835062142}
   - component: {fileID: 5796400925352824949}
-  - component: {fileID: 2602901976082349797}
+  - component: {fileID: 9180358797817463057}
   m_Layer: 5
   m_Name: InventoryGridViewPrefab
   m_TagString: Untagged
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Spacing: {x: 8, y: 8}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &2602901976082349797
+--- !u!114 &9180358797817463057
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,8 +86,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7058471013735990962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e24e9ee7e05b4febbfeece284b93fe6a, type: 3}
+  m_Script: {fileID: 11500000, guid: f176a8bc4c14423597ea5c2c17ca03a4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory.Slots.View.InventoryGridView
-  cellPrefab: {fileID: 4888551313860806528, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
+  m_EditorClassIdentifier: MageFactory.Contracts::Contracts.Inventory.InventoryGridView
+  cellPrefab: {fileID: 59291655769982536, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
   gridLayout: {fileID: 5796400925352824949}

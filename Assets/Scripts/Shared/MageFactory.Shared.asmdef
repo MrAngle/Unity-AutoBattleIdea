@@ -1,0 +1,7 @@
+﻿{
+  "name": "MageFactory.Shared",
+  "rootNamespace": "Shared",
+  "references": [
+  ],
+  "autoReferenced": true
+}

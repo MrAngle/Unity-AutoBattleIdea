@@ -1,69 +1,70 @@
-﻿using Character;
+﻿using Character.Domain;
 using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
-using Config.Semantics;
 using Context;
+using Contracts.Flow;
+using Contracts.Inventory;
+using Contracts.Items;
+using Controller.Character;
 using Inventory;
+using Inventory.Controller.Items.View;
 using Inventory.EntryPoints;
-using Inventory.Items;
 using Inventory.Items.View;
-using Inventory.Slots;
-using Inventory.Slots.Context;
-using Inventory.Slots.Domain;
-using Inventory.Slots.View;
+using Semantics;
 using UI;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zenject;
 
 namespace Config {
-    public class DependencyInjectionConfig: MonoInstaller {
+    public class DependencyInjectionConfig : MonoInstaller {
         // [SerializeField] private int width = 8;
 
-        [Header("Prefabs")]
-        [SerializeField] private ItemView itemViewPrefab;
+        [Header("Prefabs")] [SerializeField] private ItemView itemViewPrefab;
         [SerializeField] private ItemView dragGhostPrefab;
-        [SerializeField] private InventoryGridView gridViewPrefab; 
+        [SerializeField] private InventoryGridView gridViewPrefab;
         [SerializeField] private InventoryCellView cellViewPrefab;
-        
-        [Header("RectTransforms")]
-        [SerializeField] private RectTransform itemsLayerRectTransform;
 
-        [Header("GridLayoutGroup")]
-        [SerializeField] private GridLayoutGroup inventoryGridLayout;
-        
-        [Header("Battle UI")]
-        [SerializeField] private CharacterPrefabAggregate battleSlotPrefab;
+        [Header("RectTransforms")] [SerializeField]
+        private RectTransform itemsLayerRectTransform;
+
+        [Header("GridLayoutGroup")] [SerializeField]
+        private GridLayoutGroup inventoryGridLayout;
+
+        [Header("Battle UI")] [SerializeField] private CharacterPrefabAggregate battleSlotPrefab;
         [SerializeField] private Transform battleSlotParent;
+
+        // private ItemView dragGhostPrefab;
+        // // [SerializeField] private int width = 8;
+        //
+        // [Header("Prefabs")] private ItemView itemViewPrefab;
 
         // [Header("Scripts")]
         // [SerializeField] private InventoryPanelPrefabInitializer inventoryPanelPrefabInitializer;
-        
 
-        public override void InstallBindings()
-        {
+
+        public override void InstallBindings() {
             InstallSignals();
-            
+
             BindItemsLayerRectTransform();
-            
+
             BindInventoryGridLayoutGroup();
 
 
             BindContexts();
-            
+
             BindFactories();
 
             // PREFAB INITIALIZER
             Container.Bind<ItemViewPrefabItemView>()
                 .FromMethod(_ => new ItemViewPrefabItemView(itemViewPrefab))
                 .AsSingle();
-            
+
             Container.Bind<DragGhostPrefabItemView>()
                 .FromMethod(_ => new DragGhostPrefabItemView(dragGhostPrefab))
                 .AsSingle();
-            
-            
+
+
             Container.Bind<GridViewPrefabInventoryGridView>()
                 .FromMethod(_ => new GridViewPrefabInventoryGridView(gridViewPrefab))
                 .AsSingle();
@@ -71,34 +72,31 @@ namespace Config {
             Container.Bind<CellViewPrefabInventoryCellView>()
                 .FromMethod(_ => new CellViewPrefabInventoryCellView(cellViewPrefab))
                 .AsSingle();
-            
+
             Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
                 .AsSingle()
                 .NonLazy();
 
 
-            
             // Container.Bind<InventoryAggregateContext>()
             //     .AsSingle()
             //     .NonLazy();
 
- 
+
             // GRID LAYOUT
-  
-            
+
+
             // SCRIPTS
             // Container.Bind<InventoryPanelPrefabInitializer>()
             //     .FromComponentInHierarchy()
             //     .AsSingle();
-
-
         }
 
         private void BindContexts() {
             Container.Bind<InventoryGridContext>()
                 .AsSingle()
                 .NonLazy();
-            
+
             Container.Bind<InventoryAggregateContext>()
                 .AsSingle()
                 .NonLazy();
@@ -120,20 +118,20 @@ namespace Config {
             Container.Bind<IInventoryAggregateFactory>()
                 .To<InventoryAggregateFactory>()
                 .AsSingle();
-            
-            
+
+
             Container.Bind<IItemViewFactory>()
                 .To<ItemViewFactory>()
                 .AsSingle();
-            
+
             Container.Bind<IActionExecutor>()
                 .To<ActionExecutor>()
                 .AsSingle();
-            
+
             Container.Bind<ICharacterAggregateFactory>()
                 .To<CharacterAggregateFactory>()
                 .AsSingle();
-            
+
             BindCharactersAndBattleUI();
         }
 
@@ -150,7 +148,7 @@ namespace Config {
                 .AsSingle()
                 .NonLazy();
         }
-        
+
         private void BindCharactersAndBattleUI() {
             // prefab slotu
             Container.Bind<CharacterPrefabAggregate>()
@@ -169,13 +167,11 @@ namespace Config {
                 .AsSingle();
         }
 
-        void InstallSignals() {
+        private void InstallSignals() {
             SignalBusInstaller.Install(Container);
             Container.DeclareSignal<ItemPlacedDtoEvent>();
             Container.DeclareSignal<ItemRemovedDtoEvent>();
             Container.DeclareSignal<ItemPowerChangedDtoEvent>();
-
-
         }
     }
 }

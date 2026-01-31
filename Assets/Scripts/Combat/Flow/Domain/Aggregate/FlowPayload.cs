@@ -1,14 +1,9 @@
 ﻿using System;
-using Combat.Flow.Domain.Shared;
-using Inventory.EntryPoints;
+using Contracts.Flow;
+using Contracts.Inventory;
 
 namespace Combat.Flow.Domain.Aggregate {
     /// Kanał przepływu – damage/defense itd.
-    public enum FlowKind {
-        Damage,
-        Defense
-    }
-
     public class FlowSeed {
         private readonly long _initPower;
 
@@ -22,17 +17,17 @@ namespace Combat.Flow.Domain.Aggregate {
     }
 
     public class FlowPayload {
-        private DamageToReceive _damageToReceive;
-        private DamageToDeal _damageToDeal;
+        private readonly DamageToDeal _damageToDeal;
+        private readonly DamageToReceive _damageToReceive;
 
-        public FlowPayload(long power, DamageToReceive damageToReceiveToReceive = null, DamageToDeal damageToDeal = null) {
+        public FlowPayload(long power, DamageToReceive damageToReceiveToReceive = null,
+            DamageToDeal damageToDeal = null) {
             _damageToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
             _damageToDeal = damageToDeal ?? new DamageToDeal(0);
         }
 
         public void Add(DamageAmount damageAmount) {
-            switch (damageAmount)
-            {
+            switch (damageAmount) {
                 case DamageToDeal deal:
                     _damageToDeal.Add(deal);
                     break;
@@ -42,24 +37,22 @@ namespace Combat.Flow.Domain.Aggregate {
                 default:
                     throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
             }
-            
+
             _damageToReceive.Add(damageAmount);
         }
-        
+
         public void Add(DamageToDeal damageToDeal) {
             _damageToReceive.Add(damageToDeal);
         }
-        
+
 
         public DamageToReceive GetDamageToReceive() {
             return _damageToReceive;
         }
-        
+
         public DamageToDeal GetDamageToDeal() {
             return _damageToDeal;
         }
-
-
     }
 
     public class FlowContext {

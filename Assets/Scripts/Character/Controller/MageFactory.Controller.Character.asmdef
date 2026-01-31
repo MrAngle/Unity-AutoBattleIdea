@@ -1,0 +1,15 @@
+﻿{
+  "name": "MageFactory.Controller.Character",
+  "rootNamespace": "Controller.Character",
+  "references": [
+    "MageFactory.UI",
+    "MageFactory.Shared",
+    "Unity.TextMeshPro",
+    "Zenject",
+    "MageFactory.Character",
+    "MageFactory.Contracts",
+    "MageFactory.Context",
+    "MageFactory.Registry"
+  ],
+  "autoReferenced": true
+}

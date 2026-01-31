@@ -1,0 +1,8 @@
+﻿{
+  "name": "MageFactory.Contracts",
+  "rootNamespace": "Contracts",
+  "references": [
+    "MageFactory.Shared"
+  ],
+  "autoReferenced": true
+}

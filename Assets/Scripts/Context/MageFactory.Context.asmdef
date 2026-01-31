@@ -1,0 +1,19 @@
+﻿{
+  "name": "MageFactory.Context",
+  "rootNamespace": "MageFactory.Context",
+  "references": [
+    "MageFactory.Inventory",
+    "MageFactory.Shared",
+    "MageFactory.Character",
+    "MageFactory.Contracts"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,7 @@
+﻿{
+  "name": "Plugin.DOTween",
+  "rootNamespace": "DG",
+  "references": [
+  ],
+  "autoReferenced": true
+}

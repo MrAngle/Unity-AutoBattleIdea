@@ -1,0 +1,9 @@
+﻿{
+  "name": "MageFactory.TimeSystem",
+  "rootNamespace": "TimeSystem",
+  "references": [
+    "Zenject",
+    "Plugin.MEC"
+  ],
+  "autoReferenced": true
+}
