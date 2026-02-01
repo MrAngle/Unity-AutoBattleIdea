@@ -15,7 +15,7 @@ namespace MageFactory.Character.Domain {
         }
 
         internal static CharacterData from(CharacterCreateCommand command) {
-            return new CharacterData(command.Name, command.MaxHp);
+            return new CharacterData(command.name, command.maxHp);
         }
 
         internal string getName() {

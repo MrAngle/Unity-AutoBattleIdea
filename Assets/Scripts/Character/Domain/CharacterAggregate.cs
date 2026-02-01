@@ -26,7 +26,7 @@ namespace MageFactory.Character.Domain {
         public static CharacterAggregate createFrom(CharacterCreateCommand characterCreateCommand,
             ICharacterInventoryFacade characterInventoryFacade) {
             return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
-                characterCreateCommand.Team);
+                characterCreateCommand.team);
         }
 
         public string getName() {
