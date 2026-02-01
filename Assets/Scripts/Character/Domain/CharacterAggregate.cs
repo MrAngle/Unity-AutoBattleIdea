@@ -8,7 +8,7 @@ using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
-namespace Character.Domain {
+namespace MageFactory.Character.Domain {
     public class CharacterAggregate : ICharacter /*, IPlacedItemOwner*/ {
         private readonly CharacterData characterData;
         private readonly ICharacterInventoryFacade characterInventoryFacade;

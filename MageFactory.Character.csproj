@@ -50,7 +50,7 @@
         <Compile Include="Assets\Scripts\Character\Domain\CharacterData.cs"/>
         <Compile Include="Assets\Scripts\Character\Domain\CharacterAggregateFactory.cs"/>
         <Compile Include="Assets\Scripts\Character\Domain\CharacterAggregate.cs"/>
-        <None Include="Assets\Scripts\Character\Domain\MageFactory.Character.asmdef"/>
+        <None Include="Assets\Scripts\Character\Domain\MageFactory.Character.Domain.asmdef" />
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
         </Reference>

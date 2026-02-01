@@ -1,6 +1,6 @@
 ﻿{
-  "name": "MageFactory.Character",
-  "rootNamespace": "Character.Domain",
+  "name": "MageFactory.Character.Domain",
+  "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Inventory",
     "MageFactory.Shared",

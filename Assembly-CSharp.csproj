@@ -1095,10 +1095,6 @@
           <Project>{73dccb57-6c42-6948-013a-0207e57d7f06}</Project>
           <Name>MageFactory.Config</Name>
       </ProjectReference>
-      <ProjectReference Include="MageFactory.Character.csproj">
-          <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
-          <Name>MageFactory.Character</Name>
-      </ProjectReference>
       <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
           <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
           <Name>MageFactory.Inventory.Controller</Name>
@@ -1138,6 +1134,10 @@
     <ProjectReference Include="Zenject-ReflectionBaking-Editor.csproj">
       <Project>{56ed9065-1623-a8e2-a3e9-586b43e7f2ff}</Project>
       <Name>Zenject-ReflectionBaking-Editor</Name>
+    </ProjectReference>
+      <ProjectReference Include="MageFactory.Character.Domain.csproj">
+          <Project>{df9e700e-a198-251c-7098-f08623b14ddc}</Project>
+          <Name>MageFactory.Character.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="Zenject-PoolMonitor-Editor.csproj">
       <Project>{aa897244-018e-4536-ebf4-14676da43ff6}</Project>

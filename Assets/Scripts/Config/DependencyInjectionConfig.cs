@@ -1,5 +1,4 @@
-﻿using Character.Domain;
-using Combat.ActionExecutor;
+﻿using Combat.ActionExecutor;
 using Combat.Flow.Domain.Aggregate;
 using Context;
 using Contracts.Flow;
@@ -11,6 +10,7 @@ using Inventory.Controller.Items.View;
 using Inventory.EntryPoints;
 using Inventory.Items.View;
 using MageFactory.Character.Api;
+using MageFactory.Character.Domain;
 using Semantics;
 using UI;
 using UnityEngine;

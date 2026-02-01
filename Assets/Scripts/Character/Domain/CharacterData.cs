@@ -2,7 +2,7 @@
 using Contracts.Flow;
 using MageFactory.Character.Api.Dto;
 
-namespace Character.Domain {
+namespace MageFactory.Character.Domain {
     public class CharacterData {
         private long currentHp;
         private int maxHp;

@@ -8,7 +8,7 @@
     "MageFactory.Contracts",
     "MageFactory.Controller.Character",
     "MageFactory.Character.Api",
-    "MageFactory.Character",
+    "MageFactory.Character.Domain",
     "MageFactory.BattleManager",
     "MageFactory.Combat",
     "MageFactory.UI",

@@ -880,9 +880,9 @@
             <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
             <Name>MageFactory.Character.Api</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.csproj">
-            <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
-            <Name>MageFactory.Character</Name>
+        <ProjectReference Include="MageFactory.Character.Domain.csproj">
+            <Project>{df9e700e-a198-251c-7098-f08623b14ddc}</Project>
+            <Name>MageFactory.Character.Domain</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.BattleManager.csproj">
             <Project>{9ae902f5-4d39-12a9-d64b-bdd4eab4e173}</Project>
