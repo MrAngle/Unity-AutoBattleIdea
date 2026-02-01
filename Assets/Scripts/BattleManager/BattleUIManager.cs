@@ -38,17 +38,17 @@ namespace UI {
 
         private void CreateSlots() {
             for (var i = 0; i < _team.Length; i++) {
-                ICharacterAggregateFacade characterAggregateFacade;
+                ICharacter character;
                 if (i == 0) {
-                    characterAggregateFacade = _characterAggregateFactory.Create(_team[i], Team.TeamA);
-                    _characterAggregateContext.SetCharacterAggregateContext(characterAggregateFacade); // for now
+                    character = _characterAggregateFactory.Create(_team[i], Team.TeamA);
+                    _characterAggregateContext.SetCharacterAggregateContext(character); // for now
                 }
                 else {
-                    characterAggregateFacade = _characterAggregateFactory.Create(_team[i], Team.TeamB);
+                    character = _characterAggregateFactory.Create(_team[i], Team.TeamB);
                 }
 
                 CharacterPrefabAggregate.Create(_slotPrefab, _slotParent,
-                    characterAggregateFacade, _characterAggregateContext);
+                    character, _characterAggregateContext);
             }
         }
     }

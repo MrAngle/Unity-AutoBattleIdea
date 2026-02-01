@@ -6,20 +6,20 @@ namespace Context {
     public class CharacterAggregateContext {
         private readonly InventoryAggregateContext _inventoryAggregateContext;
 
-        private ICharacterAggregateFacade _characterAggregateFacade;
+        private ICharacter _character;
 
         [Inject]
         public CharacterAggregateContext(InventoryAggregateContext inventoryAggregateContext) {
             _inventoryAggregateContext = NullGuard.NotNullOrThrow(inventoryAggregateContext);
         }
 
-        public void SetCharacterAggregateContext(ICharacterAggregateFacade characterAggregateFacade) {
-            _characterAggregateFacade = characterAggregateFacade;
-            _inventoryAggregateContext.SetInventoryAggregateContext(_characterAggregateFacade.GetInventoryAggregate());
+        public void SetCharacterAggregateContext(ICharacter character) {
+            _character = character;
+            _inventoryAggregateContext.SetInventoryAggregateContext(_character.getInventoryAggregate());
         }
 
-        public ICharacterAggregateFacade GetCharacterAggregateContext() {
-            return _characterAggregateFacade;
+        public ICharacter GetCharacterAggregateContext() {
+            return _character;
         }
     }
 }

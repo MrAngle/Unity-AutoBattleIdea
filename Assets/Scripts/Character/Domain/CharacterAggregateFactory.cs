@@ -8,7 +8,7 @@ using Zenject;
 
 namespace Character.Domain {
     public interface ICharacterAggregateFactory {
-        ICharacterAggregateFacade Create(CharacterData characterData, Team team);
+        ICharacter Create(CharacterData characterData, Team team);
     }
 
 
@@ -25,7 +25,7 @@ namespace Character.Domain {
             _entryPointFactory = entryPointFactory;
         }
 
-        public ICharacterAggregateFacade Create(CharacterData characterData, Team team) {
+        public ICharacter Create(CharacterData characterData, Team team) {
             var characterInventory = _inventoryAggregateFactory.CreateCharacterInventory();
 
             var characterAggregate = new CharacterAggregate(characterData, characterInventory, team);
@@ -34,7 +34,7 @@ namespace Character.Domain {
                 //for now
                 var entryPointArchetype =
                     _entryPointFactory.CreateArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
-                characterAggregate.TryEquipItem(entryPointArchetype, new Vector2Int(0, 0), out _);
+                characterAggregate.equipItemOrThrow(entryPointArchetype, new Vector2Int(0, 0), out _);
             }
 
             return characterAggregate;

@@ -14,7 +14,7 @@ namespace Controller.Character {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
-        private ICharacterAggregateFacade _character;
+        private ICharacter _character;
 
         private CharacterAggregateContext _characterAggregateContext;
 
@@ -29,7 +29,7 @@ namespace Controller.Character {
         public void OnPointerClick(PointerEventData eventData) {
             if (_character == null) return;
 
-            Debug.Log($"Kliknięto postać: {_character.GetName()}");
+            Debug.Log($"Kliknięto postać: {_character.getName()}");
 
             _characterAggregateContext.SetCharacterAggregateContext(_character);
 
@@ -45,14 +45,14 @@ namespace Controller.Character {
         }
 
         public static CharacterPrefabAggregate Create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-            ICharacterAggregateFacade characterData, CharacterAggregateContext characterAggregateContext) {
+            ICharacter characterData, CharacterAggregateContext characterAggregateContext) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
             prefab.Setup(characterData, characterAggregateContext);
 
             return prefab;
         }
 
-        private void Setup(ICharacterAggregateFacade character, CharacterAggregateContext characterAggregateContext) {
+        private void Setup(ICharacter character, CharacterAggregateContext characterAggregateContext) {
             _character = NullGuard.NotNullOrThrow(character);
             _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
 
@@ -65,12 +65,12 @@ namespace Controller.Character {
             RefreshUI();
         }
 
-        private void HandleHpChanged(ICharacterAggregateFacade ch, long newHp, long previousHpValue) {
+        private void HandleHpChanged(ICharacter ch, long newHp, long previousHpValue) {
             PopupManager.Instance.ShowHpChangeDamage(this, newHp - previousHpValue);
             RefreshUI();
         }
 
-        private void OnDeath(ICharacterAggregateFacade ch) {
+        private void OnDeath(ICharacter ch) {
             CharacterRegistry.Instance.Unregister(_character);
             Destroy(gameObject);
         }
@@ -78,11 +78,11 @@ namespace Controller.Character {
         public void RefreshUI() {
             if (_character == null) return;
 
-            nameText.text = _character.GetName();
+            nameText.text = _character.getName();
 
             var ratio = 0f;
-            if (_character.GetMaxHp() > 0)
-                ratio = (float)_character.GetCurrentHp() / _character.GetMaxHp();
+            if (_character.getMaxHp() > 0)
+                ratio = (float)_character.getCurrentHp() / _character.getMaxHp();
 
             hpBarImage.fillAmount = ratio;
         }
@@ -91,7 +91,7 @@ namespace Controller.Character {
             if (_character != null) {
                 _character.OnHpChanged -= HandleHpChanged;
                 _character.OnDeath -= OnDeath;
-                _character.Cleanup();
+                _character.cleanup();
             }
         }
     }

@@ -76,7 +76,7 @@ namespace Inventory.Controller {
 
             // 3) validacja
             var can = characterAggregateContext != null &&
-                      characterAggregateContext.CanPlaceItem(_placeableItem, origin);
+                      characterAggregateContext.canPlaceItem(_placeableItem, origin);
             _ghostItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -101,7 +101,7 @@ namespace Inventory.Controller {
             var characterAggregateContext = _characterAggregateContext.GetCharacterAggregateContext();
 
             if (characterAggregateContext != null
-                && characterAggregateContext.TryEquipItem(_placeableItem, origin, out var placedItem))
+                && characterAggregateContext.equipItemOrThrow(_placeableItem, origin, out var placedItem))
                 NullGuard.NotNullCheckOrThrow(placedItem);
 
             // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();

@@ -27,10 +27,10 @@ namespace Combat.Flow.Domain.Aggregate {
 
             var damageToDeal = _flowModel.FlowPayload.GetDamageToDeal();
             var damageToReceive = _flowModel.FlowPayload.GetDamageToReceive();
-            target.Apply(damageToDeal);
+            target.apply(damageToDeal);
             // attacker.Apply(damageToReceive); // for now
 
-            Debug.Log($"{attacker.GetName()} zadał {damageToDeal.GetPower()} obrażeń {target.GetName()}");
+            Debug.Log($"{attacker.getName()} zadał {damageToDeal.GetPower()} obrażeń {target.getName()}");
         }
     }
 }
