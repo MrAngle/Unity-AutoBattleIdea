@@ -1,21 +1,29 @@
-﻿using Character.Domain;
-using Context;
-using Contracts.Character;
+﻿using Context;
 using Controller.Character;
-using Shared.Utility;
+using MageFactory.Character.Api;
+using MageFactory.Character.Api.Dto;
+using MageFactory.Shared.Model;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
 namespace UI {
     public class BattleUIManager : MonoBehaviour {
-        private CharacterPrefabAggregate _slotPrefab;
-        private Transform _slotParent;
-        private CharacterData[] _team;
-        private ICharacterAggregateFactory _characterAggregateFactory;
         private CharacterAggregateContext _characterAggregateContext;
+        private ICharacterAggregateFactory _characterAggregateFactory;
+        private Transform _slotParent;
+        private CharacterPrefabAggregate _slotPrefab;
+
+        private void Start() {
+            createSlots(new CharacterCreateCommand[] {
+                new("Warrior", 120, Team.TeamA),
+                new("Mage", 1220, Team.TeamB),
+                new("Archer", 1300, Team.TeamB)
+            });
+        }
 
         [Inject]
-        public void Construct(
+        public void construct(
             ICharacterAggregateFactory characterAggregateFactory,
             CharacterPrefabAggregate slotPrefab,
             [Inject(Id = "BattleSlotParent")] Transform slotParent,
@@ -25,30 +33,21 @@ namespace UI {
             _characterAggregateFactory = NullGuard.NotNullOrThrow(characterAggregateFactory);
             _slotPrefab = NullGuard.NotNullOrThrow(slotPrefab);
             _slotParent = NullGuard.NotNullOrThrow(slotParent);
-            _team = new CharacterData[] {
-                new("Warrior", 120),
-                new("Mage", 1220),
-                new("Archer", 1300)
-            };
         }
 
-        private void Start() {
-            CreateSlots();
-        }
-
-        private void CreateSlots() {
-            for (var i = 0; i < _team.Length; i++) {
+        private void createSlots(CharacterCreateCommand[] charactersToCreate) {
+            for (var i = 0; i < charactersToCreate.Length; i++) {
                 ICharacter character;
+                // TODO: change it of course
                 if (i == 0) {
-                    character = _characterAggregateFactory.Create(_team[i], Team.TeamA);
+                    character = _characterAggregateFactory.Create(charactersToCreate[i]);
                     _characterAggregateContext.SetCharacterAggregateContext(character); // for now
                 }
                 else {
-                    character = _characterAggregateFactory.Create(_team[i], Team.TeamB);
+                    character = _characterAggregateFactory.Create(charactersToCreate[i]);
                 }
 
-                CharacterPrefabAggregate.Create(_slotPrefab, _slotParent,
-                    character, _characterAggregateContext);
+                CharacterPrefabAggregate.Create(_slotPrefab, _slotParent, character, _characterAggregateContext);
             }
         }
     }

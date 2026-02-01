@@ -2,7 +2,8 @@
   "name": "MageFactory.Registry",
   "rootNamespace": "Registry",
   "references": [
-    "MageFactory.Contracts"
+    "MageFactory.Contracts",
+    "MageFactory.Character.Api"
   ],
   "autoReferenced": true
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Contracts.Character;
+using MageFactory.Character.Api;
 using UnityEngine;
 
 namespace Registry {

@@ -4,7 +4,7 @@ using Contracts.Inventory;
 using Contracts.Items;
 using UnityEngine;
 
-namespace Contracts.Character {
+namespace MageFactory.Character.Api {
     public interface ICharacter {
         public event Action<ICharacter, long, long> OnHpChanged;
         public event Action<ICharacter> OnDeath;

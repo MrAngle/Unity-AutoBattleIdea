@@ -1,5 +1,5 @@
-﻿using Contracts.Character;
-using Shared.Utility;
+﻿using MageFactory.Character.Api;
+using MageFactory.Shared.Utility;
 using Zenject;
 
 namespace Context {

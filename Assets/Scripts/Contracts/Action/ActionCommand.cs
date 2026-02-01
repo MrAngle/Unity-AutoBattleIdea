@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Contracts.Flow;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 
 namespace Contracts.Actionexe {
     public sealed class ActionCommand : IActionCommand {

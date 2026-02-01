@@ -1,61 +1,67 @@
 ﻿using System;
-using Contracts.Character;
 using Contracts.Flow;
 using Contracts.Inventory;
 using Contracts.Items;
-using Shared.Utility;
+using MageFactory.Character.Api;
+using MageFactory.Character.Api.Dto;
+using MageFactory.Shared.Model;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace Character.Domain {
-    public enum Team {
-        TeamA,
-        TeamB
-    }
-
     public class CharacterAggregate : ICharacter /*, IPlacedItemOwner*/ {
-        private readonly CharacterData _data;
-        private readonly ICharacterInventoryFacade _characterInventoryFacade;
+        private readonly CharacterData characterData;
+        private readonly ICharacterInventoryFacade characterInventoryFacade;
+        private readonly Team team;
 
-        public CharacterAggregate(CharacterData data, ICharacterInventoryFacade characterInventoryFacade, Team team) {
-            _data = NullGuard.NotNullOrThrow(data);
-            _characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
-            Team = team;
+        private CharacterAggregate(CharacterData data, ICharacterInventoryFacade characterInventoryFacade, Team team) {
+            this.characterData = NullGuard.NotNullOrThrow(data);
+            this.characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
+            this.team = NullGuard.enumDefinedOrThrow(team);
 
             // Subskrybuj event z danych, by przekazywać go dalej
-            _data.OnHpChanged += HandleDataHpChanged;
+            characterData.OnHpChanged += handleCharacterDataHpChanged;
+        }
+
+        public static CharacterAggregate createFrom(CharacterCreateCommand characterCreateCommand,
+            ICharacterInventoryFacade characterInventoryFacade) {
+            return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
+                characterCreateCommand.Team);
         }
 
         public string getName() {
-            return _data.Name;
+            return characterData.getName();
         }
 
         public ICharacterInventoryFacade getInventoryAggregate() {
-            return _characterInventoryFacade;
+            return characterInventoryFacade;
         }
 
         public long getMaxHp() {
-            return _data.MaxHp;
+            return characterData.getMaxHp();
         }
 
         public long getCurrentHp() {
-            return _data.CurrentHp;
+            return characterData.CurrentHp;
         }
 
-        public long MaxHp => _data.MaxHp;
+        public long MaxHp => characterData.getMaxHp();
 
-        public long CurrentHp => _data.CurrentHp;
+        public long CurrentHp => characterData.CurrentHp;
 
-        public Team Team { get; }
+        public Team getTeam() {
+            return team;
+        }
 
         public event Action<ICharacter, long, long> OnHpChanged;
         public event Action<ICharacter> OnDeath;
 
         ~CharacterAggregate() {
             // finalizer — w razie gdyby ktoś zapomniał Cleanup (ale nie polegaj na tym)
-            _data.OnHpChanged -= HandleDataHpChanged;
+            characterData.OnHpChanged -= handleCharacterDataHpChanged;
         }
 
-        private void HandleDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
+        private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
             OnHpChanged?.Invoke(this, newHp, previousHpValue);
         }
 
@@ -63,14 +69,14 @@ namespace Character.Domain {
 
 
         public void apply(DamageAmount damageAmount) {
-            _data.Apply(damageAmount);
-            if (_data.CurrentHp <= 0) {
+            characterData.Apply(damageAmount);
+            if (characterData.CurrentHp <= 0) {
                 OnDeath?.Invoke(this);
             }
         }
 
         public bool canPlaceItem(IPlaceableItem item, Vector2Int origin) {
-            return _characterInventoryFacade.CanPlace(item, origin);
+            return characterInventoryFacade.CanPlace(item, origin);
         }
 
         public bool equipItemOrThrow(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem) {
@@ -78,7 +84,7 @@ namespace Character.Domain {
                 throw new ArgumentException("Cannot equip item");
             }
 
-            placedItem = _characterInventoryFacade.Place(item, origin);
+            placedItem = characterInventoryFacade.Place(item, origin);
             return true;
         }
 
@@ -86,7 +92,7 @@ namespace Character.Domain {
         // Jeśli chcesz ręcznie posprzątać (usunąć subskrypcję),
         // np. gdy obiekt jest niszczony
         public void cleanup() {
-            _data.OnHpChanged -= HandleDataHpChanged;
+            characterData.OnHpChanged -= handleCharacterDataHpChanged;
         }
     }
 }

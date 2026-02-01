@@ -4,25 +4,13 @@ using Context;
 using Contracts.Inventory;
 using Contracts.Items;
 using Inventory.Controller.Items.View;
+using MageFactory.Shared.Utility;
 using Semantics;
-using Shared.Utility;
 using UI.Popup;
 using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Inventory.Items.View {
-    // public readonly struct ItemPlacedDtoEvent {
-    //     public long PlacedItemId { get; }
-    //     public ShapeArchetype Data { get; }
-    //     public Vector2Int Origin { get; }
-    //
-    //     public ItemPlacedDtoEvent(long id, ShapeArchetype data, Vector2Int origin) {
-    //         PlacedItemId = id;
-    //         Data = data;
-    //         Origin = origin;
-    //     }
-    // }
-
     public readonly struct ItemRemovedDtoEvent {
         public long PlacedItemId { get; }
 

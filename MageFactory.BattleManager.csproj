@@ -888,9 +888,9 @@
             <Project>{7aaa46dd-f5af-3d59-3491-f91232500383}</Project>
             <Name>MageFactory.UI</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.csproj">
-            <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
-            <Name>MageFactory.Character</Name>
+        <ProjectReference Include="MageFactory.Character.Api.csproj">
+            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
+            <Name>MageFactory.Character.Api</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

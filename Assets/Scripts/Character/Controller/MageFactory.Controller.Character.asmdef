@@ -4,12 +4,11 @@
   "references": [
     "MageFactory.UI",
     "MageFactory.Shared",
-    "Unity.TextMeshPro",
-    "Zenject",
-    "MageFactory.Character",
-    "MageFactory.Contracts",
     "MageFactory.Context",
-    "MageFactory.Registry"
+    "MageFactory.Registry",
+    "MageFactory.Character.Api",
+    "Unity.TextMeshPro",
+    "Zenject"
   ],
   "autoReferenced": true
 }

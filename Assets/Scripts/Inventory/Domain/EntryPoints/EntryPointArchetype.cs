@@ -3,13 +3,10 @@ using Contracts.Actionexe;
 using Contracts.Flow;
 using Contracts.Inventory;
 using Contracts.Items;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace Inventory.EntryPoints {
-    // public sealed class GridEntryPointId : StrongId<GridEntryPointId> {
-    // }
-
     public interface IEntryPointContext {
         // IEntryPointOwner Owner { get; }
         IGridInspector Grid { get; }

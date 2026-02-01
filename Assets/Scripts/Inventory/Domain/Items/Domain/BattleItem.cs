@@ -3,7 +3,7 @@ using Contracts.Actionexe;
 using Contracts.Flow;
 using Contracts.Items;
 using Inventory.Position;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace Inventory.Items.Domain {

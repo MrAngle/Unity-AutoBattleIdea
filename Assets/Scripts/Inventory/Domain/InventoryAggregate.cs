@@ -4,7 +4,7 @@ using Contracts.Inventory;
 using Contracts.Items;
 using Inventory.EntryPoints;
 using Inventory.Slots.Domain;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 

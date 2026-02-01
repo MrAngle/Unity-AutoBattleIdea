@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 
 namespace Contracts.Items {
     public sealed class ShapeArchetypeId : ConstantId<ShapeArchetypeId> {

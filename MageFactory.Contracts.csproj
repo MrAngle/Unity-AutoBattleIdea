@@ -53,7 +53,6 @@
         <Compile Include="Assets\Scripts\Contracts\Items\ItemView.cs"/>
         <Compile Include="Assets\Scripts\Contracts\Action\IPreparedAction.cs"/>
         <Compile Include="Assets\Scripts\Contracts\Items\ShapeCatalog.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Character\ICharacter.cs"/>
         <Compile Include="Assets\Scripts\Contracts\Items\ItemShape.cs"/>
         <Compile Include="Assets\Scripts\Contracts\Flow\IFlowContext.cs"/>
         <Compile Include="Assets\Scripts\Contracts\Items\ItemPowerChangedDtoEvent.cs"/>

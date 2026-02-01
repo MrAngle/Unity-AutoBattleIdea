@@ -1,0 +1,9 @@
+﻿{
+  "name": "MageFactory.Character.Api",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Shared",
+    "MageFactory.Contracts"
+  ],
+  "autoReferenced": true
+}

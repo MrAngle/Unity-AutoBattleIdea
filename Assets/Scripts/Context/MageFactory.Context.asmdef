@@ -4,7 +4,7 @@
   "references": [
     "MageFactory.Inventory",
     "MageFactory.Shared",
-    "MageFactory.Character",
+    "MageFactory.Character.Api",
     "MageFactory.Contracts"
   ],
   "includePlatforms": [],

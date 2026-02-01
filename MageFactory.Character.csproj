@@ -869,6 +869,10 @@
             <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
             <Name>MageFactory.Contracts</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.Api.csproj">
+            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
+            <Name>MageFactory.Character.Api</Name>
+        </ProjectReference>
         <ProjectReference Include="Zenject.csproj">
             <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
             <Name>Zenject</Name>

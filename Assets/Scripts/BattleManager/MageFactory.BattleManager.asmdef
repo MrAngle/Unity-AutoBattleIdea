@@ -10,7 +10,7 @@
     "MageFactory.Registry",
     "MageFactory.Shared",
     "MageFactory.UI",
-    "MageFactory.Character"
+    "MageFactory.Character.Api"
   ],
   "autoReferenced": true
 }

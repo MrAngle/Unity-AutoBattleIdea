@@ -1143,6 +1143,10 @@
       <Project>{aa897244-018e-4536-ebf4-14676da43ff6}</Project>
       <Name>Zenject-PoolMonitor-Editor</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.Character.Api.csproj">
+          <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
+          <Name>MageFactory.Character.Api</Name>
+      </ProjectReference>
       <ProjectReference Include="MageFactory.Registry.csproj">
           <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
           <Name>MageFactory.Registry</Name>

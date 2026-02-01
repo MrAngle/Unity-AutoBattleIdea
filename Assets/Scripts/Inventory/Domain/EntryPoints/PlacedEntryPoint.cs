@@ -7,7 +7,7 @@ using Contracts.Flow;
 using Contracts.Inventory;
 using Contracts.Items;
 using Inventory.Position;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace Inventory.EntryPoints {

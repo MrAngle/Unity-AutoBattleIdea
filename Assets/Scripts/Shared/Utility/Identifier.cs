@@ -1,19 +1,22 @@
 ﻿// Shared/Identifier/StrongIds.cs
+
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Shared.Utility
-{
+namespace MageFactory.Shared.Utility {
     /// Wspólna baza (bez publicznych fabryk/parsers).
     public abstract class StrongId<TSelf> :
         IEquatable<TSelf>, IComparable<TSelf>
-        where TSelf : StrongId<TSelf>, new()
-    {
+        where TSelf : StrongId<TSelf>, new() {
         public long Value { get; private set; }
         public bool IsEmpty => Value == 0;
 
-        protected StrongId() { }
-        protected StrongId(long value) { Value = value; }
+        protected StrongId() {
+        }
+
+        protected StrongId(long value) {
+            Value = value;
+        }
 
         // Jedyny "rdzeń" do ustawiania Value – dostępny dla potomnych klas/polityk.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -27,9 +30,10 @@ namespace Shared.Utility
 
         public static bool operator ==(StrongId<TSelf> a, StrongId<TSelf> b)
             => ReferenceEquals(a, b) || (!ReferenceEquals(a, null) && !ReferenceEquals(b, null) && a.Value == b.Value);
+
         public static bool operator !=(StrongId<TSelf> a, StrongId<TSelf> b) => !(a == b);
-        public static bool operator < (StrongId<TSelf> a, StrongId<TSelf> b) => a.Value <  b.Value;
-        public static bool operator > (StrongId<TSelf> a, StrongId<TSelf> b) => a.Value >  b.Value;
+        public static bool operator <(StrongId<TSelf> a, StrongId<TSelf> b) => a.Value < b.Value;
+        public static bool operator >(StrongId<TSelf> a, StrongId<TSelf> b) => a.Value > b.Value;
         public static bool operator <=(StrongId<TSelf> a, StrongId<TSelf> b) => a.Value <= b.Value;
         public static bool operator >=(StrongId<TSelf> a, StrongId<TSelf> b) => a.Value >= b.Value;
 
@@ -40,24 +44,26 @@ namespace Shared.Utility
 
     /// Polityka: ID tworzone w runtime (publiczne fabryki i parsowanie).
     public abstract class RuntimeId<TSelf> : StrongId<TSelf>
-        where TSelf : RuntimeId<TSelf>, new()
-    {
+        where TSelf : RuntimeId<TSelf>, new() {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TSelf From(long value) => FromCore(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TSelf New() => FromCore(IdGenerator.Next());
 
-        public static bool TryParse(ReadOnlySpan<char> text, out TSelf id)
-        {
+        public static bool TryParse(ReadOnlySpan<char> text, out TSelf id) {
             int colon = text.LastIndexOf(':');
             if (colon >= 0 && colon + 1 < text.Length) text = text[(colon + 1)..];
-            if (long.TryParse(text, out var v)) { id = From(v); return true; }
-            id = null; return false;
+            if (long.TryParse(text, out var v)) {
+                id = From(v);
+                return true;
+            }
+
+            id = null;
+            return false;
         }
 
-        public static TSelf Parse(string text)
-        {
+        public static TSelf Parse(string text) {
             if (TryParse(text.AsSpan(), out var id)) return id;
             throw new FormatException($"Cannot parse {typeof(TSelf).Name} from '{text}'.");
         }
@@ -66,8 +72,7 @@ namespace Shared.Utility
     /// Polityka: stałe ID – brak publicznych fabryk/parsers.
     /// Tworzysz WYŁĄCZNIE własne stałe w typie pochodnym.
     public abstract class ConstantId<TSelf> : StrongId<TSelf>
-        where TSelf : ConstantId<TSelf>, new()
-    {
+        where TSelf : ConstantId<TSelf>, new() {
         // Pomocnik tylko dla pochodnych przy definiowaniu stałych:
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static TSelf Define(long value) => FromCore(value);

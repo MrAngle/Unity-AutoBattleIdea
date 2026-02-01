@@ -10,6 +10,7 @@ using Inventory;
 using Inventory.Controller.Items.View;
 using Inventory.EntryPoints;
 using Inventory.Items.View;
+using MageFactory.Character.Api;
 using Semantics;
 using UI;
 using UnityEngine;

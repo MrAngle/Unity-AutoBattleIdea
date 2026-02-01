@@ -52,7 +52,6 @@
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewDemoSpawner.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDragController.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Controller\ItemCellTileView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryPanelPrefabInitializer.cs"/>
         <None Include="Assets\Scripts\Inventory\Controller\MageFactory.Inventory.Controller.asmdef"/>
         <Reference Include="UnityEngine">
@@ -869,9 +868,9 @@
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.csproj">
-            <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
-            <Name>MageFactory.Character</Name>
+        <ProjectReference Include="MageFactory.Character.Api.csproj">
+            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
+            <Name>MageFactory.Character.Api</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Context.csproj">
             <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>

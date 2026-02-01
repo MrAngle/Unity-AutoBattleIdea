@@ -876,6 +876,14 @@
             <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
             <Name>MageFactory.Controller.Character</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.Api.csproj">
+            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
+            <Name>MageFactory.Character.Api</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.csproj">
+            <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
+            <Name>MageFactory.Character</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.BattleManager.csproj">
             <Project>{9ae902f5-4d39-12a9-d64b-bdd4eab4e173}</Project>
             <Name>MageFactory.BattleManager</Name>
@@ -891,10 +899,6 @@
         <ProjectReference Include="Zenject.csproj">
             <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
             <Name>Zenject</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.csproj">
-            <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
-            <Name>MageFactory.Character</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Semantics.csproj">
             <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>

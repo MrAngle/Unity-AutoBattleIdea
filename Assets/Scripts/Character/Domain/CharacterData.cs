@@ -1,28 +1,38 @@
 ﻿using System;
 using Contracts.Flow;
-
-// using Combat.Flow.Domain.Shared;
+using MageFactory.Character.Api.Dto;
 
 namespace Character.Domain {
     public class CharacterData {
-        private long _currentHp;
-        internal int MaxHp;
-        internal string Name;
+        private long currentHp;
+        private int maxHp;
+        private string name;
 
-        public CharacterData(string name, int maxHP) {
-            // TO internal
-            Name = name;
-            MaxHp = maxHP;
-            CurrentHp = maxHP;
+        private CharacterData(string name, int maxHp) {
+            this.name = name;
+            this.maxHp = maxHp;
+            this.currentHp = maxHp;
+        }
+
+        internal static CharacterData from(CharacterCreateCommand command) {
+            return new CharacterData(command.Name, command.MaxHp);
+        }
+
+        internal string getName() {
+            return name;
+        }
+
+        internal int getMaxHp() {
+            return maxHp;
         }
 
         internal long CurrentHp {
-            get => _currentHp;
+            get => currentHp;
             private set {
-                if (_currentHp == value) return;
-                var _hpBeforeChange = _currentHp;
-                _currentHp = value;
-                OnHpChanged?.Invoke(this, _currentHp, _hpBeforeChange);
+                if (currentHp == value) return;
+                var _hpBeforeChange = currentHp;
+                currentHp = value;
+                OnHpChanged?.Invoke(this, currentHp, _hpBeforeChange);
             }
         }
 
@@ -48,7 +58,7 @@ namespace Character.Domain {
 
         private void Heal(long amount) {
             CurrentHp += amount;
-            if (CurrentHp > MaxHp) CurrentHp = MaxHp;
+            if (CurrentHp > maxHp) CurrentHp = maxHp;
         }
     }
 }

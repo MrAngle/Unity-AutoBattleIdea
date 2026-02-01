@@ -1,5 +1,5 @@
 ﻿using System;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 
 namespace Contracts.Actionexe {
     public sealed class PreparedAction : IPreparedAction {

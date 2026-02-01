@@ -866,18 +866,6 @@
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
         </ProjectReference>
-        <ProjectReference Include="Zenject.csproj">
-            <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
-            <Name>Zenject</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.csproj">
-            <Project>{1bca2b4f-ead9-4f57-688e-0f53699c1a89}</Project>
-            <Name>MageFactory.Character</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Contracts.csproj">
-            <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-            <Name>MageFactory.Contracts</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Context.csproj">
             <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
             <Name>MageFactory.Context</Name>
@@ -885,6 +873,14 @@
         <ProjectReference Include="MageFactory.Registry.csproj">
             <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
             <Name>MageFactory.Registry</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.Api.csproj">
+            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
+            <Name>MageFactory.Character.Api</Name>
+        </ProjectReference>
+        <ProjectReference Include="Zenject.csproj">
+            <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
+            <Name>Zenject</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

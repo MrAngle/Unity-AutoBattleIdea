@@ -3,27 +3,24 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Combat.ActionExecutor;
-using Contracts.Actionexe;
 using Contracts.Flow;
 using Contracts.Inventory;
 using Contracts.Items;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
 namespace Combat.Flow.Domain.Aggregate {
     public class FlowAggregate : IFlowAggregateFacade, IFlowContext {
-        private readonly IFlowRouter _router;
-        private readonly FlowModel _flowModel;
-        private readonly SignalBus _signalBus;
         private readonly IActionExecutor _actionExecutor;
-        private IPlacedItem _currentNode;
-
-        public IReadOnlyList<long> VisitedNodeIds => _visitedNodeIds;
+        private readonly FlowModel _flowModel;
+        private readonly IFlowRouter _router;
+        private readonly SignalBus _signalBus;
         private readonly List<long> _visitedNodeIds = new();
-        private bool _running;
 
         private CancellationTokenSource _cts;
+        private IPlacedItem _currentNode;
+        private bool _running;
 
         // public event Action<FlowPowerDeltaApplied> OnPowerDeltaApplied;
 
@@ -38,6 +35,20 @@ namespace Combat.Flow.Domain.Aggregate {
             _visitedNodeIds.Clear(); // shouldn't be needed
         }
 
+        public IReadOnlyList<long> VisitedNodeIds => _visitedNodeIds;
+
+        public bool IsFinished => _currentNode == null || _flowModel == null;
+
+        public void Start() {
+            _ = StartAsync();
+        }
+
+        public void AddPower(DamageAmount damageAmount) {
+            _flowModel.AddPower(damageAmount);
+
+            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), damageAmount.GetPower()));
+        }
+
         public static IFlowAggregateFacade Create(IPlacedEntryPoint placedEntryPoint, long power,
             IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor _actionExecutor) {
             // sourceId ??= CorrelationId.NextString();
@@ -47,18 +58,6 @@ namespace Combat.Flow.Domain.Aggregate {
             var startNode = placedEntryPoint;
 
             return new FlowAggregate(model, startNode, flowRouter, signalBus, _actionExecutor);
-        }
-
-        public void Start() {
-            _ = StartAsync();
-        }
-
-        public bool IsFinished => _currentNode == null || _flowModel == null;
-
-        public void AddPower(DamageAmount damageAmount) {
-            _flowModel.AddPower(damageAmount);
-
-            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), damageAmount.GetPower()));
         }
 
         public Task StartAsync() {
@@ -84,9 +83,9 @@ namespace Combat.Flow.Domain.Aggregate {
         }
 
         private async Task ProcessAsync(CancellationToken cancellationToken) {
-            IActionSpecification actionSpecification = _currentNode.GetAction();
+            var actionSpecification = _currentNode.GetAction();
 
-            IPreparedAction preparedAction = actionSpecification.ToPreparedAction(this);
+            var preparedAction = actionSpecification.ToPreparedAction(this);
 
             try {
                 await _actionExecutor.ExecuteAsync(preparedAction, cancellationToken);

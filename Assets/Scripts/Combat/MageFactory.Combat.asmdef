@@ -3,6 +3,7 @@
   "rootNamespace": "Combat",
   "references": [
     "MageFactory.Contracts",
+    "MageFactory.Character.Api",
     "MageFactory.Inventory",
     "MageFactory.Shared",
     "MageFactory.TimeSystem",

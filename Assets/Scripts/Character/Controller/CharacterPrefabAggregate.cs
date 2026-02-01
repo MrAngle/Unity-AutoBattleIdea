@@ -1,7 +1,7 @@
 ﻿using Context;
-using Contracts.Character;
+using MageFactory.Character.Api;
+using MageFactory.Shared.Utility;
 using Registry;
-using Shared.Utility;
 using TMPro;
 using UI.Popup;
 using UnityEngine;

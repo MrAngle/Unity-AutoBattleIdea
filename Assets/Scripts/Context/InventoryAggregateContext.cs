@@ -1,7 +1,7 @@
 ﻿using System;
 using Contracts.Inventory;
 using Inventory;
-using Shared.Utility;
+using MageFactory.Shared.Utility;
 using Zenject;
 
 namespace Context {

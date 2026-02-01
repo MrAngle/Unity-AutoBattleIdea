@@ -5,6 +5,7 @@
     "MageFactory.Inventory",
     "MageFactory.Shared",
     "MageFactory.Contracts",
+    "MageFactory.Character.Api",
     "Zenject"
   ],
   "autoReferenced": true

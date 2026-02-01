@@ -1,7 +1,7 @@
 ﻿using Context;
 using Contracts.Items;
+using MageFactory.Shared.Utility;
 using Semantics;
-using Shared.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -13,13 +13,6 @@ namespace Inventory.Controller {
         private ItemView _ghostItem;
 
         private InventoryGridLayoutGroup _inventoryGridLayout;
-        // [Inject] private readonly ItemsLayerRectTransform _itemsLayer;
-        //
-        // [Inject] private readonly InventoryGridLayoutGroup _inventoryGridLayout;
-        // [Inject] private readonly InventoryAggregateContext _inventoryAggregateContext;
-        //
-        // [Inject] private readonly DragGhostPrefabItemView _dragGhostPrefabItemView;
-        // [Inject] private readonly ItemViewPrefabItemView _itemViewPrefabItemView;
 
         private ItemsLayerRectTransform _itemsLayer;
         private ItemViewPrefabItemView _itemViewPrefabItemView;
