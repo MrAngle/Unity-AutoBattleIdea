@@ -69,7 +69,7 @@ namespace MageFactory.Character.Domain {
 
 
         public void apply(DamageAmount damageAmount) {
-            characterData.Apply(damageAmount);
+            characterData.applyDamage(damageAmount);
             if (characterData.CurrentHp <= 0) {
                 OnDeath?.Invoke(this);
             }

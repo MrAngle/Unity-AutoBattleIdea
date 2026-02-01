@@ -30,33 +30,33 @@ namespace MageFactory.Character.Domain {
             get => currentHp;
             private set {
                 if (currentHp == value) return;
-                var _hpBeforeChange = currentHp;
+                var hpBeforeChange = currentHp;
                 currentHp = value;
-                OnHpChanged?.Invoke(this, currentHp, _hpBeforeChange);
+                OnHpChanged?.Invoke(this, currentHp, hpBeforeChange);
             }
         }
 
         internal event Action<CharacterData, long, long> OnHpChanged;
 
-        internal void Apply(DamageAmount damageAmount) {
+        internal void applyDamage(DamageAmount damageAmount) {
             switch (damageAmount) {
                 case DamageToDeal deal:
-                    TakeDamage(deal.GetPower());
+                    takeDamage(deal.GetPower());
                     break;
                 case DamageToReceive receive:
-                    Heal(receive.GetPower());
+                    heal(receive.GetPower());
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
             }
         }
 
-        private void TakeDamage(long dmg) {
+        private void takeDamage(long dmg) {
             CurrentHp -= dmg;
             if (CurrentHp < 0) CurrentHp = 0;
         }
 
-        private void Heal(long amount) {
+        private void heal(long amount) {
             CurrentHp += amount;
             if (CurrentHp > maxHp) CurrentHp = maxHp;
         }
