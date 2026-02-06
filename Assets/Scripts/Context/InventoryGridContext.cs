@@ -1,7 +1,7 @@
 ﻿using System;
 using MageFactory.Inventory.Api;
 
-namespace Context {
+namespace MageFactory.Context {
     public class InventoryGridContext {
         private IInventoryGrid _inventoryGrid;
 

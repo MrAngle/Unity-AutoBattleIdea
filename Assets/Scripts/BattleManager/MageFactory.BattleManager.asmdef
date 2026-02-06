@@ -1,6 +1,6 @@
 ﻿{
   "name": "MageFactory.BattleManager",
-  "rootNamespace": "BattleManager",
+  "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Context",
     "MageFactory.Contracts",

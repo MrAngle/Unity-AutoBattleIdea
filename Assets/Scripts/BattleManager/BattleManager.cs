@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BattleManager {
+namespace MageFactory.BattleManager {
     public class BattleManager : MonoBehaviour {
         [SerializeField] private float turnInterval = 1.5f; // co ile sekund tura
 

@@ -2,7 +2,7 @@
 using MageFactory.Shared.Utility;
 using Zenject;
 
-namespace Context {
+namespace MageFactory.Context {
     public class CharacterAggregateContext {
         private readonly InventoryAggregateContext _inventoryAggregateContext;
 

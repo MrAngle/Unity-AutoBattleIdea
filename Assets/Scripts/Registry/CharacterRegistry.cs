@@ -2,7 +2,7 @@
 using MageFactory.Character.Api;
 using UnityEngine;
 
-namespace Registry {
+namespace MageFactory.Registry {
     public class CharacterRegistry : MonoBehaviour {
         private readonly List<ICharacter> _allCharacters = new();
         public static CharacterRegistry Instance { get; private set; }

@@ -25,19 +25,3 @@
         }
     }
 }
-
-// public abstract class DamageAmount {
-//     protected long _power;
-//
-//     public DamageAmount(long power) {
-//         _power = power;
-//     }
-//
-//     public long GetPower() {
-//         return _power;
-//     }
-//
-//     public void Add(DamageAmount amount) {
-//         _power += amount.GetPower();
-//     }
-// }

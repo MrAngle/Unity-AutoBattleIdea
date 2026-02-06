@@ -1,6 +1,6 @@
 ﻿{
   "name": "MageFactory.Registry",
-  "rootNamespace": "Registry",
+  "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Contracts",
     "MageFactory.Character.Api"

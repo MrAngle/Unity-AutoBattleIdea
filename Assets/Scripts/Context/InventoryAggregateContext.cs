@@ -3,7 +3,7 @@ using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
 using Zenject;
 
-namespace Context {
+namespace MageFactory.Context {
     public class InventoryAggregateContext {
         private readonly InventoryGridContext _inventoryGridContext;
 

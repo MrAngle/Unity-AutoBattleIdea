@@ -1,13 +1,13 @@
-﻿using Context;
-using MageFactory.Character.Api;
+﻿using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
 using MageFactory.Character.Controller;
+using MageFactory.Context;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
-namespace UI {
+namespace MageFactory.BattleManager {
     public class BattleUIManager : MonoBehaviour {
         private CharacterAggregateContext _characterAggregateContext;
         private ICharacterAggregateFactory _characterAggregateFactory;

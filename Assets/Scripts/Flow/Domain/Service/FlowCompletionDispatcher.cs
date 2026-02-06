@@ -1,4 +1,4 @@
-﻿using Registry;
+﻿using MageFactory.Registry;
 using UnityEngine;
 
 namespace MageFactory.Flow.Domain.Service {

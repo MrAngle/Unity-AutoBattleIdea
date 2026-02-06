@@ -11,7 +11,7 @@
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProductVersion>10.0.20506</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <RootNamespace>MageFactory.Context</RootNamespace>
+        <RootNamespace>MageFactory</RootNamespace>
         <ProjectGuid>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</ProjectGuid>
         <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
         <OutputType>Library</OutputType>
@@ -877,10 +877,6 @@
         <ProjectReference Include="MageFactory.Character.Api.csproj">
             <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
             <Name>MageFactory.Character.Api</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Contracts.csproj">
-            <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-            <Name>MageFactory.Contracts</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
