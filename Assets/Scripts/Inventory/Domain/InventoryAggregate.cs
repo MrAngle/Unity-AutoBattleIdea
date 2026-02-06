@@ -8,7 +8,6 @@ using Zenject;
 namespace MageFactory.Inventory.Domain {
     public class InventoryAggregate : IGridInspector, ICharacterInventoryFacade {
         private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
-        private readonly IEntryPointFactory entryPointFactory;
 
         private readonly IInventoryGrid inventoryGrid;
         private readonly HashSet<IPlacedItem> items;
@@ -17,17 +16,15 @@ namespace MageFactory.Inventory.Domain {
         private InventoryAggregate(IInventoryGrid inventoryGrid,
             HashSet<IPlacedEntryPoint> entryPoints,
             HashSet<IPlacedItem> items,
-            SignalBus signalBus,
-            IEntryPointFactory entryPointFactory) {
-            NullGuard.NotNullCheckOrThrow(inventoryGrid, entryPoints, items, signalBus, entryPointFactory);
+            SignalBus signalBus) {
+            NullGuard.NotNullCheckOrThrow(inventoryGrid, entryPoints, items, signalBus);
             this.inventoryGrid = inventoryGrid;
             this.items = items;
             this.signalBus = signalBus;
-            this.entryPointFactory = entryPointFactory;
-            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, this.items, this.signalBus, this.entryPointFactory);
+            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, this.items, this.signalBus);
         }
 
-        public static ICharacterInventoryFacade create(SignalBus signalBus, IEntryPointFactory entryPointFactory) {
+        public static ICharacterInventoryFacade create(SignalBus signalBus) {
             IInventoryGrid
                 grid = new InventoryGrid(12, 8);
 
@@ -35,8 +32,7 @@ namespace MageFactory.Inventory.Domain {
                 grid,
                 new HashSet<IPlacedEntryPoint>(),
                 new HashSet<IPlacedItem>(),
-                signalBus,
-                entryPointFactory
+                signalBus
             );
 
             return aggregate;
