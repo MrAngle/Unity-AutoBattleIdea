@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Inventory.Controller.Items.View {
+namespace MageFactory.Inventory.Controller {
     public interface IItemViewFactory {
         ItemView Create(ShapeArchetype data, Vector2Int origin);
     }

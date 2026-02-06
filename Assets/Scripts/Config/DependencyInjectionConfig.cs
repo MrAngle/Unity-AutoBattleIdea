@@ -1,6 +1,4 @@
-﻿using Inventory.Controller.Items.View;
-using Inventory.Items.View;
-using MageFactory.ActionExecutor.Api;
+﻿using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Domain;
 using MageFactory.BattleManager;
 using MageFactory.Character.Api;
@@ -10,6 +8,7 @@ using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api;
+using MageFactory.Inventory.Controller;
 using MageFactory.Inventory.Domain.Service;
 using MageFactory.Semantics;
 using UnityEngine;

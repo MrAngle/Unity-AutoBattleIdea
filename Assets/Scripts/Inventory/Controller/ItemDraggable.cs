@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Inventory.Controller;
 using MageFactory.Inventory.Api;
 using MageFactory.Inventory.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Inventory.Items.Controller {
+namespace MageFactory.Inventory.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
         private ItemDragController _controller;
 

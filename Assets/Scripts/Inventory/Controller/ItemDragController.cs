@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace Inventory.Controller {
+namespace MageFactory.Inventory.Controller {
     public class ItemDragController : MonoBehaviour {
         private CharacterAggregateContext _characterAggregateContext;
         private DragGhostPrefabItemView _dragGhostPrefabItemView;

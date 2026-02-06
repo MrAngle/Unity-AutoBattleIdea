@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Inventory.Controller.Items.View;
 using MageFactory.Context;
 using MageFactory.Inventory.Api;
 using MageFactory.Semantics;
@@ -9,7 +8,7 @@ using UI.Popup;
 using Zenject;
 using Object = UnityEngine.Object;
 
-namespace Inventory.Items.View {
+namespace MageFactory.Inventory.Controller {
     public readonly struct ItemRemovedDtoEvent {
         public long PlacedItemId { get; }
 

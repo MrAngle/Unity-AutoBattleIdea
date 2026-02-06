@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Inventory.Items.View;
 using MageFactory.Context;
 using MageFactory.Inventory.Api;
 using MageFactory.Inventory.Domain;
@@ -8,7 +7,7 @@ using MageFactory.Semantics;
 using UnityEngine;
 using Zenject;
 
-namespace Inventory.Slots {
+namespace MageFactory.Inventory.Controller {
     public class InventoryPanelPrefabInitializer : MonoBehaviour {
         [Inject] private readonly SignalBus _signalBus;
         [Inject] private CellViewPrefabInventoryCellView _cellViewPrefab;

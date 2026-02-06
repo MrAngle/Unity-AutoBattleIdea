@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Inventory.Items {
+namespace MageFactory.Inventory.Controller {
     public class ItemViewDemoSpawner : MonoBehaviour {
         [Header("Refs")] [SerializeField] private RectTransform itemsLayer; // wskaż ItemsLayer
 
