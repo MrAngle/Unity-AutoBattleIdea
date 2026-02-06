@@ -9,6 +9,7 @@ using MageFactory.Inventory.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
+
 // using MageFactory.Flow.Api;
 
 namespace MageFactory.Inventory.Domain {
@@ -134,14 +135,14 @@ namespace MageFactory.Inventory.Domain {
                 var flowAggregate = PrepareFlowAggregate(power);
 
                 Debug.Log("Start proces for flow");
-                flowAggregate.Start();
+                flowAggregate.start();
                 // Debug.Log($"{attacker.Name} Start POWER: {power} to attack {target.Name}");
             }
         }
 
         private IFlowAggregateFacade PrepareFlowAggregate(int power) {
             var flowRouter = GridAdjacencyRouter.Create(_gridInspector);
-            var flowAggregate = _flowFactory.Create(this, power, flowRouter);
+            var flowAggregate = _flowFactory.create(this, power, flowRouter);
             return flowAggregate;
         }
 

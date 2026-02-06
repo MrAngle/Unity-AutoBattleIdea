@@ -11,7 +11,7 @@
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProductVersion>10.0.20506</ProductVersion>
         <SchemaVersion>2.0</SchemaVersion>
-        <RootNamespace>Semantics</RootNamespace>
+        <RootNamespace>MageFactory</RootNamespace>
         <ProjectGuid>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</ProjectGuid>
         <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
         <OutputType>Library</OutputType>
@@ -867,10 +867,6 @@
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Contracts.csproj">
-            <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-            <Name>MageFactory.Contracts</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Inventory.Api.csproj">
             <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>

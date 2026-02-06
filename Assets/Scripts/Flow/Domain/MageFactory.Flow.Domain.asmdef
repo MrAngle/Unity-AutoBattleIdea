@@ -2,16 +2,16 @@
   "name": "MageFactory.Flow.Domain",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Shared",
     "MageFactory.Flow.Api",
     "MageFactory.FlowRouting",
-    "MageFactory.Contracts",
+    "MageFactory.ActionEffect",
     "MageFactory.Inventory.Api",
     "MageFactory.ActionExecutor.Api",
     "MageFactory.Character.Api",
+
     "MageFactory.Registry",
-    "Zenject",
-    "MageFactory.ActionEffect"
+    "MageFactory.Shared",
+    "Zenject"
   ],
   "autoReferenced": true
 }

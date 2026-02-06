@@ -1,9 +1,8 @@
 ﻿{
   "name": "MageFactory.Semantics",
-  "rootNamespace": "Semantics",
+  "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Shared",
-    "MageFactory.Contracts",
     "MageFactory.Inventory.Api",
     "Zenject"
   ],

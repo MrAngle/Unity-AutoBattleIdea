@@ -4,7 +4,7 @@ using MageFactory.Inventory.Api;
 namespace MageFactory.FlowRouting {
     public interface IFlowRouter {
         /// Zwraca null — jeśli brak kandydata (koniec).
-        IPlacedItem DecideNext(IPlacedItem current, IReadOnlyCollection<long> visitedNodeIds);
+        IPlacedItem decideNext(IPlacedItem current, IReadOnlyCollection<long> visitedNodeIds);
     }
 
 

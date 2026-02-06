@@ -3,7 +3,6 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Context",
-    "MageFactory.Contracts",
     "MageFactory.Controller.Character",
     "MageFactory.Registry",
     "MageFactory.Shared",

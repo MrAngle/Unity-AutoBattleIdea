@@ -4,8 +4,6 @@ using MageFactory.Inventory.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
-// using MageFactory.FlowRouting;
-// using MageFactory.Flow.Api;
 
 namespace MageFactory.Inventory.Domain {
     public interface IEntryPointContext {

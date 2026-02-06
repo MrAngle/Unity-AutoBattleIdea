@@ -2,10 +2,9 @@
   "name": "MageFactory.Flow.Api",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Shared",
+    "MageFactory.FlowRouting",
     "MageFactory.Inventory.Api",
-    "MageFactory.Contracts",
-    "MageFactory.FlowRouting"
+    "MageFactory.Shared"
   ],
   "autoReferenced": true
 }

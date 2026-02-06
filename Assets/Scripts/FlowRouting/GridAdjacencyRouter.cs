@@ -7,7 +7,6 @@ namespace MageFactory.FlowRouting {
     public class GridAdjacencyRouter : IFlowRouter {
         private readonly IGridInspector _gridInspector;
 
-        // [Inject]
         private GridAdjacencyRouter(IGridInspector gridInspector) {
             _gridInspector = gridInspector;
         }
@@ -16,7 +15,7 @@ namespace MageFactory.FlowRouting {
             return new GridAdjacencyRouter(gridInspector);
         }
 
-        public IPlacedItem DecideNext(IPlacedItem current, IReadOnlyCollection<long> visitedNodeIds) {
+        public IPlacedItem decideNext(IPlacedItem current, IReadOnlyCollection<long> visitedNodeIds) {
             // if (!_inventoryAggregate.TryGetItemAtCell(current.Position, out IPlacedItem placedItem)) {
             //     
             // }

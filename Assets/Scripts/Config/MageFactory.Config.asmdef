@@ -10,7 +10,6 @@
     "MageFactory.ActionExecutor.Api",
     "MageFactory.ActionExecutor.Domain",
     "MageFactory.Context",
-    "MageFactory.Contracts",
     "MageFactory.Controller.Character",
     "MageFactory.Character.Api",
     "MageFactory.Character.Domain",

@@ -48,10 +48,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Assets\Scripts\Flow\Api\IFlowFactory.cs"/>
-        <Compile Include="Assets\Scripts\Flow\Api\GridAdjacencyRouter.cs"/>
         <Compile Include="Assets\Scripts\Flow\Api\IFlowAggregateFacade.cs"/>
-        <Compile Include="Assets\Scripts\Flow\Api\IFlowRouter.cs"/>
-        <Compile Include="Assets\Scripts\Flow\Api\IFlowContext.cs"/>
         <None Include="Assets\Scripts\Flow\Api\MageFactory.Flow.Api.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -868,21 +865,17 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Shared.csproj">
-            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
-            <Name>MageFactory.Shared</Name>
+        <ProjectReference Include="MageFactory.FlowRouting.csproj">
+            <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
+            <Name>MageFactory.FlowRouting</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Inventory.Api.csproj">
             <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
             <Name>MageFactory.Inventory.Api</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Contracts.csproj">
-            <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-            <Name>MageFactory.Contracts</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.FlowRouting.csproj">
-            <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
-            <Name>MageFactory.FlowRouting</Name>
+        <ProjectReference Include="MageFactory.Shared.csproj">
+            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
+            <Name>MageFactory.Shared</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

@@ -1,5 +1,5 @@
 ﻿using MageFactory.Inventory.Api;
-using Semantics;
+using MageFactory.Semantics;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;

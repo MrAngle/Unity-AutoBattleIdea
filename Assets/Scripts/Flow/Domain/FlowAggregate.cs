@@ -26,8 +26,6 @@ namespace MageFactory.Flow.Domain {
         private IPlacedItem _currentNode;
         private bool _running;
 
-        // public event Action<FlowPowerDeltaApplied> OnPowerDeltaApplied;
-
         private FlowAggregate(FlowModel flowModel, IPlacedEntryPoint startNode, IFlowRouter flowRouter,
             SignalBus signalBus, IActionExecutor actionExecutor) {
             _router = NullGuard.NotNullOrThrow(flowRouter);
@@ -39,11 +37,7 @@ namespace MageFactory.Flow.Domain {
             _visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        public IReadOnlyList<long> VisitedNodeIds => _visitedNodeIds;
-
-        public bool IsFinished => _currentNode == null || _flowModel == null;
-
-        public void Start() {
+        public void start() {
             _ = StartAsync();
         }
 
@@ -110,7 +104,7 @@ namespace MageFactory.Flow.Domain {
         private async Task<bool> GoNextAsync(CancellationToken ct) {
             NullGuard.NotNullCheckOrThrow(_currentNode, _flowModel);
 
-            var decision = _router.DecideNext(_currentNode, _visitedNodeIds);
+            var decision = _router.decideNext(_currentNode, _visitedNodeIds);
             if (decision is null) {
                 FlowCompletionDispatcher
                     .finishFlow(_flowModel); // TODO: change it. Use service or something like that instead

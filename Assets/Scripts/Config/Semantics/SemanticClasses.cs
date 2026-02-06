@@ -3,7 +3,7 @@ using MageFactory.Inventory.Api;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Semantics {
+namespace MageFactory.Semantics {
     public sealed class ItemsLayerRectTransform : Semantic<RectTransform> {
         public ItemsLayerRectTransform(RectTransform value) : base(value) {
         }

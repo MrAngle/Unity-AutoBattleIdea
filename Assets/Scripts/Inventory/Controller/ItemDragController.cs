@@ -1,7 +1,7 @@
 ﻿using MageFactory.Context;
 using MageFactory.Inventory.Api;
+using MageFactory.Semantics;
 using MageFactory.Shared.Utility;
-using Semantics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;

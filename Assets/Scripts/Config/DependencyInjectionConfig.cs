@@ -11,7 +11,7 @@ using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api;
 using MageFactory.Inventory.Domain.Service;
-using Semantics;
+using MageFactory.Semantics;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -116,7 +116,7 @@ namespace Config {
 
         private void BindFactories() {
             Container.Bind<IFlowFactory>()
-                .To<FlowFactory>()
+                .To<FlowFactoryService>()
                 .AsSingle();
 
             Container.Bind<IEntryPointFactory>()

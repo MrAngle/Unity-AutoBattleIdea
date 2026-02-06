@@ -8,9 +8,8 @@
     "MageFactory.Character.Api",
     "MageFactory.Context",
     "MageFactory.UI",
-    "Zenject",
-    "MageFactory.Contracts",
-    "MageFactory.Semantics"
+    "MageFactory.Semantics",
+    "Zenject"
   ],
   "autoReferenced": true
 }

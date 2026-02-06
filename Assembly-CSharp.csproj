@@ -1145,10 +1145,6 @@
           <Project>{7aaa46dd-f5af-3d59-3491-f91232500383}</Project>
           <Name>MageFactory.UI</Name>
       </ProjectReference>
-      <ProjectReference Include="MageFactory.FlowFactory.csproj">
-          <Project>{22429f84-ed1e-a777-8dd8-7491b9f643d7}</Project>
-          <Name>MageFactory.FlowFactory</Name>
-      </ProjectReference>
       <ProjectReference Include="Plugin.DOTween.csproj">
           <Project>{e1d99a99-6880-f92f-e6dd-1174f1c455f9}</Project>
           <Name>Plugin.DOTween</Name>
@@ -1180,10 +1176,6 @@
       <ProjectReference Include="MageFactory.Flow.Api.csproj">
           <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
           <Name>MageFactory.Flow.Api</Name>
-      </ProjectReference>
-      <ProjectReference Include="MageFactory.Contracts.csproj">
-          <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-          <Name>MageFactory.Contracts</Name>
       </ProjectReference>
       <ProjectReference Include="MageFactory.ActionExecutor.Domain.csproj">
           <Project>{7d4fec63-3cf9-4cf0-4ca0-3975473ded8f}</Project>
