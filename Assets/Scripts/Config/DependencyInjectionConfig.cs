@@ -1,10 +1,10 @@
 ﻿using Context;
-using Controller.Character;
 using Inventory.Controller.Items.View;
 using Inventory.Items.View;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Domain;
 using MageFactory.Character.Api;
+using MageFactory.Character.Controller;
 using MageFactory.Character.Domain.Service;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;

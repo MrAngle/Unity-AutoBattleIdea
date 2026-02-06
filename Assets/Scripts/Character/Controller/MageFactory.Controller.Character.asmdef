@@ -1,6 +1,6 @@
 ﻿{
   "name": "MageFactory.Controller.Character",
-  "rootNamespace": "Controller.Character",
+  "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.UI",
     "MageFactory.Shared",

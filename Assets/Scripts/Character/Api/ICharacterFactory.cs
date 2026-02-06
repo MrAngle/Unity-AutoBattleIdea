@@ -2,6 +2,6 @@
 
 namespace MageFactory.Character.Api {
     public interface ICharacterAggregateFactory {
-        ICharacter Create(CharacterCreateCommand command);
+        ICharacter create(CharacterCreateCommand command);
     }
 }

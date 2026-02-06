@@ -1,7 +1,7 @@
 ﻿using Context;
-using Controller.Character;
 using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
+using MageFactory.Character.Controller;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -40,11 +40,11 @@ namespace UI {
                 ICharacter character;
                 // TODO: change it of course
                 if (i == 0) {
-                    character = _characterAggregateFactory.Create(charactersToCreate[i]);
+                    character = _characterAggregateFactory.create(charactersToCreate[i]);
                     _characterAggregateContext.SetCharacterAggregateContext(character); // for now
                 }
                 else {
-                    character = _characterAggregateFactory.Create(charactersToCreate[i]);
+                    character = _characterAggregateFactory.create(charactersToCreate[i]);
                 }
 
                 CharacterPrefabAggregate.Create(_slotPrefab, _slotParent, character, _characterAggregateContext);

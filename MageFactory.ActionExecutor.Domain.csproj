@@ -865,14 +865,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Shared.csproj">
-            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
-            <Name>MageFactory.Shared</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.TimeSystem.csproj">
-            <Project>{2b5b6e5b-92f7-6d66-6fa8-5174d74d9819}</Project>
-            <Name>MageFactory.TimeSystem</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.ActionExecutor.Api.csproj">
             <Project>{3104d3d4-b398-917f-6acc-2f14d39376e4}</Project>
             <Name>MageFactory.ActionExecutor.Api</Name>
@@ -885,13 +877,13 @@
             <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
             <Name>MageFactory.Inventory.Api</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Flow.Api.csproj">
-            <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
-            <Name>MageFactory.Flow.Api</Name>
+        <ProjectReference Include="MageFactory.Shared.csproj">
+            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
+            <Name>MageFactory.Shared</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Contracts.csproj">
-            <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-            <Name>MageFactory.Contracts</Name>
+        <ProjectReference Include="MageFactory.TimeSystem.csproj">
+            <Project>{2b5b6e5b-92f7-6d66-6fa8-5174d74d9819}</Project>
+            <Name>MageFactory.TimeSystem</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

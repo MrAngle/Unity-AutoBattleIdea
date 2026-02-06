@@ -21,10 +21,6 @@ namespace MageFactory.Character.Domain {
             characterData.OnHpChanged += handleCharacterDataHpChanged;
         }
 
-        public long MaxHp => characterData.getMaxHp();
-
-        public long CurrentHp => characterData.CurrentHp;
-
         public string getName() {
             return characterData.getName();
         }
@@ -43,9 +39,6 @@ namespace MageFactory.Character.Domain {
 
         public event Action<ICharacter, long, long> OnHpChanged;
         public event Action<ICharacter> OnDeath;
-
-        // Metody przepuszczające do _data
-
 
         public void apply(PowerAmount powerAmount) {
             characterData.applyDamage(powerAmount);

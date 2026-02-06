@@ -20,7 +20,7 @@ namespace MageFactory.Character.Domain.Service {
         }
 
         // @Override
-        public ICharacter Create(CharacterCreateCommand command) {
+        public ICharacter create(CharacterCreateCommand command) {
             ICharacterInventoryFacade characterInventory = _inventoryAggregateFactory.CreateCharacterInventory();
             CharacterAggregate character = CharacterAggregate.createFrom(command, characterInventory);
 
