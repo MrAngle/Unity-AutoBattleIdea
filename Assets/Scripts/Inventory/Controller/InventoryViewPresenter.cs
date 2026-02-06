@@ -64,7 +64,7 @@ namespace MageFactory.Inventory.Controller {
 
         private void PrintInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
             Clear();
-            foreach (var placedItem in characterInventoryFacade.GetPlacedSnapshot()) {
+            foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
                 if (_views.ContainsKey(placedItem.GetId())) continue;
                 ItemView view = _factory.Create(placedItem.GetShape(), placedItem.GetOrigin());
                 _views[placedItem.GetId()] = view;

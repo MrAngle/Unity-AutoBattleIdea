@@ -25,7 +25,7 @@ namespace MageFactory.Inventory.Api {
             for (int x = 0; x < inventoryGrid.Width; x++) {
                 var coord = new Vector2Int(x, y);
                 var v = Instantiate(cellPrefab, transform);
-                v.Init(coord, inventoryGrid.GetState(coord));
+                v.Init(coord, inventoryGrid.getState(coord));
                 _views[coord] = v;
             }
         }

@@ -23,7 +23,7 @@ namespace MageFactory.Context {
                 return; // should nothing to do
 
             _inventoryAggregate = inventoryAggregate;
-            _inventoryGridContext.SetInventoryGrid(_inventoryAggregate.GetInventoryGrid());
+            _inventoryGridContext.SetInventoryGrid(_inventoryAggregate.getInventoryGrid());
             OnInventoryAggregateSet?.Invoke(_inventoryAggregate);
         }
 

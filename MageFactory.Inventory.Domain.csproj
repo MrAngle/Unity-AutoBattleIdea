@@ -47,8 +47,6 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Slots\View\InventoryGridView.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Slots\View\InventoryCellView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ItemArchetype.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\EntryPointArchetype.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\InventoryAggregate.cs"/>
@@ -57,9 +55,7 @@
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ActionDescriptor\ItemActionDescription.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Position\InventoryPosition.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\BattleItem.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Slots\domain\SimpleGridItemIndex.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Service\InventoryAggregateFactoryService.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Slots\domain\Api\IGridItemIndex.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\TickEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\PlacedEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ActionDescriptor\EffectsDescription.cs"/>

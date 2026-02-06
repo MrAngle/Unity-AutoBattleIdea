@@ -15,7 +15,7 @@ namespace MageFactory.Inventory.Domain.Service {
         }
 
         public ICharacterInventoryFacade CreateCharacterInventory() {
-            return InventoryAggregate.Create(_signalBus, _entryPointFactory);
+            return InventoryAggregate.create(_signalBus, _entryPointFactory);
         }
     }
 }

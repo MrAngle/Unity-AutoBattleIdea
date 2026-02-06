@@ -46,13 +46,13 @@ namespace MageFactory.Character.Domain {
         }
 
         public bool canPlaceItem(IPlaceableItem item, Vector2Int origin) {
-            return characterInventoryFacade.CanPlace(item, origin);
+            return characterInventoryFacade.canPlace(item, origin);
         }
 
         public bool equipItemOrThrow(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem) {
             if (!canPlaceItem(item, origin)) throw new ArgumentException("Cannot equip item");
 
-            placedItem = characterInventoryFacade.Place(item, origin);
+            placedItem = characterInventoryFacade.place(item, origin);
             return true;
         }
 

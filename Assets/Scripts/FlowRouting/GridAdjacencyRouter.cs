@@ -40,7 +40,7 @@ namespace MageFactory.FlowRouting {
             var candidates = new Dictionary<Vector2Int, IPlacedItem>();
             // Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
             foreach (Vector2Int vector2Int in boundary) {
-                if (_gridInspector.TryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
+                if (_gridInspector.tryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
                     if (placedItem == current) continue; // ta sama bryła
                     // var neighborNodeId = $"Item:{neighborItem.Id}"; // TODO
                     if (visitedNodeIds.Contains(placedItem.GetId())) continue; // już odwiedzony item
