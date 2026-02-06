@@ -865,14 +865,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Inventory.csproj">
-            <Project>{478b55ed-73f4-eb1f-9e93-1f107e11324c}</Project>
-            <Name>MageFactory.Inventory</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Combat.csproj">
-            <Project>{feaf1a10-0c18-53d5-ae74-ce24f4c2d2be}</Project>
-            <Name>MageFactory.Combat</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Context.csproj">
             <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
             <Name>MageFactory.Context</Name>

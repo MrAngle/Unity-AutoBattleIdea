@@ -1,7 +1,6 @@
 ﻿using System;
-using Contracts.Flow;
-using Contracts.Inventory;
-using Contracts.Items;
+using MageFactory.Inventory.Api;
+using MageFactory.Shared.Model;
 using UnityEngine;
 
 namespace MageFactory.Character.Api {
@@ -18,7 +17,7 @@ namespace MageFactory.Character.Api {
 
         public long getCurrentHp();
 
-        void apply(DamageAmount damageAmount);
+        void apply(PowerAmount powerAmount);
 
         string getName();
 

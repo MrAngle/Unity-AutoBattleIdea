@@ -49,9 +49,12 @@
     <ItemGroup>
         <Compile Include="Assets\Scripts\Shared\IsExternalInit.cs"/>
         <Compile Include="Assets\Scripts\Shared\Utility\Identifier.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Model\Duration.cs"/>
         <Compile Include="Assets\Scripts\Shared\Utility\NullGuard.cs"/>
         <Compile Include="Assets\Scripts\Shared\Utility\IdGenerator.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\Team.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Model\PowerAmount.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Model\FlowKind.cs"/>
         <None Include="Assets\Scripts\Shared\MageFactory.Shared.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

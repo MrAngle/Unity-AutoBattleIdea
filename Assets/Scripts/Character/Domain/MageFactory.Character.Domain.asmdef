@@ -2,10 +2,10 @@
   "name": "MageFactory.Character.Domain",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Inventory",
-    "MageFactory.Shared",
-    "MageFactory.Contracts",
     "MageFactory.Character.Api",
+    "MageFactory.Inventory.Api",
+    "MageFactory.Shared",
+    
     "Zenject"
   ],
   "autoReferenced": true

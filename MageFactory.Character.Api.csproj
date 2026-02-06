@@ -870,9 +870,9 @@
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Contracts.csproj">
-            <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
-            <Name>MageFactory.Contracts</Name>
+        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
+            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
+            <Name>MageFactory.Inventory.Api</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

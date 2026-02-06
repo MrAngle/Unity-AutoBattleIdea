@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Context;
-using Contracts.Inventory;
-using Contracts.Items;
 using Inventory.Controller.Items.View;
+using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
 using Semantics;
 using UI.Popup;

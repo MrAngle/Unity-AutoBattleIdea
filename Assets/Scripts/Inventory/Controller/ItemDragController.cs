@@ -1,5 +1,5 @@
 ﻿using Context;
-using Contracts.Items;
+using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
 using Semantics;
 using UnityEngine;

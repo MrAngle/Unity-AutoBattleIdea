@@ -47,38 +47,7 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Assets\Scripts\Contracts\Flow\IFlowFactory.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\IActionSpecification.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\IInventoryPosition.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\ItemView.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\IPreparedAction.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\ShapeCatalog.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\ItemShape.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Flow\IFlowContext.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\ItemPowerChangedDtoEvent.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\ItemPlacedDtoEvent.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\IInventoryGrid.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\InventoryCell.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\ItemCellTitleView.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\IPlacedItem.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\InventoryGridView.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\IGridInspector.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Flow\IFlowAggregateFacade.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\PreparedAction.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\ActionSpecification.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\IActionDescriptor.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\IEffectDescriptor.cs"/>
         <Compile Include="Assets\Scripts\Contracts\FlowContracts.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\ICharacterInventoryFacade.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\IActionCommand.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Flow\IFlowRouter.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\ActionTiming.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\ActionCommandDescriptor.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Action\ActionCommand.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\IPlacedEntryPoint.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Items\ShapeArchetype.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Inventory\InventoryCellView.cs"/>
-        <Compile Include="Assets\Scripts\Contracts\Flow\GridAdjacencyRouter.cs"/>
         <None Include="Assets\Scripts\Contracts\MageFactory.Contracts.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

@@ -1,9 +1,7 @@
 ﻿using System;
-using Contracts.Flow;
-using Contracts.Inventory;
-using Contracts.Items;
 using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
+using MageFactory.Inventory.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -15,7 +13,7 @@ namespace MageFactory.Character.Domain {
         private readonly Team team;
 
         private CharacterAggregate(CharacterData data, ICharacterInventoryFacade characterInventoryFacade, Team team) {
-            this.characterData = NullGuard.NotNullOrThrow(data);
+            characterData = NullGuard.NotNullOrThrow(data);
             this.characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.team = NullGuard.enumDefinedOrThrow(team);
 
@@ -23,11 +21,9 @@ namespace MageFactory.Character.Domain {
             characterData.OnHpChanged += handleCharacterDataHpChanged;
         }
 
-        public static CharacterAggregate createFrom(CharacterCreateCommand characterCreateCommand,
-            ICharacterInventoryFacade characterInventoryFacade) {
-            return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
-                characterCreateCommand.team);
-        }
+        public long MaxHp => characterData.getMaxHp();
+
+        public long CurrentHp => characterData.CurrentHp;
 
         public string getName() {
             return characterData.getName();
@@ -45,34 +41,15 @@ namespace MageFactory.Character.Domain {
             return characterData.CurrentHp;
         }
 
-        public long MaxHp => characterData.getMaxHp();
-
-        public long CurrentHp => characterData.CurrentHp;
-
-        public Team getTeam() {
-            return team;
-        }
-
         public event Action<ICharacter, long, long> OnHpChanged;
         public event Action<ICharacter> OnDeath;
-
-        ~CharacterAggregate() {
-            // finalizer — w razie gdyby ktoś zapomniał Cleanup (ale nie polegaj na tym)
-            characterData.OnHpChanged -= handleCharacterDataHpChanged;
-        }
-
-        private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
-            OnHpChanged?.Invoke(this, newHp, previousHpValue);
-        }
 
         // Metody przepuszczające do _data
 
 
-        public void apply(DamageAmount damageAmount) {
-            characterData.applyDamage(damageAmount);
-            if (characterData.CurrentHp <= 0) {
-                OnDeath?.Invoke(this);
-            }
+        public void apply(PowerAmount powerAmount) {
+            characterData.applyDamage(powerAmount);
+            if (characterData.CurrentHp <= 0) OnDeath?.Invoke(this);
         }
 
         public bool canPlaceItem(IPlaceableItem item, Vector2Int origin) {
@@ -80,9 +57,7 @@ namespace MageFactory.Character.Domain {
         }
 
         public bool equipItemOrThrow(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem) {
-            if (!canPlaceItem(item, origin)) {
-                throw new ArgumentException("Cannot equip item");
-            }
+            if (!canPlaceItem(item, origin)) throw new ArgumentException("Cannot equip item");
 
             placedItem = characterInventoryFacade.Place(item, origin);
             return true;
@@ -93,6 +68,25 @@ namespace MageFactory.Character.Domain {
         // np. gdy obiekt jest niszczony
         public void cleanup() {
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
+        }
+
+        public static CharacterAggregate createFrom(CharacterCreateCommand characterCreateCommand,
+            ICharacterInventoryFacade characterInventoryFacade) {
+            return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
+                characterCreateCommand.team);
+        }
+
+        public Team getTeam() {
+            return team;
+        }
+
+        ~CharacterAggregate() {
+            // finalizer — w razie gdyby ktoś zapomniał Cleanup (ale nie polegaj na tym)
+            characterData.OnHpChanged -= handleCharacterDataHpChanged;
+        }
+
+        private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
+            OnHpChanged?.Invoke(this, newHp, previousHpValue);
         }
     }
 }

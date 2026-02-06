@@ -2,33 +2,27 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts.Actionexe;
-using Contracts.Flow;
-using Contracts.Inventory;
-using Contracts.Items;
-using Inventory.Position;
+using MageFactory.ActionEffect;
+using MageFactory.Flow.Api;
+using MageFactory.FlowRouting;
+using MageFactory.Inventory.Api;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
+// using MageFactory.Flow.Api;
 
-namespace Inventory.EntryPoints {
+namespace MageFactory.Inventory.Domain {
     public class PlacedEntryPoint : IPlacedEntryPoint, IDisposable {
-        // private readonly float _turnInterval; // sekundy
-        // private readonly InventoryPosition _inventoryPosition;
-        // private readonly FlowKind _kind;
-        // private readonly Vector2Int _position;
-
+        private readonly IEntryPointArchetype _entryPointArchetype;
         private readonly IFlowFactory _flowFactory;
+        private readonly IGridInspector _gridInspector;
+        private readonly long _id;
+        private readonly InventoryPosition _inventoryPosition;
 
         private bool _battleRunning = true; /*for now*/
         private CancellationTokenSource _cts;
 
-        private readonly InventoryPosition _inventoryPosition;
-        private readonly EntryPointArchetype _entryPointArchetype;
-
-        private readonly IGridInspector _gridInspector;
-        private readonly long _id;
-
-        private PlacedEntryPoint(EntryPointArchetype entryPointArchetype, Vector2Int origin,
+        private PlacedEntryPoint(IEntryPointArchetype entryPointArchetype, Vector2Int origin,
             IGridInspector gridInspector, IFlowFactory flowFactory) {
             _id = IdGenerator.Next();
             _entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
@@ -38,31 +32,25 @@ namespace Inventory.EntryPoints {
             NullGuard.NotNullCheckOrThrow(_inventoryPosition);
         }
 
-        internal static IPlacedEntryPoint Create(EntryPointArchetype archetype, Vector2Int position,
-            IGridInspector gridInspector, IFlowFactory flowFactory) {
-            PlacedEntryPoint placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
-
-            placedEntryPoint.StartBattle(); // for now
-            return placedEntryPoint;
+        public void Dispose() {
+            StopBattle();
         }
 
-        public IActionSpecification GetAction() {
-            IActionSpecification actionSpecification = new ActionSpecification(
-                PrepareActionTiming(),
-                PrepareActionCommandDescriptor());
+        public IItemActionDescription prepareItemActionDescription() {
+            IItemActionDescription actionSpecification = new ItemActionDescription(
+                prepareCastTime(),
+                prepareEffectsDescriptor());
 
             return actionSpecification;
         }
 
-        private ActionTiming PrepareActionTiming() {
-            return new ActionTiming(2f); // for now
-        }
-
-        private IActionDescriptor PrepareActionCommandDescriptor() {
-            return new ActionCommandDescriptor(
-                new AddPower(new DamageToDeal(3))
-            );
-        }
+        // public IActionSpecification GetAction() {
+        //     IActionSpecification actionSpecification = new ActionSpecification(
+        //         PrepareActionTiming(),
+        //         PrepareActionCommandDescriptor());
+        //
+        //     return actionSpecification;
+        // }
 
         public Vector2Int GetOrigin() {
             return _inventoryPosition.GetOrigin();
@@ -80,16 +68,40 @@ namespace Inventory.EntryPoints {
             return _id;
         }
 
-        public void Dispose() {
-            StopBattle();
-        }
-
         public void StartBattle() {
             // if (_battleRunning) return;
             // _battleRunning = true;
             _cts = new CancellationTokenSource();
             _ = BattleLoopAsync(_cts.Token); // fire-and-forget
         }
+
+        internal static IPlacedEntryPoint Create(IEntryPointArchetype archetype, Vector2Int position,
+            IGridInspector gridInspector, IFlowFactory flowFactory) {
+            var placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
+
+            placedEntryPoint.StartBattle(); // for now
+            return placedEntryPoint;
+        }
+
+        private Duration prepareCastTime() {
+            return new Duration(2f); // for now
+        }
+
+        private IEffectsDescriptor prepareEffectsDescriptor() {
+            return new EffectsDescription(
+                new AddPower(new DamageToDeal(3))
+            );
+        }
+
+        // private ActionTiming PrepareActionTiming() {
+        //     return new ActionTiming(2f); // for now
+        // }
+        //
+        // private IActionDescriptor PrepareActionCommandDescriptor() {
+        //     return new ActionCommandDescriptor(
+        //         new AddPower(new DamageToDeal(3))
+        //     );
+        // }
 
         public void StopBattle() {
             if (!_battleRunning) return;
@@ -128,8 +140,8 @@ namespace Inventory.EntryPoints {
         }
 
         private IFlowAggregateFacade PrepareFlowAggregate(int power) {
-            IFlowRouter flowRouter = GridAdjacencyRouter.Create(_gridInspector);
-            IFlowAggregateFacade flowAggregate = _flowFactory.Create(this, power, flowRouter);
+            var flowRouter = GridAdjacencyRouter.Create(_gridInspector);
+            var flowAggregate = _flowFactory.Create(this, power, flowRouter);
             return flowAggregate;
         }
 

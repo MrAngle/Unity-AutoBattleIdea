@@ -2,7 +2,7 @@
   "name": "MageFactory.Context",
   "rootNamespace": "MageFactory.Context",
   "references": [
-    "MageFactory.Inventory",
+    "MageFactory.Inventory.Api",
     "MageFactory.Shared",
     "MageFactory.Character.Api",
     "MageFactory.Contracts"

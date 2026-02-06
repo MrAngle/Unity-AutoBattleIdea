@@ -1,7 +1,7 @@
 ﻿// Assets/Scripts/Inventory/Slots/IGridItemIndex.cs
 
 using System.Collections.Generic;
-using Contracts.Items;
+using MageFactory.Inventory.Api;
 using UnityEngine;
 
 namespace Inventory.Slots.Domain.Api {

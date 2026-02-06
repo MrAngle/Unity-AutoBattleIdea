@@ -2,59 +2,37 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Contracts.Inventory;
-using Contracts.Items;
+using MageFactory.Inventory.Api;
 using UnityEngine;
 
-namespace Inventory.Slots.Domain {
-    // public interface IInventoryGrid
-    // {
-    //     int Width { get; }
-    //     int Height { get; }
-    //     CellState GetState(Vector2Int coord);
-    //
-    //     bool CanPlace(ShapeArchetype data, Vector2Int origin);
-    //     void Place(ShapeArchetype data, Vector2Int origin);
-    //     
-    //     void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint);
-    //     
-    //     public static IInventoryGrid CreateInventoryGrid(int width, int height, IPlacedEntryPoint placedEntryPoint = null) {
-    //         return new InventoryGrid(width, height, placedEntryPoint);
-    //     }
-    // }
-
-
+namespace MageFactory.Inventory.Domain {
     public class InventoryGrid : IInventoryGrid {
         // TODO: make it internal
         private readonly Dictionary<Vector2Int, InventoryCell> _cells;
-        private readonly int _width;
-        private readonly int _height;
 
         private readonly List<IPlacedEntryPoint> _entryPoints = new();
-        public ReadOnlyCollection<IPlacedEntryPoint> EntryPoints => _entryPoints.AsReadOnly();
-
-        public int Width => _width;
-        public int Height => _height;
 
         internal InventoryGrid(int width, int height, IPlacedEntryPoint placedEntryPoint = null) {
-            _width = Mathf.Max(0, width);
-            _height = Mathf.Max(0, height);
+            Width = Mathf.Max(0, width);
+            Height = Mathf.Max(0, height);
 
             _cells = new Dictionary<Vector2Int, InventoryCell>();
-            for (int xIndex = 0; xIndex < _width; xIndex++) {
-                for (int yIndex = 0; yIndex < _height; yIndex++) {
-                    _cells[new Vector2Int(xIndex, yIndex)] = new InventoryCell(CellState.Empty);
-                }
-            }
+            for (var xIndex = 0; xIndex < Width; xIndex++)
+            for (var yIndex = 0; yIndex < Height; yIndex++)
+                _cells[new Vector2Int(xIndex, yIndex)] = new InventoryCell(CellState.Empty);
 
-            if (placedEntryPoint != null) {
-                TryAddEntryPoint(placedEntryPoint);
-            }
+            if (placedEntryPoint != null) TryAddEntryPoint(placedEntryPoint);
         }
+
+        public ReadOnlyCollection<IPlacedEntryPoint> EntryPoints => _entryPoints.AsReadOnly();
+
+        public int Width { get; }
+
+        public int Height { get; }
 
         public CellState GetState(Vector2Int coord) {
             // wersja bezpieczna: jeśli poza zakresem lub brak wpisu → traktuj jako zablokowane
-            if (coord.x < 0 || coord.x >= _width || coord.y < 0 || coord.y >= _height)
+            if (coord.x < 0 || coord.x >= Width || coord.y < 0 || coord.y >= Height)
                 return CellState.Unreachable;
 
             return _cells.TryGetValue(coord, out var cell)
@@ -69,19 +47,18 @@ namespace Inventory.Slots.Domain {
 
         public IEnumerable<(Vector2Int pos, InventoryCell cell)> AllCells() {
             // Iteracja po wszystkich legalnych polach
-            for (int x = 0; x < _width; x++) {
-                for (int y = 0; y < _height; y++) {
-                    var p = new Vector2Int(x, y);
-                    if (_cells.TryGetValue(p, out var c))
-                        yield return (p, c);
-                }
+            for (var x = 0; x < Width; x++)
+            for (var y = 0; y < Height; y++) {
+                var p = new Vector2Int(x, y);
+                if (_cells.TryGetValue(p, out var c))
+                    yield return (p, c);
             }
         }
 
         public bool CanPlace(ShapeArchetype data, Vector2Int origin) {
             foreach (var off in data.Shape.Cells) {
                 var p = origin + off;
-                if (p.x < 0 || p.x >= _width || p.y < 0 || p.y >= _height) return false;
+                if (p.x < 0 || p.x >= Width || p.y < 0 || p.y >= Height) return false;
                 if (!_cells.TryGetValue(p, out var c)) return false;
                 if (!c.IsAvailableForPlacement) return false;
             }
@@ -90,9 +67,7 @@ namespace Inventory.Slots.Domain {
         }
 
         public void Place(ShapeArchetype data, Vector2Int origin) {
-            if (!CanPlace(data, origin)) {
-                throw new ArgumentException("Cannot place item");
-            }
+            if (!CanPlace(data, origin)) throw new ArgumentException("Cannot place item");
 
             foreach (var off in data.Shape.Cells) {
                 var p = origin + off;
@@ -112,8 +87,9 @@ namespace Inventory.Slots.Domain {
             }
         }
 
-        private bool IsWithinBounds(Vector2Int p)
-            => p.x >= 0 && p.x < _width && p.y >= 0 && p.y < _height;
+        private bool IsWithinBounds(Vector2Int p) {
+            return p.x >= 0 && p.x < Width && p.y >= 0 && p.y < Height;
+        }
 
         /// Dodaj punkt wejścia (np. Damage) pod warunkiem, że mieści się w siatce.
         public void TryAddEntryPoint(IPlacedEntryPoint placedEntry) {

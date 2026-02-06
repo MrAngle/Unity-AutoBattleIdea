@@ -1,5 +1,5 @@
 ﻿using System;
-using Contracts.Inventory;
+using MageFactory.Inventory.Api;
 
 namespace Context {
     public class InventoryGridContext {

@@ -1,16 +1,15 @@
-﻿using Combat.ActionExecutor;
-using Combat.Flow.Domain.Aggregate;
-using Context;
-using Contracts.Flow;
-using Contracts.Inventory;
-using Contracts.Items;
+﻿using Context;
 using Controller.Character;
-using Inventory;
 using Inventory.Controller.Items.View;
-using Inventory.EntryPoints;
 using Inventory.Items.View;
+using MageFactory.ActionExecutor.Api;
+using MageFactory.ActionExecutor.Domain;
 using MageFactory.Character.Api;
-using MageFactory.Character.Domain;
+using MageFactory.Character.Domain.Service;
+using MageFactory.Flow.Api;
+using MageFactory.Flow.Domain.Service;
+using MageFactory.Inventory.Api;
+using MageFactory.Inventory.Domain.Service;
 using Semantics;
 using UI;
 using UnityEngine;
@@ -33,7 +32,15 @@ namespace Config {
         private GridLayoutGroup inventoryGridLayout;
 
         [Header("Battle UI")] [SerializeField] private CharacterPrefabAggregate battleSlotPrefab;
+
         [SerializeField] private Transform battleSlotParent;
+        // private InventoryCellView cellViewPrefab;
+        // private ItemView dragGhostPrefab;
+        //
+        // private InventoryGridView gridViewPrefab;
+        // // [SerializeField] private int width = 8;
+        //
+        // [Header("Prefabs")] private ItemView itemViewPrefab;
 
         // private ItemView dragGhostPrefab;
         // // [SerializeField] private int width = 8;

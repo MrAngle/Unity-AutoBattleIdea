@@ -1,12 +1,12 @@
 ﻿{
   "name": "MageFactory.Inventory.Controller",
-  "rootNamespace": "Inventory.Controller",
+  "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Inventory",
+    "MageFactory.Inventory.Api",
+    "MageFactory.Inventory.Domain",
     "MageFactory.Shared",
     "MageFactory.Character.Api",
     "MageFactory.Context",
-    "MageFactory.Combat",
     "MageFactory.UI",
     "Zenject",
     "MageFactory.Contracts",

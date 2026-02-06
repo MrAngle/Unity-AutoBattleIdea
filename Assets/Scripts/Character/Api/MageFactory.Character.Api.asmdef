@@ -3,7 +3,7 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Shared",
-    "MageFactory.Contracts"
+    "MageFactory.Inventory.Api"
   ],
   "autoReferenced": true
 }

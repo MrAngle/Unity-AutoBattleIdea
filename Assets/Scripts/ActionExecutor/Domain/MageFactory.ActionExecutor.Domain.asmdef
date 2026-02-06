@@ -1,0 +1,14 @@
+﻿{
+  "name": "MageFactory.ActionExecutor.Domain",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Shared",
+    "MageFactory.TimeSystem",
+    "MageFactory.ActionExecutor.Api",
+    "MageFactory.ActionEffect",
+    "MageFactory.Inventory.Api",
+    "MageFactory.Flow.Api",
+    "MageFactory.Contracts"
+  ],
+  "autoReferenced": true
+}

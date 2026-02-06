@@ -1,4 +1,4 @@
-﻿using Contracts.Items;
+﻿using MageFactory.Inventory.Api;
 using UnityEngine;
 using UnityEngine.UI;
 

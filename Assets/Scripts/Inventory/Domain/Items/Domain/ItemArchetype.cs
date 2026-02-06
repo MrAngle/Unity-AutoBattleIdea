@@ -1,11 +1,10 @@
-﻿using Contracts.Inventory;
-using Contracts.Items;
+﻿using MageFactory.Inventory.Api;
 using UnityEngine;
 
-namespace Inventory.Items.Domain {
+namespace MageFactory.Inventory.Domain {
     public class ItemArchetype : IPlaceableItem {
-        private readonly ShapeArchetype _shapeArchetype;
         private readonly float _castTime = 0.05f; // for now
+        private readonly ShapeArchetype _shapeArchetype;
 
         public ItemArchetype(ShapeArchetype shapeArchetype) {
             _shapeArchetype = shapeArchetype;

@@ -1,6 +1,5 @@
 ﻿using System;
-using Contracts.Inventory;
-using Inventory;
+using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
 using Zenject;
 

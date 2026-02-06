@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Contracts.Items;
 using Inventory.Controller;
-using Inventory.Items.Domain;
+using MageFactory.Inventory.Api;
+using MageFactory.Inventory.Domain;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

@@ -1,12 +1,15 @@
 ﻿{
-  "name": "MageFactory.Inventory",
-  "rootNamespace": "Inventory",
+  "name": "MageFactory.Inventory.Domain",
+  "rootNamespace": "MageFactory",
   "references": [
+    "MageFactory.Inventory.Api",
     "MageFactory.Shared",
     "MageFactory.TimeSystem",
-    "MageFactory.Contracts",
     "MageFactory.Semantics",
-    "Zenject"
+    "MageFactory.ActionEffect",
+    "MageFactory.Flow.Api",
+    "Zenject",
+    "MageFactory.FlowRouting"
   ],
   "autoReferenced": true
 }

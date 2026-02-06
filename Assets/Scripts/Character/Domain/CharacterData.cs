@@ -1,6 +1,6 @@
 ﻿using System;
-using Contracts.Flow;
 using MageFactory.Character.Api.Dto;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain {
     public class CharacterData {
@@ -38,13 +38,13 @@ namespace MageFactory.Character.Domain {
 
         internal event Action<CharacterData, long, long> OnHpChanged;
 
-        internal void applyDamage(DamageAmount damageAmount) {
+        internal void applyDamage(PowerAmount damageAmount) {
             switch (damageAmount) {
                 case DamageToDeal deal:
-                    takeDamage(deal.GetPower());
+                    takeDamage(deal.getPower());
                     break;
                 case DamageToReceive receive:
-                    heal(receive.GetPower());
+                    heal(receive.getPower());
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");

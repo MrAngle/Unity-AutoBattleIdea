@@ -1,6 +1,5 @@
 ﻿using System;
-using Contracts.Inventory;
-using Contracts.Items;
+using MageFactory.Inventory.Api;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,9 +38,7 @@ namespace Semantics {
         private readonly T _value;
 
         protected Semantic(T value) {
-            if (value is null) {
-                throw new ArgumentNullException(nameof(value));
-            }
+            if (value is null) throw new ArgumentNullException(nameof(value));
 
             _value = value;
         }

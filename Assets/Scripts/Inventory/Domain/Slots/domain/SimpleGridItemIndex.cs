@@ -1,8 +1,8 @@
 ﻿// Assets/Scripts/Inventory/Slots/SimpleGridItemIndex.cs
 
 using System.Collections.Generic;
-using Contracts.Items;
 using Inventory.Slots.Domain.Api;
+using MageFactory.Inventory.Api;
 using UnityEngine;
 
 namespace Inventory.Slots.Domain {

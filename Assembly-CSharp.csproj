@@ -940,9 +940,6 @@
     <Reference Include="Unity.RenderPipelines.Core.Runtime.Shared">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="PPv2URPConverters">
-      <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.2D.Runtime">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.2D.Runtime.dll</HintPath>
     </Reference>
@@ -954,6 +951,9 @@
     </Reference>
     <Reference Include="Unity.PlasticSCM.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+    </Reference>
+      <Reference Include="PPv2URPConverters">
+          <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
@@ -1089,21 +1089,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-      <ProjectReference Include="MageFactory.Inventory.csproj">
-          <Project>{478b55ed-73f4-eb1f-9e93-1f107e11324c}</Project>
-          <Name>MageFactory.Inventory</Name>
+      <ProjectReference Include="MageFactory.Inventory.Domain.csproj">
+          <Project>{daa5b235-a6ba-a97d-ac14-53fd076ebe8a}</Project>
+          <Name>MageFactory.Inventory.Domain</Name>
       </ProjectReference>
       <ProjectReference Include="MageFactory.Context.csproj">
           <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
           <Name>MageFactory.Context</Name>
       </ProjectReference>
-      <ProjectReference Include="MageFactory.Combat.csproj">
-          <Project>{feaf1a10-0c18-53d5-ae74-ce24f4c2d2be}</Project>
-          <Name>MageFactory.Combat</Name>
-      </ProjectReference>
       <ProjectReference Include="MageFactory.Config.csproj">
           <Project>{73dccb57-6c42-6948-013a-0207e57d7f06}</Project>
           <Name>MageFactory.Config</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.ActionEffect.csproj">
+          <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
+          <Name>MageFactory.ActionEffect</Name>
       </ProjectReference>
       <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
           <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
@@ -1121,6 +1121,10 @@
       <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
       <Name>Zenject</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.ActionExecutor.Api.csproj">
+          <Project>{3104d3d4-b398-917f-6acc-2f14d39376e4}</Project>
+          <Name>MageFactory.ActionExecutor.Api</Name>
+      </ProjectReference>
       <ProjectReference Include="MageFactory.Shared.csproj">
           <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
           <Name>MageFactory.Shared</Name>
@@ -1133,9 +1137,17 @@
           <Project>{2b5b6e5b-92f7-6d66-6fa8-5174d74d9819}</Project>
           <Name>MageFactory.TimeSystem</Name>
       </ProjectReference>
+      <ProjectReference Include="MageFactory.Flow.Domain.csproj">
+          <Project>{ab1fe733-aab6-7e9e-5bfc-545c7a515a04}</Project>
+          <Name>MageFactory.Flow.Domain</Name>
+      </ProjectReference>
       <ProjectReference Include="MageFactory.UI.csproj">
           <Project>{7aaa46dd-f5af-3d59-3491-f91232500383}</Project>
           <Name>MageFactory.UI</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.FlowFactory.csproj">
+          <Project>{22429f84-ed1e-a777-8dd8-7491b9f643d7}</Project>
+          <Name>MageFactory.FlowFactory</Name>
       </ProjectReference>
       <ProjectReference Include="Plugin.DOTween.csproj">
           <Project>{e1d99a99-6880-f92f-e6dd-1174f1c455f9}</Project>
@@ -1161,9 +1173,21 @@
           <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
           <Name>MageFactory.Registry</Name>
       </ProjectReference>
+      <ProjectReference Include="MageFactory.FlowRouting.csproj">
+          <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
+          <Name>MageFactory.FlowRouting</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Flow.Api.csproj">
+          <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
+          <Name>MageFactory.Flow.Api</Name>
+      </ProjectReference>
       <ProjectReference Include="MageFactory.Contracts.csproj">
           <Project>{ef5d5157-4935-d941-dc55-ae29b3158996}</Project>
           <Name>MageFactory.Contracts</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.ActionExecutor.Domain.csproj">
+          <Project>{7d4fec63-3cf9-4cf0-4ca0-3975473ded8f}</Project>
+          <Name>MageFactory.ActionExecutor.Domain</Name>
       </ProjectReference>
       <ProjectReference Include="MageFactory.Controller.Character.csproj">
           <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
@@ -1172,6 +1196,10 @@
       <ProjectReference Include="MageFactory.Semantics.csproj">
           <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
           <Name>MageFactory.Semantics</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Inventory.Api.csproj">
+          <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
+          <Name>MageFactory.Inventory.Api</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

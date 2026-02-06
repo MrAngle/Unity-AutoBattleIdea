@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Contracts.Inventory;
-using Contracts.Items;
-using Inventory.EntryPoints;
-using Inventory.Slots.Domain;
+using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
-namespace Inventory {
+namespace MageFactory.Inventory.Domain {
     // TODO: rozdzielic characterInventoryFacade od inventoryAggregate
     // public interface ICharacterInventoryFacade {
     //     IEnumerable<IPlacedItem> GetPlacedSnapshot();

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using Context;
-using Contracts.Inventory;
-using Contracts.Items;
 using Inventory.Items.View;
-using Inventory.Slots.Domain;
+using MageFactory.Inventory.Api;
+using MageFactory.Inventory.Domain;
 using Semantics;
 using UnityEngine;
 using Zenject;

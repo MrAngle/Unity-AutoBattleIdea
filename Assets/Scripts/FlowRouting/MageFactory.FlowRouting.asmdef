@@ -1,0 +1,9 @@
+﻿{
+  "name": "MageFactory.FlowRouting",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Shared",
+    "MageFactory.Inventory.Api"
+  ],
+  "autoReferenced": true
+}

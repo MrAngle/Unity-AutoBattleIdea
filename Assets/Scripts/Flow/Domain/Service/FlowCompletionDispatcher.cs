@@ -1,0 +1,36 @@
+﻿using Registry;
+using UnityEngine;
+
+namespace MageFactory.Flow.Domain.Service {
+    public class FlowCompletionDispatcher {
+        private readonly FlowModel _flowModel;
+
+        public static void finishFlow(FlowModel flowModel) {
+            FlowCompletionDispatcher flowCompletionDispatcher = new FlowCompletionDispatcher(flowModel);
+
+            // TODO: change it
+            flowCompletionDispatcher.handleFlow();
+        }
+
+        private FlowCompletionDispatcher(FlowModel flowModel) {
+            _flowModel = flowModel;
+        }
+
+        private void handleFlow() {
+            // for now
+            var teamA = CharacterRegistry.Instance.GetTeamA();
+            var teamB = CharacterRegistry.Instance.GetTeamB();
+
+            // wybierz losowego atakującego z drużyny A
+            var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, teamA.Count)];
+            var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, teamB.Count)];
+
+            var damageToDeal = _flowModel.FlowPayload.GetDamageToDeal();
+            var damageToReceive = _flowModel.FlowPayload.GetDamageToReceive();
+            target.apply(damageToDeal);
+            // attacker.Apply(damageToReceive); // for now
+
+            Debug.Log($"{attacker.getName()} zadał {damageToDeal.getPower()} obrażeń {target.getName()}");
+        }
+    }
+}
