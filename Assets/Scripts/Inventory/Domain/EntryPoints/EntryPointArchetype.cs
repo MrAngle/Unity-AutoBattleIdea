@@ -48,27 +48,6 @@ namespace MageFactory.Inventory.Domain {
             return _turnInterval;
         }
 
-        public IItemActionDescription prepareActionDescription(IEntryPointContext entryPointContext) {
-            var actionSpecification = new ItemActionDescription(
-                prepareCastTime(),
-                prepareEffectsDescriptor(entryPointContext));
-
-            return actionSpecification;
-        }
-
-        private Duration prepareCastTime() {
-            return new Duration(2f); // for now
-        }
-
-
-        protected abstract IEffectsDescriptor prepareEffectsDescriptor(IEntryPointContext entryPointContext);
-
-        // private ActionTiming PrepareActionTiming() {
-        //     return new ActionTiming(2f); // for now
-        // }
-        //
-        // protected abstract ActionCommandDescriptor PrepareActionCommandDescriptor(IEntryPointContext entryPointContext);
-
         public override string ToString() {
             return $"({_kind})";
         }

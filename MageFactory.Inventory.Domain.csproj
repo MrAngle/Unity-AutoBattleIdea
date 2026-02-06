@@ -62,9 +62,7 @@
         <Compile Include="Assets\Scripts\Inventory\Domain\Slots\domain\Api\IGridItemIndex.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\TickEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\PlacedEntryPoint.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\EventEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ActionDescriptor\EffectsDescription.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\EntryPointData.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Service\InventoryAggregateFactory.cs"/>
         <None Include="Assets\Scripts\Inventory\Domain\MageFactory.Inventory.asmdef"/>
         <Reference Include="UnityEngine">
@@ -886,6 +884,18 @@
             <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
             <Name>MageFactory.Inventory.Api</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.ActionEffect.csproj">
+            <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
+            <Name>MageFactory.ActionEffect</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Flow.Api.csproj">
+            <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
+            <Name>MageFactory.Flow.Api</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.FlowRouting.csproj">
+            <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
+            <Name>MageFactory.FlowRouting</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
@@ -898,21 +908,9 @@
             <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
             <Name>MageFactory.Semantics</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.ActionEffect.csproj">
-            <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
-            <Name>MageFactory.ActionEffect</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Flow.Api.csproj">
-            <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
-            <Name>MageFactory.Flow.Api</Name>
-        </ProjectReference>
         <ProjectReference Include="Zenject.csproj">
             <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
             <Name>Zenject</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.FlowRouting.csproj">
-            <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
-            <Name>MageFactory.FlowRouting</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

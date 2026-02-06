@@ -8,11 +8,5 @@ namespace MageFactory.Inventory.Api {
 
         bool CanPlace(ShapeArchetype data, Vector2Int origin);
         void Place(ShapeArchetype data, Vector2Int origin);
-
-        void RegisterEntryPoint(IPlacedEntryPoint placedEntryPoint);
-
-        // public static IInventoryGrid CreateInventoryGrid(int width, int height, IPlacedEntryPoint placedEntryPoint = null) {
-        //     return new InventoryGrid(width, height, placedEntryPoint);
-        // }
     }
 }

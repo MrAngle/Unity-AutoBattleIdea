@@ -3,13 +3,13 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Inventory.Api",
+    "MageFactory.ActionEffect",
+    "MageFactory.Flow.Api",
+    "MageFactory.FlowRouting",
     "MageFactory.Shared",
     "MageFactory.TimeSystem",
     "MageFactory.Semantics",
-    "MageFactory.ActionEffect",
-    "MageFactory.Flow.Api",
-    "Zenject",
-    "MageFactory.FlowRouting"
+    "Zenject"
   ],
   "autoReferenced": true
 }

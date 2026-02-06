@@ -5,13 +5,6 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Domain.Service {
-    // public interface IEntryPointFactory {
-    //     IPlacedEntryPoint CreatePlacedEntryPoint(EntryPointArchetype archetype, Vector2Int position,
-    //         IGridInspector gridInspector);
-    //
-    //     EntryPointArchetype CreateArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype);
-    // }
-
     public class EntryPointFactory : IEntryPointFactory {
         private readonly IFlowFactory _flowFactory;
 
