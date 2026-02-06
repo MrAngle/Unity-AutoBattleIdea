@@ -6,17 +6,10 @@ using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.ActionExecutor.Domain {
-    public sealed class PreparedAction /*: IPreparedAction*/ {
-        // private readonly ActionCommand actionCommand;
+    public sealed class PreparedAction {
         private readonly Duration castTime;
         private readonly IReadOnlyList<IEffect> effects;
         private readonly IEffectContext effectContext;
-
-        // public PreparedAction(Duration castTime, ActionCommand actionCommand) {
-        //     this.castTime = castTime;
-        //     this.actionCommand = actionCommand ?? throw new ArgumentNullException(nameof(actionCommand));
-        //     NullGuard.NotNullCheckOrThrow(this.castTime, this.actionCommand);
-        // }        
 
         public PreparedAction(Duration castTime, IReadOnlyList<IEffect> effects, IEffectContext effectContext) {
             this.castTime = castTime;
@@ -41,24 +34,8 @@ namespace MageFactory.ActionExecutor.Domain {
             return castTime;
         }
 
-        // public void execute() {
-        //     _actionCommand.Execute();
-        // }
-
         public void execute() {
             for (var i = 0; i < effects.Count; i++) effects[i].apply(effectContext);
         }
-
-        // public IPreparedAction ToPreparedAction(IFlowContext flowContext) {
-        //     return new PreparedAction(_actionTiming, _actionCommand.ToActionCommand(flowContext));
-        // }
-
-        // public ActionTiming GetActionTiming() {
-        //     return _actionTiming;
-        // }
-        //
-        // public void Execute() {
-        //     _actionCommand.Execute();
-        // }
     }
 }

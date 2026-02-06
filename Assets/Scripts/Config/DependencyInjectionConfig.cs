@@ -133,7 +133,7 @@ namespace Config {
                 .AsSingle();
 
             Container.Bind<IActionExecutor>()
-                .To<ActionExecutor>()
+                .To<ActionExecutorService>()
                 .AsSingle();
 
             Container.Bind<ICharacterAggregateFactory>()

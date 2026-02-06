@@ -8,9 +8,6 @@ namespace MageFactory.ActionEffect {
             this.damageAmount = damageAmount;
         }
 
-        // public void Execute(IFlowContext flow) {
-        //     flow.AddPower(_amount);
-        // }
         public void apply(IEffectContext effectContext) {
             effectContext.addPower(damageAmount);
         }

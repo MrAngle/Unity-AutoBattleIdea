@@ -47,15 +47,8 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\ActionEffectResolver.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\ActionSpecification.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\EffectDescriptor.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\ActionExecutor.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\ActionCommand.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\IActionEffect.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\IEffectMapper.cs"/>
         <Compile Include="Assets\Scripts\ActionExecutor\Domain\PreparedAction.cs"/>
-        <Compile Include="Assets\Scripts\ActionExecutor\Domain\ActionCommandDescriptor.cs"/>
+        <Compile Include="Assets\Scripts\ActionExecutor\Domain\ActionExecutorService.cs"/>
         <None Include="Assets\Scripts\ActionExecutor\Domain\MageFactory.ActionExecutor.Domain.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
