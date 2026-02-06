@@ -1,17 +1,10 @@
 ﻿using System.Threading;
-using MageFactory.FlowRouting;
 using MageFactory.Inventory.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
-    public interface IEntryPointContext {
-        IGridInspector Grid { get; }
-
-        IFlowRouter FlowRouter { get; }
-    }
-
     public abstract class EntryPointArchetype : IEntryPointArchetype {
         private readonly IEntryPointFactory _entryPointFactory; // separate in future
         private readonly FlowKind _kind;
