@@ -119,11 +119,11 @@ namespace Config {
                 .AsSingle();
 
             Container.Bind<IEntryPointFactory>()
-                .To<EntryPointFactory>()
+                .To<EntryPointFactoryService>()
                 .AsSingle();
 
             Container.Bind<IInventoryAggregateFactory>()
-                .To<InventoryAggregateFactory>()
+                .To<InventoryAggregateFactoryService>()
                 .AsSingle();
 
 

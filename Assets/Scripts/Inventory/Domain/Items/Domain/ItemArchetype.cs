@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
     public class ItemArchetype : IPlaceableItem {
-        private readonly float _castTime = 0.05f; // for now
+        private readonly float castTime = 0.05f; // for now
         private readonly ShapeArchetype _shapeArchetype;
 
         public ItemArchetype(ShapeArchetype shapeArchetype) {
@@ -19,8 +19,8 @@ namespace MageFactory.Inventory.Domain {
             return _shapeArchetype;
         }
 
-        public float GetCastTime() {
-            return _castTime;
+        public float getCastTime() {
+            return castTime;
         }
     }
 }

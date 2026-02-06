@@ -15,7 +15,6 @@ namespace MageFactory.Inventory.Domain {
             _id = IdGenerator.Next();
             _itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
             _inventoryPosition = InventoryPosition.Create(origin, _itemArchetype.GetShape().Shape);
-            // Register(Data, Origin);
         }
 
         public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
@@ -39,7 +38,7 @@ namespace MageFactory.Inventory.Domain {
         }
 
         private Duration prepareActionTiming() {
-            return new Duration(_itemArchetype.GetCastTime());
+            return new Duration(_itemArchetype.getCastTime());
         }
 
         private IEffectsDescriptor prepareEffectsDescriptor() {
@@ -47,16 +46,6 @@ namespace MageFactory.Inventory.Domain {
                 new AddPower(new DamageToDeal(5))
             );
         }
-
-        // private ActionTiming PrepareActionTiming() {
-        //     return new ActionTiming(_itemArchetype.GetCastTime());
-        // }
-        //
-        // private IActionDescriptor PrepareActionCommandDescriptor() {
-        //     return new ActionCommandDescriptor(
-        //         new AddPower(new DamageToDeal(5))
-        //     );
-        // }
 
         public ShapeArchetype GetShape() {
             return _itemArchetype.GetShape();

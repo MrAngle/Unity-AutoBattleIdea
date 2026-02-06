@@ -2,12 +2,12 @@
 using Zenject;
 
 namespace MageFactory.Inventory.Domain.Service {
-    public class InventoryAggregateFactory : IInventoryAggregateFactory {
+    public class InventoryAggregateFactoryService : IInventoryAggregateFactory {
         private readonly IEntryPointFactory _entryPointFactory;
         private readonly SignalBus _signalBus;
 
         [Inject]
-        public InventoryAggregateFactory(
+        public InventoryAggregateFactoryService(
             SignalBus signalBus,
             IEntryPointFactory entryPointFactory) {
             _signalBus = signalBus;

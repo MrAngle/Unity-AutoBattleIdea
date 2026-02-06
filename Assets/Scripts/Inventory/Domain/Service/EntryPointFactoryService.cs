@@ -5,11 +5,11 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Domain.Service {
-    public class EntryPointFactory : IEntryPointFactory {
+    public class EntryPointFactoryService : IEntryPointFactory {
         private readonly IFlowFactory _flowFactory;
 
         [Inject]
-        public EntryPointFactory(IFlowFactory flowFactory) {
+        public EntryPointFactoryService(IFlowFactory flowFactory) {
             _flowFactory = flowFactory;
         }
 

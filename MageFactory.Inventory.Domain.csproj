@@ -50,20 +50,19 @@
         <Compile Include="Assets\Scripts\Inventory\Domain\Slots\View\InventoryGridView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Slots\View\InventoryCellView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ItemArchetype.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Service\EntryPointFactory.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\EntryPointArchetype.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\InventoryAggregate.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Slots\domain\InventoryGrid.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Domain\Service\EntryPointFactoryService.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ActionDescriptor\ItemActionDescription.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Position\InventoryPosition.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\BattleItem.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Slots\domain\SimpleGridItemIndex.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ActionDescriptor\IEffectDescriptor.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Domain\Service\InventoryAggregateFactoryService.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Slots\domain\Api\IGridItemIndex.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\TickEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\EntryPoints\PlacedEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Items\Domain\ActionDescriptor\EffectsDescription.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Domain\Service\InventoryAggregateFactory.cs"/>
         <None Include="Assets\Scripts\Inventory\Domain\MageFactory.Inventory.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

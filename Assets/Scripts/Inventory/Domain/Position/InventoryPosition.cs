@@ -15,12 +15,8 @@ namespace MageFactory.Inventory.Domain {
             _occupiedCells = CalculateOccupiedCellsByOrigin();
         }
 
-        // public IReadOnlyCollection<Vector2Int> GetOccupiedCells()
-        //     => _cellToItem.Keys.ToArray();
-
         public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
             return _occupiedCells;
-            // return Data.Shape.Cells.Select(offset => Origin + offset);
         }
 
         public Vector2Int GetOrigin() {
