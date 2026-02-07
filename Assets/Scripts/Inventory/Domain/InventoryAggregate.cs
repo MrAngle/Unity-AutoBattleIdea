@@ -5,10 +5,9 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
-namespace MageFactory.Item.Controller.Domain {
-    public class InventoryAggregate : IGridInspector, ICharacterInventoryFacade {
-        private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
-
+namespace MageFactory.Inventory.Domain {
+    internal class InventoryAggregate : IGridInspector, ICharacterInventoryFacade {
+        private readonly Dictionary<Vector2Int, IPlacedItem> cellToItem = new();
         private readonly IInventoryGrid inventoryGrid;
         private readonly HashSet<IPlacedItem> items;
         private readonly SignalBus signalBus;
@@ -24,7 +23,7 @@ namespace MageFactory.Item.Controller.Domain {
             NullGuard.NotNullCheckOrThrow(this.inventoryGrid, this.items, this.signalBus);
         }
 
-        public static ICharacterInventoryFacade create(SignalBus signalBus) {
+        internal static ICharacterInventoryFacade create(SignalBus signalBus) {
             IInventoryGrid
                 grid = new InventoryGrid(12, 8);
 
@@ -58,11 +57,11 @@ namespace MageFactory.Item.Controller.Domain {
 
             var placedItem = placeableItem.toPlacedItem(this, origin);
             foreach (var c in placedItem.getOccupiedCells())
-                if (_cellToItem.ContainsKey(c))
+                if (cellToItem.ContainsKey(c))
                     throw new ArgumentException("Cannot place item");
 
             items.Add(placedItem);
-            foreach (var c in placedItem.getOccupiedCells()) _cellToItem[c] = placedItem;
+            foreach (var c in placedItem.getOccupiedCells()) cellToItem[c] = placedItem;
 
             inventoryGrid.place(placedItem.getShape(), origin);
             signalBus.Fire(new ItemPlacedDtoEvent(placedItem.getId(), placedItem.getShape(), origin));
@@ -70,7 +69,7 @@ namespace MageFactory.Item.Controller.Domain {
         }
 
         public bool tryGetItemAtCell(Vector2Int cell, out IPlacedItem item) {
-            return _cellToItem.TryGetValue(cell, out item);
+            return cellToItem.TryGetValue(cell, out item);
         }
     }
 }

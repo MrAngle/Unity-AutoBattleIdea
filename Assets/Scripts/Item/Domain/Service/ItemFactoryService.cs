@@ -6,6 +6,7 @@ using MageFactory.Item.Controller.Api;
 using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
@@ -17,7 +18,7 @@ namespace MageFactory.Item.Domain.Service {
 
         [Inject]
         internal ItemFactoryService(IFlowFactory flowFactory) {
-            _flowFactory = flowFactory;
+            _flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
 
         public IPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,

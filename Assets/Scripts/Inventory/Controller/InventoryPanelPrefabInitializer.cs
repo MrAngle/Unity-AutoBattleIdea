@@ -2,48 +2,57 @@
 using System.Reflection;
 using MageFactory.Context;
 using MageFactory.Item.Controller.Api;
-using MageFactory.Item.Controller.Domain;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public class InventoryPanelPrefabInitializer : MonoBehaviour {
-        [Inject] private readonly SignalBus _signalBus;
-        [Inject] private CellViewPrefabInventoryCellView _cellViewPrefab;
+        private SignalBus signalBus;
+        private CellViewPrefabInventoryCellView cellViewPrefab;
+        private GridViewPrefabInventoryGridView gridViewPrefab;
+        private InventoryGridContext inventoryGridContext;
 
         private InventoryGridView _gridView;
 
-        [Header("Prefabs")] [Inject] private GridViewPrefabInventoryGridView _gridViewPrefab;
-
-        [Inject] private InventoryAggregateContext _inventoryAggregateContext;
-
-        [Inject] private InventoryGridContext _inventoryGridContext;
+        [Inject]
+        private void construct(
+            SignalBus injectSignalBus,
+            CellViewPrefabInventoryCellView injectCellViewPrefab,
+            GridViewPrefabInventoryGridView injectGridViewPrefab,
+            InventoryGridContext injectInventoryGridContext
+        ) {
+            signalBus = NullGuard.NotNullOrThrow(injectSignalBus);
+            cellViewPrefab = NullGuard.NotNullOrThrow(injectCellViewPrefab);
+            gridViewPrefab = NullGuard.NotNullOrThrow(injectGridViewPrefab);
+            inventoryGridContext = NullGuard.NotNullOrThrow(injectInventoryGridContext);
+        }
 
         private void Awake() {
-            _gridView = Instantiate(_gridViewPrefab.Get(), transform, false);
+            _gridView = Instantiate(gridViewPrefab.Get(), transform, false);
 
             var field = _gridView.GetType()
                 .GetField("cellPrefab", BindingFlags.NonPublic | BindingFlags.Instance);
             if (field != null && field.GetValue(_gridView) == null)
-                field.SetValue(_gridView, _cellViewPrefab.Get());
+                field.SetValue(_gridView, cellViewPrefab.Get());
         }
 
         private void OnEnable() {
-            _inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
+            inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
 
-            var current = _inventoryGridContext.getInventoryGrid();
+            var current = inventoryGridContext.getInventoryGrid();
             if (current != null)
                 OnInventoryGridChanged(current);
         }
 
         private void OnDisable() {
-            _inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
+            inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
         }
 
         public void Initialize() {
-            _signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
-            _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
-            _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
+            signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
+            signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
+            signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
         private void OnItemPlaced() {
@@ -59,14 +68,14 @@ namespace MageFactory.Inventory.Controller {
         }
 
 
-        public void Dispose() {
-            _signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);
-            _signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
-            _signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
+        public void dispose() {
+            signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);
+            signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
+            signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
         private void OnInventoryGridChanged(IInventoryGrid grid) {
-            _gridView.Build((InventoryGrid)grid);
+            _gridView.Build(grid);
 
             var rt = (RectTransform)_gridView.transform;
             rt.anchorMin = Vector2.zero;
