@@ -9,14 +9,12 @@ using UnityEngine.EventSystems;
 namespace MageFactory.Inventory.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
         private ItemDragController _controller;
-
-        // private ShapeArchetype _data;
         private IPlaceableItem _placeableItem;
         [Header("Config")] public ShapeArchetypeId itemId = ShapeArchetypeId.SQUARE_2X2;
 
         private void Awake() {
-            _controller = FindObjectOfType<ItemDragController>(true);
-            // Prosty lookup z Twojej statycznej konfiguracji:
+            _controller = FindAnyObjectByType<ItemDragController>(FindObjectsInactive.Include);
+
             var shapeArchetype = Array.Find(ShapeCatalog.All.ToArray(), d => d.ShapeArchetypeId == itemId);
             var itemArchetype = new ItemArchetype(shapeArchetype);
 

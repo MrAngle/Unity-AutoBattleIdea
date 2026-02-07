@@ -32,6 +32,10 @@ namespace MageFactory.Item.Domain {
             return _id;
         }
 
+        public ShapeArchetype getShape() {
+            return _itemArchetype.getShape();
+        }
+
         public IActionDescription prepareItemActionDescription() {
             IActionDescription actionSpecification = new ItemActionDescription(
                 prepareActionTiming(),
@@ -48,10 +52,6 @@ namespace MageFactory.Item.Domain {
             return new ItemOperationsDescription(
                 new AddPower(new DamageToDeal(5))
             );
-        }
-
-        public ShapeArchetype getShape() {
-            return _itemArchetype.getShape();
         }
     }
 }

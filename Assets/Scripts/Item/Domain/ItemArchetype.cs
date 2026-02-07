@@ -5,10 +5,10 @@ using UnityEngine;
 namespace MageFactory.Item.Domain {
     public class ItemArchetype : IPlaceableItem {
         private readonly float castTime = 0.05f; // for now
-        private readonly ShapeArchetype _shapeArchetype;
+        private readonly ShapeArchetype shapeArchetype;
 
         public ItemArchetype(ShapeArchetype shapeArchetype) {
-            _shapeArchetype = shapeArchetype;
+            this.shapeArchetype = shapeArchetype;
         }
 
         public IPlacedItem toPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
@@ -17,10 +17,10 @@ namespace MageFactory.Item.Domain {
 
 
         public ShapeArchetype getShape() {
-            return _shapeArchetype;
+            return shapeArchetype;
         }
 
-        public float getCastTime() {
+        internal float getCastTime() {
             return castTime;
         }
     }

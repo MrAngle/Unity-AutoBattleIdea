@@ -18,12 +18,12 @@ namespace MageFactory.Flow.Domain {
 
         private void handleFlow() {
             // for now
-            var teamA = CharacterRegistry.Instance.GetTeamA();
-            var teamB = CharacterRegistry.Instance.GetTeamB();
+            var teamA = CharacterRegistry.Instance.getTeamA();
+            var teamB = CharacterRegistry.Instance.getTeamB();
 
             // wybierz losowego atakującego z drużyny A
-            var attacker = CharacterRegistry.Instance.GetTeamA()[Random.Range(0, teamA.Count)];
-            var target = CharacterRegistry.Instance.GetTeamB()[Random.Range(0, teamB.Count)];
+            var attacker = CharacterRegistry.Instance.getTeamA()[Random.Range(0, teamA.Count)];
+            var target = CharacterRegistry.Instance.getTeamB()[Random.Range(0, teamB.Count)];
 
             var damageToDeal = flowModel.getFlowPayload().getDamageToDeal();
             var damageToReceive = flowModel.getFlowPayload().getDamageToReceive();

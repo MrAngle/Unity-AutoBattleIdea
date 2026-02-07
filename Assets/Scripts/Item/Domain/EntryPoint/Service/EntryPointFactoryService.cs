@@ -18,15 +18,13 @@ namespace MageFactory.Item.Domain.EntryPoint.Service {
             _flowFactory = flowFactory;
         }
 
-        // @Override
         public IPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
             IGridInspector gridInspector) {
-            var placedEntryPoint = PlacedEntryPoint.Create(archetype, position, gridInspector, _flowFactory);
+            var placedEntryPoint = PlacedEntryPoint.create(archetype, position, gridInspector, _flowFactory);
 
             return placedEntryPoint;
         }
 
-        // @Override
         public IEntryPointArchetype createArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
             return new TickEntryPoint(kind, shapeArchetype, this);
         }

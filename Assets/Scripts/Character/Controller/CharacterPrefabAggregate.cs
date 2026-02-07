@@ -57,7 +57,7 @@ namespace MageFactory.Character.Controller {
             if (_character != null) {
                 _character.OnHpChanged += HandleHpChanged;
                 _character.OnDeath += OnDeath;
-                CharacterRegistry.Instance.Register(_character);
+                CharacterRegistry.Instance.register(_character);
             }
 
             RefreshUI();
@@ -69,7 +69,7 @@ namespace MageFactory.Character.Controller {
         }
 
         private void OnDeath(ICharacter ch) {
-            CharacterRegistry.Instance.Unregister(_character);
+            CharacterRegistry.Instance.unregister(_character);
             Destroy(gameObject);
         }
 

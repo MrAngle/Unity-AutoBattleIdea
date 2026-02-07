@@ -35,6 +35,14 @@ namespace MageFactory.Item.Domain.EntryPoint {
             NullGuard.NotNullCheckOrThrow(_inventoryPosition);
         }
 
+        internal static IPlacedEntryPoint create(IEntryPointArchetype archetype, Vector2Int position,
+            IGridInspector gridInspector, IFlowFactory flowFactory) {
+            var placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
+
+            placedEntryPoint.startBattle(); // for now
+            return placedEntryPoint;
+        }
+
         public void Dispose() {
             stopBattle();
         }
@@ -46,7 +54,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
 
             return actionSpecification;
         }
-
 
         public Vector2Int getOrigin() {
             return _inventoryPosition.getOrigin();
@@ -64,19 +71,11 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return _id;
         }
 
-        public void StartBattle() {
+        public void startBattle() {
             // if (_battleRunning) return;
             // _battleRunning = true;
             _cts = new CancellationTokenSource();
             _ = battleLoopAsync(_cts.Token); // fire-and-forget
-        }
-
-        internal static IPlacedEntryPoint Create(IEntryPointArchetype archetype, Vector2Int position,
-            IGridInspector gridInspector, IFlowFactory flowFactory) {
-            var placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
-
-            placedEntryPoint.StartBattle(); // for now
-            return placedEntryPoint;
         }
 
         private Duration prepareCastTime() {
@@ -87,14 +86,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return new ItemOperationsDescription(
                 new AddPower(new DamageToDeal(3))
             );
-        }
-
-        public void stopBattle() {
-            if (!_battleRunning) return;
-            _battleRunning = false;
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = null;
         }
 
         private async Task battleLoopAsync(CancellationToken ct) {
@@ -116,6 +107,14 @@ namespace MageFactory.Item.Domain.EntryPoint {
             var flowRouter = GridAdjacencyRouter.create(_gridInspector);
             var flowAggregate = _flowFactory.create(this, power, flowRouter);
             return flowAggregate;
+        }
+
+        private void stopBattle() {
+            if (!_battleRunning) return;
+            _battleRunning = false;
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
         }
 
         public override string ToString() {

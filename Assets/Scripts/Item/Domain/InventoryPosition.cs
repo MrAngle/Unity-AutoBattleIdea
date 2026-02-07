@@ -4,7 +4,7 @@ using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain {
-    public class InventoryPosition : IInventoryPosition {
+    internal class InventoryPosition : IInventoryPosition {
         private readonly ItemShape _itemShape;
 
         private readonly HashSet<Vector2Int> _occupiedCells;
