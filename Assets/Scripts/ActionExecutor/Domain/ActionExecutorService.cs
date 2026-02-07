@@ -1,10 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
 using TimeSystem;
 
+[assembly: InternalsVisibleTo("MageFactory.Config")]
+
 namespace MageFactory.ActionExecutor.Domain {
-    public sealed class ActionExecutorService : IActionExecutor {
+    sealed class ActionExecutorService : IActionExecutor {
         public async Task executeAsync(
             ExecuteActionCommand actionCommand /*, CancellationToken cancellationToken = default*/) {
             PreparedAction preparedAction = PreparedAction.from(actionCommand);
