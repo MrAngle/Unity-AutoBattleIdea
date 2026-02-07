@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Character.Contract;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Utility;
 using Zenject;
 
@@ -8,14 +9,16 @@ using Zenject;
 namespace MageFactory.Inventory.Domain.Service {
     internal class InventoryFactoryService : IInventoryFactory {
         private readonly SignalBus signalBus;
+        private readonly IItemFactory itemFactory;
 
         [Inject]
-        public InventoryFactoryService(SignalBus signalBus) {
+        public InventoryFactoryService(IItemFactory itemFactory, SignalBus signalBus) {
             this.signalBus = NullGuard.NotNullOrThrow(signalBus);
+            this.itemFactory = NullGuard.NotNullOrThrow(itemFactory);
         }
 
-        public ICharacterInventoryFacade CreateCharacterInventory() {
-            return InventoryAggregate.create(signalBus);
+        public ICharacterInventory createCharacterInventory() {
+            return InventoryAggregate.create(itemFactory, signalBus);
         }
     }
 }

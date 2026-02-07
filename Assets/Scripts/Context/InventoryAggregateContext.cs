@@ -1,5 +1,5 @@
 ﻿using System;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Character.Contract;
 using MageFactory.Shared.Utility;
 using Zenject;
 
@@ -7,9 +7,9 @@ namespace MageFactory.Context {
     public class InventoryAggregateContext {
         private readonly InventoryGridContext _inventoryGridContext;
 
-        private ICharacterInventoryFacade _inventoryAggregate;
+        private ICharacterInventory characterInventory;
 
-        public event Action<ICharacterInventoryFacade> OnInventoryAggregateSet;
+        public event Action<ICharacterInventory> OnInventoryAggregateSet;
 
         [Inject]
         public InventoryAggregateContext(IInventoryFactory inventoryFactory,
@@ -18,17 +18,17 @@ namespace MageFactory.Context {
             _inventoryGridContext = NullGuard.NotNullOrThrow(inventoryGridContext);
         }
 
-        public void setInventoryAggregateContext(ICharacterInventoryFacade inventoryAggregate) {
-            if (_inventoryAggregate == inventoryAggregate)
+        public void setInventoryAggregateContext(ICharacterInventory inventoryAggregate) {
+            if (characterInventory == inventoryAggregate)
                 return; // should nothing to do
 
-            _inventoryAggregate = inventoryAggregate;
-            _inventoryGridContext.setInventoryGrid(_inventoryAggregate.getInventoryGrid());
-            OnInventoryAggregateSet?.Invoke(_inventoryAggregate);
+            characterInventory = inventoryAggregate;
+            _inventoryGridContext.setInventoryGrid(characterInventory.getInventoryGrid());
+            OnInventoryAggregateSet?.Invoke(characterInventory);
         }
 
-        public ICharacterInventoryFacade getInventoryAggregateContext() {
-            return _inventoryAggregate;
+        public ICharacterInventory getInventoryAggregateContext() {
+            return characterInventory;
         }
     }
 }

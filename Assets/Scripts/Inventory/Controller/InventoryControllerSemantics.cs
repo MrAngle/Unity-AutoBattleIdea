@@ -1,4 +1,4 @@
-﻿using MageFactory.Item.Controller.Api;
+﻿using MageFactory.Inventory.Api;
 using MageFactory.Semantics;
 using UnityEngine.UI;
 

@@ -1,18 +1,17 @@
 ﻿using System;
 using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Character.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
-using UnityEngine;
 
 namespace MageFactory.Character.Domain {
     internal class CharacterAggregate : ICharacter {
         private readonly CharacterData characterData;
-        private readonly ICharacterInventoryFacade characterInventoryFacade;
+        private readonly ICharacterInventory characterInventoryFacade;
         private readonly Team team;
 
-        private CharacterAggregate(CharacterData data, ICharacterInventoryFacade characterInventoryFacade, Team team) {
+        private CharacterAggregate(CharacterData data, ICharacterInventory characterInventoryFacade, Team team) {
             characterData = NullGuard.NotNullOrThrow(data);
             this.characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.team = NullGuard.enumDefinedOrThrow(team);
@@ -25,7 +24,7 @@ namespace MageFactory.Character.Domain {
             return characterData.getName();
         }
 
-        public ICharacterInventoryFacade getInventoryAggregate() {
+        public ICharacterInventory getInventoryAggregate() {
             return characterInventoryFacade;
         }
 
@@ -45,15 +44,18 @@ namespace MageFactory.Character.Domain {
             if (characterData.CurrentHp <= 0) OnDeath?.Invoke(this);
         }
 
-        public bool canPlaceItem(IPlaceableItem item, Vector2Int origin) {
-            return characterInventoryFacade.canPlace(item, origin);
+        public bool canPlaceItem(EquipItemQuery equipItemQuery) {
+            return characterInventoryFacade.canPlace(new PlaceItemQuery(equipItemQuery.itemDefinition,
+                equipItemQuery.origin));
         }
 
-        public bool equipItemOrThrow(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem) {
-            if (!canPlaceItem(item, origin)) throw new ArgumentException("Cannot equip item");
+        public ICharacterEquippedItem equipItemOrThrow(EquipItemCommand equipItemCommand) {
+            if (!canPlaceItem(new EquipItemQuery(equipItemCommand.itemDefinition, equipItemCommand.origin))) {
+                throw new ArgumentException("Cannot equip item");
+            }
 
-            placedItem = characterInventoryFacade.place(item, origin);
-            return true;
+            return characterInventoryFacade.place(
+                new PlaceItemCommand(equipItemCommand.itemDefinition, equipItemCommand.origin));
         }
 
         public void cleanup() {
@@ -61,7 +63,7 @@ namespace MageFactory.Character.Domain {
         }
 
         public static CharacterAggregate createFrom(CharacterCreateCommand characterCreateCommand,
-            ICharacterInventoryFacade characterInventoryFacade) {
+            ICharacterInventory characterInventoryFacade) {
             return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
                 characterCreateCommand.team);
         }

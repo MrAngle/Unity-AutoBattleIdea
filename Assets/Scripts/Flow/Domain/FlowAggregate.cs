@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
+using MageFactory.Character.Contract.Event;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -22,10 +23,10 @@ namespace MageFactory.Flow.Domain {
         private readonly List<long> visitedNodeIds = new();
 
         private CancellationTokenSource cancellationTokenSource;
-        private IPlacedItem currentNode;
+        private IInventoryPlacedItem currentNode;
         private bool isRunning;
 
-        private FlowAggregate(FlowModel flowModel, IPlacedEntryPoint startNode, IFlowRouter flowRouter,
+        private FlowAggregate(FlowModel flowModel, IInventoryPlacedEntryPoint startNode, IFlowRouter flowRouter,
             SignalBus signalBus, IActionExecutor actionExecutor) {
             router = NullGuard.NotNullOrThrow(flowRouter);
             this.flowModel = NullGuard.NotNullOrThrow(flowModel);
@@ -36,7 +37,7 @@ namespace MageFactory.Flow.Domain {
             visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        internal static IFlowAggregateFacade create(IPlacedEntryPoint placedEntryPoint, long power,
+        internal static IFlowAggregateFacade create(IInventoryPlacedEntryPoint placedEntryPoint, long power,
             IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor actionExecutor) {
             // sourceId ??= CorrelationId.NextString();
             var payload = new FlowSeed(power);

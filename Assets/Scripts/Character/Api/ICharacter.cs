@@ -1,17 +1,20 @@
 ﻿using System;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Character.Api.Dto;
+using MageFactory.Character.Contract;
 using MageFactory.Shared.Model;
-using UnityEngine;
 
 namespace MageFactory.Character.Api {
     public interface ICharacter {
         public event Action<ICharacter, long, long> OnHpChanged;
         public event Action<ICharacter> OnDeath;
 
-        bool equipItemOrThrow(IPlaceableItem item, Vector2Int origin, out IPlacedItem placedItem);
-        bool canPlaceItem(IPlaceableItem item, Vector2Int origin);
+        ICharacterEquippedItem equipItemOrThrow(EquipItemCommand item);
 
-        ICharacterInventoryFacade getInventoryAggregate();
+        // bool equipItemOrThrow(ICharacterEquipableItem item, Vector2Int origin, out ICharacterEquippedItem placedItem);
+        bool canPlaceItem(EquipItemQuery equipItemQuery);
+        // bool canPlaceItem(ICharacterEquipableItem item, Vector2Int origin);
+
+        ICharacterInventory getInventoryAggregate();
 
         public long getMaxHp();
 

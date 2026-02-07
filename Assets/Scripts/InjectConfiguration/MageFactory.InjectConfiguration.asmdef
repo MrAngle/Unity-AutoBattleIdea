@@ -17,6 +17,7 @@
     "MageFactory.Controller.Character",
     "MageFactory.Character.Api",
     "MageFactory.Character.Domain",
+    "MageFactory.Character.Contract",
     "MageFactory.BattleManager",
     "MageFactory.UI",
     "Zenject"

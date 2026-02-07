@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -9,7 +9,7 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain {
-    internal class BattleItem : IPlacedItem {
+    internal class BattleItem : IInventoryPlacedItem {
         private readonly long _id;
         private readonly ItemArchetype _itemArchetype;
         private readonly InventoryPosition _inventoryPosition;

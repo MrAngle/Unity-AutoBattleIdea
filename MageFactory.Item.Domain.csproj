@@ -876,13 +876,13 @@
             <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
             <Name>MageFactory.ActionEffect</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-            <Name>MageFactory.Inventory.Api</Name>
+        <ProjectReference Include="MageFactory.Inventory.Contract.csproj">
+            <Project>{e2d7bb56-5e71-2134-3345-b8070bc32158}</Project>
+            <Name>MageFactory.Inventory.Contract</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Item.Api.csproj">
-            <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
-            <Name>MageFactory.Item.Api</Name>
+        <ProjectReference Include="MageFactory.Character.Contract.csproj">
+            <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
+            <Name>MageFactory.Character.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Flow.Api.csproj">
             <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>

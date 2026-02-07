@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using UnityEngine;
 
 namespace MageFactory.FlowRouting {
     public class GridAdjacencyRouter : IFlowRouter {
-        private readonly IGridInspector _gridInspector;
+        private readonly IInventoryInspector _gridInspector;
 
-        private GridAdjacencyRouter(IGridInspector gridInspector) {
+        private GridAdjacencyRouter(IInventoryInspector gridInspector) {
             _gridInspector = gridInspector;
         }
 
-        public static IFlowRouter create(IGridInspector gridInspector) {
+        public static IFlowRouter create(IInventoryInspector gridInspector) {
             return new GridAdjacencyRouter(gridInspector);
         }
 
-        public IPlacedItem decideNext(IPlacedItem current, IReadOnlyCollection<long> visitedNodeIds) {
+        public IInventoryPlacedItem decideNext(IInventoryPlacedItem current, IReadOnlyCollection<long> visitedNodeIds) {
             // if (!_inventoryAggregate.TryGetItemAtCell(current.Position, out IPlacedItem placedItem)) {
             //     
             // }
@@ -37,10 +37,10 @@ namespace MageFactory.FlowRouting {
 
             // 3) Kandydaci: kratki Occupied, należące do innego itemu
             // var candidates = new List<(ItemData item, Vector2Int origin, Vector2Int entryCell)>();
-            var candidates = new Dictionary<Vector2Int, IPlacedItem>();
+            var candidates = new Dictionary<Vector2Int, IInventoryPlacedItem>();
             // Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
             foreach (Vector2Int vector2Int in boundary) {
-                if (_gridInspector.tryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
+                if (_gridInspector.tryGetItemAtCell(vector2Int, out IInventoryPlacedItem placedItem)) {
                     if (placedItem == current) continue; // ta sama bryła
                     // var neighborNodeId = $"Item:{neighborItem.Id}"; // TODO
                     if (visitedNodeIds.Contains(placedItem.getId())) continue; // już odwiedzony item
@@ -64,7 +64,7 @@ namespace MageFactory.FlowRouting {
 
 
             int index = Random.Range(0, candidates.Count);
-            IPlacedItem nextNodeToHandle = candidates.ElementAt(index).Value;
+            IInventoryPlacedItem nextNodeToHandle = candidates.ElementAt(index).Value;
 
             // 4) Losuj jednego kandydata
             // var pick = candidates[_rng.Next(candidates.Count)];

@@ -3,8 +3,7 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Character.Api",
-    "MageFactory.Inventory.Api",
-    "MageFactory.Item.Api",
+    "MageFactory.Character.Contract",
     "MageFactory.Shared",
     
     "Zenject"

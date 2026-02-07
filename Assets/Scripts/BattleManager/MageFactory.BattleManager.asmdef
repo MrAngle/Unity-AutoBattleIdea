@@ -4,6 +4,9 @@
   "references": [
     "MageFactory.Context",
     "MageFactory.Controller.Character",
+    "MageFactory.Inventory.Contract",
+    "MageFactory.Item.Api",
+    "MageFactory.Item.Catalog",
     "MageFactory.Registry",
     "MageFactory.Shared",
     "MageFactory.UI",

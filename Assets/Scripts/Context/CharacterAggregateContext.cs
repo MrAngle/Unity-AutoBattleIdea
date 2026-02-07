@@ -5,7 +5,6 @@ using Zenject;
 namespace MageFactory.Context {
     public class CharacterAggregateContext {
         private readonly InventoryAggregateContext _inventoryAggregateContext;
-
         private ICharacter _character;
 
         [Inject]

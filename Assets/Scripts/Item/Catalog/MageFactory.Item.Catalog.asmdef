@@ -1,0 +1,8 @@
+﻿{
+  "name": "MageFactory.Item.Catalog",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Shared"
+  ],
+  "autoReferenced": true
+}

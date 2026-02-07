@@ -47,6 +47,7 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Assets\Scripts\BattleManager\CharacterPrepareCommand.cs"/>
         <Compile Include="Assets\Scripts\BattleManager\BattleManager.cs"/>
         <Compile Include="Assets\Scripts\BattleManager\BattleUIManager.cs"/>
         <None Include="Assets\Scripts\BattleManager\MageFactory.BattleManager.asmdef"/>
@@ -872,6 +873,14 @@
         <ProjectReference Include="MageFactory.Controller.Character.csproj">
             <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
             <Name>MageFactory.Controller.Character</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Inventory.Contract.csproj">
+            <Project>{e2d7bb56-5e71-2134-3345-b8070bc32158}</Project>
+            <Name>MageFactory.Inventory.Contract</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Item.Catalog.csproj">
+            <Project>{bb0e5e2b-220c-237a-b895-42bc7fa808d2}</Project>
+            <Name>MageFactory.Item.Catalog</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Registry.csproj">
             <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>

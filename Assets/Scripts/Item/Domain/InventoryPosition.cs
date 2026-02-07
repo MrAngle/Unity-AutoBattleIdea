@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 

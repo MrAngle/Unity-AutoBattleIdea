@@ -47,8 +47,10 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Assets\Scripts\Character\Api\Dto\EquipItemCommand.cs"/>
         <Compile Include="Assets\Scripts\Character\Api\ICharacter.cs"/>
         <Compile Include="Assets\Scripts\Character\Api\Dto\CharacterCreateCommand.cs"/>
+        <Compile Include="Assets\Scripts\Character\Api\Dto\EquipItemQuery.cs"/>
         <Compile Include="Assets\Scripts\Character\Api\ICharacterFactory.cs"/>
         <None Include="Assets\Scripts\Character\Api\MageFactory.Character.Api.asmdef"/>
         <Reference Include="UnityEngine">
@@ -870,9 +872,9 @@
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-            <Name>MageFactory.Inventory.Api</Name>
+        <ProjectReference Include="MageFactory.Character.Contract.csproj">
+            <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
+            <Name>MageFactory.Character.Contract</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

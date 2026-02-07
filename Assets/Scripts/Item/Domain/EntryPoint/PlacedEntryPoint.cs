@@ -6,8 +6,7 @@ using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Item.Api;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -15,18 +14,18 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain.EntryPoint {
-    internal class PlacedEntryPoint : IPlacedEntryPoint, IDisposable {
+    internal class PlacedEntryPoint : IInventoryPlacedEntryPoint, IDisposable {
         private readonly long id;
         private readonly IEntryPointArchetype entryPointArchetype;
         private readonly IFlowFactory flowFactory;
-        private readonly IGridInspector gridInspector;
+        private readonly IInventoryInspector gridInspector;
         private readonly InventoryPosition inventoryPosition;
 
         private bool isBattleRunning = true; /*for now*/
         private CancellationTokenSource cancellationTokenSource;
 
         private PlacedEntryPoint(IEntryPointArchetype entryPointArchetype, Vector2Int origin,
-            IGridInspector gridInspector, IFlowFactory flowFactory) {
+            IInventoryInspector gridInspector, IFlowFactory flowFactory) {
             id = IdGenerator.Next();
             this.entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
             this.gridInspector = NullGuard.NotNullOrThrow(gridInspector);
@@ -35,8 +34,8 @@ namespace MageFactory.Item.Domain.EntryPoint {
             NullGuard.NotNullCheckOrThrow(inventoryPosition);
         }
 
-        internal static IPlacedEntryPoint create(IEntryPointArchetype archetype, Vector2Int position,
-            IGridInspector gridInspector, IFlowFactory flowFactory) {
+        internal static IInventoryPlacedEntryPoint create(IEntryPointArchetype archetype, Vector2Int position,
+            IInventoryInspector gridInspector, IFlowFactory flowFactory) {
             var placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
 
             placedEntryPoint.startBattle(); // for now

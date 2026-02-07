@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Reflection;
+using MageFactory.Character.Contract;
+using MageFactory.Character.Contract.Event;
 using MageFactory.Context;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;

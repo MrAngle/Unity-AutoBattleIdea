@@ -47,21 +47,9 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Assets\Scripts\Inventory\Api\ItemPlacedDtoEvent.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IGridInspector.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\InventoryGridView.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\ItemPowerChangedDtoEvent.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IPlacedEntryPoint.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\ICharacterInventoryFacade.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IInventoryFactory.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IPlaceableItem.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\IEffectsDescriptor.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IInventoryGrid.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\InventoryCell.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\InventoryCellView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\IItemActionDescription.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IPlacedItem.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\IInventoryPosition.cs"/>
         <None Include="Assets\Scripts\Inventory\Api\MageFactory.Inventory.Api.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -885,6 +873,10 @@
         <ProjectReference Include="MageFactory.ActionEffect.csproj">
             <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
             <Name>MageFactory.ActionEffect</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.Contract.csproj">
+            <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
+            <Name>MageFactory.Character.Contract</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

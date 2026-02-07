@@ -1,7 +1,7 @@
 ﻿using MageFactory.ActionExecutor.Api;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using Zenject;
 
 namespace MageFactory.Flow.Domain.Service {
@@ -15,7 +15,7 @@ namespace MageFactory.Flow.Domain.Service {
             _actionExecutor = actionExecutor;
         }
 
-        public IFlowAggregateFacade create(IPlacedEntryPoint startNode, long power, IFlowRouter router) {
+        public IFlowAggregateFacade create(IInventoryPlacedEntryPoint startNode, long power, IFlowRouter router) {
             var flow = (FlowAggregate)FlowAggregate.create(startNode, power, router, _signalBus, _actionExecutor);
 
             return flow;

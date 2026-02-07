@@ -49,10 +49,11 @@
     <ItemGroup>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDraggable.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryViewPresenter.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\InventoryGridView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\PlacedItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDragController.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryItemViewFactory.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Controller\ItemRemovedDtoEvent.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\InventoryCellView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryControllerSemantics.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryPanelPrefabInitializer.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\IInventoryItemViewFactory.cs"/>
@@ -884,13 +885,17 @@
             <Project>{95b70598-3070-6fcc-9ea5-f0015bf7eced}</Project>
             <Name>MageFactory.Item.Controller</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Item.Api.csproj">
-            <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
-            <Name>MageFactory.Item.Api</Name>
+        <ProjectReference Include="MageFactory.Item.Catalog.csproj">
+            <Project>{bb0e5e2b-220c-237a-b895-42bc7fa808d2}</Project>
+            <Name>MageFactory.Item.Catalog</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.Contract.csproj">
+            <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
+            <Name>MageFactory.Character.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Character.Api.csproj">
             <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>

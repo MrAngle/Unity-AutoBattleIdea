@@ -16,6 +16,7 @@ namespace MageFactory.Flow.Domain {
             flowCompletionDispatcher.handleFlow();
         }
 
+        // todo: refactor, shouldnt base on registry
         private void handleFlow() {
             // for now
             var teamA = CharacterRegistry.Instance.getTeamA();

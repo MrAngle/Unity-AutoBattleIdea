@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using MageFactory.Character.Contract;
+using MageFactory.Character.Contract.Event;
 using MageFactory.Context;
-using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Utility;
 using UI.Popup;
 using Zenject;
+// using MageFactory.Inventory.Api;
 using Object = UnityEngine.Object;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
@@ -41,7 +43,7 @@ namespace MageFactory.Inventory.Controller {
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
-        private void printInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
+        private void printInventoryItems(ICharacterInventory characterInventoryFacade) {
             clear();
             foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
                 if (_views.ContainsKey(placedItem.getId())) continue;

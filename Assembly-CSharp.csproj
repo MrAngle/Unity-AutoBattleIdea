@@ -1097,6 +1097,14 @@
       <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
       <Name>MageFactory.Context</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.Inventory.Contract.csproj">
+          <Project>{e2d7bb56-5e71-2134-3345-b8070bc32158}</Project>
+          <Name>MageFactory.Inventory.Contract</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Character.Contract.csproj">
+          <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
+          <Name>MageFactory.Character.Contract</Name>
+      </ProjectReference>
     <ProjectReference Include="MageFactory.ActionEffect.csproj">
       <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
       <Name>MageFactory.ActionEffect</Name>
@@ -1109,9 +1117,9 @@
       <Project>{9ae902f5-4d39-12a9-d64b-bdd4eab4e173}</Project>
       <Name>MageFactory.BattleManager</Name>
     </ProjectReference>
-    <ProjectReference Include="MageFactory.Item.Api.csproj">
-      <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
-      <Name>MageFactory.Item.Api</Name>
+      <ProjectReference Include="MageFactory.Item.Catalog.csproj">
+          <Project>{bb0e5e2b-220c-237a-b895-42bc7fa808d2}</Project>
+          <Name>MageFactory.Item.Catalog</Name>
     </ProjectReference>
     <ProjectReference Include="Zenject-Editor.csproj">
       <Project>{32d25bd9-ce4a-3838-298e-03da1528c748}</Project>

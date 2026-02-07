@@ -1,11 +1,13 @@
-﻿namespace MageFactory.Item.Controller.Api {
-    public enum CellState {
-        Unreachable, // nieosiągalne
-        Empty, // dozwolone i puste
+﻿using MageFactory.Shared.Model;
 
-        Occupied // dozwolone ale zajęte
-        // (możesz dodać: Locked / Reserved)
-    }
+namespace MageFactory.Inventory.Api {
+    // public enum CellState {
+    //     Unreachable, // nieosiągalne
+    //     Empty, // dozwolone i puste
+    //
+    //     Occupied // dozwolone ale zajęte
+    //     // (możesz dodać: Locked / Reserved)
+    // }
 
     public class InventoryCell {
         // TODO: make it internal

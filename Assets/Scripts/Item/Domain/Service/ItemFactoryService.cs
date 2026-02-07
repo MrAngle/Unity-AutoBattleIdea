@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 using MageFactory.Flow.Api;
-using MageFactory.Item.Api;
-using MageFactory.Item.Api.Dto;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
+using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Item.Domain.EntryPoint;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
@@ -21,8 +21,8 @@ namespace MageFactory.Item.Domain.Service {
             _flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
 
-        public IPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
-            IGridInspector gridInspector) {
+        public IInventoryPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
+            IInventoryInspector gridInspector) {
             var placedEntryPoint = PlacedEntryPoint.create(archetype, position, gridInspector, _flowFactory);
 
             return placedEntryPoint;
@@ -32,8 +32,22 @@ namespace MageFactory.Item.Domain.Service {
             return new TickEntryPoint(kind, shapeArchetype, this);
         }
 
-        public IPlaceableItem createPlacableItem(CreatePlaceableItemCommand createPlaceableItemCommand) {
-            return ItemArchetype.create(createPlaceableItemCommand);
+        public IInventoryPlaceableItem createPlacableItem(CreatePlaceableItemCommand createPlaceableItemCommand) {
+            if (createPlaceableItemCommand.itemDefinition is IEntryPointDefinition entryPointDefinition) {
+                // todo change it
+                return createPlacableItem(entryPointDefinition);
+            }
+
+            return createPlacableItem(createPlaceableItemCommand.itemDefinition);
+            // return ItemArchetype.create(createPlaceableItemCommand);
+        }
+
+        private IInventoryPlaceableItem createPlacableItem(IItemDefinition itemDefinition) {
+            return ItemArchetype.create(itemDefinition);
+        }
+
+        private IInventoryPlaceableItem createPlacableItem(IEntryPointDefinition itemDefinition) {
+            return TickEntryPoint.create(itemDefinition, this);
         }
     }
 }

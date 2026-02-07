@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Character.Contract;
+using MageFactory.Inventory.Api;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 

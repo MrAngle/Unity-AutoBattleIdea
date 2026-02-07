@@ -878,6 +878,10 @@
             <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
             <Name>MageFactory.Character.Api</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.Character.Contract.csproj">
+            <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
+            <Name>MageFactory.Character.Contract</Name>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

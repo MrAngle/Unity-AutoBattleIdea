@@ -2,14 +2,16 @@
 using MageFactory.ActionExecutor.Domain;
 using MageFactory.BattleManager;
 using MageFactory.Character.Api;
+using MageFactory.Character.Contract;
+using MageFactory.Character.Contract.Event;
 using MageFactory.Character.Controller;
 using MageFactory.Character.Domain.Service;
 using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
+using MageFactory.Inventory.Api;
 using MageFactory.Inventory.Controller;
 using MageFactory.Inventory.Domain.Service;
-using MageFactory.Item.Controller.Api;
 using MageFactory.Item.Domain.Service;
 using MageFactory.Semantics;
 using UnityEngine;

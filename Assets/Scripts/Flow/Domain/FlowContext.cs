@@ -1,15 +1,15 @@
-﻿using MageFactory.Item.Controller.Api;
+﻿using MageFactory.Inventory.Contract;
 
 namespace MageFactory.Flow.Domain {
     internal class FlowContext {
-        private readonly IPlacedEntryPoint placedEntryPoint;
+        private readonly IInventoryPlacedEntryPoint placedEntryPoint;
         private int stepIndex;
 
-        internal FlowContext(IPlacedEntryPoint placedEntryPoint) {
+        internal FlowContext(IInventoryPlacedEntryPoint placedEntryPoint) {
             this.placedEntryPoint = placedEntryPoint;
         }
 
-        internal IPlacedEntryPoint getPlacedEntryPoint() {
+        internal IInventoryPlacedEntryPoint getPlacedEntryPoint() {
             return placedEntryPoint;
         }
 

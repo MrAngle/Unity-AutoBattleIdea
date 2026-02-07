@@ -1,6 +1,8 @@
-﻿using MageFactory.Context;
-using MageFactory.Item.Controller.Api;
+﻿using MageFactory.Character.Api;
+using MageFactory.Character.Api.Dto;
+using MageFactory.Context;
 using MageFactory.Semantics;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,13 +10,21 @@ using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public class ItemDragController : MonoBehaviour {
-        private ItemsLayerRectTransform itemsLayer;
-        private InventoryGridLayoutGroup inventoryGridLayout;
         private CharacterAggregateContext characterAggregateContext;
         private DragGhostPrefabItemView dragGhostPrefabItemView;
 
         private PlacedItemView ghostPlacedItem;
-        private IPlaceableItem _placeableItem;
+
+        private InventoryGridLayoutGroup inventoryGridLayout;
+
+        // private IInventoryPlaceableItem inventoryPlaceableItem;
+        private IItemDefinition inventoryPlaceableItem; // todo change name
+        private ItemsLayerRectTransform itemsLayer;
+
+        private void Start() {
+            ghostPlacedItem = Instantiate(dragGhostPrefabItemView.Get(), itemsLayer.Get(), false);
+            ghostPlacedItem.gameObject.SetActive(false);
+        }
 
         [Inject]
         public void construct(
@@ -29,15 +39,11 @@ namespace MageFactory.Inventory.Controller {
             dragGhostPrefabItemView = NullGuard.NotNullOrThrow(injectDragGhostPrefabItemView);
         }
 
-        private void Start() {
-            ghostPlacedItem = Instantiate(dragGhostPrefabItemView.Get(), itemsLayer.Get(), false);
-            ghostPlacedItem.gameObject.SetActive(false);
-        }
-
-        internal void beginDrag(IPlaceableItem data, PointerEventData eventData) {
-            _placeableItem = data;
+        // internal void beginDrag(IInventoryPlaceableItem data, PointerEventData eventData) {
+        internal void beginDrag(IItemDefinition itemDefinition, PointerEventData eventData) {
+            inventoryPlaceableItem = itemDefinition;
             var cellSize = inventoryGridLayout.Get().cellSize;
-            ghostPlacedItem.build(_placeableItem.getShape(), cellSize);
+            ghostPlacedItem.build(inventoryPlaceableItem.getShape(), cellSize);
             ghostPlacedItem.setColor(new Color(1f, 1f, 1f, 0.6f));
             ghostPlacedItem.gameObject.SetActive(true);
 
@@ -45,7 +51,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         internal void updateDrag(PointerEventData pointerEventData) {
-            if (_placeableItem == null) return;
+            if (inventoryPlaceableItem == null) return;
 
             // 1) pozycja kursora w układzie ItemsLayer
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -62,7 +68,9 @@ namespace MageFactory.Inventory.Controller {
 
             // 3) validacja
             var can = characterAggregateContext != null &&
-                      characterAggregateContext.canPlaceItem(_placeableItem, origin);
+                      // characterAggregateContext.getInventoryAggregate()
+                      //     .canPlace(new PlaceItemQuery(inventoryPlaceableItem, origin));
+                      characterAggregateContext.canPlaceItem(new EquipItemQuery(inventoryPlaceableItem, origin));
             ghostPlacedItem.setColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -70,7 +78,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         internal void endDrag(PointerEventData pointerEventData) {
-            if (_placeableItem == null) {
+            if (inventoryPlaceableItem == null) {
                 ghostPlacedItem.gameObject.SetActive(false);
                 return;
             }
@@ -84,11 +92,14 @@ namespace MageFactory.Inventory.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            var characterAggregateContext = this.characterAggregateContext.getCharacterAggregateContext();
+            ICharacter character = characterAggregateContext.getCharacterAggregateContext();
+            if (characterAggregateContext != null)
+                // && characterAggregateContext.equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin))
+            {
+                var equippedItem = character.equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin));
+                NullGuard.NotNullCheckOrThrow(equippedItem);
+            }
 
-            if (characterAggregateContext != null
-                && characterAggregateContext.equipItemOrThrow(_placeableItem, origin, out var placedItem))
-                NullGuard.NotNullCheckOrThrow(placedItem);
 
             // ICharacterInventoryFacade inventoryAggregate = _inventoryAggregateContext.GetInventoryAggregate();
             // if (characterAggregateContext != null && characterAggregateContext.CanPlace(_placeableItem, origin)) {
@@ -96,7 +107,7 @@ namespace MageFactory.Inventory.Controller {
             // }
 
             ghostPlacedItem.gameObject.SetActive(false);
-            _placeableItem = null;
+            inventoryPlaceableItem = null;
         }
     }
 }

@@ -5,8 +5,9 @@
     "MageFactory.Flow.Api",
     "MageFactory.FlowRouting",
     "MageFactory.ActionEffect",
-    "MageFactory.Inventory.Api",
+    "MageFactory.Inventory.Contract",
     "MageFactory.ActionExecutor.Api",
+    "MageFactory.Character.Contract",
     "MageFactory.Character.Api",
 
     "MageFactory.Registry",

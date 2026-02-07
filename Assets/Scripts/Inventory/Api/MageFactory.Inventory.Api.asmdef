@@ -3,7 +3,8 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Shared",
-    "MageFactory.ActionEffect"
+    "MageFactory.ActionEffect",
+    "MageFactory.Character.Contract"
   ],
   "autoReferenced": true
 }

@@ -1,6 +1,5 @@
 ﻿using System.Threading;
-using MageFactory.Item.Api;
-using MageFactory.Item.Controller.Api;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
@@ -26,8 +25,8 @@ namespace MageFactory.Item.Domain.EntryPoint {
             turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
-        public IPlacedItem toPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
-            return entryPointFactory.createPlacedEntryPoint(this, origin, gridInspector);
+        public IInventoryPlacedItem toPlacedItem(IInventoryInspector inventoryInspector, Vector2Int origin) {
+            return entryPointFactory.createPlacedEntryPoint(this, origin, inventoryInspector);
         }
 
         public ShapeArchetype getShape() {
