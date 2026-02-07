@@ -49,7 +49,7 @@ namespace MageFactory.Inventory.Controller {
             inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
         }
 
-        public void Initialize() {
+        private void initialize() {
             signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
@@ -66,7 +66,6 @@ namespace MageFactory.Inventory.Controller {
         private void OnPowerChanged(ItemPowerChangedDtoEvent changedDtoEvent) {
             throw new NotImplementedException();
         }
-
 
         public void dispose() {
             signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);

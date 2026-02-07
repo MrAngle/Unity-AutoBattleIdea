@@ -11,43 +11,36 @@ namespace MageFactory.Inventory.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
         private ItemDragController _controller;
         private IItemFactory itemFactory;
-        [Header("Config")] public ShapeArchetypeId itemId = ShapeArchetypeId.SQUARE_2X2;
         private IPlaceableItem placeableItem;
+
+        [Inject]
+        public void construct(
+            IItemFactory injectItemFactory
+        ) {
+            itemFactory = NullGuard.NotNullOrThrow(injectItemFactory);
+        }
 
         private void Awake() {
             _controller = FindAnyObjectByType<ItemDragController>(FindObjectsInactive.Include);
-
-            // var shapeArchetype = Array.Find(ShapeCatalog.All.ToArray(), d => d.ShapeArchetypeId == itemId);
-            // var shapeArchetype = ShapeCatalog.All[UnityEngine.Random.Range(0, ShapeCatalog.All.Count)];
-            //
-            // var itemArchetype = new ItemArchetype(shapeArchetype);
-            //
-            // _placeableItem = itemArchetype;
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
             placeableItem = getRandomItem();
             if (placeableItem == null) return;
-            _controller?.BeginDrag(placeableItem, eventData);
+            _controller?.beginDrag(placeableItem, eventData);
         }
 
         public void OnDrag(PointerEventData eventData) {
             if (placeableItem == null) return;
-            _controller?.UpdateDrag(eventData);
+            _controller?.updateDrag(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
             if (placeableItem == null) return;
-            _controller?.EndDrag(eventData);
+            _controller?.endDrag(eventData);
             placeableItem = null;
         }
 
-        [Inject]
-        public void Construct(
-            IItemFactory itemFactory
-        ) {
-            this.itemFactory = NullGuard.NotNullOrThrow(itemFactory);
-        }
 
         private IPlaceableItem getRandomItem() {
             var shapeArchetype = ShapeCatalog.All[Random.Range(0, ShapeCatalog.All.Count)];

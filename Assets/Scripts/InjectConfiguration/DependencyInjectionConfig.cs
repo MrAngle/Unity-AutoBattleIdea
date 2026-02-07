@@ -100,8 +100,8 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle();
 
 
-            Container.Bind<IItemViewFactory>()
-                .To<ItemViewFactory>()
+            Container.Bind<IInventoryItemViewFactory>()
+                .To<InventoryItemViewFactory>()
                 .AsSingle();
 
             Container.Bind<IActionExecutor>()

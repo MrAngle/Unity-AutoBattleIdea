@@ -1,8 +1,8 @@
 ﻿namespace MageFactory.Inventory.Controller {
-    public readonly struct ItemRemovedDtoEvent {
-        public long PlacedItemId { get; }
+    internal readonly struct ItemRemovedDtoEvent {
+        internal long PlacedItemId { get; }
 
-        public ItemRemovedDtoEvent(long id) {
+        internal ItemRemovedDtoEvent(long id) {
             PlacedItemId = id;
         }
     }

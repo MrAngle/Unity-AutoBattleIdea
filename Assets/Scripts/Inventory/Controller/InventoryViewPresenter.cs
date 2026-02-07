@@ -1,37 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using MageFactory.Context;
 using MageFactory.Item.Controller.Api;
-using MageFactory.Semantics;
 using MageFactory.Shared.Utility;
 using UI.Popup;
 using Zenject;
 using Object = UnityEngine.Object;
 
+[assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
+
 namespace MageFactory.Inventory.Controller {
-    public sealed class InventoryViewPresenter : IInitializable, IDisposable {
+    internal sealed class InventoryViewPresenter : IInitializable, IDisposable {
         private readonly InventoryAggregateContext _aggregateContext;
-
-        private readonly IItemViewFactory _factory;
-        // private readonly RectTransform _itemsLayerRectTransform;
-        // private readonly GridLayoutGroup _inventoryGridLayout;
-
+        private readonly IInventoryItemViewFactory _factory;
         private readonly SignalBus _signalBus;
-
         private readonly Dictionary<long, PlacedItemView> _views = new();
 
         [Inject]
-        public InventoryViewPresenter(
+        internal InventoryViewPresenter(
             SignalBus signalBus,
-            IItemViewFactory factory,
-            ItemsLayerRectTransform itemsLayer,
-            InventoryGridLayoutGroup gridLayout,
+            IInventoryItemViewFactory factory,
             InventoryAggregateContext aggregateContext) {
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
             _factory = NullGuard.NotNullOrThrow(factory);
             _aggregateContext = NullGuard.NotNullOrThrow(aggregateContext);
 
-            _aggregateContext.OnInventoryAggregateSet += PrintInventoryItems;
+            _aggregateContext.OnInventoryAggregateSet += printInventoryItems;
         }
 
         public void Dispose() {
@@ -46,24 +41,16 @@ namespace MageFactory.Inventory.Controller {
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
-        private void Start() {
-            RefreshView(); // to remove?
-        }
-
-        private void RefreshView() {
-            PrintInventoryItems(_aggregateContext.getInventoryAggregateContext());
-        }
-
-        private void PrintInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
-            Clear();
+        private void printInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
+            clear();
             foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
                 if (_views.ContainsKey(placedItem.getId())) continue;
-                PlacedItemView view = _factory.Create(placedItem.getShape(), placedItem.getOrigin());
+                PlacedItemView view = _factory.create(placedItem.getShape(), placedItem.getOrigin());
                 _views[placedItem.getId()] = view;
             }
         }
 
-        public void Clear() {
+        private void clear() {
             foreach (var view in _views.Values)
                 if (view != null)
                     Object.Destroy(view.gameObject);
@@ -72,7 +59,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         private void OnItemPlaced(ItemPlacedDtoEvent itemPlacedDtoEvent) {
-            PlacedItemView view = _factory.Create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
+            PlacedItemView view = _factory.create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
             _views[itemPlacedDtoEvent.PlacedItemId] = view;
         }
 

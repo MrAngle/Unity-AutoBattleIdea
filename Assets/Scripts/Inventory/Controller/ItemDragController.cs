@@ -8,90 +8,83 @@ using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public class ItemDragController : MonoBehaviour {
-        private CharacterAggregateContext _characterAggregateContext;
-        private DragGhostPrefabItemView _dragGhostPrefabItemView;
+        private ItemsLayerRectTransform itemsLayer;
+        private InventoryGridLayoutGroup inventoryGridLayout;
+        private CharacterAggregateContext characterAggregateContext;
+        private DragGhostPrefabItemView dragGhostPrefabItemView;
+
         private PlacedItemView ghostPlacedItem;
-
-        private InventoryGridLayoutGroup _inventoryGridLayout;
-
-        private ItemsLayerRectTransform _itemsLayer;
-        private ItemViewPrefabItemView _itemViewPrefabItemView;
-
-        // private ShapeArchetype _shapeArchetype;
         private IPlaceableItem _placeableItem;
 
+        [Inject]
+        public void construct(
+            ItemsLayerRectTransform injectItemsLayer,
+            InventoryGridLayoutGroup injectInventoryGridLayout,
+            CharacterAggregateContext injectCharacterAggregateContext,
+            DragGhostPrefabItemView injectDragGhostPrefabItemView
+        ) {
+            itemsLayer = NullGuard.NotNullOrThrow(injectItemsLayer);
+            inventoryGridLayout = NullGuard.NotNullOrThrow(injectInventoryGridLayout);
+            characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
+            dragGhostPrefabItemView = NullGuard.NotNullOrThrow(injectDragGhostPrefabItemView);
+        }
 
         private void Start() {
-            ghostPlacedItem = Instantiate(_dragGhostPrefabItemView.Get(), _itemsLayer.Get(), false);
+            ghostPlacedItem = Instantiate(dragGhostPrefabItemView.Get(), itemsLayer.Get(), false);
             ghostPlacedItem.gameObject.SetActive(false);
         }
 
-        [Inject]
-        public void Construct(
-            ItemsLayerRectTransform itemsLayer,
-            InventoryGridLayoutGroup inventoryGridLayout,
-            CharacterAggregateContext characterAggregateContext,
-            DragGhostPrefabItemView dragGhostPrefabItemView,
-            ItemViewPrefabItemView itemViewPrefabItemView
-        ) {
-            _itemsLayer = NullGuard.NotNullOrThrow(itemsLayer);
-            _inventoryGridLayout = NullGuard.NotNullOrThrow(inventoryGridLayout);
-            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
-            _dragGhostPrefabItemView = NullGuard.NotNullOrThrow(dragGhostPrefabItemView);
-            _itemViewPrefabItemView = NullGuard.NotNullOrThrow(itemViewPrefabItemView);
-        }
-
-        public void BeginDrag(IPlaceableItem data, PointerEventData eventData) {
+        internal void beginDrag(IPlaceableItem data, PointerEventData eventData) {
             _placeableItem = data;
-            var cellSize = _inventoryGridLayout.Get().cellSize;
-            ghostPlacedItem.Build(_placeableItem.getShape(), cellSize);
-            ghostPlacedItem.SetColor(new Color(1f, 1f, 1f, 0.6f));
+            var cellSize = inventoryGridLayout.Get().cellSize;
+            ghostPlacedItem.build(_placeableItem.getShape(), cellSize);
+            ghostPlacedItem.setColor(new Color(1f, 1f, 1f, 0.6f));
             ghostPlacedItem.gameObject.SetActive(true);
 
-            UpdateDrag(eventData);
+            updateDrag(eventData);
         }
 
-        public void UpdateDrag(PointerEventData pointerEventData) {
+        internal void updateDrag(PointerEventData pointerEventData) {
             if (_placeableItem == null) return;
 
             // 1) pozycja kursora w układzie ItemsLayer
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _itemsLayer.Get(), pointerEventData.position, pointerEventData.pressEventCamera, out var localPos);
+                itemsLayer.Get(), pointerEventData.position, pointerEventData.pressEventCamera, out var localPos);
 
             // 2) zamiana na origin komórkowy
-            var cell = _inventoryGridLayout.Get().cellSize;
-            var spacing = _inventoryGridLayout.Get().spacing;
+            var cell = inventoryGridLayout.Get().cellSize;
+            var spacing = inventoryGridLayout.Get().spacing;
             var x = Mathf.FloorToInt(localPos.x / (cell.x + spacing.x));
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-            var characterAggregateContext = _characterAggregateContext.getCharacterAggregateContext();
+            var characterAggregateContext = this.characterAggregateContext.getCharacterAggregateContext();
 
             // 3) validacja
             var can = characterAggregateContext != null &&
                       characterAggregateContext.canPlaceItem(_placeableItem, origin);
-            ghostPlacedItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
+            ghostPlacedItem.setColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
-            ghostPlacedItem.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            ghostPlacedItem.setOriginInGrid(origin, cell, Vector2.zero, spacing.x);
         }
 
-        public void EndDrag(PointerEventData pointerEventData) {
+        internal void endDrag(PointerEventData pointerEventData) {
             if (_placeableItem == null) {
                 ghostPlacedItem.gameObject.SetActive(false);
                 return;
             }
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _itemsLayer.Get(), pointerEventData.position, pointerEventData.pressEventCamera, out var localPos);
+                itemsLayer.Get(), pointerEventData.position, pointerEventData.pressEventCamera, out var localPos);
 
-            var cell = _inventoryGridLayout.Get().cellSize;
-            var spacing = _inventoryGridLayout.Get().spacing;
+            var cell = inventoryGridLayout.Get().cellSize;
+            var spacing = inventoryGridLayout.Get().spacing;
             var x = Mathf.FloorToInt(localPos.x / (cell.x + spacing.x));
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            var characterAggregateContext = _characterAggregateContext.getCharacterAggregateContext();
+            var characterAggregateContext = this.characterAggregateContext.getCharacterAggregateContext();
 
             if (characterAggregateContext != null
                 && characterAggregateContext.equipItemOrThrow(_placeableItem, origin, out var placedItem))

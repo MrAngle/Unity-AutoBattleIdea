@@ -49,13 +49,13 @@
     <ItemGroup>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDraggable.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryViewPresenter.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewDemoSpawner.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\PlacedItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDragController.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\InventoryItemViewFactory.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemRemovedDtoEvent.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewFactory.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryControllerSemantics.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryPanelPrefabInitializer.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\IInventoryItemViewFactory.cs"/>
         <None Include="Assets\Scripts\Inventory\Controller\MageFactory.Inventory.Controller.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

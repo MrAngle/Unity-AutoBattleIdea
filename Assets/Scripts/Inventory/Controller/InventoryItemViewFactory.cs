@@ -5,17 +5,13 @@ using UnityEngine.UI;
 using Zenject;
 
 namespace MageFactory.Inventory.Controller {
-    public interface IItemViewFactory {
-        PlacedItemView Create(ShapeArchetype data, Vector2Int origin);
-    }
-
-    public sealed class ItemViewFactory : IItemViewFactory {
+    internal sealed class InventoryItemViewFactory : IInventoryItemViewFactory {
         private readonly GridLayoutGroup _grid;
         private readonly ItemsLayerRectTransform _itemsLayer;
         private readonly PlacedItemView _prefab;
 
         [Inject]
-        public ItemViewFactory(
+        public InventoryItemViewFactory(
             ItemViewPrefabItemView prefabProvider,
             ItemsLayerRectTransform itemsLayer,
             InventoryGridLayoutGroup gridLayoutGroup) {
@@ -24,14 +20,14 @@ namespace MageFactory.Inventory.Controller {
             _grid = gridLayoutGroup.Get();
         }
 
-        public PlacedItemView Create(ShapeArchetype data, Vector2Int origin) {
+        public PlacedItemView create(ShapeArchetype data, Vector2Int origin) {
             var view = Object.Instantiate(_prefab, _itemsLayer.Get(), false);
 
             var cell = _grid.cellSize;
             var spacing = _grid.spacing;
 
-            view.Build(data, cell);
-            view.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            view.build(data, cell);
+            view.setOriginInGrid(origin, cell, Vector2.zero, spacing.x);
 
             return view;
         }
