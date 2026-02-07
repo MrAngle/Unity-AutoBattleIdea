@@ -1,7 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 using MageFactory.Flow.Api;
 using MageFactory.Item.Api;
+using MageFactory.Item.Api.Dto;
 using MageFactory.Item.Controller.Api;
+using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
@@ -9,12 +11,12 @@ using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
-namespace MageFactory.Item.Domain.EntryPoint.Service {
-    internal class EntryPointFactoryService : IEntryPointFactory {
+namespace MageFactory.Item.Domain.Service {
+    internal class ItemFactoryService : IEntryPointFactory, IItemFactory {
         private readonly IFlowFactory _flowFactory;
 
         [Inject]
-        internal EntryPointFactoryService(IFlowFactory flowFactory) {
+        internal ItemFactoryService(IFlowFactory flowFactory) {
             _flowFactory = flowFactory;
         }
 
@@ -27,6 +29,10 @@ namespace MageFactory.Item.Domain.EntryPoint.Service {
 
         public IEntryPointArchetype createArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
             return new TickEntryPoint(kind, shapeArchetype, this);
+        }
+
+        public IPlaceableItem createPlacableItem(CreatePlaceableItemCommand createPlaceableItemCommand) {
+            return ItemArchetype.create(createPlaceableItemCommand);
         }
     }
 }

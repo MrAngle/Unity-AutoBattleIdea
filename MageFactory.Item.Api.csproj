@@ -47,6 +47,8 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Assets\Scripts\Item\Api\IItemFactory.cs"/>
+        <Compile Include="Assets\Scripts\Item\Api\Dto\CreatePlaceableItemCommand.cs"/>
         <Compile Include="Assets\Scripts\Item\Api\IEntryPointArchetype.cs"/>
         <Compile Include="Assets\Scripts\Item\Api\IEntryPointFactory.cs"/>
         <None Include="Assets\Scripts\Item\Api\MageFactory.Item.Api.asmdef"/>

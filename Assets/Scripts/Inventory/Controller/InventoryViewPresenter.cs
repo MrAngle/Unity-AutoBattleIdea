@@ -9,14 +9,6 @@ using Zenject;
 using Object = UnityEngine.Object;
 
 namespace MageFactory.Inventory.Controller {
-    public readonly struct ItemRemovedDtoEvent {
-        public long PlacedItemId { get; }
-
-        public ItemRemovedDtoEvent(long id) {
-            PlacedItemId = id;
-        }
-    }
-
     public sealed class InventoryViewPresenter : IInitializable, IDisposable {
         private readonly InventoryAggregateContext _aggregateContext;
 

@@ -51,8 +51,8 @@
         <Compile Include="Assets\Scripts\Item\Domain\ActionDescriptor\ItemOperationsDescription.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\InventoryPosition.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\ItemArchetype.cs"/>
+        <Compile Include="Assets\Scripts\Item\Domain\Service\ItemFactoryService.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\EntryPoint\PlacedEntryPoint.cs"/>
-        <Compile Include="Assets\Scripts\Item\Domain\EntryPoint\Service\EntryPointFactoryService.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\EntryPoint\TickEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\EntryPoint\EntryPointArchetype.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\BattleItem.cs"/>

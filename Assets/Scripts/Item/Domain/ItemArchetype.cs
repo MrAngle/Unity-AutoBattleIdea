@@ -1,14 +1,19 @@
-﻿using MageFactory.Item.Controller.Api;
+﻿using MageFactory.Item.Api.Dto;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain {
-    public class ItemArchetype : IPlaceableItem {
+    internal class ItemArchetype : IPlaceableItem {
         private readonly float castTime = 0.05f; // for now
         private readonly ShapeArchetype shapeArchetype;
 
-        public ItemArchetype(ShapeArchetype shapeArchetype) {
+        private ItemArchetype(ShapeArchetype shapeArchetype) {
             this.shapeArchetype = shapeArchetype;
+        }
+
+        internal static IPlaceableItem create(CreatePlaceableItemCommand createPlaceableItemCommand) {
+            return new ItemArchetype(createPlaceableItemCommand.shapeArchetype);
         }
 
         public IPlacedItem toPlacedItem(IGridInspector gridInspector, Vector2Int origin) {

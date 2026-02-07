@@ -52,6 +52,7 @@
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewDemoSpawner.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\PlacedItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDragController.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\ItemRemovedDtoEvent.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewFactory.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryControllerSemantics.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryPanelPrefabInitializer.cs"/>
@@ -882,10 +883,6 @@
         <ProjectReference Include="MageFactory.Item.Controller.csproj">
             <Project>{95b70598-3070-6fcc-9ea5-f0015bf7eced}</Project>
             <Name>MageFactory.Item.Controller</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Item.Domain.csproj">
-            <Project>{32e97b26-a6ec-ea03-9b27-96314bcdefa1}</Project>
-            <Name>MageFactory.Item.Domain</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Item.Api.csproj">
             <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>

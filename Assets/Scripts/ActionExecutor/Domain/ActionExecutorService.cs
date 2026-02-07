@@ -7,7 +7,7 @@ using TimeSystem;
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.ActionExecutor.Domain {
-    sealed class ActionExecutorService : IActionExecutor {
+    internal sealed class ActionExecutorService : IActionExecutor {
         public async Task executeAsync(
             ExecuteActionCommand actionCommand /*, CancellationToken cancellationToken = default*/) {
             PreparedAction preparedAction = PreparedAction.from(actionCommand);

@@ -8,10 +8,9 @@ using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Controller;
-using MageFactory.Item.Api;
 using MageFactory.Item.Controller.Api;
 using MageFactory.Item.Controller.Domain.Service;
-using MageFactory.Item.Domain.EntryPoint.Service;
+using MageFactory.Item.Domain.Service;
 using MageFactory.Semantics;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -93,8 +92,7 @@ namespace MageFactory.InjectConfiguration {
                 .To<FlowFactoryService>()
                 .AsSingle();
 
-            Container.Bind<IEntryPointFactory>()
-                .To<EntryPointFactoryService>()
+            Container.BindInterfacesTo<ItemFactoryService>()
                 .AsSingle();
 
             Container.Bind<IInventoryFactory>()
