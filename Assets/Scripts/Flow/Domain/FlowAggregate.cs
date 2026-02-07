@@ -6,7 +6,6 @@ using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Flow.Api;
-using MageFactory.Flow.Domain.Service;
 using MageFactory.FlowRouting;
 using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
@@ -16,79 +15,79 @@ using Zenject;
 
 namespace MageFactory.Flow.Domain {
     internal class FlowAggregate : IActionContext, IFlowAggregateFacade {
-        private readonly IActionExecutor _actionExecutor;
-        private readonly FlowModel _flowModel;
-        private readonly IFlowRouter _router;
-        private readonly SignalBus _signalBus;
-        private readonly List<long> _visitedNodeIds = new();
+        private readonly IActionExecutor actionExecutor;
+        private readonly FlowModel flowModel;
+        private readonly IFlowRouter router;
+        private readonly SignalBus signalBus;
+        private readonly List<long> visitedNodeIds = new();
 
-        private CancellationTokenSource _cts;
-        private IPlacedItem _currentNode;
-        private bool _running;
+        private CancellationTokenSource cancellationTokenSource;
+        private IPlacedItem currentNode;
+        private bool isRunning;
 
         private FlowAggregate(FlowModel flowModel, IPlacedEntryPoint startNode, IFlowRouter flowRouter,
             SignalBus signalBus, IActionExecutor actionExecutor) {
-            _router = NullGuard.NotNullOrThrow(flowRouter);
-            _flowModel = NullGuard.NotNullOrThrow(flowModel);
-            _currentNode = NullGuard.NotNullOrThrow(startNode);
-            _signalBus = NullGuard.NotNullOrThrow(signalBus);
-            _actionExecutor = NullGuard.NotNullOrThrow(actionExecutor);
+            router = NullGuard.NotNullOrThrow(flowRouter);
+            this.flowModel = NullGuard.NotNullOrThrow(flowModel);
+            currentNode = NullGuard.NotNullOrThrow(startNode);
+            this.signalBus = NullGuard.NotNullOrThrow(signalBus);
+            this.actionExecutor = NullGuard.NotNullOrThrow(actionExecutor);
 
-            _visitedNodeIds.Clear(); // shouldn't be needed
+            visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        public void start() {
-            _ = StartAsync();
-        }
-
-        public void addPower(PowerAmount damageAmount) {
-            _flowModel.AddPower(damageAmount);
-
-            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.getId(), damageAmount.getPower()));
-        }
-
-        public static IFlowAggregateFacade Create(IPlacedEntryPoint placedEntryPoint, long power,
-            IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor _actionExecutor) {
+        internal static IFlowAggregateFacade create(IPlacedEntryPoint placedEntryPoint, long power,
+            IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor actionExecutor) {
             // sourceId ??= CorrelationId.NextString();
             var payload = new FlowSeed(power);
             var context = new FlowContext(placedEntryPoint);
             var model = new FlowModel(payload, context);
             var startNode = placedEntryPoint;
 
-            return new FlowAggregate(model, startNode, flowRouter, signalBus, _actionExecutor);
+            return new FlowAggregate(model, startNode, flowRouter, signalBus, actionExecutor);
         }
 
-        public Task StartAsync() {
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = new CancellationTokenSource();
-            return StepLoopAsync(_cts.Token);
+        public void start() {
+            _ = startAsync();
         }
 
-        private async Task StepLoopAsync(CancellationToken ct) {
-            if (_running) return;
-            _running = true;
+        public void addPower(PowerAmount damageAmount) {
+            flowModel.addPower(damageAmount);
+
+            signalBus.Fire(new ItemPowerChangedDtoEvent(currentNode.getId(), damageAmount.getPower()));
+        }
+
+        private Task startAsync() {
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            return stepLoopAsync(cancellationTokenSource.Token);
+        }
+
+        private async Task stepLoopAsync(CancellationToken ct) {
+            if (isRunning) return;
+            isRunning = true;
             try {
-                while (!ct.IsCancellationRequested && _currentNode != null && _flowModel != null) {
-                    await ProcessAsync(ct);
+                while (!ct.IsCancellationRequested && currentNode != null && flowModel != null) {
+                    await processAsync(ct);
                     if (ct.IsCancellationRequested) break;
-                    if (!await GoNextAsync(ct)) break;
+                    if (!await goNextAsync(ct)) break;
                 }
             }
             finally {
-                _running = false;
+                isRunning = false;
             }
         }
 
-        private async Task ProcessAsync(CancellationToken cancellationToken) {
-            IActionDescription actionSpecification = _currentNode.prepareItemActionDescription();
+        private async Task processAsync(CancellationToken cancellationToken) {
+            IActionDescription actionSpecification = currentNode.prepareItemActionDescription();
 
             // IPreparedAction preparedAction = actionSpecification.ToPreparedAction(this);
             ExecuteActionCommand executeActionCommand = new ExecuteActionCommand(actionSpecification, this);
 
             try {
                 // await _actionExecutor.ExecuteAsync(preparedAction, cancellationToken);
-                await _actionExecutor.executeAsync(executeActionCommand);
+                await actionExecutor.executeAsync(executeActionCommand);
             }
             catch (OperationCanceledException) {
                 throw; // for now
@@ -98,31 +97,31 @@ namespace MageFactory.Flow.Domain {
                 throw; // for now
             }
 
-            _visitedNodeIds.Add(_currentNode.getId());
+            visitedNodeIds.Add(currentNode.getId());
         }
 
-        private async Task<bool> GoNextAsync(CancellationToken ct) {
-            NullGuard.NotNullCheckOrThrow(_currentNode, _flowModel);
+        private async Task<bool> goNextAsync(CancellationToken ct) {
+            NullGuard.NotNullCheckOrThrow(currentNode, flowModel);
 
-            var decision = _router.decideNext(_currentNode, _visitedNodeIds);
+            var decision = router.decideNext(currentNode, visitedNodeIds);
             if (decision is null) {
                 FlowCompletionDispatcher
-                    .finishFlow(_flowModel); // TODO: change it. Use service or something like that instead
-                _currentNode = null;
+                    .finishFlow(flowModel); // TODO: change it. Use service or something like that instead
+                currentNode = null;
                 return false;
             }
 
-            _currentNode = decision;
-            _flowModel.FlowContext.NextStep();
+            currentNode = decision;
+            flowModel.getFlowContext().nextStep();
 
             await Task.Yield();
             return true;
         }
 
-        public void Stop() {
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = null;
+        public void stop() {
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = null;
         }
     }
 }

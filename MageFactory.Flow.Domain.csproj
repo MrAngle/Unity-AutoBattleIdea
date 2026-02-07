@@ -47,12 +47,12 @@
         <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Assets\Scripts\Flow\Domain\ApiFlow.cs"/>
+        <Compile Include="Assets\Scripts\Flow\Domain\FlowCompletionDispatcher.cs"/>
         <Compile Include="Assets\Scripts\Flow\Domain\FlowAggregate.cs"/>
         <Compile Include="Assets\Scripts\Flow\Domain\FlowModel.cs"/>
         <Compile Include="Assets\Scripts\Flow\Domain\FlowPayload.cs"/>
-        <Compile Include="Assets\Scripts\Flow\Domain\GridItemNode.cs"/>
-        <Compile Include="Assets\Scripts\Flow\Domain\Service\FlowCompletionDispatcher.cs"/>
+        <Compile Include="Assets\Scripts\Flow\Domain\FlowContext.cs"/>
+        <Compile Include="Assets\Scripts\Flow\Domain\FlowSeed.cs"/>
         <Compile Include="Assets\Scripts\Flow\Domain\Service\FlowFactoryService.cs"/>
         <None Include="Assets\Scripts\Flow\Domain\MageFactory.Flow.Domain.asmdef"/>
         <Reference Include="UnityEngine">

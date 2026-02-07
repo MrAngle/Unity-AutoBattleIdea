@@ -41,7 +41,7 @@ namespace MageFactory.BattleManager {
                 // TODO: change it of course
                 if (i == 0) {
                     character = characterFactory.create(charactersToCreate[i]);
-                    _characterAggregateContext.SetCharacterAggregateContext(character); // for now
+                    _characterAggregateContext.setCharacterAggregateContext(character); // for now
                 }
                 else {
                     character = characterFactory.create(charactersToCreate[i]);

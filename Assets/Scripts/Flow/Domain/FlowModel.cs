@@ -1,19 +1,27 @@
 ﻿using MageFactory.Shared.Model;
 
 namespace MageFactory.Flow.Domain {
-    public class FlowModel {
-        public FlowModel(FlowSeed flowSeed, FlowContext flowContext) {
-            FlowSeed = flowSeed;
-            FlowPayload = new FlowPayload(flowSeed.Power());
-            FlowContext = flowContext;
+    internal class FlowModel {
+        private readonly FlowSeed flowSeed;
+        private readonly FlowPayload flowPayload;
+        private readonly FlowContext flowContext;
+
+        internal FlowModel(FlowSeed flowSeed, FlowContext flowContext) {
+            this.flowSeed = flowSeed;
+            this.flowPayload = new FlowPayload(flowSeed.power()); // for now
+            this.flowContext = flowContext;
         }
 
-        public FlowSeed FlowSeed { get; }
-        public FlowPayload FlowPayload { get; }
-        public FlowContext FlowContext { get; }
+        internal FlowPayload getFlowPayload() {
+            return flowPayload;
+        }
 
-        public void AddPower(PowerAmount damageAmount) {
-            FlowPayload.Add(damageAmount);
+        internal FlowContext getFlowContext() {
+            return flowContext;
+        }
+
+        internal void addPower(PowerAmount damageAmount) {
+            flowPayload.add(damageAmount);
         }
     }
 }

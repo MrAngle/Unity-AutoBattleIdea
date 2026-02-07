@@ -18,16 +18,16 @@ namespace MageFactory.Context {
             _inventoryGridContext = NullGuard.NotNullOrThrow(inventoryGridContext);
         }
 
-        public void SetInventoryAggregateContext(ICharacterInventoryFacade inventoryAggregate) {
+        public void setInventoryAggregateContext(ICharacterInventoryFacade inventoryAggregate) {
             if (_inventoryAggregate == inventoryAggregate)
                 return; // should nothing to do
 
             _inventoryAggregate = inventoryAggregate;
-            _inventoryGridContext.SetInventoryGrid(_inventoryAggregate.getInventoryGrid());
+            _inventoryGridContext.setInventoryGrid(_inventoryAggregate.getInventoryGrid());
             OnInventoryAggregateSet?.Invoke(_inventoryAggregate);
         }
 
-        public ICharacterInventoryFacade GetInventoryAggregateContext() {
+        public ICharacterInventoryFacade getInventoryAggregateContext() {
             return _inventoryAggregate;
         }
     }

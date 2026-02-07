@@ -31,7 +31,7 @@ namespace MageFactory.Inventory.Controller {
         private void OnEnable() {
             _inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
 
-            var current = _inventoryGridContext.GetInventoryGrid();
+            var current = _inventoryGridContext.getInventoryGrid();
             if (current != null)
                 OnInventoryGridChanged(current);
         }

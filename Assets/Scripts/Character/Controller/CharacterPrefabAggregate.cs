@@ -39,7 +39,7 @@ namespace MageFactory.Character.Controller {
 
             Debug.Log($"Kliknięto postać: {_character.getName()}");
 
-            _characterAggregateContext.SetCharacterAggregateContext(_character);
+            _characterAggregateContext.setCharacterAggregateContext(_character);
         }
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,

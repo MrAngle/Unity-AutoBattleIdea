@@ -13,12 +13,12 @@ namespace MageFactory.Context {
             _inventoryAggregateContext = NullGuard.NotNullOrThrow(inventoryAggregateContext);
         }
 
-        public void SetCharacterAggregateContext(ICharacter character) {
+        public void setCharacterAggregateContext(ICharacter character) {
             _character = character;
-            _inventoryAggregateContext.SetInventoryAggregateContext(_character.getInventoryAggregate());
+            _inventoryAggregateContext.setInventoryAggregateContext(_character.getInventoryAggregate());
         }
 
-        public ICharacter GetCharacterAggregateContext() {
+        public ICharacter getCharacterAggregateContext() {
             return _character;
         }
     }

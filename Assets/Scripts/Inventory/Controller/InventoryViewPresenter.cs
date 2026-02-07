@@ -59,7 +59,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         private void RefreshView() {
-            PrintInventoryItems(_aggregateContext.GetInventoryAggregateContext());
+            PrintInventoryItems(_aggregateContext.getInventoryAggregateContext());
         }
 
         private void PrintInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {

@@ -7,7 +7,7 @@ namespace MageFactory.Context {
 
         public event Action<IInventoryGrid> InventoryGridChanged;
 
-        public void SetInventoryGrid(IInventoryGrid inventoryGrid) {
+        public void setInventoryGrid(IInventoryGrid inventoryGrid) {
             if (_inventoryGrid == inventoryGrid)
                 return; // should nothing to do
 
@@ -15,7 +15,7 @@ namespace MageFactory.Context {
             InventoryGridChanged?.Invoke(_inventoryGrid);
         }
 
-        public IInventoryGrid GetInventoryGrid() {
+        public IInventoryGrid getInventoryGrid() {
             return _inventoryGrid;
         }
     }

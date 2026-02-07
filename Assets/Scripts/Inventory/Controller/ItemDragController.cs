@@ -65,7 +65,7 @@ namespace MageFactory.Inventory.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-            var characterAggregateContext = _characterAggregateContext.GetCharacterAggregateContext();
+            var characterAggregateContext = _characterAggregateContext.getCharacterAggregateContext();
 
             // 3) validacja
             var can = characterAggregateContext != null &&
@@ -91,7 +91,7 @@ namespace MageFactory.Inventory.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            var characterAggregateContext = _characterAggregateContext.GetCharacterAggregateContext();
+            var characterAggregateContext = _characterAggregateContext.getCharacterAggregateContext();
 
             if (characterAggregateContext != null
                 && characterAggregateContext.equipItemOrThrow(_placeableItem, origin, out var placedItem))

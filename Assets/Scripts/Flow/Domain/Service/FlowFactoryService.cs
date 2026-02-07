@@ -16,7 +16,7 @@ namespace MageFactory.Flow.Domain.Service {
         }
 
         public IFlowAggregateFacade create(IPlacedEntryPoint startNode, long power, IFlowRouter router) {
-            var flow = (FlowAggregate)FlowAggregate.Create(startNode, power, router, _signalBus, _actionExecutor);
+            var flow = (FlowAggregate)FlowAggregate.create(startNode, power, router, _signalBus, _actionExecutor);
 
             return flow;
         }
