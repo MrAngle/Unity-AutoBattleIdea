@@ -15,7 +15,7 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Flow.Domain {
-    internal class FlowAggregate : IEffectContext, IFlowAggregateFacade {
+    internal class FlowAggregate : IActionContext, IFlowAggregateFacade {
         private readonly IActionExecutor _actionExecutor;
         private readonly FlowModel _flowModel;
         private readonly IFlowRouter _router;
@@ -81,7 +81,7 @@ namespace MageFactory.Flow.Domain {
         }
 
         private async Task ProcessAsync(CancellationToken cancellationToken) {
-            IItemActionDescription actionSpecification = _currentNode.prepareItemActionDescription();
+            IActionDescription actionSpecification = _currentNode.prepareItemActionDescription();
 
             // IPreparedAction preparedAction = actionSpecification.ToPreparedAction(this);
             ExecuteActionCommand executeActionCommand = new ExecuteActionCommand(actionSpecification, this);

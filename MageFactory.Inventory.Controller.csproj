@@ -52,6 +52,8 @@
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewDemoSpawner.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDragController.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewFactory.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\InventoryControllerSemantics.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryPanelPrefabInitializer.cs"/>
         <None Include="Assets\Scripts\Inventory\Controller\MageFactory.Inventory.Controller.asmdef"/>
         <Reference Include="UnityEngine">
@@ -876,6 +878,18 @@
         <ProjectReference Include="MageFactory.Inventory.Domain.csproj">
             <Project>{daa5b235-a6ba-a97d-ac14-53fd076ebe8a}</Project>
             <Name>MageFactory.Inventory.Domain</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Item.Controller.csproj">
+            <Project>{95b70598-3070-6fcc-9ea5-f0015bf7eced}</Project>
+            <Name>MageFactory.Item.Controller</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Item.Domain.csproj">
+            <Project>{32e97b26-a6ec-ea03-9b27-96314bcdefa1}</Project>
+            <Name>MageFactory.Item.Domain</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Item.Api.csproj">
+            <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
+            <Name>MageFactory.Item.Api</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>

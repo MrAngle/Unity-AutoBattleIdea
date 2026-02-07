@@ -1,38 +1,36 @@
 ﻿using System;
-using MageFactory.Inventory.Api;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MageFactory.Semantics {
     public sealed class ItemsLayerRectTransform : Semantic<RectTransform> {
         public ItemsLayerRectTransform(RectTransform value) : base(value) {
         }
     }
-
-    public sealed class ItemViewPrefabItemView : Semantic<ItemView> {
-        public ItemViewPrefabItemView(ItemView value) : base(value) {
-        }
-    }
-
-    public sealed class DragGhostPrefabItemView : Semantic<ItemView> {
-        public DragGhostPrefabItemView(ItemView value) : base(value) {
-        }
-    }
-
-    public sealed class InventoryGridLayoutGroup : Semantic<GridLayoutGroup> {
-        public InventoryGridLayoutGroup(GridLayoutGroup value) : base(value) {
-        }
-    }
-
-    public sealed class GridViewPrefabInventoryGridView : Semantic<InventoryGridView> {
-        public GridViewPrefabInventoryGridView(InventoryGridView value) : base(value) {
-        }
-    }
-
-    public sealed class CellViewPrefabInventoryCellView : Semantic<InventoryCellView> {
-        public CellViewPrefabInventoryCellView(InventoryCellView value) : base(value) {
-        }
-    }
+    //
+    // public sealed class ItemViewPrefabItemView : Semantic<ItemView> {
+    //     public ItemViewPrefabItemView(ItemView value) : base(value) {
+    //     }
+    // }
+    //
+    // public sealed class DragGhostPrefabItemView : Semantic<ItemView> {
+    //     public DragGhostPrefabItemView(ItemView value) : base(value) {
+    //     }
+    // }
+    //
+    // public sealed class InventoryGridLayoutGroup : Semantic<GridLayoutGroup> {
+    //     public InventoryGridLayoutGroup(GridLayoutGroup value) : base(value) {
+    //     }
+    // }
+    //
+    // public sealed class GridViewPrefabInventoryGridView : Semantic<InventoryGridView> {
+    //     public GridViewPrefabInventoryGridView(InventoryGridView value) : base(value) {
+    //     }
+    // }
+    //
+    // public sealed class CellViewPrefabInventoryCellView : Semantic<InventoryCellView> {
+    //     public CellViewPrefabInventoryCellView(InventoryCellView value) : base(value) {
+    //     }
+    // }
 
     public abstract class Semantic<T> {
         private readonly T _value;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MageFactory.Shared.Model.Shape;
+using UnityEngine;
 
 namespace MageFactory.Inventory.Api {
     public interface IInventoryGrid {

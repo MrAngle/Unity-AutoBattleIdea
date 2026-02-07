@@ -1,8 +1,9 @@
-﻿using MageFactory.Shared.Model;
+﻿// using MageFactory.Shared.Model;
+//
+// namespace MageFactory.Inventory.Api {
+//     public interface IItemActionDescription {
+//         public Duration getCastTime();
+//         public IEffectsDescriptor getEffectsDescriptor();
+//     }
+// }
 
-namespace MageFactory.Inventory.Api {
-    public interface IItemActionDescription {
-        public Duration getCastTime();
-        public IEffectsDescriptor getEffectsDescriptor();
-    }
-}

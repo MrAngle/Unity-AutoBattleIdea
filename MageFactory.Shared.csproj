@@ -50,8 +50,11 @@
         <Compile Include="Assets\Scripts\Shared\IsExternalInit.cs"/>
         <Compile Include="Assets\Scripts\Shared\Utility\Identifier.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\Duration.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Model\Shape\ShapeCatalog.cs"/>
         <Compile Include="Assets\Scripts\Shared\Utility\NullGuard.cs"/>
         <Compile Include="Assets\Scripts\Shared\Utility\IdGenerator.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Model\Shape\ShapeArchetype.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Model\Shape\ItemShape.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\Team.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\PowerAmount.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\FlowKind.cs"/>

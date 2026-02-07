@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MageFactory.Inventory.Api;
+using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using MageFactory.ActionEffect;
+﻿// using System.Collections.Generic;
+// using MageFactory.ActionEffect;
+//
+// namespace MageFactory.Inventory.Api {
+//     public interface IEffectsDescriptor {
+//         IReadOnlyList<IEffect> getEffects();
+//     }
+// }
 
-namespace MageFactory.Inventory.Api {
-    public interface IEffectsDescriptor {
-        IReadOnlyList<IEffect> getEffects();
-    }
-}

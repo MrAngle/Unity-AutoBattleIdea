@@ -1,4 +1,5 @@
 ﻿using MageFactory.Inventory.Api;
+using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -1,27 +1,29 @@
 ﻿using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
 using MageFactory.Inventory.Api;
+using MageFactory.Item.Api;
 using MageFactory.Shared.Model;
+using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Character.Domain.Service {
     public class CharacterAggregateFactory : ICharacterAggregateFactory {
         private readonly IEntryPointFactory _entryPointFactory; // for now
-        private readonly IInventoryAggregateFactory _inventoryAggregateFactory;
+        private readonly IInventoryFactory inventoryFactory;
 
         [Inject]
         public CharacterAggregateFactory(
             SignalBus signalBus,
-            IInventoryAggregateFactory inventoryAggregateFactory,
+            IInventoryFactory inventoryFactory,
             IEntryPointFactory entryPointFactory) {
-            _inventoryAggregateFactory = inventoryAggregateFactory;
+            this.inventoryFactory = inventoryFactory;
             _entryPointFactory = entryPointFactory;
         }
 
         // @Override
         public ICharacter create(CharacterCreateCommand command) {
-            ICharacterInventoryFacade characterInventory = _inventoryAggregateFactory.CreateCharacterInventory();
+            ICharacterInventoryFacade characterInventory = inventoryFactory.CreateCharacterInventory();
             CharacterAggregate character = CharacterAggregate.createFrom(command, characterInventory);
 
             if (character.getTeam() == Team.TeamA) {

@@ -2,9 +2,6 @@
   "name": "MageFactory.Semantics",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Shared",
-    "MageFactory.Inventory.Api",
-    "Zenject"
   ],
   "autoReferenced": true
 }

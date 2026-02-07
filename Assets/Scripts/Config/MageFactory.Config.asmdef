@@ -2,9 +2,13 @@
   "name": "MageFactory.Config",
   "rootNamespace": "Config",
   "references": [
+    "MageFactory.Semantics",
     "MageFactory.Shared",
     "MageFactory.Inventory.Api",
     "MageFactory.Inventory.Domain",
+    "MageFactory.Inventory.Controller",
+    "MageFactory.Item.Api",
+    "MageFactory.Item.Domain",
     "MageFactory.Flow.Api",
     "MageFactory.Flow.Domain",
     "MageFactory.ActionExecutor.Api",
@@ -15,9 +19,7 @@
     "MageFactory.Character.Domain",
     "MageFactory.BattleManager",
     "MageFactory.UI",
-    "Zenject",
-    "MageFactory.Semantics",
-    "MageFactory.Inventory.Controller"
+    "Zenject"
   ],
   "autoReferenced": true
 }

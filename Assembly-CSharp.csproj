@@ -55,6 +55,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
+      <Compile Include="Assets\Scripts\Config\GlobalExceptionHooks.cs"/>
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
+      <Compile Include="Assets\Scripts\Config\DependencyInjectionConfig.cs"/>
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
@@ -87,6 +89,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Roboto-Bold - License.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader" />
+      <None Include="Assets\Scripts\Config\MageFactory.Config.asmdef"/>
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Unity - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Oswald-Bold - OFL.txt" />
@@ -1097,10 +1100,6 @@
           <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
           <Name>MageFactory.Context</Name>
       </ProjectReference>
-      <ProjectReference Include="MageFactory.Config.csproj">
-          <Project>{73dccb57-6c42-6948-013a-0207e57d7f06}</Project>
-          <Name>MageFactory.Config</Name>
-      </ProjectReference>
       <ProjectReference Include="MageFactory.ActionEffect.csproj">
           <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
           <Name>MageFactory.ActionEffect</Name>
@@ -1112,6 +1111,10 @@
       <ProjectReference Include="MageFactory.BattleManager.csproj">
           <Project>{9ae902f5-4d39-12a9-d64b-bdd4eab4e173}</Project>
           <Name>MageFactory.BattleManager</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Item.Api.csproj">
+          <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
+          <Name>MageFactory.Item.Api</Name>
     </ProjectReference>
     <ProjectReference Include="Zenject-Editor.csproj">
       <Project>{32d25bd9-ce4a-3838-298e-03da1528c748}</Project>
@@ -1120,6 +1123,10 @@
     <ProjectReference Include="Zenject.csproj">
       <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
       <Name>Zenject</Name>
+    </ProjectReference>
+      <ProjectReference Include="MageFactory.Item.Controller.csproj">
+          <Project>{95b70598-3070-6fcc-9ea5-f0015bf7eced}</Project>
+          <Name>MageFactory.Item.Controller</Name>
     </ProjectReference>
       <ProjectReference Include="MageFactory.ActionExecutor.Api.csproj">
           <Project>{3104d3d4-b398-917f-6acc-2f14d39376e4}</Project>
@@ -1192,6 +1199,10 @@
       <ProjectReference Include="MageFactory.Inventory.Api.csproj">
           <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
           <Name>MageFactory.Inventory.Api</Name>
+      </ProjectReference>
+      <ProjectReference Include="MageFactory.Item.Domain.csproj">
+          <Project>{32e97b26-a6ec-ea03-9b27-96314bcdefa1}</Project>
+          <Name>MageFactory.Item.Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

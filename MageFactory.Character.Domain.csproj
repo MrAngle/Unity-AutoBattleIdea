@@ -874,6 +874,10 @@
             <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
             <Name>MageFactory.Inventory.Api</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.Item.Api.csproj">
+            <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
+            <Name>MageFactory.Item.Api</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>

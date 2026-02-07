@@ -10,6 +10,8 @@ using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api;
 using MageFactory.Inventory.Controller;
 using MageFactory.Inventory.Domain.Service;
+using MageFactory.Item.Api;
+using MageFactory.Item.Domain.Service;
 using MageFactory.Semantics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -122,8 +124,8 @@ namespace Config {
                 .To<EntryPointFactoryService>()
                 .AsSingle();
 
-            Container.Bind<IInventoryAggregateFactory>()
-                .To<InventoryAggregateFactoryService>()
+            Container.Bind<IInventoryFactory>()
+                .To<InventoryFactoryService>()
                 .AsSingle();
 
 

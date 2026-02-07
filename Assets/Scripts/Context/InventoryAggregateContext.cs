@@ -12,7 +12,7 @@ namespace MageFactory.Context {
         public event Action<ICharacterInventoryFacade> OnInventoryAggregateSet;
 
         [Inject]
-        public InventoryAggregateContext(IInventoryAggregateFactory inventoryAggregateFactory,
+        public InventoryAggregateContext(IInventoryFactory inventoryFactory,
             InventoryGridContext inventoryGridContext) {
             // _inventoryAggregate = inventoryAggregateFactory.CreateCharacterInventory();
             _inventoryGridContext = NullGuard.NotNullOrThrow(inventoryGridContext);

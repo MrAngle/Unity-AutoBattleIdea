@@ -4,6 +4,7 @@
   "references": [
     "MageFactory.Character.Api",
     "MageFactory.Inventory.Api",
+    "MageFactory.Item.Api",
     "MageFactory.Shared",
     
     "Zenject"

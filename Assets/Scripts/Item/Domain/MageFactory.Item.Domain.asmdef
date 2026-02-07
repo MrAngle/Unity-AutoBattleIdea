@@ -1,0 +1,16 @@
+﻿{
+  "name": "MageFactory.Item.Domain",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.ActionEffect",
+    "MageFactory.Inventory.Api",
+    "MageFactory.Item.Api",
+    "MageFactory.Flow.Api",
+    "MageFactory.FlowRouting",
+    "MageFactory.Shared",
+    "MageFactory.TimeSystem",
+    "MageFactory.Semantics",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}

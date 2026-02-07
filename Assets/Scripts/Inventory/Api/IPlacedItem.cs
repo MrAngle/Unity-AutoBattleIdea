@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using MageFactory.ActionExecutor.Api.Dto;
+using MageFactory.Shared.Model.Shape;
+using UnityEngine;
 
 namespace MageFactory.Inventory.Api {
     public interface IPlacedItem : IInventoryPosition {
         public long GetId();
-        public IItemActionDescription prepareItemActionDescription();
+        public IActionDescription prepareItemActionDescription();
         public ShapeArchetype GetShape();
     }
 

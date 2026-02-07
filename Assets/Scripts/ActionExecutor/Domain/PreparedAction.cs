@@ -1,29 +1,28 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
-using MageFactory.Inventory.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.ActionExecutor.Domain {
     public sealed class PreparedAction {
         private readonly Duration castTime;
-        private readonly IReadOnlyList<IEffect> effects;
-        private readonly IEffectContext effectContext;
+        private readonly IReadOnlyList<IOperation> effects;
+        private readonly IActionContext actionContext;
 
-        public PreparedAction(Duration castTime, IReadOnlyList<IEffect> effects, IEffectContext effectContext) {
+        public PreparedAction(Duration castTime, IReadOnlyList<IOperation> effects, IActionContext actionContext) {
             this.castTime = castTime;
             this.effects = effects;
-            this.effectContext = effectContext;
+            this.actionContext = actionContext;
             // this.actionCommand = actionCommand ?? throw new ArgumentNullException(nameof(actionCommand));
-            NullGuard.NotNullCheckOrThrow(this.castTime, this.effects, this.effectContext);
+            NullGuard.NotNullCheckOrThrow(this.castTime, this.effects, this.actionContext);
         }
 
-        public static PreparedAction from(IItemActionDescription itemActionDescription, IEffectContext effectContext) {
+        public static PreparedAction from(IActionDescription actionDescription, IActionContext actionContext) {
             // return new PreparedAction(_actionTiming, _actionCommand.ToActionCommand(flowContext));
-            return new PreparedAction(itemActionDescription.getCastTime(),
-                itemActionDescription.getEffectsDescriptor().getEffects(),
-                effectContext);
+            return new PreparedAction(actionDescription.getCastTime(),
+                actionDescription.getEffectsDescriptor().getEffects(),
+                actionContext);
         }
 
         public static PreparedAction from(ExecuteActionCommand actionCommand) {
@@ -35,7 +34,7 @@ namespace MageFactory.ActionExecutor.Domain {
         }
 
         public void execute() {
-            for (var i = 0; i < effects.Count; i++) effects[i].apply(effectContext);
+            for (var i = 0; i < effects.Count; i++) effects[i].apply(actionContext);
         }
     }
 }

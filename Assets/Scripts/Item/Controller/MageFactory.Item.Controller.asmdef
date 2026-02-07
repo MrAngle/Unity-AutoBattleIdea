@@ -1,0 +1,9 @@
+﻿{
+  "name": "MageFactory.Item.Controller",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Semantics",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}

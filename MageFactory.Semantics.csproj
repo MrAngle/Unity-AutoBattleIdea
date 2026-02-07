@@ -864,18 +864,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Shared.csproj">
-            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
-            <Name>MageFactory.Shared</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-            <Name>MageFactory.Inventory.Api</Name>
-        </ProjectReference>
-        <ProjectReference Include="Zenject.csproj">
-            <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
-            <Name>Zenject</Name>
-        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

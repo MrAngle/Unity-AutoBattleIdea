@@ -3,9 +3,8 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Inventory.Api",
-    "MageFactory.ActionEffect",
-    "MageFactory.Flow.Api",
-    "MageFactory.FlowRouting",
+    "MageFactory.Item.Api",
+
     "MageFactory.Shared",
     "MageFactory.TimeSystem",
     "MageFactory.Semantics",

@@ -4,6 +4,9 @@
   "references": [
     "MageFactory.Inventory.Api",
     "MageFactory.Inventory.Domain",
+    "MageFactory.Item.Controller",
+    "MageFactory.Item.Domain",
+    "MageFactory.Item.Api",
     "MageFactory.Shared",
     "MageFactory.Character.Api",
     "MageFactory.Context",
