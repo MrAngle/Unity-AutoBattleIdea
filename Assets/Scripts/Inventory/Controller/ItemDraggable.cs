@@ -1,4 +1,5 @@
 ﻿using MageFactory.Item.Catalog;
+using MageFactory.Shared.Contract;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
@@ -8,7 +9,7 @@ namespace MageFactory.Inventory.Controller {
         private ItemDragController _controller;
 
         // private IItemFactory itemFactory;
-        private ItemDefinition inventoryPlaceableItem;
+        private IItemDefinition inventoryPlaceableItem;
 
         private void Awake() {
             _controller = FindAnyObjectByType<ItemDragController>(FindObjectsInactive.Include);
@@ -40,8 +41,8 @@ namespace MageFactory.Inventory.Controller {
         }
 
 
-        private ItemDefinition getRandomItemDefinition() {
-            return ItemDefinition.All[Random.Range(0, ItemDefinition.All.Count)];
+        private IItemDefinition getRandomItemDefinition() {
+            return EntryPointDefinition.All[Random.Range(0, EntryPointDefinition.All.Count)];
 
             // return itemFactory.createPlacableItem(new CreatePlaceableItemCommand(shapeArchetype));
             // return new EquipItemCommand(shapeArchetype, );

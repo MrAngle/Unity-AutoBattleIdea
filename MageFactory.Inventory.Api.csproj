@@ -48,7 +48,6 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Assets\Scripts\Inventory\Api\IEffectsDescriptor.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Api\InventoryCell.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\IItemActionDescription.cs"/>
         <None Include="Assets\Scripts\Inventory\Api\MageFactory.Inventory.Api.asmdef"/>
         <Reference Include="UnityEngine">

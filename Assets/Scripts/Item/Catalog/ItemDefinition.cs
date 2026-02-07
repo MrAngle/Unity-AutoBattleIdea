@@ -62,5 +62,9 @@ namespace MageFactory.Item.Catalog {
                 FlowKind.Damage,
                 ShapeCatalog.Square1x1
             );
+
+        public static readonly IReadOnlyList<IEntryPointDefinition> All = new[] {
+            Standard
+        };
     }
 }

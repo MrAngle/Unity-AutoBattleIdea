@@ -20,7 +20,7 @@ namespace MageFactory.Context {
 
         public void setInventoryAggregateContext(ICharacterInventory inventoryAggregate) {
             if (characterInventory == inventoryAggregate)
-                return; // should nothing to do
+                return; // should nothing to do or clear
 
             characterInventory = inventoryAggregate;
             _inventoryGridContext.setInventoryGrid(characterInventory.getInventoryGrid());
