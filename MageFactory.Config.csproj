@@ -864,6 +864,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+      <ProjectReference Include="MageFactory.Semantics.csproj">
+          <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
+          <Name>MageFactory.Semantics</Name>
+      </ProjectReference>
     <ProjectReference Include="MageFactory.Shared.csproj">
       <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
       <Name>MageFactory.Shared</Name>
@@ -875,6 +879,10 @@
     <ProjectReference Include="MageFactory.Inventory.Domain.csproj">
       <Project>{daa5b235-a6ba-a97d-ac14-53fd076ebe8a}</Project>
       <Name>MageFactory.Inventory.Domain</Name>
+    </ProjectReference>
+      <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
+          <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
+          <Name>MageFactory.Inventory.Controller</Name>
     </ProjectReference>
     <ProjectReference Include="MageFactory.Item.Api.csproj">
       <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>
@@ -927,14 +935,6 @@
     <ProjectReference Include="Zenject.csproj">
       <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
       <Name>Zenject</Name>
-    </ProjectReference>
-    <ProjectReference Include="MageFactory.Semantics.csproj">
-      <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
-      <Name>MageFactory.Semantics</Name>
-    </ProjectReference>
-    <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
-      <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
-      <Name>MageFactory.Inventory.Controller</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
