@@ -54,6 +54,7 @@
         <Compile Include="Assets\Scripts\Inventory\Api\IPlacedEntryPoint.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\ICharacterInventoryFacade.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\IInventoryFactory.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Api\IPlaceableItem.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\IEffectsDescriptor.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\IInventoryGrid.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Api\InventoryCell.cs"/>

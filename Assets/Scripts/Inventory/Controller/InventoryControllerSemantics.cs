@@ -1,15 +1,15 @@
-﻿using MageFactory.Inventory.Api;
+﻿using MageFactory.Item.Controller.Api;
 using MageFactory.Semantics;
 using UnityEngine.UI;
 
 namespace MageFactory.Inventory.Controller {
-    public sealed class ItemViewPrefabItemView : Semantic<ItemView> {
-        public ItemViewPrefabItemView(ItemView value) : base(value) {
+    public sealed class ItemViewPrefabItemView : Semantic<PlacedItemView> {
+        public ItemViewPrefabItemView(PlacedItemView value) : base(value) {
         }
     }
 
-    public sealed class DragGhostPrefabItemView : Semantic<ItemView> {
-        public DragGhostPrefabItemView(ItemView value) : base(value) {
+    public sealed class DragGhostPrefabItemView : Semantic<PlacedItemView> {
+        public DragGhostPrefabItemView(PlacedItemView value) : base(value) {
         }
     }
 

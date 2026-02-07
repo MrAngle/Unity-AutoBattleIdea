@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using MageFactory.Inventory.Api;
-using MageFactory.Item;
+using MageFactory.Item.Controller.Api;
+using MageFactory.Item.Domain;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using UnityEngine.EventSystems;

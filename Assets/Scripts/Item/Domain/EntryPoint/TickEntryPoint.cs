@@ -2,7 +2,7 @@
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 
-namespace MageFactory.Item.Domain {
+namespace MageFactory.Item.Domain.EntryPoint {
     public class TickEntryPoint : EntryPointArchetype {
         public TickEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype, IEntryPointFactory entryPointFactory) :
             base(kind, shapeArchetype, entryPointFactory) {

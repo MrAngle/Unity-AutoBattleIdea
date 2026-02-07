@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MageFactory.Context;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Semantics;
 using MageFactory.Shared.Utility;
 using UI.Popup;
@@ -26,7 +26,7 @@ namespace MageFactory.Inventory.Controller {
 
         private readonly SignalBus _signalBus;
 
-        private readonly Dictionary<long, ItemView> _views = new();
+        private readonly Dictionary<long, PlacedItemView> _views = new();
 
         [Inject]
         public InventoryViewPresenter(
@@ -65,9 +65,9 @@ namespace MageFactory.Inventory.Controller {
         private void PrintInventoryItems(ICharacterInventoryFacade characterInventoryFacade) {
             Clear();
             foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
-                if (_views.ContainsKey(placedItem.GetId())) continue;
-                ItemView view = _factory.Create(placedItem.GetShape(), placedItem.GetOrigin());
-                _views[placedItem.GetId()] = view;
+                if (_views.ContainsKey(placedItem.getId())) continue;
+                PlacedItemView view = _factory.Create(placedItem.getShape(), placedItem.getOrigin());
+                _views[placedItem.getId()] = view;
             }
         }
 
@@ -80,7 +80,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         private void OnItemPlaced(ItemPlacedDtoEvent itemPlacedDtoEvent) {
-            ItemView view = _factory.Create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
+            PlacedItemView view = _factory.Create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
             _views[itemPlacedDtoEvent.PlacedItemId] = view;
         }
 

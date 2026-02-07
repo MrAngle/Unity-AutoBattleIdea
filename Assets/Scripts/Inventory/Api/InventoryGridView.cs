@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Api {
+namespace MageFactory.Item.Controller.Api {
     public class InventoryGridView : MonoBehaviour {
         [Header("Prefabs / Refs")] [SerializeField]
         private InventoryCellView cellPrefab;

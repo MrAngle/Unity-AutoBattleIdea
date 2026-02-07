@@ -8,7 +8,7 @@ using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.FlowRouting;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -44,7 +44,7 @@ namespace MageFactory.Flow.Domain {
         public void addPower(PowerAmount damageAmount) {
             _flowModel.AddPower(damageAmount);
 
-            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.GetId(), damageAmount.getPower()));
+            _signalBus.Fire(new ItemPowerChangedDtoEvent(_currentNode.getId(), damageAmount.getPower()));
         }
 
         public static IFlowAggregateFacade Create(IPlacedEntryPoint placedEntryPoint, long power,
@@ -98,7 +98,7 @@ namespace MageFactory.Flow.Domain {
                 throw; // for now
             }
 
-            _visitedNodeIds.Add(_currentNode.GetId());
+            _visitedNodeIds.Add(_currentNode.getId());
         }
 
         private async Task<bool> GoNextAsync(CancellationToken ct) {

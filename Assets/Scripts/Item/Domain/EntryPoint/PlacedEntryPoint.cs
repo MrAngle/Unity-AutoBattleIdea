@@ -6,15 +6,15 @@ using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Inventory.Api;
-using MageFactory.Inventory.Domain;
 using MageFactory.Item.Api;
+using MageFactory.Item.Controller.Api;
+using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
-namespace MageFactory.Item.Domain {
+namespace MageFactory.Item.Domain.EntryPoint {
     public class PlacedEntryPoint : IPlacedEntryPoint, IDisposable {
         private readonly IEntryPointArchetype _entryPointArchetype;
         private readonly IFlowFactory _flowFactory;
@@ -31,7 +31,7 @@ namespace MageFactory.Item.Domain {
             _entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
             _gridInspector = NullGuard.NotNullOrThrow(gridInspector);
             _flowFactory = NullGuard.NotNullOrThrow(flowFactory);
-            _inventoryPosition = InventoryPosition.Create(origin, ItemShape.SingleCell());
+            _inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
             NullGuard.NotNullCheckOrThrow(_inventoryPosition);
         }
 
@@ -48,19 +48,19 @@ namespace MageFactory.Item.Domain {
         }
 
 
-        public Vector2Int GetOrigin() {
-            return _inventoryPosition.GetOrigin();
+        public Vector2Int getOrigin() {
+            return _inventoryPosition.getOrigin();
         }
 
-        public ShapeArchetype GetShape() {
-            return _entryPointArchetype.GetShape();
+        public ShapeArchetype getShape() {
+            return _entryPointArchetype.getShape();
         }
 
-        public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
-            return _inventoryPosition.GetOccupiedCells();
+        public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
+            return _inventoryPosition.getOccupiedCells();
         }
 
-        public long GetId() {
+        public long getId() {
             return _id;
         }
 
@@ -99,7 +99,7 @@ namespace MageFactory.Item.Domain {
 
         private async Task battleLoopAsync(CancellationToken ct) {
             while (_battleRunning && !ct.IsCancellationRequested) {
-                await Task.Delay(TimeSpan.FromSeconds(_entryPointArchetype.GetTurnInterval()), ct);
+                await Task.Delay(TimeSpan.FromSeconds(_entryPointArchetype.getTurnInterval()), ct);
 
                 Debug.Log("Init proces for flow");
                 if (ct.IsCancellationRequested || !_battleRunning) break;
@@ -119,7 +119,7 @@ namespace MageFactory.Item.Domain {
         }
 
         public override string ToString() {
-            return $"({_entryPointArchetype.GetFlowKind()})";
+            return $"({_entryPointArchetype.getFlowKind()})";
         }
     }
 }

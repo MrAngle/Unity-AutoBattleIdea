@@ -1,5 +1,4 @@
-﻿using MageFactory.Inventory.Api;
-using MageFactory.Shared.Model.Shape;
+﻿using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +7,7 @@ namespace MageFactory.Inventory.Controller {
         [Header("Refs")] [SerializeField] private RectTransform itemsLayer; // wskaż ItemsLayer
 
         [SerializeField] private GridLayoutGroup gridLayout; // wskaż GridLayoutGroup z Twojego grida
-        private ItemView itemViewPrefab; // wskaż ItemViewPrefab
+        private PlacedItemView placedItemViewPrefab; // wskaż ItemViewPrefab
 
         private void Reset() {
             if (!itemsLayer) {
@@ -33,7 +32,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         private void SpawnAt(ShapeArchetype data, Vector2Int origin, Vector2 cellSize, float spacing) {
-            var view = Instantiate(itemViewPrefab, itemsLayer, false);
+            var view = Instantiate(placedItemViewPrefab, itemsLayer, false);
             view.Build(data, cellSize);
 
             // Zakładamy, że lewy-górny rogu grida w anchored to (0,0).

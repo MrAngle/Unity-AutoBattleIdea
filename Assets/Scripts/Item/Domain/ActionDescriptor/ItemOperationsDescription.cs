@@ -2,7 +2,7 @@
 using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
 
-namespace MageFactory.Inventory.Domain {
+namespace MageFactory.Item.Domain.ActionDescriptor {
     public sealed class ItemOperationsDescription : IOperations {
         private readonly IReadOnlyList<IOperation> _effects;
 

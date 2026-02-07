@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Api {
+namespace MageFactory.Item.Controller {
     [RequireComponent(typeof(RectTransform), typeof(Image))]
     public class ItemCellTileView : MonoBehaviour {
         [SerializeField] private Image _image;

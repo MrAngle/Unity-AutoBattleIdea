@@ -1,7 +1,7 @@
 ﻿using MageFactory.ActionExecutor.Api;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using Zenject;
 
 namespace MageFactory.Flow.Domain.Service {

@@ -1,7 +1,7 @@
 ﻿using System;
 using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 
 namespace MageFactory.FlowRouting {
     public interface IFlowRouter {

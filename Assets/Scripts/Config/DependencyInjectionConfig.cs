@@ -7,13 +7,14 @@ using MageFactory.Character.Domain.Service;
 using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
-using MageFactory.Inventory.Api;
 using MageFactory.Inventory.Controller;
-using MageFactory.Inventory.Domain.Service;
 using MageFactory.Item.Api;
-using MageFactory.Item.Domain.Service;
+using MageFactory.Item.Controller.Api;
+using MageFactory.Item.Controller.Domain.Service;
+using MageFactory.Item.Domain.EntryPoint.Service;
 using MageFactory.Semantics;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zenject;
 
@@ -21,8 +22,10 @@ namespace Config {
     public class DependencyInjectionConfig : MonoInstaller {
         // [SerializeField] private int width = 8;
 
-        [Header("Prefabs")] [SerializeField] private ItemView itemViewPrefab;
-        [SerializeField] private ItemView dragGhostPrefab;
+        [Header("Prefabs")] [SerializeField] [FormerlySerializedAs("itemViewPrefab")]
+        private PlacedItemView placedItemViewPrefab;
+
+        [SerializeField] private PlacedItemView dragGhostPrefab;
         [SerializeField] private InventoryGridView gridViewPrefab;
         [SerializeField] private InventoryCellView cellViewPrefab;
 
@@ -35,21 +38,6 @@ namespace Config {
         [Header("Battle UI")] [SerializeField] private CharacterPrefabAggregate battleSlotPrefab;
 
         [SerializeField] private Transform battleSlotParent;
-        // private InventoryCellView cellViewPrefab;
-        // private ItemView dragGhostPrefab;
-        //
-        // private InventoryGridView gridViewPrefab;
-        // // [SerializeField] private int width = 8;
-        //
-        // [Header("Prefabs")] private ItemView itemViewPrefab;
-
-        // private ItemView dragGhostPrefab;
-        // // [SerializeField] private int width = 8;
-        //
-        // [Header("Prefabs")] private ItemView itemViewPrefab;
-
-        // [Header("Scripts")]
-        // [SerializeField] private InventoryPanelPrefabInitializer inventoryPanelPrefabInitializer;
 
 
         public override void InstallBindings() {
@@ -66,7 +54,7 @@ namespace Config {
 
             // PREFAB INITIALIZER
             Container.Bind<ItemViewPrefabItemView>()
-                .FromMethod(_ => new ItemViewPrefabItemView(itemViewPrefab))
+                .FromMethod(_ => new ItemViewPrefabItemView(placedItemViewPrefab))
                 .AsSingle();
 
             Container.Bind<DragGhostPrefabItemView>()
@@ -85,20 +73,6 @@ namespace Config {
             Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
                 .AsSingle()
                 .NonLazy();
-
-
-            // Container.Bind<InventoryAggregateContext>()
-            //     .AsSingle()
-            //     .NonLazy();
-
-
-            // GRID LAYOUT
-
-
-            // SCRIPTS
-            // Container.Bind<InventoryPanelPrefabInitializer>()
-            //     .FromComponentInHierarchy()
-            //     .AsSingle();
         }
 
         private void BindContexts() {

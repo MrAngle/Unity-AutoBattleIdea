@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using MageFactory.Context;
-using MageFactory.Inventory.Api;
-using MageFactory.Inventory.Domain;
-using MageFactory.Semantics;
+using MageFactory.Item.Controller.Api;
+using MageFactory.Item.Controller.Domain;
 using UnityEngine;
 using Zenject;
 

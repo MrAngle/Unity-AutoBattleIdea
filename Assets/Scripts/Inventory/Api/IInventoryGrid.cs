@@ -1,7 +1,7 @@
 ﻿using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
-namespace MageFactory.Inventory.Api {
+namespace MageFactory.Item.Controller.Api {
     public interface IInventoryGrid {
         int Width { get; }
         int Height { get; }

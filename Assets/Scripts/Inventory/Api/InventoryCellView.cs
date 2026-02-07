@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Api {
+namespace MageFactory.Item.Controller.Api {
     public class InventoryCellView : MonoBehaviour {
         [SerializeField] private Image _image;
 

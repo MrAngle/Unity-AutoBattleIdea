@@ -49,8 +49,8 @@
     <ItemGroup>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDraggable.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryViewPresenter.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Controller\ItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewDemoSpawner.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Controller\PlacedItemView.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemDragController.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\ItemViewFactory.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Controller\InventoryControllerSemantics.cs"/>

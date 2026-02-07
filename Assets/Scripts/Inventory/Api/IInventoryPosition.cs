@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MageFactory.Inventory.Api {
+namespace MageFactory.Item.Controller.Api {
     public interface IInventoryPosition {
-        public IReadOnlyCollection<Vector2Int> GetOccupiedCells();
-        public Vector2Int GetOrigin();
+        public IReadOnlyCollection<Vector2Int> getOccupiedCells();
+        public Vector2Int getOrigin();
     }
 }

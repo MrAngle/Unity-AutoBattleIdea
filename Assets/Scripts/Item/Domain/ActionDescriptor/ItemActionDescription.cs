@@ -2,7 +2,7 @@
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
-namespace MageFactory.Inventory.Domain {
+namespace MageFactory.Item.Domain.ActionDescriptor {
     public sealed class ItemActionDescription : IActionDescription {
         private readonly Duration castTime;
         private readonly IOperations operations;

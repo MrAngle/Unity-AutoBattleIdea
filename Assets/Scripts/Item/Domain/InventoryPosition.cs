@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
-namespace MageFactory.Item {
+namespace MageFactory.Item.Domain {
     public class InventoryPosition : IInventoryPosition {
         private readonly ItemShape _itemShape;
 
@@ -13,22 +13,22 @@ namespace MageFactory.Item {
         private InventoryPosition(Vector2Int origin, ItemShape itemItemShape) {
             _origin = origin;
             _itemShape = itemItemShape;
-            _occupiedCells = CalculateOccupiedCellsByOrigin();
+            _occupiedCells = calculateOccupiedCellsByOrigin();
         }
 
-        public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
-            return _occupiedCells;
-        }
-
-        public Vector2Int GetOrigin() {
-            return _origin;
-        }
-
-        public static InventoryPosition Create(Vector2Int origin, ItemShape itemItemShape) {
+        public static InventoryPosition create(Vector2Int origin, ItemShape itemItemShape) {
             return new InventoryPosition(origin, itemItemShape);
         }
 
-        private HashSet<Vector2Int> CalculateOccupiedCellsByOrigin() {
+        public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
+            return _occupiedCells;
+        }
+
+        public Vector2Int getOrigin() {
+            return _origin;
+        }
+
+        private HashSet<Vector2Int> calculateOccupiedCellsByOrigin() {
             return _itemShape.GetCellSetAt(_origin);
         }
     }

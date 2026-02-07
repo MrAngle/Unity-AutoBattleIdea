@@ -1,9 +1,9 @@
-﻿using MageFactory.Inventory.Api;
-using MageFactory.Item.Api;
+﻿using MageFactory.Item.Api;
+using MageFactory.Item.Controller.Api;
 using UnityEngine;
 using Zenject;
 
-namespace MageFactory.Inventory.Domain.Service {
+namespace MageFactory.Item.Controller.Domain.Service {
     public class InventoryFactoryService : IInventoryFactory {
         private readonly SignalBus signalBus;
         private readonly IEntryPointFactory entryPointFactory;
@@ -22,7 +22,7 @@ namespace MageFactory.Inventory.Domain.Service {
 
         public IPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
             IGridInspector gridInspector) {
-            return entryPointFactory.CreatePlacedEntryPoint(archetype, position, gridInspector);
+            return entryPointFactory.createPlacedEntryPoint(archetype, position, gridInspector);
         }
 
         // @Override

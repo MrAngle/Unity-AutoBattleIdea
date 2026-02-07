@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
-namespace MageFactory.Inventory.Domain {
+namespace MageFactory.Item.Controller.Domain {
     public class InventoryGrid : IInventoryGrid {
         // TODO: make it internal
         private readonly Dictionary<Vector2Int, InventoryCell> _cells;

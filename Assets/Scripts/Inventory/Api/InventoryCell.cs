@@ -1,4 +1,4 @@
-﻿namespace MageFactory.Inventory.Api {
+﻿namespace MageFactory.Item.Controller.Api {
     public enum CellState {
         Unreachable, // nieosiągalne
         Empty, // dozwolone i puste

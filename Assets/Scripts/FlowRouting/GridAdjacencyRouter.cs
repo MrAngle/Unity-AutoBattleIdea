@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using UnityEngine;
 
 namespace MageFactory.FlowRouting {
@@ -28,7 +28,7 @@ namespace MageFactory.FlowRouting {
             var dirs = new[] { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
             var boundary = new HashSet<Vector2Int>();
 
-            foreach (var cell in current.GetOccupiedCells()) {
+            foreach (var cell in current.getOccupiedCells()) {
                 foreach (var d in dirs) {
                     var n = cell + d;
                     boundary.Add(n);
@@ -43,7 +43,7 @@ namespace MageFactory.FlowRouting {
                 if (_gridInspector.tryGetItemAtCell(vector2Int, out IPlacedItem placedItem)) {
                     if (placedItem == current) continue; // ta sama bryła
                     // var neighborNodeId = $"Item:{neighborItem.Id}"; // TODO
-                    if (visitedNodeIds.Contains(placedItem.GetId())) continue; // już odwiedzony item
+                    if (visitedNodeIds.Contains(placedItem.getId())) continue; // już odwiedzony item
                     candidates.Add(vector2Int, placedItem);
                 }
                 // if (_itemIndex.TryGetItemAtCell(vector2Int, out var neighborItem, out var neighborOrigin))

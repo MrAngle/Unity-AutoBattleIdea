@@ -1,5 +1,5 @@
 ﻿using MageFactory.Context;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Semantics;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace MageFactory.Inventory.Controller {
     public class ItemDragController : MonoBehaviour {
         private CharacterAggregateContext _characterAggregateContext;
         private DragGhostPrefabItemView _dragGhostPrefabItemView;
-        private ItemView _ghostItem;
+        private PlacedItemView ghostPlacedItem;
 
         private InventoryGridLayoutGroup _inventoryGridLayout;
 
@@ -22,8 +22,8 @@ namespace MageFactory.Inventory.Controller {
 
 
         private void Start() {
-            _ghostItem = Instantiate(_dragGhostPrefabItemView.Get(), _itemsLayer.Get(), false);
-            _ghostItem.gameObject.SetActive(false);
+            ghostPlacedItem = Instantiate(_dragGhostPrefabItemView.Get(), _itemsLayer.Get(), false);
+            ghostPlacedItem.gameObject.SetActive(false);
         }
 
         [Inject]
@@ -44,9 +44,9 @@ namespace MageFactory.Inventory.Controller {
         public void BeginDrag(IPlaceableItem data, PointerEventData eventData) {
             _placeableItem = data;
             var cellSize = _inventoryGridLayout.Get().cellSize;
-            _ghostItem.Build(_placeableItem.GetShape(), cellSize);
-            _ghostItem.SetColor(new Color(1f, 1f, 1f, 0.6f));
-            _ghostItem.gameObject.SetActive(true);
+            ghostPlacedItem.Build(_placeableItem.getShape(), cellSize);
+            ghostPlacedItem.SetColor(new Color(1f, 1f, 1f, 0.6f));
+            ghostPlacedItem.gameObject.SetActive(true);
 
             UpdateDrag(eventData);
         }
@@ -70,15 +70,15 @@ namespace MageFactory.Inventory.Controller {
             // 3) validacja
             var can = characterAggregateContext != null &&
                       characterAggregateContext.canPlaceItem(_placeableItem, origin);
-            _ghostItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
+            ghostPlacedItem.SetColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
-            _ghostItem.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            ghostPlacedItem.SetOriginInGrid(origin, cell, Vector2.zero, spacing.x);
         }
 
         public void EndDrag(PointerEventData pointerEventData) {
             if (_placeableItem == null) {
-                _ghostItem.gameObject.SetActive(false);
+                ghostPlacedItem.gameObject.SetActive(false);
                 return;
             }
 
@@ -102,7 +102,7 @@ namespace MageFactory.Inventory.Controller {
             //     IPlacedItem placedItem = inventoryAggregate.Place(_placeableItem, origin);
             // }
 
-            _ghostItem.gameObject.SetActive(false);
+            ghostPlacedItem.gameObject.SetActive(false);
             _placeableItem = null;
         }
     }

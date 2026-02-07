@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
-using MageFactory.Inventory.Api;
-using MageFactory.Inventory.Domain;
+using MageFactory.Item.Controller.Api;
+using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
-namespace MageFactory.Item {
+namespace MageFactory.Item.Domain {
     internal class BattleItem : IPlacedItem {
         private readonly long _id;
         private readonly ItemArchetype _itemArchetype;
@@ -17,18 +17,18 @@ namespace MageFactory.Item {
         internal BattleItem(ItemArchetype itemArchetype, Vector2Int origin) {
             _id = IdGenerator.Next();
             _itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
-            _inventoryPosition = InventoryPosition.Create(origin, _itemArchetype.GetShape().Shape);
+            _inventoryPosition = InventoryPosition.create(origin, _itemArchetype.getShape().Shape);
         }
 
-        public IReadOnlyCollection<Vector2Int> GetOccupiedCells() {
-            return _inventoryPosition.GetOccupiedCells();
+        public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
+            return _inventoryPosition.getOccupiedCells();
         }
 
-        public Vector2Int GetOrigin() {
-            return _inventoryPosition.GetOrigin();
+        public Vector2Int getOrigin() {
+            return _inventoryPosition.getOrigin();
         }
 
-        public long GetId() {
+        public long getId() {
             return _id;
         }
 
@@ -50,8 +50,8 @@ namespace MageFactory.Item {
             );
         }
 
-        public ShapeArchetype GetShape() {
-            return _itemArchetype.GetShape();
+        public ShapeArchetype getShape() {
+            return _itemArchetype.getShape();
         }
     }
 }

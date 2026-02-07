@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
-namespace MageFactory.Inventory.Domain {
+namespace MageFactory.Item.Controller.Domain {
     public class InventoryAggregate : IGridInspector, ICharacterInventoryFacade {
         private readonly Dictionary<Vector2Int, IPlacedItem> _cellToItem = new();
 
@@ -49,23 +49,23 @@ namespace MageFactory.Inventory.Domain {
         }
 
         public bool canPlace(IPlaceableItem placeableItem, Vector2Int origin) {
-            return inventoryGrid.canPlace(placeableItem.GetShape(), origin);
+            return inventoryGrid.canPlace(placeableItem.getShape(), origin);
         }
 
         public IPlacedItem place(IPlaceableItem placeableItem, Vector2Int origin) {
-            if (!inventoryGrid.canPlace(placeableItem.GetShape(), origin))
+            if (!inventoryGrid.canPlace(placeableItem.getShape(), origin))
                 throw new ArgumentException("Cannot place item");
 
-            var placedItem = placeableItem.ToPlacedItem(this, origin);
-            foreach (var c in placedItem.GetOccupiedCells())
+            var placedItem = placeableItem.toPlacedItem(this, origin);
+            foreach (var c in placedItem.getOccupiedCells())
                 if (_cellToItem.ContainsKey(c))
                     throw new ArgumentException("Cannot place item");
 
             items.Add(placedItem);
-            foreach (var c in placedItem.GetOccupiedCells()) _cellToItem[c] = placedItem;
+            foreach (var c in placedItem.getOccupiedCells()) _cellToItem[c] = placedItem;
 
-            inventoryGrid.place(placedItem.GetShape(), origin);
-            signalBus.Fire(new ItemPlacedDtoEvent(placedItem.GetId(), placedItem.GetShape(), origin));
+            inventoryGrid.place(placedItem.getShape(), origin);
+            signalBus.Fire(new ItemPlacedDtoEvent(placedItem.getId(), placedItem.getShape(), origin));
             return placedItem;
         }
 

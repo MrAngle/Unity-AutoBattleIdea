@@ -1,5 +1,5 @@
 ﻿using MageFactory.FlowRouting;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 
 namespace MageFactory.Flow.Api {
     public interface IFlowFactory {

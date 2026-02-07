@@ -1,12 +1,12 @@
 ﻿using MageFactory.Flow.Api;
-using MageFactory.Inventory.Api;
 using MageFactory.Item.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using Zenject;
 
-namespace MageFactory.Item.Domain.Service {
+namespace MageFactory.Item.Domain.EntryPoint.Service {
     public class EntryPointFactoryService : IEntryPointFactory {
         private readonly IFlowFactory _flowFactory;
 
@@ -16,7 +16,7 @@ namespace MageFactory.Item.Domain.Service {
         }
 
         // @Override
-        public IPlacedEntryPoint CreatePlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
+        public IPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
             IGridInspector gridInspector) {
             var placedEntryPoint = PlacedEntryPoint.Create(archetype, position, gridInspector, _flowFactory);
 
@@ -24,7 +24,7 @@ namespace MageFactory.Item.Domain.Service {
         }
 
         // @Override
-        public IEntryPointArchetype CreateArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
+        public IEntryPointArchetype createArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
             return new TickEntryPoint(kind, shapeArchetype, this);
         }
     }

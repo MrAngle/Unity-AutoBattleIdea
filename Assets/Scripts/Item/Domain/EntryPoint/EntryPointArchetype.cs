@@ -1,12 +1,12 @@
 ﻿using System.Threading;
-using MageFactory.Inventory.Api;
 using MageFactory.Item.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
-namespace MageFactory.Item.Domain {
+namespace MageFactory.Item.Domain.EntryPoint {
     public abstract class EntryPointArchetype : IEntryPointArchetype {
         private readonly IEntryPointFactory _entryPointFactory; // separate in future
         private readonly FlowKind _kind;
@@ -27,19 +27,19 @@ namespace MageFactory.Item.Domain {
             _turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
-        public IPlacedItem ToPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
-            return _entryPointFactory.CreatePlacedEntryPoint(this, origin, gridInspector);
+        public IPlacedItem toPlacedItem(IGridInspector gridInspector, Vector2Int origin) {
+            return _entryPointFactory.createPlacedEntryPoint(this, origin, gridInspector);
         }
 
-        public ShapeArchetype GetShape() {
+        public ShapeArchetype getShape() {
             return _shapeArchetype;
         }
 
-        public FlowKind GetFlowKind() {
+        public FlowKind getFlowKind() {
             return _kind;
         }
 
-        public float GetTurnInterval() {
+        public float getTurnInterval() {
             return _turnInterval;
         }
 

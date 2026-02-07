@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MageFactory.Item.Controller;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Api {
-    public class ItemView : MonoBehaviour {
+namespace MageFactory.Inventory.Controller {
+    public class PlacedItemView : MonoBehaviour {
         [Header("Visual")] [SerializeField] private Color cellColor = new(0.4f, 0.7f, 1f, 0.85f);
 
         [SerializeField] private float cellSpacing = 2f; // odstęp między kafelkami (px)

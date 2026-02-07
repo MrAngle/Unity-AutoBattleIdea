@@ -1,5 +1,4 @@
-﻿using MageFactory.Inventory.Api;
-using MageFactory.Semantics;
+﻿using MageFactory.Semantics;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,13 +6,13 @@ using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public interface IItemViewFactory {
-        ItemView Create(ShapeArchetype data, Vector2Int origin);
+        PlacedItemView Create(ShapeArchetype data, Vector2Int origin);
     }
 
     public sealed class ItemViewFactory : IItemViewFactory {
         private readonly GridLayoutGroup _grid;
         private readonly ItemsLayerRectTransform _itemsLayer;
-        private readonly ItemView _prefab;
+        private readonly PlacedItemView _prefab;
 
         [Inject]
         public ItemViewFactory(
@@ -25,7 +24,7 @@ namespace MageFactory.Inventory.Controller {
             _grid = gridLayoutGroup.Get();
         }
 
-        public ItemView Create(ShapeArchetype data, Vector2Int origin) {
+        public PlacedItemView Create(ShapeArchetype data, Vector2Int origin) {
             var view = Object.Instantiate(_prefab, _itemsLayer.Get(), false);
 
             var cell = _grid.cellSize;

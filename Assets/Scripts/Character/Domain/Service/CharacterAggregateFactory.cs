@@ -1,7 +1,7 @@
 ﻿using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
-using MageFactory.Inventory.Api;
 using MageFactory.Item.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace MageFactory.Character.Domain.Service {
             if (character.getTeam() == Team.TeamA) {
                 //for now
                 IPlaceableItem entryPointArchetype =
-                    _entryPointFactory.CreateArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
+                    _entryPointFactory.createArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
                 character.equipItemOrThrow(entryPointArchetype, new Vector2Int(0, 0), out _);
             }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using MageFactory.Inventory.Api;
+using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
 using UnityEngine;
 
