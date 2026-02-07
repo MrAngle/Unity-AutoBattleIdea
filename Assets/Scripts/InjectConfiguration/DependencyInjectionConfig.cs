@@ -18,7 +18,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Config {
+namespace MageFactory.InjectConfiguration {
     public class DependencyInjectionConfig : MonoInstaller {
         // [SerializeField] private int width = 8;
 
@@ -41,16 +41,15 @@ namespace Config {
 
 
         public override void InstallBindings() {
-            InstallSignals();
+            installSignals();
 
-            BindItemsLayerRectTransform();
+            bindItemsLayerRectTransform();
 
-            BindInventoryGridLayoutGroup();
-
+            bindInventoryGridLayoutGroup();
 
             BindContexts();
 
-            BindFactories();
+            bindFactories();
 
             // PREFAB INITIALIZER
             Container.Bind<ItemViewPrefabItemView>()
@@ -89,7 +88,7 @@ namespace Config {
                 .NonLazy();
         }
 
-        private void BindFactories() {
+        private void bindFactories() {
             Container.Bind<IFlowFactory>()
                 .To<FlowFactoryService>()
                 .AsSingle();
@@ -115,24 +114,24 @@ namespace Config {
                 .To<CharacterFactoryService>()
                 .AsSingle();
 
-            BindCharactersAndBattleUI();
+            bindCharactersAndBattleUI();
         }
 
-        private void BindInventoryGridLayoutGroup() {
+        private void bindInventoryGridLayoutGroup() {
             Container.Bind<InventoryGridLayoutGroup>()
                 .FromMethod(_ => new InventoryGridLayoutGroup(inventoryGridLayout))
                 .AsSingle()
                 .NonLazy();
         }
 
-        private void BindItemsLayerRectTransform() {
+        private void bindItemsLayerRectTransform() {
             Container.Bind<ItemsLayerRectTransform>()
                 .FromMethod(_ => new ItemsLayerRectTransform(itemsLayerRectTransform))
                 .AsSingle()
                 .NonLazy();
         }
 
-        private void BindCharactersAndBattleUI() {
+        private void bindCharactersAndBattleUI() {
             // prefab slotu
             Container.Bind<CharacterPrefabAggregate>()
                 .FromInstance(battleSlotPrefab)
@@ -150,7 +149,7 @@ namespace Config {
                 .AsSingle();
         }
 
-        private void InstallSignals() {
+        private void installSignals() {
             SignalBusInstaller.Install(Container);
             Container.DeclareSignal<ItemPlacedDtoEvent>();
             Container.DeclareSignal<ItemRemovedDtoEvent>();

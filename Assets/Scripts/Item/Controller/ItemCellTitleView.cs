@@ -11,12 +11,12 @@ namespace MageFactory.Item.Controller {
             _image.raycastTarget = true; // na razie bez interakcji
         }
 
-        public void SetupVisual(Color color) {
+        public void setupVisual(Color color) {
             if (!_image) _image = GetComponent<Image>();
             _image.color = color;
         }
 
-        public void SetSize(Vector2 size) {
+        public void setSize(Vector2 size) {
             var rt = (RectTransform)transform;
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);

@@ -1,6 +1,6 @@
 ﻿{
-  "name": "MageFactory.Config",
-  "rootNamespace": "Config",
+  "name": "MageFactory.InjectConfiguration",
+  "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Semantics",
     "MageFactory.Shared",

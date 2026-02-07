@@ -113,7 +113,7 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         private IFlowAggregateFacade prepareFlowAggregate(int power) {
-            var flowRouter = GridAdjacencyRouter.Create(_gridInspector);
+            var flowRouter = GridAdjacencyRouter.create(_gridInspector);
             var flowAggregate = _flowFactory.create(this, power, flowRouter);
             return flowAggregate;
         }

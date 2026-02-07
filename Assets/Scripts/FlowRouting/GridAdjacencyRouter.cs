@@ -11,7 +11,7 @@ namespace MageFactory.FlowRouting {
             _gridInspector = gridInspector;
         }
 
-        public static IFlowRouter Create(IGridInspector gridInspector) {
+        public static IFlowRouter create(IGridInspector gridInspector) {
             return new GridAdjacencyRouter(gridInspector);
         }
 

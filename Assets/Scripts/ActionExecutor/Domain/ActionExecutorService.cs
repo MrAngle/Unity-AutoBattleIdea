@@ -4,7 +4,7 @@ using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
 using TimeSystem;
 
-[assembly: InternalsVisibleTo("MageFactory.Config")]
+[assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.ActionExecutor.Domain {
     sealed class ActionExecutorService : IActionExecutor {

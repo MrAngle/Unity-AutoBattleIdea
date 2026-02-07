@@ -3,10 +3,10 @@ using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api.Dto;
 
 namespace MageFactory.Item.Domain.ActionDescriptor {
-    public sealed class ItemOperationsDescription : IOperations {
+    internal sealed class ItemOperationsDescription : IOperations {
         private readonly IReadOnlyList<IOperation> _effects;
 
-        public ItemOperationsDescription(params IOperation[] effects) {
+        internal ItemOperationsDescription(params IOperation[] effects) {
             _effects = effects;
         }
 

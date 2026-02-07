@@ -8,7 +8,7 @@ using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using Zenject;
 
-[assembly: InternalsVisibleTo("MageFactory.Config")]
+[assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.Character.Domain.Service {
     class CharacterFactoryService : ICharacterFactory {

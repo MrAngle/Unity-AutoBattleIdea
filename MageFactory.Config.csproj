@@ -11,7 +11,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>Config</RootNamespace>
+    <RootNamespace>MageFactory</RootNamespace>
     <ProjectGuid>{73dccb57-6c42-6948-013a-0207e57d7f06}</ProjectGuid>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
@@ -46,9 +46,8 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Config\GlobalExceptionHooks.cs" />
     <Compile Include="Assets\Scripts\Config\DependencyInjectionConfig.cs" />
-    <None Include="Assets\Scripts\Config\MageFactory.Config.asmdef" />
+    <None Include="Assets\Scripts\Config\MageFactory.InjectConfiguration.asmdef" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -864,10 +863,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-      <ProjectReference Include="MageFactory.Semantics.csproj">
-          <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
-          <Name>MageFactory.Semantics</Name>
-      </ProjectReference>
+    <ProjectReference Include="MageFactory.Semantics.csproj">
+      <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
+      <Name>MageFactory.Semantics</Name>
+    </ProjectReference>
     <ProjectReference Include="MageFactory.Shared.csproj">
       <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
       <Name>MageFactory.Shared</Name>
@@ -880,9 +879,9 @@
       <Project>{daa5b235-a6ba-a97d-ac14-53fd076ebe8a}</Project>
       <Name>MageFactory.Inventory.Domain</Name>
     </ProjectReference>
-      <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
-          <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
-          <Name>MageFactory.Inventory.Controller</Name>
+    <ProjectReference Include="MageFactory.Inventory.Controller.csproj">
+      <Project>{1ed4effa-ef12-4199-16cb-74247297f77b}</Project>
+      <Name>MageFactory.Inventory.Controller</Name>
     </ProjectReference>
     <ProjectReference Include="MageFactory.Item.Api.csproj">
       <Project>{9fef537c-6049-deec-24b5-ff9896d18933}</Project>

@@ -1097,10 +1097,6 @@
       <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
       <Name>MageFactory.Context</Name>
     </ProjectReference>
-    <ProjectReference Include="MageFactory.Config.csproj">
-      <Project>{73dccb57-6c42-6948-013a-0207e57d7f06}</Project>
-      <Name>MageFactory.Config</Name>
-    </ProjectReference>
     <ProjectReference Include="MageFactory.ActionEffect.csproj">
       <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
       <Name>MageFactory.ActionEffect</Name>
@@ -1177,6 +1173,10 @@
       <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
       <Name>MageFactory.Registry</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.Semantics.csproj">
+          <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
+          <Name>MageFactory.Semantics</Name>
+    </ProjectReference>
     <ProjectReference Include="MageFactory.FlowRouting.csproj">
       <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
       <Name>MageFactory.FlowRouting</Name>
@@ -1185,6 +1185,10 @@
       <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
       <Name>MageFactory.Flow.Api</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.InjectConfiguration.csproj">
+          <Project>{0f8863f4-2c18-81c6-0547-c213a021e090}</Project>
+          <Name>MageFactory.InjectConfiguration</Name>
+    </ProjectReference>
     <ProjectReference Include="MageFactory.ActionExecutor.Domain.csproj">
       <Project>{7d4fec63-3cf9-4cf0-4ca0-3975473ded8f}</Project>
       <Name>MageFactory.ActionExecutor.Domain</Name>
@@ -1192,10 +1196,6 @@
     <ProjectReference Include="MageFactory.Controller.Character.csproj">
       <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
       <Name>MageFactory.Controller.Character</Name>
-    </ProjectReference>
-    <ProjectReference Include="MageFactory.Semantics.csproj">
-      <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
-      <Name>MageFactory.Semantics</Name>
     </ProjectReference>
     <ProjectReference Include="MageFactory.Inventory.Api.csproj">
       <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>

@@ -1,4 +1,5 @@
-﻿using MageFactory.Flow.Api;
+﻿using System.Runtime.CompilerServices;
+using MageFactory.Flow.Api;
 using MageFactory.Item.Api;
 using MageFactory.Item.Controller.Api;
 using MageFactory.Shared.Model;
@@ -6,12 +7,14 @@ using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using Zenject;
 
+[assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
+
 namespace MageFactory.Item.Domain.EntryPoint.Service {
-    public class EntryPointFactoryService : IEntryPointFactory {
+    internal class EntryPointFactoryService : IEntryPointFactory {
         private readonly IFlowFactory _flowFactory;
 
         [Inject]
-        public EntryPointFactoryService(IFlowFactory flowFactory) {
+        internal EntryPointFactoryService(IFlowFactory flowFactory) {
             _flowFactory = flowFactory;
         }
 

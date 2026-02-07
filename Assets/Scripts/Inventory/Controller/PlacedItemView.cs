@@ -31,8 +31,8 @@ namespace MageFactory.Inventory.Controller {
                 go.transform.SetParent(transform, false);
 
                 var tile = go.GetComponent<ItemCellTileView>();
-                tile.SetupVisual(cellColor);
-                tile.SetSize(_cellSize);
+                tile.setupVisual(cellColor);
+                tile.setSize(_cellSize);
 
                 var rt = (RectTransform)go.transform;
                 rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
@@ -61,7 +61,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         public void SetColor(Color c) {
-            foreach (var t in _tiles) t.SetupVisual(c);
+            foreach (var t in _tiles) t.setupVisual(c);
         }
 
         public void Clear() {
