@@ -15,24 +15,24 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain.EntryPoint {
-    public class PlacedEntryPoint : IPlacedEntryPoint, IDisposable {
-        private readonly IEntryPointArchetype _entryPointArchetype;
-        private readonly IFlowFactory _flowFactory;
-        private readonly IGridInspector _gridInspector;
-        private readonly long _id;
-        private readonly InventoryPosition _inventoryPosition;
+    internal class PlacedEntryPoint : IPlacedEntryPoint, IDisposable {
+        private readonly long id;
+        private readonly IEntryPointArchetype entryPointArchetype;
+        private readonly IFlowFactory flowFactory;
+        private readonly IGridInspector gridInspector;
+        private readonly InventoryPosition inventoryPosition;
 
-        private bool _battleRunning = true; /*for now*/
-        private CancellationTokenSource _cts;
+        private bool isBattleRunning = true; /*for now*/
+        private CancellationTokenSource cancellationTokenSource;
 
         private PlacedEntryPoint(IEntryPointArchetype entryPointArchetype, Vector2Int origin,
             IGridInspector gridInspector, IFlowFactory flowFactory) {
-            _id = IdGenerator.Next();
-            _entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
-            _gridInspector = NullGuard.NotNullOrThrow(gridInspector);
-            _flowFactory = NullGuard.NotNullOrThrow(flowFactory);
-            _inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
-            NullGuard.NotNullCheckOrThrow(_inventoryPosition);
+            id = IdGenerator.Next();
+            this.entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
+            this.gridInspector = NullGuard.NotNullOrThrow(gridInspector);
+            this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
+            inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
+            NullGuard.NotNullCheckOrThrow(inventoryPosition);
         }
 
         internal static IPlacedEntryPoint create(IEntryPointArchetype archetype, Vector2Int position,
@@ -56,26 +56,24 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         public Vector2Int getOrigin() {
-            return _inventoryPosition.getOrigin();
+            return inventoryPosition.getOrigin();
         }
 
         public ShapeArchetype getShape() {
-            return _entryPointArchetype.getShape();
+            return entryPointArchetype.getShape();
         }
 
         public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
-            return _inventoryPosition.getOccupiedCells();
+            return inventoryPosition.getOccupiedCells();
         }
 
         public long getId() {
-            return _id;
+            return id;
         }
 
         public void startBattle() {
-            // if (_battleRunning) return;
-            // _battleRunning = true;
-            _cts = new CancellationTokenSource();
-            _ = battleLoopAsync(_cts.Token); // fire-and-forget
+            cancellationTokenSource = new CancellationTokenSource();
+            _ = battleLoopAsync(cancellationTokenSource.Token); // fire-and-forget
         }
 
         private Duration prepareCastTime() {
@@ -89,11 +87,11 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         private async Task battleLoopAsync(CancellationToken ct) {
-            while (_battleRunning && !ct.IsCancellationRequested) {
-                await Task.Delay(TimeSpan.FromSeconds(_entryPointArchetype.getTurnInterval()), ct);
+            while (isBattleRunning && !ct.IsCancellationRequested) {
+                await Task.Delay(TimeSpan.FromSeconds(entryPointArchetype.getTurnInterval()), ct);
 
                 Debug.Log("Init proces for flow");
-                if (ct.IsCancellationRequested || !_battleRunning) break;
+                if (ct.IsCancellationRequested || !isBattleRunning) break;
 
                 var power = 10;
                 var flowAggregate = prepareFlowAggregate(power);
@@ -104,21 +102,21 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         private IFlowAggregateFacade prepareFlowAggregate(int power) {
-            var flowRouter = GridAdjacencyRouter.create(_gridInspector);
-            var flowAggregate = _flowFactory.create(this, power, flowRouter);
+            var flowRouter = GridAdjacencyRouter.create(gridInspector);
+            var flowAggregate = flowFactory.create(this, power, flowRouter);
             return flowAggregate;
         }
 
         private void stopBattle() {
-            if (!_battleRunning) return;
-            _battleRunning = false;
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = null;
+            if (!isBattleRunning) return;
+            isBattleRunning = false;
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
+            cancellationTokenSource = null;
         }
 
         public override string ToString() {
-            return $"({_entryPointArchetype.getFlowKind()})";
+            return $"({entryPointArchetype.getFlowKind()})";
         }
     }
 }
