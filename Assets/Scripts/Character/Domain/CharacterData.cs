@@ -3,7 +3,7 @@ using MageFactory.Character.Api.Dto;
 using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain {
-    public class CharacterData {
+    internal class CharacterData {
         private long currentHp;
         private int maxHp;
         private string name;

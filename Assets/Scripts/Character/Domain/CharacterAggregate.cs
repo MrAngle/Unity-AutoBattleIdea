@@ -7,7 +7,7 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Character.Domain {
-    public class CharacterAggregate : ICharacter /*, IPlacedItemOwner*/ {
+    internal class CharacterAggregate : ICharacter {
         private readonly CharacterData characterData;
         private readonly ICharacterInventoryFacade characterInventoryFacade;
         private readonly Team team;
@@ -56,9 +56,6 @@ namespace MageFactory.Character.Domain {
             return true;
         }
 
-
-        // Jeśli chcesz ręcznie posprzątać (usunąć subskrypcję),
-        // np. gdy obiekt jest niszczony
         public void cleanup() {
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
         }

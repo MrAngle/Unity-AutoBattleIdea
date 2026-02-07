@@ -10,7 +10,7 @@ using Zenject;
 namespace MageFactory.BattleManager {
     public class BattleUIManager : MonoBehaviour {
         private CharacterAggregateContext _characterAggregateContext;
-        private ICharacterAggregateFactory _characterAggregateFactory;
+        private ICharacterFactory characterFactory;
         private Transform _slotParent;
         private CharacterPrefabAggregate _slotPrefab;
 
@@ -24,13 +24,13 @@ namespace MageFactory.BattleManager {
 
         [Inject]
         public void construct(
-            ICharacterAggregateFactory characterAggregateFactory,
+            ICharacterFactory characterFactory,
             CharacterPrefabAggregate slotPrefab,
             [Inject(Id = "BattleSlotParent")] Transform slotParent,
             CharacterAggregateContext characterAggregateContext
         ) {
             _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
-            _characterAggregateFactory = NullGuard.NotNullOrThrow(characterAggregateFactory);
+            this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
             _slotPrefab = NullGuard.NotNullOrThrow(slotPrefab);
             _slotParent = NullGuard.NotNullOrThrow(slotParent);
         }
@@ -40,14 +40,14 @@ namespace MageFactory.BattleManager {
                 ICharacter character;
                 // TODO: change it of course
                 if (i == 0) {
-                    character = _characterAggregateFactory.create(charactersToCreate[i]);
+                    character = characterFactory.create(charactersToCreate[i]);
                     _characterAggregateContext.SetCharacterAggregateContext(character); // for now
                 }
                 else {
-                    character = _characterAggregateFactory.create(charactersToCreate[i]);
+                    character = characterFactory.create(charactersToCreate[i]);
                 }
 
-                CharacterPrefabAggregate.Create(_slotPrefab, _slotParent, character, _characterAggregateContext);
+                CharacterPrefabAggregate.create(_slotPrefab, _slotParent, character, _characterAggregateContext);
             }
         }
     }

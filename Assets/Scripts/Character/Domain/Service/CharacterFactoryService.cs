@@ -1,4 +1,5 @@
-﻿using MageFactory.Character.Api;
+﻿using System.Runtime.CompilerServices;
+using MageFactory.Character.Api;
 using MageFactory.Character.Api.Dto;
 using MageFactory.Item.Api;
 using MageFactory.Item.Controller.Api;
@@ -7,13 +8,15 @@ using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 using Zenject;
 
+[assembly: InternalsVisibleTo("MageFactory.Config")]
+
 namespace MageFactory.Character.Domain.Service {
-    public class CharacterAggregateFactory : ICharacterAggregateFactory {
+    class CharacterFactoryService : ICharacterFactory {
         private readonly IEntryPointFactory _entryPointFactory; // for now
         private readonly IInventoryFactory inventoryFactory;
 
         [Inject]
-        public CharacterAggregateFactory(
+        CharacterFactoryService(
             SignalBus signalBus,
             IInventoryFactory inventoryFactory,
             IEntryPointFactory entryPointFactory) {

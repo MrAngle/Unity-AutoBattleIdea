@@ -18,12 +18,20 @@ namespace MageFactory.Character.Controller {
 
         private CharacterAggregateContext _characterAggregateContext;
 
+        [Inject]
+        public void construct(
+            CharacterAggregateContext characterAggregateContext
+        ) {
+            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
+        }
+
+
         private void OnDisable() {
-            Cleanup();
+            cleanup();
         }
 
         private void OnDestroy() {
-            Cleanup();
+            cleanup();
         }
 
         public void OnPointerClick(PointerEventData eventData) {
@@ -32,19 +40,9 @@ namespace MageFactory.Character.Controller {
             Debug.Log($"Kliknięto postać: {_character.getName()}");
 
             _characterAggregateContext.SetCharacterAggregateContext(_character);
-
-            // np. pokaż szczegóły, zaznacz postać itd.
-            // OnClicked?.Invoke(this, _character);
         }
 
-        [Inject]
-        public void Construct(
-            CharacterAggregateContext characterAggregateContext
-        ) {
-            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
-        }
-
-        public static CharacterPrefabAggregate Create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
+        public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
             ICharacter characterData, CharacterAggregateContext characterAggregateContext) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
             prefab.Setup(characterData, characterAggregateContext);
@@ -75,7 +73,7 @@ namespace MageFactory.Character.Controller {
             Destroy(gameObject);
         }
 
-        public void RefreshUI() {
+        private void RefreshUI() {
             if (_character == null) return;
 
             nameText.text = _character.getName();
@@ -87,12 +85,14 @@ namespace MageFactory.Character.Controller {
             hpBarImage.fillAmount = ratio;
         }
 
-        private void Cleanup() {
-            if (_character != null) {
-                _character.OnHpChanged -= HandleHpChanged;
-                _character.OnDeath -= OnDeath;
-                _character.cleanup();
+        private void cleanup() {
+            if (_character == null) {
+                return;
             }
+
+            _character.OnHpChanged -= HandleHpChanged;
+            _character.OnDeath -= OnDeath;
+            _character.cleanup();
         }
     }
 }

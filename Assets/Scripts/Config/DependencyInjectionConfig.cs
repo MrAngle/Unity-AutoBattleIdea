@@ -111,8 +111,8 @@ namespace Config {
                 .To<ActionExecutorService>()
                 .AsSingle();
 
-            Container.Bind<ICharacterAggregateFactory>()
-                .To<CharacterAggregateFactory>()
+            Container.Bind<ICharacterFactory>()
+                .To<CharacterFactoryService>()
                 .AsSingle();
 
             BindCharactersAndBattleUI();
