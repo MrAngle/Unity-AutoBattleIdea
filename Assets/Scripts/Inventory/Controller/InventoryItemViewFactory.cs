@@ -1,5 +1,6 @@
 ﻿using MageFactory.Semantics;
 using MageFactory.Shared.Model.Shape;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -15,21 +16,21 @@ namespace MageFactory.Inventory.Controller {
             ItemViewPrefabItemView prefabProvider,
             ItemsLayerRectTransform itemsLayer,
             InventoryGridLayoutGroup gridLayoutGroup) {
-            _prefab = prefabProvider.Get();
-            _itemsLayer = itemsLayer;
-            _grid = gridLayoutGroup.Get();
+            _prefab = NullGuard.NotNullOrThrow(prefabProvider.Get());
+            _itemsLayer = NullGuard.NotNullOrThrow(itemsLayer);
+            _grid = NullGuard.NotNullOrThrow(gridLayoutGroup.Get());
         }
 
         public PlacedItemView create(ShapeArchetype data, Vector2Int origin) {
-            var view = Object.Instantiate(_prefab, _itemsLayer.Get(), false);
+            PlacedItemView placedItemView = Object.Instantiate(_prefab, _itemsLayer.Get(), false);
 
-            var cell = _grid.cellSize;
-            var spacing = _grid.spacing;
+            Vector2 cell = _grid.cellSize;
+            Vector2 spacing = _grid.spacing;
 
-            view.build(data, cell);
-            view.setOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            placedItemView.build(data, cell);
+            placedItemView.setOriginInGrid(origin, cell, Vector2.zero, spacing.x);
 
-            return view;
+            return placedItemView;
         }
     }
 }
