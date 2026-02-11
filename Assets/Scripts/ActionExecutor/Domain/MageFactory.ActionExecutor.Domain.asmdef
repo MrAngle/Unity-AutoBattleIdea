@@ -4,7 +4,6 @@
   "references": [
     "MageFactory.ActionExecutor.Api",
     "MageFactory.ActionEffect",
-    "MageFactory.Inventory.Api",
     "MageFactory.Shared",
     "MageFactory.TimeSystem"
   ],

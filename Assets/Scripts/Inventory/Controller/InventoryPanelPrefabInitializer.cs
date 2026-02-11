@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
-using MageFactory.Character.Contract;
 using MageFactory.Character.Contract.Event;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Context;
 using MageFactory.Inventory.Api;
 using MageFactory.Shared.Utility;
@@ -75,7 +75,7 @@ namespace MageFactory.Inventory.Controller {
             signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
-        private void OnInventoryGridChanged(IInventoryGrid grid) {
+        private void OnInventoryGridChanged(ICombatInventory grid) {
             _gridView.Build(grid);
 
             var rt = (RectTransform)_gridView.transform;

@@ -49,7 +49,6 @@
     <ItemGroup>
         <Compile Include="Assets\Scripts\Item\Domain\ActionDescriptor\ItemActionDescription.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\ActionDescriptor\ItemOperationsDescription.cs"/>
-        <Compile Include="Assets\Scripts\Item\Domain\InventoryPosition.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\ItemArchetype.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\Service\ItemFactoryService.cs"/>
         <Compile Include="Assets\Scripts\Item\Domain\EntryPoint\PlacedEntryPoint.cs"/>
@@ -872,10 +871,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.ActionEffect.csproj">
-            <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
-            <Name>MageFactory.ActionEffect</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Inventory.Contract.csproj">
             <Project>{e2d7bb56-5e71-2134-3345-b8070bc32158}</Project>
             <Name>MageFactory.Inventory.Contract</Name>
@@ -883,6 +878,14 @@
         <ProjectReference Include="MageFactory.Character.Contract.csproj">
             <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
             <Name>MageFactory.Character.Contract</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.ActionEffect.csproj">
+            <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
+            <Name>MageFactory.ActionEffect</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Flow.Api.csproj">
             <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>

@@ -952,9 +952,6 @@
     <Reference Include="Unity.PlasticSCM.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="PPv2URPConverters">
-      <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Burst.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
     </Reference>
@@ -969,6 +966,9 @@
     </Reference>
     <Reference Include="Unity.Rendering.LightTransport.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.Rendering.LightTransport.Editor.dll</HintPath>
+    </Reference>
+      <Reference Include="PPv2URPConverters">
+          <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\PPv2URPConverters.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
@@ -1000,11 +1000,11 @@
     <Reference Include="Unity.VisualScripting.Flow.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.VisualScripting.Flow.Editor.dll</HintPath>
     </Reference>
+      <Reference Include="Unity.2D.SpriteShape.Runtime">
+          <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
+      </Reference>
     <Reference Include="Unity.2D.IK.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.2D.IK.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.SpriteShape.Runtime">
-      <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
@@ -1141,6 +1141,10 @@
       <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
       <Name>MageFactory.Shared</Name>
     </ProjectReference>
+      <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+          <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+          <Name>MageFactory.CombatContext.Contract</Name>
+      </ProjectReference>
     <ProjectReference Include="Plugin.MEC.csproj">
       <Project>{d43a18b2-8a53-360e-50dc-04876e8a32a1}</Project>
       <Name>Plugin.MEC</Name>
@@ -1173,10 +1177,6 @@
       <Project>{aa897244-018e-4536-ebf4-14676da43ff6}</Project>
       <Name>Zenject-PoolMonitor-Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="MageFactory.Character.Api.csproj">
-      <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
-      <Name>MageFactory.Character.Api</Name>
-    </ProjectReference>
     <ProjectReference Include="MageFactory.Registry.csproj">
       <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
       <Name>MageFactory.Registry</Name>
@@ -1204,10 +1204,6 @@
     <ProjectReference Include="MageFactory.Controller.Character.csproj">
       <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
       <Name>MageFactory.Controller.Character</Name>
-    </ProjectReference>
-    <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-      <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-      <Name>MageFactory.Inventory.Api</Name>
     </ProjectReference>
     <ProjectReference Include="MageFactory.Item.Domain.csproj">
       <Project>{32e97b26-a6ec-ea03-9b27-96314bcdefa1}</Project>

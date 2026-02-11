@@ -1,5 +1,5 @@
 ﻿using System;
-using MageFactory.Character.Api.Dto;
+using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain {
@@ -14,7 +14,7 @@ namespace MageFactory.Character.Domain {
             this.currentHp = maxHp;
         }
 
-        internal static CharacterData from(CharacterCreateCommand command) {
+        internal static CharacterData from(CreateCombatCharacterCommand command) {
             return new CharacterData(command.name, command.maxHp);
         }
 

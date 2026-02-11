@@ -2,17 +2,16 @@
   "name": "MageFactory.Inventory.Controller",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Inventory.Api",
-    "MageFactory.Inventory.Domain",
     "MageFactory.Item.Controller",
     "MageFactory.Item.Catalog",
-    "MageFactory.Item.Api",
-    "MageFactory.Shared",
     "MageFactory.Character.Contract",
-    "MageFactory.Character.Api",
+    "MageFactory.CombatContext.Contract",
+    
     "MageFactory.Context",
     "MageFactory.UI",
     "MageFactory.Semantics",
+    "MageFactory.Shared",
+    
     "Zenject"
   ],
   "autoReferenced": true

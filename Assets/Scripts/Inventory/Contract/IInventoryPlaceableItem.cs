@@ -1,10 +1,13 @@
-﻿using MageFactory.Shared.Model.Shape;
-using UnityEngine;
+﻿using MageFactory.CombatContext.Contract;
+using MageFactory.Shared.Model.Shape;
 
 namespace MageFactory.Inventory.Contract {
     public interface IInventoryPlaceableItem {
-        IInventoryPlacedItem toPlacedItem(IInventoryInspector gridInspector /*do zastanowienia czy potrzebne*/,
-            Vector2Int origin);
+        IInventoryPlacedItem toPlacedItem(
+            // IInventoryInspector gridInspector /*do zastanowienia czy potrzebne*/,
+            IInventoryPosition inventoryPosition,
+            ICharacterCombatCapabilities characterCombatCapabilities
+            /*Vector2Int origin*/);
 
         ShapeArchetype getShape();
     }

@@ -2,6 +2,8 @@
   "name": "MageFactory.Character.Contract",
   "rootNamespace": "MageFactory",
   "references": [
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.ActionEffect",
     "MageFactory.Shared"
   ],
   "autoReferenced": true

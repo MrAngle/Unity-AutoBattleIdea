@@ -1,24 +1,22 @@
 ﻿using MageFactory.ActionExecutor.Api;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Inventory.Contract;
 using Zenject;
 
 namespace MageFactory.Flow.Domain.Service {
     public sealed class FlowFactoryService : IFlowFactory {
-        private readonly SignalBus _signalBus;
-        private readonly IActionExecutor _actionExecutor;
+        private readonly SignalBus signalBus;
+        private readonly IActionExecutor actionExecutor;
 
         [Inject]
-        public FlowFactoryService(SignalBus signalBus, IActionExecutor actionExecutor) {
-            _signalBus = signalBus;
-            _actionExecutor = actionExecutor;
+        public FlowFactoryService(SignalBus injectSignalBus, IActionExecutor injectActionExecutor) {
+            signalBus = injectSignalBus;
+            actionExecutor = injectActionExecutor;
         }
 
-        public IFlowAggregateFacade create(IInventoryPlacedEntryPoint startNode, long power, IFlowRouter router) {
-            var flow = (FlowAggregate)FlowAggregate.create(startNode, power, router, _signalBus, _actionExecutor);
-
-            return flow;
+        public IFlowAggregateFacade create(ICombatCharacterEquippedItem startNode, IFlowRouter router) {
+            return FlowAggregate.create(startNode, router, signalBus, actionExecutor);
         }
     }
 }

@@ -872,10 +872,6 @@
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-            <Name>MageFactory.Inventory.Api</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Inventory.Domain.csproj">
             <Project>{daa5b235-a6ba-a97d-ac14-53fd076ebe8a}</Project>
             <Name>MageFactory.Inventory.Domain</Name>
@@ -912,10 +908,6 @@
             <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
             <Name>MageFactory.Controller.Character</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.Api.csproj">
-            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
-            <Name>MageFactory.Character.Api</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Character.Domain.csproj">
             <Project>{df9e700e-a198-251c-7098-f08623b14ddc}</Project>
             <Name>MageFactory.Character.Domain</Name>
@@ -923,6 +915,10 @@
         <ProjectReference Include="MageFactory.Character.Contract.csproj">
             <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
             <Name>MageFactory.Character.Contract</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.BattleManager.csproj">
             <Project>{9ae902f5-4d39-12a9-d64b-bdd4eab4e173}</Project>

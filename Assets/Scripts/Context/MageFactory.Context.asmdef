@@ -2,10 +2,8 @@
   "name": "MageFactory.Context",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Inventory.Api",
-    "MageFactory.Shared",
-    "MageFactory.Character.Api",
-    "MageFactory.Character.Contract"
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.Shared"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

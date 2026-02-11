@@ -1,0 +1,11 @@
+﻿{
+  "name": "MageFactory.CombatContext.Contract",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.ActionEffect",
+    "MageFactory.ActionExecutor.Api",
+    "MageFactory.Shared",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}

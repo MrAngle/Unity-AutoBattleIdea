@@ -6,7 +6,7 @@
     "MageFactory.Shared",
     "MageFactory.Context",
     "MageFactory.Registry",
-    "MageFactory.Character.Api",
+    "MageFactory.CombatContext.Contract",
     "MageFactory.Semantics",
     "Unity.TextMeshPro",
     "Zenject"

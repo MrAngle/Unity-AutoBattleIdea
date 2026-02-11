@@ -7,14 +7,12 @@ namespace MageFactory.BattleManager {
         private bool _battleRunning;
 
         private void Start() {
-            // Na razie testowo – można w przyszłości inicjalizować z prefabu
             startBattle();
         }
 
         private void startBattle() {
             if (_battleRunning) return;
             _battleRunning = true;
-            // StartCoroutine(BattleLoop());
         }
     }
 }

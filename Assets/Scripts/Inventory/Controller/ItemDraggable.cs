@@ -1,4 +1,6 @@
-﻿using MageFactory.Item.Catalog;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MageFactory.Item.Catalog;
 using MageFactory.Shared.Contract;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,9 +9,11 @@ using Zenject;
 namespace MageFactory.Inventory.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
         private ItemDragController _controller;
-
-        // private IItemFactory itemFactory;
         private IItemDefinition inventoryPlaceableItem;
+
+        [Inject]
+        public void construct() {
+        }
 
         private void Awake() {
             _controller = FindAnyObjectByType<ItemDragController>(FindObjectsInactive.Include);
@@ -31,21 +35,13 @@ namespace MageFactory.Inventory.Controller {
             _controller?.endDrag(eventData);
             inventoryPlaceableItem = null;
         }
-        // private IInventoryPlaceableItem inventoryPlaceableItem;
-
-        [Inject]
-        public void construct(
-            // IItemFactory injectItemFactory
-        ) {
-            // itemFactory = NullGuard.NotNullOrThrow(injectItemFactory);
-        }
-
 
         private IItemDefinition getRandomItemDefinition() {
-            return EntryPointDefinition.All[Random.Range(0, EntryPointDefinition.All.Count)];
-
-            // return itemFactory.createPlacableItem(new CreatePlaceableItemCommand(shapeArchetype));
-            // return new EquipItemCommand(shapeArchetype, );
+            IReadOnlyList<IItemDefinition> allItems =
+                ItemDefinition.All
+                    .Concat<IItemDefinition>(EntryPointDefinition.All)
+                    .ToList();
+            return allItems[Random.Range(0, allItems.Count)];
         }
     }
 }

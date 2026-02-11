@@ -48,14 +48,11 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Assets\Scripts\Character\Contract\IInventoryGrid.cs"/>
-        <Compile Include="Assets\Scripts\Character\Contract\Event\ItemRemovedDtoEvent.cs"/>
-        <Compile Include="Assets\Scripts\Character\Contract\Event\ItemPowerChangedDtoEvent.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\PlaceItemQuery.cs"/>
-        <Compile Include="Assets\Scripts\Character\Contract\ICharacterEquipableItem.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\IInventoryFactory.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\PlaceItemCommand.cs"/>
-        <Compile Include="Assets\Scripts\Character\Contract\Event\ItemPlacedDtoEvent.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\IGridInspector.cs"/>
+        <Compile Include="Assets\Scripts\Character\Contract\IInventoryReadModel.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\ICharacterEquippedItem.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\ICharacterInventory.cs"/>
         <None Include="Assets\Scripts\Character\Contract\MageFactory.Character.Contract.asmdef"/>
@@ -874,6 +871,14 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.ActionEffect.csproj">
+            <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
+            <Name>MageFactory.ActionEffect</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
             <Name>MageFactory.Shared</Name>

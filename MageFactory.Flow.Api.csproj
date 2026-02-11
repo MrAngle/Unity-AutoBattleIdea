@@ -869,9 +869,9 @@
             <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
             <Name>MageFactory.FlowRouting</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Inventory.Contract.csproj">
-            <Project>{e2d7bb56-5e71-2134-3345-b8070bc32158}</Project>
-            <Name>MageFactory.Inventory.Contract</Name>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>

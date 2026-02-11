@@ -2,10 +2,9 @@
   "name": "MageFactory.Inventory.Domain",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Inventory.Api",
     "MageFactory.Inventory.Contract",
     "MageFactory.Character.Contract",
-    "MageFactory.Item.Api",
+    "MageFactory.CombatContext.Contract",
 
     "MageFactory.Shared",
     "MageFactory.TimeSystem",

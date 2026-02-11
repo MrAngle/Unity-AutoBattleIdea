@@ -873,14 +873,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-            <Name>MageFactory.Inventory.Api</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Inventory.Domain.csproj">
-            <Project>{daa5b235-a6ba-a97d-ac14-53fd076ebe8a}</Project>
-            <Name>MageFactory.Inventory.Domain</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Item.Controller.csproj">
             <Project>{95b70598-3070-6fcc-9ea5-f0015bf7eced}</Project>
             <Name>MageFactory.Item.Controller</Name>
@@ -889,17 +881,13 @@
             <Project>{bb0e5e2b-220c-237a-b895-42bc7fa808d2}</Project>
             <Name>MageFactory.Item.Catalog</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Shared.csproj">
-            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
-            <Name>MageFactory.Shared</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Character.Contract.csproj">
             <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
             <Name>MageFactory.Character.Contract</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.Api.csproj">
-            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
-            <Name>MageFactory.Character.Api</Name>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Context.csproj">
             <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
@@ -912,6 +900,10 @@
         <ProjectReference Include="MageFactory.Semantics.csproj">
             <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>
             <Name>MageFactory.Semantics</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.Shared.csproj">
+            <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>
+            <Name>MageFactory.Shared</Name>
         </ProjectReference>
         <ProjectReference Include="Zenject.csproj">
             <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>

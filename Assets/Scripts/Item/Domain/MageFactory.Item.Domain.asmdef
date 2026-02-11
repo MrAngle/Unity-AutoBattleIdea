@@ -2,10 +2,10 @@
   "name": "MageFactory.Item.Domain",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.ActionEffect",
     "MageFactory.Inventory.Contract",
     "MageFactory.Character.Contract",
-    "MageFactory.Item.Api",
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.ActionEffect",
     "MageFactory.Flow.Api",
     "MageFactory.FlowRouting",
     "MageFactory.Shared",

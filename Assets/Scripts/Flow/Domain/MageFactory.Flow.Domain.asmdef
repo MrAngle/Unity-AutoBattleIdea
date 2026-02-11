@@ -3,13 +3,12 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Flow.Api",
-    "MageFactory.FlowRouting",
-    "MageFactory.ActionEffect",
-    "MageFactory.Inventory.Contract",
-    "MageFactory.ActionExecutor.Api",
-    "MageFactory.Character.Contract",
-    "MageFactory.Character.Api",
+    "MageFactory.CombatContext.Contract",
 
+    "MageFactory.ActionExecutor.Api",
+    "MageFactory.ActionEffect",
+    "MageFactory.FlowRouting",
+    
     "MageFactory.Registry",
     "MageFactory.Shared",
     "Zenject"

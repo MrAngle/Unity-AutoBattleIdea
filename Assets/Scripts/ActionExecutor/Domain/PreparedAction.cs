@@ -5,7 +5,7 @@ using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.ActionExecutor.Domain {
-    sealed class PreparedAction {
+    internal sealed class PreparedAction {
         private readonly Duration castTime;
         private readonly IReadOnlyList<IOperation> effects;
         private readonly IActionContext actionContext;
@@ -14,12 +14,10 @@ namespace MageFactory.ActionExecutor.Domain {
             this.castTime = castTime;
             this.effects = effects;
             this.actionContext = actionContext;
-            // this.actionCommand = actionCommand ?? throw new ArgumentNullException(nameof(actionCommand));
             NullGuard.NotNullCheckOrThrow(this.castTime, this.effects, this.actionContext);
         }
 
         static PreparedAction from(IActionDescription actionDescription, IActionContext actionContext) {
-            // return new PreparedAction(_actionTiming, _actionCommand.ToActionCommand(flowContext));
             return new PreparedAction(actionDescription.getCastTime(),
                 actionDescription.getEffectsDescriptor().getEffects(),
                 actionContext);

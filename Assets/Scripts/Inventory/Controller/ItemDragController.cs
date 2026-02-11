@@ -1,5 +1,5 @@
-﻿using MageFactory.Character.Api;
-using MageFactory.Character.Api.Dto;
+﻿using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Context;
 using MageFactory.Semantics;
 using MageFactory.Shared.Contract;
@@ -92,7 +92,7 @@ namespace MageFactory.Inventory.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            ICharacter character = characterAggregateContext.getCharacterAggregateContext();
+            ICombatCharacter character = characterAggregateContext.getCharacterAggregateContext();
             if (characterAggregateContext != null)
                 // && characterAggregateContext.equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin))
             {

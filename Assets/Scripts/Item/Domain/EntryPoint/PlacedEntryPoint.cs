@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MageFactory.ActionEffect;
-using MageFactory.ActionExecutor.Api.Dto;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
 using MageFactory.Inventory.Contract;
@@ -18,25 +18,36 @@ namespace MageFactory.Item.Domain.EntryPoint {
         private readonly long id;
         private readonly IEntryPointArchetype entryPointArchetype;
         private readonly IFlowFactory flowFactory;
-        private readonly IInventoryInspector gridInspector;
-        private readonly InventoryPosition inventoryPosition;
+        private readonly IInventoryPosition inventoryPosition;
+        private readonly ICharacterCombatCapabilities characterCombatCapabilities;
 
-        private bool isBattleRunning = true; /*for now*/
         private CancellationTokenSource cancellationTokenSource;
 
-        private PlacedEntryPoint(IEntryPointArchetype entryPointArchetype, Vector2Int origin,
-            IInventoryInspector gridInspector, IFlowFactory flowFactory) {
+        private bool isBattleRunning = true; /*for now*/
+
+        private PlacedEntryPoint(
+            IEntryPointArchetype entryPointArchetype,
+            IInventoryPosition inventoryPosition,
+            IFlowFactory flowFactory,
+            ICharacterCombatCapabilities characterCombatCapabilities
+        ) {
             id = IdGenerator.Next();
             this.entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
-            this.gridInspector = NullGuard.NotNullOrThrow(gridInspector);
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
-            inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
+            this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
+            this.characterCombatCapabilities = NullGuard.NotNullOrThrow(characterCombatCapabilities);
+            // this.inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
             NullGuard.NotNullCheckOrThrow(inventoryPosition);
         }
 
-        internal static IInventoryPlacedEntryPoint create(IEntryPointArchetype archetype, Vector2Int position,
-            IInventoryInspector gridInspector, IFlowFactory flowFactory) {
-            var placedEntryPoint = new PlacedEntryPoint(archetype, position, gridInspector, flowFactory);
+        internal static IInventoryPlacedEntryPoint create(
+            IEntryPointArchetype archetype,
+            IInventoryPosition inventoryPosition,
+            IFlowFactory flowFactory,
+            ICharacterCombatCapabilities characterCombatCapabilities
+        ) {
+            var placedEntryPoint =
+                new PlacedEntryPoint(archetype, inventoryPosition, flowFactory, characterCombatCapabilities);
 
             placedEntryPoint.startBattle(); // for now
             return placedEntryPoint;
@@ -92,17 +103,16 @@ namespace MageFactory.Item.Domain.EntryPoint {
                 Debug.Log("Init proces for flow");
                 if (ct.IsCancellationRequested || !isBattleRunning) break;
 
-                var power = 10;
-                var flowAggregate = prepareFlowAggregate(power);
+                var flowAggregate = prepareFlowAggregate();
 
                 Debug.Log("Start proces for flow");
                 flowAggregate.start();
             }
         }
 
-        private IFlowAggregateFacade prepareFlowAggregate(int power) {
-            var flowRouter = GridAdjacencyRouter.create(gridInspector);
-            var flowAggregate = flowFactory.create(this, power, flowRouter);
+        private IFlowAggregateFacade prepareFlowAggregate() {
+            var flowRouter = GridAdjacencyRouter.create(characterCombatCapabilities);
+            var flowAggregate = flowFactory.create(this, flowRouter);
             return flowAggregate;
         }
 

@@ -1,7 +1,7 @@
-﻿using MageFactory.Inventory.Contract;
+﻿using MageFactory.CombatContext.Contract;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model.Shape;
-using UnityEngine;
 
 namespace MageFactory.Item.Domain {
     internal class ItemArchetype : IInventoryPlaceableItem {
@@ -16,8 +16,19 @@ namespace MageFactory.Item.Domain {
             return new ItemArchetype(itemDefinition.getShape());
         }
 
-        public IInventoryPlacedItem toPlacedItem(IInventoryInspector gridInspector, Vector2Int origin) {
-            return new BattleItem(this, origin); // TODO
+        // public IInventoryPlacedItem toPlacedItem(
+        //     // IInventoryInspector inventoryInspector, 
+        //     IInventoryPosition inventoryPosition
+        //     /*Vector2Int origin*/) {
+        //     return new BattleItem(this, inventoryPosition);
+        // }
+
+
+        public IInventoryPlacedItem toPlacedItem(
+            IInventoryPosition inventoryPosition,
+            ICharacterCombatCapabilities characterCombatCapabilities
+        ) {
+            return new BattleItem(this, inventoryPosition);
         }
 
         public ShapeArchetype getShape() {

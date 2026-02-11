@@ -1,13 +1,13 @@
 ﻿using System;
-using MageFactory.Character.Contract;
+using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.Context {
     public class InventoryGridContext {
-        private IInventoryGrid _inventoryGrid;
+        private ICombatInventory _inventoryGrid;
 
-        public event Action<IInventoryGrid> InventoryGridChanged;
+        public event Action<ICombatInventory> InventoryGridChanged;
 
-        public void setInventoryGrid(IInventoryGrid inventoryGrid) {
+        public void setInventoryGrid(ICombatInventory inventoryGrid) {
             if (_inventoryGrid == inventoryGrid)
                 return; // should nothing to do
 
@@ -15,7 +15,7 @@ namespace MageFactory.Context {
             InventoryGridChanged?.Invoke(_inventoryGrid);
         }
 
-        public IInventoryGrid getInventoryGrid() {
+        public ICombatInventory getInventoryGrid() {
             return _inventoryGrid;
         }
     }

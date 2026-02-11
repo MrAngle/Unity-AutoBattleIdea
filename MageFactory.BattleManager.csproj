@@ -870,6 +870,10 @@
             <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
             <Name>MageFactory.Context</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.Controller.Character.csproj">
             <Project>{4211c127-8c20-6ff8-cd7e-bb81c24f5a5e}</Project>
             <Name>MageFactory.Controller.Character</Name>
@@ -893,10 +897,6 @@
         <ProjectReference Include="MageFactory.UI.csproj">
             <Project>{7aaa46dd-f5af-3d59-3491-f91232500383}</Project>
             <Name>MageFactory.UI</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.Api.csproj">
-            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
-            <Name>MageFactory.Character.Api</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

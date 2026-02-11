@@ -3,8 +3,7 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Shared",
-    "MageFactory.Inventory.Contract",
-    "MageFactory.Character.Contract"
+    "MageFactory.CombatContext.Contract"
   ],
   "autoReferenced": true
 }

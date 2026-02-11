@@ -1,11 +1,11 @@
 ﻿using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Domain;
 using MageFactory.BattleManager;
-using MageFactory.Character.Api;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Character.Controller;
 using MageFactory.Character.Domain.Service;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
@@ -100,8 +100,9 @@ namespace MageFactory.InjectConfiguration {
             Container.Bind<IInventoryFactory>()
                 .To<InventoryFactoryService>()
                 .AsSingle();
-
-
+            Container.Bind<ICharacterCombatCapabilitiesFactory>()
+                .To<CharacterCombatCapabilitiesFactoryService>()
+                .AsSingle();
             Container.Bind<IInventoryItemViewFactory>()
                 .To<InventoryItemViewFactory>()
                 .AsSingle();

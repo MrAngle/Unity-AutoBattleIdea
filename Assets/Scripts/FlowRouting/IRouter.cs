@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using MageFactory.Inventory.Contract;
+using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.FlowRouting {
     public interface IFlowRouter {
         /// Zwraca null — jeśli brak kandydata (koniec).
-        IInventoryPlacedItem decideNext(IInventoryPlacedItem current, IReadOnlyCollection<long> visitedNodeIds);
+        ICombatCharacterEquippedItem decideNext(ICombatCharacterEquippedItem current,
+            IReadOnlyCollection<long> visitedNodeIds);
     }
 
 

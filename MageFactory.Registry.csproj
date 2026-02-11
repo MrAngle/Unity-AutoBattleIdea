@@ -864,9 +864,9 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Character.Api.csproj">
-            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
-            <Name>MageFactory.Character.Api</Name>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

@@ -1,7 +1,7 @@
 ﻿using System;
-using MageFactory.Character.Api;
-using MageFactory.Character.Api.Dto;
 using MageFactory.Character.Controller;
+using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Context;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Catalog;
@@ -12,14 +12,14 @@ using Zenject;
 
 namespace MageFactory.BattleManager {
     public class BattleUIManager : MonoBehaviour {
-        private CharacterAggregateContext _characterAggregateContext;
+        private CharacterAggregateContext characterAggregateContext;
         private ICharacterFactory characterFactory;
-        private Transform _slotParent;
-        private CharacterPrefabAggregate _slotPrefab;
-        private IEntryPointFactory _entryPointFactory; // for now
+        private CharacterPrefabAggregate characterPrefabAggregate;
+        private IEntryPointFactory entryPointFactory; // for now
+        private Transform slotParent;
 
         private void Start() {
-            createSlots(new CharacterCreateCommand[] {
+            createSlots(new CreateCombatCharacterCommand[] {
                 new("Warrior", 120, Team.TeamA, new[] {
                     new EquipItemCommand(
                         EntryPointDefinition.Standard, new Vector2Int(0, 0))
@@ -31,31 +31,30 @@ namespace MageFactory.BattleManager {
 
         [Inject]
         public void construct(
-            ICharacterFactory characterFactory,
-            CharacterPrefabAggregate slotPrefab,
-            [Inject(Id = "BattleSlotParent")] Transform slotParent,
-            CharacterAggregateContext characterAggregateContext,
-            IEntryPointFactory _entryPointFactory
-        ) {
-            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
-            this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
-            _slotPrefab = NullGuard.NotNullOrThrow(slotPrefab);
-            _slotParent = NullGuard.NotNullOrThrow(slotParent);
+            ICharacterFactory injectCharacterFactory,
+            CharacterPrefabAggregate injectSlotPrefab,
+            [Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
+            CharacterAggregateContext injectCharacterAggregateContext) {
+            characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
+            characterFactory = NullGuard.NotNullOrThrow(injectCharacterFactory);
+            characterPrefabAggregate = NullGuard.NotNullOrThrow(injectSlotPrefab);
+            slotParent = NullGuard.NotNullOrThrow(injectSlotParent);
         }
 
-        private void createSlots(CharacterCreateCommand[] charactersToCreate) {
+        private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
             for (var i = 0; i < charactersToCreate.Length; i++) {
-                ICharacter character;
+                ICombatCharacter character;
                 // TODO: change it of course
                 if (i == 0) {
                     character = characterFactory.create(charactersToCreate[i]);
-                    _characterAggregateContext.setCharacterAggregateContext(character); // for now
+                    characterAggregateContext.setCharacterAggregateContext(character); // for now
                 }
                 else {
                     character = characterFactory.create(charactersToCreate[i]);
                 }
 
-                CharacterPrefabAggregate.create(_slotPrefab, _slotParent, character, _characterAggregateContext);
+                CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, character,
+                    characterAggregateContext);
             }
         }
     }

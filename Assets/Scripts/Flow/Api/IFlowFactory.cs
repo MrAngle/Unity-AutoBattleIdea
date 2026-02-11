@@ -1,8 +1,8 @@
-﻿using MageFactory.FlowRouting;
-using MageFactory.Inventory.Contract;
+﻿using MageFactory.CombatContext.Contract;
+using MageFactory.FlowRouting;
 
 namespace MageFactory.Flow.Api {
     public interface IFlowFactory {
-        IFlowAggregateFacade create(IInventoryPlacedEntryPoint startNode, long power, IFlowRouter router);
+        IFlowAggregateFacade create(ICombatCharacterEquippedItem startNode, IFlowRouter router);
     }
 }

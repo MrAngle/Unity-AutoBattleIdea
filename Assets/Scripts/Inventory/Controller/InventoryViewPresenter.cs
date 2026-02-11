@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using MageFactory.Character.Contract;
 using MageFactory.Character.Contract.Event;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Context;
 using MageFactory.Shared.Utility;
 using UI.Popup;
@@ -43,7 +43,7 @@ namespace MageFactory.Inventory.Controller {
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
-        private void printInventoryItems(ICharacterInventory characterInventoryFacade) {
+        private void printInventoryItems(ICombatCharacterInventory characterInventoryFacade) {
             clear();
             foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
                 if (_views.ContainsKey(placedItem.getId())) continue;

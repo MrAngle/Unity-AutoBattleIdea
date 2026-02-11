@@ -2,13 +2,11 @@
 
 namespace MageFactory.Flow.Domain {
     internal class FlowModel {
-        private readonly FlowSeed flowSeed;
         private readonly FlowPayload flowPayload;
         private readonly FlowContext flowContext;
 
-        internal FlowModel(FlowSeed flowSeed, FlowContext flowContext) {
-            this.flowSeed = flowSeed;
-            this.flowPayload = new FlowPayload(flowSeed.power()); // for now
+        internal FlowModel(FlowContext flowContext) {
+            this.flowPayload = new FlowPayload();
             this.flowContext = flowContext;
         }
 

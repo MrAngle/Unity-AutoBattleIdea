@@ -1,4 +1,4 @@
-﻿using MageFactory.Character.Api;
+﻿using MageFactory.CombatContext.Contract;
 using MageFactory.Context;
 using MageFactory.Registry;
 using MageFactory.Shared.Utility;
@@ -14,7 +14,8 @@ namespace MageFactory.Character.Controller {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
-        private ICharacter _character;
+        // it should refer to ICombatCharacter
+        private ICombatCharacter _character;
 
         private CharacterAggregateContext _characterAggregateContext;
 
@@ -43,37 +44,37 @@ namespace MageFactory.Character.Controller {
         }
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-            ICharacter characterData, CharacterAggregateContext characterAggregateContext) {
+            ICombatCharacter characterData, CharacterAggregateContext characterAggregateContext) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
-            prefab.Setup(characterData, characterAggregateContext);
+            prefab.setup(characterData, characterAggregateContext);
 
             return prefab;
         }
 
-        private void Setup(ICharacter character, CharacterAggregateContext characterAggregateContext) {
+        private void setup(ICombatCharacter character, CharacterAggregateContext characterAggregateContext) {
             _character = NullGuard.NotNullOrThrow(character);
             _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
 
             if (_character != null) {
-                _character.OnHpChanged += HandleHpChanged;
+                _character.OnHpChanged += handleHpChanged;
                 _character.OnDeath += OnDeath;
                 CharacterRegistry.Instance.register(_character);
             }
 
-            RefreshUI();
+            refreshUI();
         }
 
-        private void HandleHpChanged(ICharacter ch, long newHp, long previousHpValue) {
+        private void handleHpChanged(ICombatCharacter ch, long newHp, long previousHpValue) {
             PopupManager.Instance.ShowHpChangeDamage(this, newHp - previousHpValue);
-            RefreshUI();
+            refreshUI();
         }
 
-        private void OnDeath(ICharacter ch) {
+        private void OnDeath(ICombatCharacter ch) {
             CharacterRegistry.Instance.unregister(_character);
             Destroy(gameObject);
         }
 
-        private void RefreshUI() {
+        private void refreshUI() {
             if (_character == null) return;
 
             nameText.text = _character.getName();
@@ -90,7 +91,7 @@ namespace MageFactory.Character.Controller {
                 return;
             }
 
-            _character.OnHpChanged -= HandleHpChanged;
+            _character.OnHpChanged -= handleHpChanged;
             _character.OnDeath -= OnDeath;
             _character.cleanup();
         }

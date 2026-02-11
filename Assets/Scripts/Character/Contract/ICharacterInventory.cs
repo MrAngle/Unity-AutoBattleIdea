@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
+using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.Character.Contract {
-    public interface ICharacterInventory {
+    public interface ICharacterInventory : /*IInventoryReadModel, */ICombatCharacterInventory {
+        //TODO: separate read and command model
         IEnumerable<ICharacterEquippedItem> getPlacedSnapshot();
-        IInventoryGrid getInventoryGrid();
 
+        // IInventoryGrid getInventoryGrid();
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand);
-
-        // public ICharacterEquippedItem place(ICharacterEquipableItem placeableItem, Vector2Int origin);
         public bool canPlace(PlaceItemQuery placeItemCommand);
-        // public bool canPlace(ICharacterEquipableItem placeableItem, Vector2Int origin);
     }
 }

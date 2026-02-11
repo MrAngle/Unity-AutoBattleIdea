@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
-using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Model;
@@ -10,30 +9,31 @@ using UnityEngine;
 
 namespace MageFactory.Item.Domain {
     internal class BattleItem : IInventoryPlacedItem {
-        private readonly long _id;
-        private readonly ItemArchetype _itemArchetype;
-        private readonly InventoryPosition _inventoryPosition;
+        private readonly long id;
+        private readonly ItemArchetype itemArchetype;
+        private readonly IInventoryPosition inventoryPosition;
 
-        internal BattleItem(ItemArchetype itemArchetype, Vector2Int origin) {
-            _id = IdGenerator.Next();
-            _itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
-            _inventoryPosition = InventoryPosition.create(origin, _itemArchetype.getShape().Shape);
+        internal BattleItem(ItemArchetype itemArchetype, IInventoryPosition inventoryPosition) {
+            id = IdGenerator.Next();
+            this.itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
+            this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
+            // _inventoryPosition = InventoryPosition.create(origin, _itemArchetype.getShape().Shape);
         }
 
         public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
-            return _inventoryPosition.getOccupiedCells();
+            return inventoryPosition.getOccupiedCells();
         }
 
         public Vector2Int getOrigin() {
-            return _inventoryPosition.getOrigin();
+            return inventoryPosition.getOrigin();
         }
 
         public long getId() {
-            return _id;
+            return id;
         }
 
         public ShapeArchetype getShape() {
-            return _itemArchetype.getShape();
+            return itemArchetype.getShape();
         }
 
         public IActionDescription prepareItemActionDescription() {
@@ -45,10 +45,10 @@ namespace MageFactory.Item.Domain {
         }
 
         private Duration prepareActionTiming() {
-            return new Duration(_itemArchetype.getCastTime());
+            return new Duration(itemArchetype.getCastTime());
         }
 
-        private IOperations prepareEffectsDescriptor() {
+        private static IOperations prepareEffectsDescriptor() {
             return new ItemOperationsDescription(
                 new AddPower(new DamageToDeal(5))
             );

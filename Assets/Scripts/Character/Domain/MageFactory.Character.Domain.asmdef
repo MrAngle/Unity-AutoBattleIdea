@@ -2,8 +2,8 @@
   "name": "MageFactory.Character.Domain",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Character.Api",
     "MageFactory.Character.Contract",
+    "MageFactory.CombatContext.Contract",
     "MageFactory.Shared",
     
     "Zenject"

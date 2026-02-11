@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
@@ -7,7 +8,6 @@ using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
-using UnityEngine;
 using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
@@ -21,25 +21,28 @@ namespace MageFactory.Item.Domain.Service {
             _flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
 
-        public IInventoryPlacedEntryPoint createPlacedEntryPoint(IEntryPointArchetype archetype, Vector2Int position,
-            IInventoryInspector gridInspector) {
-            var placedEntryPoint = PlacedEntryPoint.create(archetype, position, gridInspector, _flowFactory);
+        public IInventoryPlacedEntryPoint createPlacedEntryPoint(
+            IEntryPointArchetype entryPointArchetype,
+            IInventoryPosition inventoryPosition,
+            ICharacterCombatCapabilities characterCombatCapabilities
+        ) {
+            var placedEntryPoint = PlacedEntryPoint.create(entryPointArchetype, inventoryPosition, _flowFactory,
+                characterCombatCapabilities);
 
             return placedEntryPoint;
         }
 
-        public IEntryPointArchetype createArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
-            return new TickEntryPoint(kind, shapeArchetype, this);
-        }
-
         public IInventoryPlaceableItem createPlacableItem(CreatePlaceableItemCommand createPlaceableItemCommand) {
-            if (createPlaceableItemCommand.itemDefinition is IEntryPointDefinition entryPointDefinition) {
+            if (createPlaceableItemCommand.itemDefinition is IEntryPointDefinition entryPointDefinition)
                 // todo change it
                 return createPlacableItem(entryPointDefinition);
-            }
 
             return createPlacableItem(createPlaceableItemCommand.itemDefinition);
             // return ItemArchetype.create(createPlaceableItemCommand);
+        }
+
+        public IEntryPointArchetype createArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
+            return new TickEntryPoint(kind, shapeArchetype, this);
         }
 
         private IInventoryPlaceableItem createPlacableItem(IItemDefinition itemDefinition) {

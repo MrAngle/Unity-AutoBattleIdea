@@ -51,6 +51,7 @@
         <Compile Include="Assets\Scripts\Inventory\Domain\InventoryAggregate.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\Service\InventoryFactoryService.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Domain\InventoryCell.cs"/>
+        <Compile Include="Assets\Scripts\Inventory\Domain\InventoryPosition.cs"/>
         <None Include="Assets\Scripts\Inventory\Domain\MageFactory.Inventory.asmdef"/>
         <Reference Include="UnityEngine">
             <HintPath>C:\Program Files\Unity\Hub\Editor\6000.2.7f2-x86_64\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -867,10 +868,6 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="MageFactory.Inventory.Api.csproj">
-            <Project>{8591c339-4bce-1356-deff-453b0c843c3b}</Project>
-            <Name>MageFactory.Inventory.Api</Name>
-        </ProjectReference>
         <ProjectReference Include="MageFactory.Inventory.Contract.csproj">
             <Project>{e2d7bb56-5e71-2134-3345-b8070bc32158}</Project>
             <Name>MageFactory.Inventory.Contract</Name>
@@ -878,6 +875,10 @@
         <ProjectReference Include="MageFactory.Character.Contract.csproj">
             <Project>{95c4269e-1769-3903-69a6-72be2e64b3f2}</Project>
             <Name>MageFactory.Character.Contract</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>

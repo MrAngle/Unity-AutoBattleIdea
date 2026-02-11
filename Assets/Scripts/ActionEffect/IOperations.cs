@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using MageFactory.ActionEffect;
 
-namespace MageFactory.ActionExecutor.Api.Dto {
+namespace MageFactory.ActionEffect {
     public interface IOperations {
         IReadOnlyList<IOperation> getEffects();
     }

@@ -1,33 +1,30 @@
 ﻿using System;
-using MageFactory.Character.Contract;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Shared.Utility;
 using Zenject;
 
 namespace MageFactory.Context {
     public class InventoryAggregateContext {
-        private readonly InventoryGridContext _inventoryGridContext;
+        private readonly InventoryGridContext inventoryGridContext;
 
-        private ICharacterInventory characterInventory;
-
-        public event Action<ICharacterInventory> OnInventoryAggregateSet;
+        private ICombatCharacterInventory characterInventory;
+        public event Action<ICombatCharacterInventory> OnInventoryAggregateSet;
 
         [Inject]
-        public InventoryAggregateContext(IInventoryFactory inventoryFactory,
-            InventoryGridContext inventoryGridContext) {
-            // _inventoryAggregate = inventoryAggregateFactory.CreateCharacterInventory();
-            _inventoryGridContext = NullGuard.NotNullOrThrow(inventoryGridContext);
+        public InventoryAggregateContext(InventoryGridContext inventoryGridContext) {
+            this.inventoryGridContext = NullGuard.NotNullOrThrow(inventoryGridContext);
         }
 
-        public void setInventoryAggregateContext(ICharacterInventory inventoryAggregate) {
+        public void setInventoryAggregateContext(ICombatCharacterInventory inventoryAggregate) {
             if (characterInventory == inventoryAggregate)
                 return; // should nothing to do or clear
 
             characterInventory = inventoryAggregate;
-            _inventoryGridContext.setInventoryGrid(characterInventory.getInventoryGrid());
+            inventoryGridContext.setInventoryGrid(characterInventory.getInventoryGrid());
             OnInventoryAggregateSet?.Invoke(characterInventory);
         }
 
-        public ICharacterInventory getInventoryAggregateContext() {
+        public ICombatCharacterInventory getInventoryAggregateContext() {
             return characterInventory;
         }
     }

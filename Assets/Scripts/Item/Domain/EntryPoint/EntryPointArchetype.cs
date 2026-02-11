@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -25,9 +26,17 @@ namespace MageFactory.Item.Domain.EntryPoint {
             turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
-        public IInventoryPlacedItem toPlacedItem(IInventoryInspector inventoryInspector, Vector2Int origin) {
-            return entryPointFactory.createPlacedEntryPoint(this, origin, inventoryInspector);
+        public IInventoryPlacedItem toPlacedItem(IInventoryPosition inventoryPosition,
+            ICharacterCombatCapabilities characterCombatCapabilities) {
+            return entryPointFactory.createPlacedEntryPoint(this, inventoryPosition, characterCombatCapabilities);
         }
+
+        // public IInventoryPlacedItem toPlacedItem(
+        //     IInventoryInspector gridInspector, 
+        //     IInventoryPosition inventoryPosition,
+        //     Vector2Int origin) {
+        //     return entryPointFactory.createPlacedEntryPoint(this, origin, inventoryInspector)
+        // }
 
         public ShapeArchetype getShape() {
             return shapeArchetype;

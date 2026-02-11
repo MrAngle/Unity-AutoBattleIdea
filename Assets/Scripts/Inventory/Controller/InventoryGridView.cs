@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MageFactory.Character.Contract;
+using MageFactory.CombatContext.Contract;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +16,7 @@ namespace MageFactory.Inventory.Api {
             if (!gridLayout) gridLayout = GetComponent<GridLayoutGroup>();
         }
 
-        public void Build(IInventoryGrid inventoryGrid) {
+        public void Build(ICombatInventory inventoryGrid) {
             Clear();
 
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;

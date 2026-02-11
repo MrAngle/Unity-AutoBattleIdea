@@ -1,44 +1,30 @@
 ﻿using System.Runtime.CompilerServices;
-using MageFactory.Character.Api;
-using MageFactory.Character.Api.Dto;
 using MageFactory.Character.Contract;
-using MageFactory.Shared.Model;
+using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Contract.Command;
 using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.Character.Domain.Service {
     internal class CharacterFactoryService : ICharacterFactory {
-        // private readonly IEntryPointFactory _entryPointFactory; // for now
+        private readonly ICharacterCombatCapabilitiesFactory combatCapabilitiesFactory;
         private readonly IInventoryFactory inventoryFactory;
 
         [Inject]
         internal CharacterFactoryService(
-            SignalBus signalBus,
-            IInventoryFactory inventoryFactory
-            // , IEntryPointFactory entryPointFactory
+            IInventoryFactory inventoryFactory,
+            ICharacterCombatCapabilitiesFactory combatCapabilitiesFactory
         ) {
             this.inventoryFactory = inventoryFactory;
-            // _entryPointFactory = entryPointFactory;
+            this.combatCapabilitiesFactory = combatCapabilitiesFactory;
         }
 
-        // @Override
-        public ICharacter create(CharacterCreateCommand command) {
-            ICharacterInventory characterInventory = inventoryFactory.createCharacterInventory();
-            CharacterAggregate character = CharacterAggregate.createFrom(command, characterInventory);
+        public ICombatCharacter create(CreateCombatCharacterCommand command) {
+            var characterInventory = inventoryFactory.createCharacterInventory();
+            var character = CharacterAggregate.createFrom(command, characterInventory, combatCapabilitiesFactory);
 
-            if (character.getTeam() == Team.TeamA) {
-                foreach (EquipItemCommand itemToEquip in command.itemsToEquip) {
-                    // IPlaceableItem entryPointArchetype =
-                    //     _entryPointFactory.createArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
-                    character.equipItemOrThrow(itemToEquip);
-                }
-
-                //for now
-                // IPlaceableItem entryPointArchetype =
-                //     _entryPointFactory.createArchetypeEntryPoint(FlowKind.Damage, ShapeCatalog.Square1x1);
-                // character.equipItemOrThrow(entryPointArchetype, new Vector2Int(0, 0), out _);
-            }
+            foreach (var itemToEquip in command.itemsToEquip) character.equipItemOrThrow(itemToEquip);
 
             return character;
         }

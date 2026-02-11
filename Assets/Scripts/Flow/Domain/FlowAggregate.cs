@@ -6,9 +6,9 @@ using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Character.Contract.Event;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
-using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -23,10 +23,10 @@ namespace MageFactory.Flow.Domain {
         private readonly List<long> visitedNodeIds = new();
 
         private CancellationTokenSource cancellationTokenSource;
-        private IInventoryPlacedItem currentNode;
+        private ICombatCharacterEquippedItem currentNode;
         private bool isRunning;
 
-        private FlowAggregate(FlowModel flowModel, IInventoryPlacedEntryPoint startNode, IFlowRouter flowRouter,
+        private FlowAggregate(FlowModel flowModel, ICombatCharacterEquippedItem startNode, IFlowRouter flowRouter,
             SignalBus signalBus, IActionExecutor actionExecutor) {
             router = NullGuard.NotNullOrThrow(flowRouter);
             this.flowModel = NullGuard.NotNullOrThrow(flowModel);
@@ -37,25 +37,23 @@ namespace MageFactory.Flow.Domain {
             visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        internal static IFlowAggregateFacade create(IInventoryPlacedEntryPoint placedEntryPoint, long power,
+        internal static IFlowAggregateFacade create(ICombatCharacterEquippedItem placedEntryPoint,
             IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor actionExecutor) {
-            // sourceId ??= CorrelationId.NextString();
-            var payload = new FlowSeed(power);
             var context = new FlowContext(placedEntryPoint);
-            var model = new FlowModel(payload, context);
+            var model = new FlowModel(context);
             var startNode = placedEntryPoint;
 
             return new FlowAggregate(model, startNode, flowRouter, signalBus, actionExecutor);
-        }
-
-        public void start() {
-            _ = startAsync();
         }
 
         public void addPower(PowerAmount damageAmount) {
             flowModel.addPower(damageAmount);
 
             signalBus.Fire(new ItemPowerChangedDtoEvent(currentNode.getId(), damageAmount.getPower()));
+        }
+
+        public void start() {
+            _ = startAsync();
         }
 
         private Task startAsync() {
@@ -81,10 +79,10 @@ namespace MageFactory.Flow.Domain {
         }
 
         private async Task processAsync(CancellationToken cancellationToken) {
-            IActionDescription actionSpecification = currentNode.prepareItemActionDescription();
+            var actionSpecification = currentNode.prepareItemActionDescription();
 
             // IPreparedAction preparedAction = actionSpecification.ToPreparedAction(this);
-            ExecuteActionCommand executeActionCommand = new ExecuteActionCommand(actionSpecification, this);
+            var executeActionCommand = new ExecuteActionCommand(actionSpecification, this);
 
             try {
                 // await _actionExecutor.ExecuteAsync(preparedAction, cancellationToken);
@@ -101,7 +99,7 @@ namespace MageFactory.Flow.Domain {
             visitedNodeIds.Add(currentNode.getId());
         }
 
-        private async Task<bool> goNextAsync(CancellationToken ct) {
+        private async Task<bool> goNextAsync(CancellationToken cancellationToken) {
             NullGuard.NotNullCheckOrThrow(currentNode, flowModel);
 
             var decision = router.decideNext(currentNode, visitedNodeIds);

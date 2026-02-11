@@ -4,10 +4,8 @@
   "references": [
     "MageFactory.Semantics",
     "MageFactory.Shared",
-    "MageFactory.Inventory.Api",
     "MageFactory.Inventory.Domain",
     "MageFactory.Inventory.Controller",
-    "MageFactory.Item.Api",
     "MageFactory.Item.Domain",
     "MageFactory.Flow.Api",
     "MageFactory.Flow.Domain",
@@ -15,9 +13,9 @@
     "MageFactory.ActionExecutor.Domain",
     "MageFactory.Context",
     "MageFactory.Controller.Character",
-    "MageFactory.Character.Api",
     "MageFactory.Character.Domain",
     "MageFactory.Character.Contract",
+    "MageFactory.CombatContext.Contract",
     "MageFactory.BattleManager",
     "MageFactory.UI",
     "Zenject"

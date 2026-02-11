@@ -3,19 +3,19 @@ using MageFactory.Shared.Model;
 
 namespace MageFactory.Flow.Domain {
     public class FlowPayload {
-        private readonly DamageToDeal _damageToDeal;
-        private readonly DamageToReceive _damageToReceive;
+        private readonly DamageToDeal damageToDeal;
+        private readonly DamageToReceive damageToReceive;
 
-        internal FlowPayload(long power, DamageToReceive damageToReceiveToReceive = null,
+        internal FlowPayload(DamageToReceive damageToReceiveToReceive = null,
             DamageToDeal damageToDeal = null) {
-            _damageToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
-            _damageToDeal = damageToDeal ?? new DamageToDeal(0);
+            damageToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
+            this.damageToDeal = damageToDeal ?? new DamageToDeal(0);
         }
 
         internal void add(PowerAmount damageAmount) {
             switch (damageAmount) {
                 case DamageToDeal deal:
-                    _damageToDeal.change(deal);
+                    damageToDeal.change(deal);
                     break;
                 case DamageToReceive receive:
                     damageAmount.change(receive);
@@ -24,15 +24,15 @@ namespace MageFactory.Flow.Domain {
                     throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
             }
 
-            _damageToReceive.change(damageAmount);
+            damageToReceive.change(damageAmount);
         }
 
         internal DamageToReceive getDamageToReceive() {
-            return _damageToReceive;
+            return damageToReceive;
         }
 
         internal DamageToDeal getDamageToDeal() {
-            return _damageToDeal;
+            return damageToDeal;
         }
     }
 }

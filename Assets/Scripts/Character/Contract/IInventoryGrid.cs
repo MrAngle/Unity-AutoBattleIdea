@@ -1,9 +1,10 @@
-﻿using MageFactory.Shared.Model;
+﻿using MageFactory.CombatContext.Contract;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
 namespace MageFactory.Character.Contract {
-    public interface IInventoryGrid {
+    public interface IInventoryGrid : ICombatInventory {
         int Width { get; }
         int Height { get; }
         CellState getState(Vector2Int coord);

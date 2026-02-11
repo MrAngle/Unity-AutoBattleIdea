@@ -1,30 +1,49 @@
-﻿using System;
-using MageFactory.Character.Api;
-using MageFactory.Character.Api.Dto;
+﻿#nullable enable
+using System;
 using MageFactory.Character.Contract;
+using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
-    internal class CharacterAggregate : ICharacter {
+    internal class CharacterAggregate : ICombatCharacter {
         private readonly CharacterData characterData;
         private readonly ICharacterInventory characterInventoryFacade;
         private readonly Team team;
+        private readonly ICharacterCombatCapabilities characterCombatCapabilities;
 
-        private CharacterAggregate(CharacterData data, ICharacterInventory characterInventoryFacade, Team team) {
+        private CharacterAggregate(
+            CharacterData data,
+            ICharacterInventory characterInventoryFacade,
+            Team team,
+            ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory
+        ) {
             characterData = NullGuard.NotNullOrThrow(data);
             this.characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.team = NullGuard.enumDefinedOrThrow(team);
 
-            // Subskrybuj event z danych, by przekazywać go dalej
             characterData.OnHpChanged += handleCharacterDataHpChanged;
+
+            // Be warned: use "this" in constructor. It's not a good practice, but Im not so similar to C#, but it should work
+            characterCombatCapabilities = characterCombatCapabilitiesFactory.createCombatContextFactory(this);
         }
+
+        public static CharacterAggregate createFrom(
+            CreateCombatCharacterCommand characterCreateCommand,
+            ICharacterInventory characterInventoryFacade, // I think it will be better when a character creates inventory
+            ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory
+        ) {
+            return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
+                characterCreateCommand.team, characterCombatCapabilitiesFactory);
+        }
+
 
         public string getName() {
             return characterData.getName();
         }
 
-        public ICharacterInventory getInventoryAggregate() {
+        public ICombatCharacterInventory getInventoryAggregate() {
             return characterInventoryFacade;
         }
 
@@ -36,8 +55,8 @@ namespace MageFactory.Character.Domain {
             return characterData.CurrentHp;
         }
 
-        public event Action<ICharacter, long, long> OnHpChanged;
-        public event Action<ICharacter> OnDeath;
+        public event Action<ICombatCharacter, long, long> OnHpChanged;
+        public event Action<ICombatCharacter> OnDeath;
 
         public void apply(PowerAmount powerAmount) {
             characterData.applyDamage(powerAmount);
@@ -49,23 +68,18 @@ namespace MageFactory.Character.Domain {
                 equipItemQuery.origin));
         }
 
-        public ICharacterEquippedItem equipItemOrThrow(EquipItemCommand equipItemCommand) {
+        public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand equipItemCommand) {
             if (!canPlaceItem(new EquipItemQuery(equipItemCommand.itemDefinition, equipItemCommand.origin))) {
                 throw new ArgumentException("Cannot equip item");
             }
 
             return characterInventoryFacade.place(
-                new PlaceItemCommand(equipItemCommand.itemDefinition, equipItemCommand.origin));
+                new PlaceItemCommand(equipItemCommand.itemDefinition, equipItemCommand.origin,
+                    characterCombatCapabilities));
         }
 
         public void cleanup() {
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
-        }
-
-        public static CharacterAggregate createFrom(CharacterCreateCommand characterCreateCommand,
-            ICharacterInventory characterInventoryFacade) {
-            return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
-                characterCreateCommand.team);
         }
 
         public Team getTeam() {

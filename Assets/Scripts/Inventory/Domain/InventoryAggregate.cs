@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Contract.Event;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Shared.Utility;
@@ -10,7 +11,7 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Domain {
-    internal class InventoryAggregate : IGridInspector, ICharacterInventory, IInventoryInspector {
+    internal class InventoryAggregate : /*IGridInspector, */ICharacterInventory, IInventoryInspector {
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
         private readonly IInventoryGrid inventoryGrid;
         private readonly HashSet<IInventoryPlacedItem> items;
@@ -51,10 +52,13 @@ namespace MageFactory.Inventory.Domain {
                 yield return item;
         }
 
-        public IInventoryGrid getInventoryGrid() {
-            return inventoryGrid;
+        IEnumerable<ICombatCharacterEquippedItem> ICombatCharacterInventory.getPlacedSnapshot() {
+            return getPlacedSnapshot();
         }
 
+        public ICombatInventory getInventoryGrid() {
+            return inventoryGrid;
+        }
 
         public bool canPlace(PlaceItemQuery placeItemQuery) {
             return inventoryGrid.canPlace(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
@@ -72,7 +76,10 @@ namespace MageFactory.Inventory.Domain {
             IInventoryPlaceableItem inventoryPlaceableItem = itemFactory.createPlacableItem(createPlaceableItemCommand);
 
             IInventoryPlacedItem inventoryPlacedItem =
-                inventoryPlaceableItem.toPlacedItem(this, placeItemCommand.origin);
+                inventoryPlaceableItem.toPlacedItem( /*this, */
+                    InventoryPosition.create(placeItemCommand.origin, placeItemCommand.itemDefinition.getShape().Shape),
+                    placeItemCommand.characterCombatCapabilities
+                    /*placeItemCommand.origin*/);
 
             if (inventoryPlacedItem.getOccupiedCells().Any(vector2Int => cellToItem.ContainsKey(vector2Int))) {
                 throw new ArgumentException("Cannot place item");
@@ -131,10 +138,22 @@ namespace MageFactory.Inventory.Domain {
             return false;
         }
 
-        public bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem itemToReturn) {
+        public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem itemToReturn) {
             var found = tryGetItemAtCell(cell, out IInventoryPlacedItem placedItem);
             itemToReturn = placedItem; // jak found == false → null
             return found;
         }
+
+        // public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem item) {
+        //     throw new NotImplementedException();
+        // }
+
+
+        // ICombatInventory ICombatCharacterInventory.getInventoryGrid() {
+        //     throw new NotImplementedException();
+        // }
+        // public bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item) {
+        //     throw new NotImplementedException();
+        // }
     }
 }

@@ -884,9 +884,9 @@
             <Project>{e427ed3c-89f0-c8a3-0ee9-017bf9d423ff}</Project>
             <Name>MageFactory.Registry</Name>
         </ProjectReference>
-        <ProjectReference Include="MageFactory.Character.Api.csproj">
-            <Project>{b7a0baea-4ded-967f-7b5b-6f1eea6605ce}</Project>
-            <Name>MageFactory.Character.Api</Name>
+        <ProjectReference Include="MageFactory.CombatContext.Contract.csproj">
+            <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
+            <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Semantics.csproj">
             <Project>{d6a5c0b5-3792-d21c-0197-dc0b363183e6}</Project>

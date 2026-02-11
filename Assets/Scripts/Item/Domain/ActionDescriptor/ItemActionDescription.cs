@@ -1,4 +1,4 @@
-﻿using MageFactory.ActionExecutor.Api.Dto;
+﻿using MageFactory.ActionEffect;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
