@@ -15,6 +15,7 @@
 *.pdb
 *.mdb
 *.svd
+*.csproj
 
 # Unity Cloud / crash/profiler
 sysinfo.txt
