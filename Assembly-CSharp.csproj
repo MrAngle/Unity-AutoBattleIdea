@@ -1000,11 +1000,11 @@
     <Reference Include="Unity.VisualScripting.Flow.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.VisualScripting.Flow.Editor.dll</HintPath>
     </Reference>
-      <Reference Include="Unity.2D.SpriteShape.Runtime">
-          <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
-      </Reference>
     <Reference Include="Unity.2D.IK.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.2D.IK.Editor.dll</HintPath>
+    </Reference>
+      <Reference Include="Unity.2D.SpriteShape.Runtime">
+          <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
@@ -1027,11 +1027,11 @@
     <Reference Include="Unity.VisualScripting.State.Editor">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.VisualScripting.State.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.RenderPipelines.GPUDriven.Runtime.dll</HintPath>
+    </Reference>
+      <Reference Include="Unity.Mathematics">
+          <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Shaders">
       <HintPath>C:\Users\User\MrAngleGame\Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>

@@ -28,7 +28,4 @@ namespace MageFactory.Semantics {
             return $"{typeof(T).Name}: {_value}";
         }
     }
-
-    public class SemanticClasses {
-    }
 }

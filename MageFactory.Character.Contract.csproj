@@ -51,8 +51,6 @@
         <Compile Include="Assets\Scripts\Character\Contract\PlaceItemQuery.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\IInventoryFactory.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\PlaceItemCommand.cs"/>
-        <Compile Include="Assets\Scripts\Character\Contract\IGridInspector.cs"/>
-        <Compile Include="Assets\Scripts\Character\Contract\IInventoryReadModel.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\ICharacterEquippedItem.cs"/>
         <Compile Include="Assets\Scripts\Character\Contract\ICharacterInventory.cs"/>
         <None Include="Assets\Scripts\Character\Contract\MageFactory.Character.Contract.asmdef"/>

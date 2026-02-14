@@ -11,7 +11,7 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Domain {
-    internal class InventoryAggregate : /*IGridInspector, */ICharacterInventory, IInventoryInspector {
+    internal class InventoryAggregate : ICharacterInventory {
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
         private readonly IInventoryGrid inventoryGrid;
         private readonly HashSet<IInventoryPlacedItem> items;
@@ -64,10 +64,6 @@ namespace MageFactory.Inventory.Domain {
             return inventoryGrid.canPlace(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
         }
 
-        // public bool canPlace(ICharacterEquipableItem inventoryPlaceableItem, Vector2Int origin) {
-        //     return inventoryGrid.canPlace(inventoryPlaceableItem.getShape(), origin);
-        // }
-
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand) {
             if (!inventoryGrid.canPlace(placeItemCommand.itemDefinition.getShape(), placeItemCommand.origin))
                 throw new ArgumentException("Cannot place item");
@@ -96,38 +92,6 @@ namespace MageFactory.Inventory.Domain {
             return inventoryPlacedItem;
         }
 
-        // public ICharacterEquippedItem place(ICharacterEquipableItem inventoryPlaceableItem, Vector2Int origin) {
-        //     if (!inventoryGrid.canPlace(inventoryPlaceableItem.getShape(), origin))
-        //         throw new ArgumentException("Cannot place item");
-        //
-        //     itemFactory.
-        //     
-        //     ICharacterEquippedItem placedItem = inventoryPlaceableItem.toEquippedItem(this, origin);
-        //     foreach (var c in placedItem.getOccupiedCells())
-        //         if (cellToItem.ContainsKey(c))
-        //             throw new ArgumentException("Cannot place item");
-        //
-        //     items.Add(placedItem);
-        //     foreach (var c in placedItem.getOccupiedCells()) cellToItem[c] = placedItem;
-        //
-        //     inventoryGrid.place(placedItem.getShape(), origin);
-        //     signalBus.Fire(new ItemPlacedDtoEvent(placedItem.getId(), placedItem.getShape(), origin));
-        //     return placedItem;
-        // }
-
-        // public bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem itemToReturn) {
-        //     tryGetItemAtCell(cell, out IInventoryPlacedItem placedItem);
-        //     itemToReturn = placedItem;
-        //     // if (cellToItem.TryGetValue(cell, out IInventoryPlacedItem placedItem)) {
-        //     //     itemToReturn = placedItem; // OK: w górę hierarchii
-        //     //     return true;
-        //     // }
-        //     //
-        //     // itemToReturn = null;
-        //     // return false;
-        //     // return cellToItem.TryGetValue(cell, out IInventoryPlacedItem  item);
-        // }
-
         public bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
             if (cellToItem.TryGetValue(cell, out var placedItem)) {
                 itemToReturn = placedItem;
@@ -143,17 +107,5 @@ namespace MageFactory.Inventory.Domain {
             itemToReturn = placedItem; // jak found == false → null
             return found;
         }
-
-        // public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem item) {
-        //     throw new NotImplementedException();
-        // }
-
-
-        // ICombatInventory ICombatCharacterInventory.getInventoryGrid() {
-        //     throw new NotImplementedException();
-        // }
-        // public bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item) {
-        //     throw new NotImplementedException();
-        // }
     }
 }

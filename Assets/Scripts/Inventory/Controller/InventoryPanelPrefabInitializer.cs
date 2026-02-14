@@ -76,7 +76,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         private void OnInventoryGridChanged(ICombatInventory grid) {
-            _gridView.Build(grid);
+            _gridView.build(grid);
 
             var rt = (RectTransform)_gridView.transform;
             rt.anchorMin = Vector2.zero;

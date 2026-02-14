@@ -16,14 +16,6 @@ namespace MageFactory.Item.Domain {
             return new ItemArchetype(itemDefinition.getShape());
         }
 
-        // public IInventoryPlacedItem toPlacedItem(
-        //     // IInventoryInspector inventoryInspector, 
-        //     IInventoryPosition inventoryPosition
-        //     /*Vector2Int origin*/) {
-        //     return new BattleItem(this, inventoryPosition);
-        // }
-
-
         public IInventoryPlacedItem toPlacedItem(
             IInventoryPosition inventoryPosition,
             ICharacterCombatCapabilities characterCombatCapabilities

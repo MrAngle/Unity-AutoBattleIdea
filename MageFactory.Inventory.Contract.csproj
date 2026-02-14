@@ -51,7 +51,6 @@
         <Compile Include="Assets\Scripts\Inventory\Contract\IEntryPointArchetype.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Contract\Dto\CreatePlaceableItemCommand.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Contract\IEntryPointFactory.cs"/>
-        <Compile Include="Assets\Scripts\Inventory\Contract\Dto\CreatePlacedItemCommand.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Contract\IItemFactory.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Contract\IInventoryInspector.cs"/>
         <Compile Include="Assets\Scripts\Inventory\Contract\IInventoryPlacedItem.cs"/>

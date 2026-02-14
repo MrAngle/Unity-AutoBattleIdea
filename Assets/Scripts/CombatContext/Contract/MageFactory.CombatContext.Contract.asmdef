@@ -3,7 +3,6 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.ActionEffect",
-    "MageFactory.ActionExecutor.Api",
     "MageFactory.Shared",
     "Zenject"
   ],

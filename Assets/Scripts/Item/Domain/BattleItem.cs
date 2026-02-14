@@ -17,7 +17,6 @@ namespace MageFactory.Item.Domain {
             id = IdGenerator.Next();
             this.itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
             this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
-            // _inventoryPosition = InventoryPosition.create(origin, _itemArchetype.getShape().Shape);
         }
 
         public IReadOnlyCollection<Vector2Int> getOccupiedCells() {

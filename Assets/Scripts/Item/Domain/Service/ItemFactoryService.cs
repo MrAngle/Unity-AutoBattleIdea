@@ -5,8 +5,6 @@ using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Shared.Contract;
-using MageFactory.Shared.Model;
-using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using Zenject;
 
@@ -33,16 +31,11 @@ namespace MageFactory.Item.Domain.Service {
         }
 
         public IInventoryPlaceableItem createPlacableItem(CreatePlaceableItemCommand createPlaceableItemCommand) {
-            if (createPlaceableItemCommand.itemDefinition is IEntryPointDefinition entryPointDefinition)
-                // todo change it
+            if (createPlaceableItemCommand.itemDefinition is IEntryPointDefinition entryPointDefinition) {
                 return createPlacableItem(entryPointDefinition);
+            }
 
             return createPlacableItem(createPlaceableItemCommand.itemDefinition);
-            // return ItemArchetype.create(createPlaceableItemCommand);
-        }
-
-        public IEntryPointArchetype createArchetypeEntryPoint(FlowKind kind, ShapeArchetype shapeArchetype) {
-            return new TickEntryPoint(kind, shapeArchetype, this);
         }
 
         private IInventoryPlaceableItem createPlacableItem(IItemDefinition itemDefinition) {

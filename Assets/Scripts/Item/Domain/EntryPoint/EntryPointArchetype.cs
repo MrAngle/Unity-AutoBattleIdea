@@ -31,13 +31,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return entryPointFactory.createPlacedEntryPoint(this, inventoryPosition, characterCombatCapabilities);
         }
 
-        // public IInventoryPlacedItem toPlacedItem(
-        //     IInventoryInspector gridInspector, 
-        //     IInventoryPosition inventoryPosition,
-        //     Vector2Int origin) {
-        //     return entryPointFactory.createPlacedEntryPoint(this, origin, inventoryInspector)
-        // }
-
         public ShapeArchetype getShape() {
             return shapeArchetype;
         }
