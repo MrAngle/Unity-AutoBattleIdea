@@ -18,7 +18,9 @@
     "MageFactory.CombatContext.Contract",
     "MageFactory.BattleManager",
     "MageFactory.UI",
-    "Zenject"
+    "Zenject",
+    "MageFactory.CombatContext.Api",
+    "MageFactory.CombatContext.Domain"
   ],
   "autoReferenced": true
 }

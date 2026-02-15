@@ -10,10 +10,6 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             this.character = character;
         }
 
-        public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem item) {
-            return character.getInventoryAggregate().tryGetItemAtCell(cell, out item);
-        }
-
         public bool tryGetItemAtCell(Vector2Int cell, out IFlowItem item) {
             if (!character.getInventoryAggregate()
                     .tryGetItemAtCell(cell, out ICombatCharacterEquippedItem combatItem)) {
@@ -21,7 +17,7 @@ namespace MageFactory.Character.Domain.CharacterCapability {
                 return false;
             }
 
-            item = combatItem; // upcast
+            item = combatItem;
             return true;
         }
     }

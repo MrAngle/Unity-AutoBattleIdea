@@ -23,9 +23,5 @@ namespace MageFactory.Context {
             inventoryGridContext.setInventoryGrid(characterInventory.getInventoryGrid());
             OnInventoryAggregateSet?.Invoke(characterInventory);
         }
-
-        public ICombatCharacterInventory getInventoryAggregateContext() {
-            return characterInventory;
-        }
     }
 }

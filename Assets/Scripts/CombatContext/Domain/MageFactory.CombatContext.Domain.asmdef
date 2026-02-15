@@ -1,0 +1,10 @@
+﻿{
+  "name": "MageFactory.CombatContext.Domain",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.CombatContext.Api",
+    "MageFactory.Shared"
+  ],
+  "autoReferenced": true
+}

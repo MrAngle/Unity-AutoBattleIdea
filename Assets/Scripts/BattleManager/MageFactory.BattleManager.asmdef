@@ -10,7 +10,8 @@
     "MageFactory.Item.Catalog",
     "MageFactory.Registry",
     "MageFactory.Shared",
-    "MageFactory.UI"
+    "MageFactory.UI",
+    "MageFactory.CombatContext.Api"
   ],
   "autoReferenced": true
 }

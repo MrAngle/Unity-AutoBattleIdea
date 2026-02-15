@@ -1,0 +1,8 @@
+﻿{
+  "name": "MageFactory.CombatContext.Api",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.CombatContext.Contract"
+  ],
+  "autoReferenced": true
+}

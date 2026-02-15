@@ -5,7 +5,9 @@ using MageFactory.Character.Contract;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Character.Controller;
 using MageFactory.Character.Domain.Service;
+using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Domain.Service;
 using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
@@ -117,6 +119,10 @@ namespace MageFactory.InjectConfiguration {
 
             Container.Bind<ICharacterFactory>()
                 .To<CharacterFactoryService>()
+                .AsSingle();
+
+            Container.Bind<ICombatContextFactory>()
+                .To<CombatContextFactoryService>()
                 .AsSingle();
 
             bindCharactersAndBattleUI();

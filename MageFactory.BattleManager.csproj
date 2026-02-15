@@ -901,6 +901,10 @@
             <Project>{7aaa46dd-f5af-3d59-3491-f91232500383}</Project>
             <Name>MageFactory.UI</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Api.csproj">
+            <Project>{e5712499-6ffc-6c9b-f270-c53b22df1ff1}</Project>
+            <Name>MageFactory.CombatContext.Api</Name>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

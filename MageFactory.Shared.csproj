@@ -58,6 +58,7 @@
         <Compile Include="Assets\Scripts\Shared\Model\Shape\ShapeArchetype.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\Shape\ItemShape.cs"/>
         <Compile Include="Assets\Scripts\Shared\Contract\IGridItemPlaced.cs"/>
+        <Compile Include="Assets\Scripts\Shared\Id\CharacterId.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\Team.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\PowerAmount.cs"/>
         <Compile Include="Assets\Scripts\Shared\Model\FlowKind.cs"/>

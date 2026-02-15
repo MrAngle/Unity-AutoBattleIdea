@@ -935,6 +935,14 @@
             <Project>{60b3bc91-297e-f221-bc42-5f6f40618190}</Project>
             <Name>Zenject</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Api.csproj">
+            <Project>{e5712499-6ffc-6c9b-f270-c53b22df1ff1}</Project>
+            <Name>MageFactory.CombatContext.Api</Name>
+        </ProjectReference>
+        <ProjectReference Include="MageFactory.CombatContext.Domain.csproj">
+            <Project>{00de11eb-098c-59b9-2a2e-9cc002d04e28}</Project>
+            <Name>MageFactory.CombatContext.Domain</Name>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

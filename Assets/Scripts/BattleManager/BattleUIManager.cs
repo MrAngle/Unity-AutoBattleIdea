@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using MageFactory.Character.Controller;
+using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Context;
@@ -20,6 +21,9 @@ namespace MageFactory.BattleManager {
         private Transform slotParent;
         private BattleRuntime battleRuntime; // move to BattleManager
         private Coroutine battleLoop;
+        private ICombatContextFactory combatContextFactory;
+
+        private ICombatContext combatContext;
 
         private float turnInterval = 2f;
 
@@ -41,31 +45,43 @@ namespace MageFactory.BattleManager {
                               CharacterPrefabAggregate injectSlotPrefab,
                               [Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
                               CharacterAggregateContext injectCharacterAggregateContext,
-                              BattleRuntime injectBattleRuntime) {
+                              BattleRuntime injectBattleRuntime,
+                              ICombatContextFactory injectCombatContextFactory) {
             characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
             characterFactory = NullGuard.NotNullOrThrow(injectCharacterFactory);
             characterPrefabAggregate = NullGuard.NotNullOrThrow(injectSlotPrefab);
             slotParent = NullGuard.NotNullOrThrow(injectSlotParent);
             battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
+            combatContextFactory = NullGuard.NotNullOrThrow(injectCombatContextFactory);
         }
 
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
-            for (var i = 0; i < charactersToCreate.Length; i++) {
-                ICombatCharacter character;
-                // TODO: change it of course
-                if (i == 0) {
-                    character = characterFactory.create(charactersToCreate[i]);
-                    characterAggregateContext.setCharacterAggregateContext(character); // for now
-                }
-                else {
-                    character = characterFactory.create(charactersToCreate[i]);
-                }
+            combatContext = combatContextFactory.create(charactersToCreate);
 
-                battleRuntime.register(character);
+            characterAggregateContext.setCharacterAggregateContext(combatContext.getRandomCharacter()); // for now
 
-                CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, character,
+            foreach (ICombatCharacter combatCharacter in combatContext.getAllCharacters()) {
+                battleRuntime.register(combatCharacter);
+                CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, combatCharacter,
                     characterAggregateContext);
             }
+
+            // for (var i = 0; i < charactersToCreate.Length; i++) {
+            //     ICombatCharacter character;
+            //     // TODO: change it of course
+            //     if (i == 0) {
+            //         character = characterFactory.create(charactersToCreate[i]);
+            //         characterAggregateContext.setCharacterAggregateContext(character); // for now
+            //     }
+            //     else {
+            //         character = characterFactory.create(charactersToCreate[i]);
+            //     }
+            //
+            //     battleRuntime.register(character);
+            //
+            //     CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, character,
+            //         characterAggregateContext);
+            // }
         }
 
         private void startBattleLoop() {

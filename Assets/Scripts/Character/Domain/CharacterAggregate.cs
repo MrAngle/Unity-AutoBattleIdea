@@ -5,11 +5,13 @@ using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Api;
 using MageFactory.FlowRouting;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
     internal class CharacterAggregate : ICombatCharacter {
+        private readonly Id<CharacterId> characterId;
         private readonly CharacterData characterData;
         private readonly ICharacterInventory characterInventory;
         private readonly Team team;
@@ -23,10 +25,12 @@ namespace MageFactory.Character.Domain {
             ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory,
             IFlowFactory flowFactory
         ) {
+            characterId = new Id<CharacterId>(IdGenerator.Next());
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             characterData = NullGuard.NotNullOrThrow(data);
             this.characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.team = NullGuard.enumDefinedOrThrow(team);
+
 
             characterData.OnHpChanged += handleCharacterDataHpChanged;
 
@@ -44,6 +48,9 @@ namespace MageFactory.Character.Domain {
                 characterCreateCommand.team, characterCombatCapabilitiesFactory, flowFactory);
         }
 
+        public Id<CharacterId> getId() {
+            return characterId;
+        }
 
         public string getName() {
             return characterData.getName();
