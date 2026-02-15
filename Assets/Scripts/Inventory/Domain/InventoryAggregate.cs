@@ -12,33 +12,30 @@ using Zenject;
 
 namespace MageFactory.Inventory.Domain {
     internal class InventoryAggregate : ICharacterInventory {
+        private readonly HashSet<IInventoryPlacedItem> items = new();
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
+        private readonly HashSet<ICharacterEquippedEntryPointToTick> entryPoints = new();
+
         private readonly IInventoryGrid inventoryGrid;
-        private readonly HashSet<IInventoryPlacedItem> items;
         private readonly IItemFactory itemFactory;
         private readonly SignalBus signalBus;
 
         private InventoryAggregate(IInventoryGrid inventoryGrid,
-            HashSet<IInventoryPlacedEntryPoint> entryPoints,
-            HashSet<IInventoryPlacedItem> items,
-            IItemFactory itemFactory,
-            SignalBus signalBus) {
-            NullGuard.NotNullCheckOrThrow(inventoryGrid, entryPoints, items, signalBus, itemFactory);
+                                   IItemFactory itemFactory,
+                                   SignalBus signalBus) {
+            NullGuard.NotNullCheckOrThrow(inventoryGrid, signalBus, itemFactory);
             this.inventoryGrid = inventoryGrid;
-            this.items = items;
             this.signalBus = signalBus;
             this.itemFactory = itemFactory;
-            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, this.items, this.itemFactory, this.signalBus);
+            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, entryPoints, items, this.itemFactory, this.signalBus);
         }
 
-        internal static ICharacterInventory create(IItemFactory itemFactory, SignalBus signalBus) {
-            IInventoryGrid
-                grid = new InventoryGrid(12, 8);
+        internal static ICharacterInventory create(IItemFactory itemFactory,
+                                                   SignalBus signalBus) {
+            IInventoryGrid grid = new InventoryGrid(12, 8);
 
             var aggregate = new InventoryAggregate(
                 grid,
-                new HashSet<IInventoryPlacedEntryPoint>(),
-                new HashSet<IInventoryPlacedItem>(),
                 itemFactory,
                 signalBus
             );
@@ -64,6 +61,10 @@ namespace MageFactory.Inventory.Domain {
             return inventoryGrid.canPlace(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
         }
 
+        public HashSet<ICharacterEquippedEntryPointToTick> getEntryPointsToTick() {
+            return entryPoints;
+        }
+
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand) {
             if (!inventoryGrid.canPlace(placeItemCommand.itemDefinition.getShape(), placeItemCommand.origin))
                 throw new ArgumentException("Cannot place item");
@@ -72,13 +73,16 @@ namespace MageFactory.Inventory.Domain {
             IInventoryPlaceableItem inventoryPlaceableItem = itemFactory.createPlacableItem(createPlaceableItemCommand);
 
             IInventoryPlacedItem inventoryPlacedItem =
-                inventoryPlaceableItem.toPlacedItem( /*this, */
+                inventoryPlaceableItem.toPlacedItem(
                     InventoryPosition.create(placeItemCommand.origin, placeItemCommand.itemDefinition.getShape().Shape),
-                    placeItemCommand.characterCombatCapabilities
-                    /*placeItemCommand.origin*/);
+                    placeItemCommand.characterCombatCapabilities);
 
             if (inventoryPlacedItem.getOccupiedCells().Any(vector2Int => cellToItem.ContainsKey(vector2Int))) {
                 throw new ArgumentException("Cannot place item");
+            }
+
+            if (inventoryPlacedItem is IInventoryPlacedEntryPoint entryPoint) {
+                entryPoints.Add(entryPoint);
             }
 
             items.Add(inventoryPlacedItem);
@@ -92,7 +96,17 @@ namespace MageFactory.Inventory.Domain {
             return inventoryPlacedItem;
         }
 
-        public bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
+        // public bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
+        //     if (cellToItem.TryGetValue(cell, out var placedItem)) {
+        //         itemToReturn = placedItem;
+        //         return true;
+        //     }
+        //
+        //     itemToReturn = null;
+        //     return false;
+        // }
+
+        public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem itemToReturn) {
             if (cellToItem.TryGetValue(cell, out var placedItem)) {
                 itemToReturn = placedItem;
                 return true;
@@ -100,12 +114,10 @@ namespace MageFactory.Inventory.Domain {
 
             itemToReturn = null;
             return false;
-        }
 
-        public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem itemToReturn) {
-            var found = tryGetItemAtCell(cell, out IInventoryPlacedItem placedItem);
-            itemToReturn = placedItem; // jak found == false → null
-            return found;
+            // var found = tryGetItemAtCell(cell, out IInventoryPlacedItem placedItem);
+            // itemToReturn = placedItem; // jak found == false → null
+            // return found;
         }
     }
 }

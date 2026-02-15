@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using MageFactory.Character.Controller;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
@@ -17,6 +18,10 @@ namespace MageFactory.BattleManager {
         private CharacterPrefabAggregate characterPrefabAggregate;
         private IEntryPointFactory entryPointFactory; // for now
         private Transform slotParent;
+        private BattleRuntime battleRuntime; // move to BattleManager
+        private Coroutine battleLoop;
+
+        private float turnInterval = 2f;
 
         private void Start() {
             createSlots(new CreateCombatCharacterCommand[] {
@@ -27,18 +32,21 @@ namespace MageFactory.BattleManager {
                 new("Mage", 1220, Team.TeamB, Array.Empty<EquipItemCommand>()),
                 new("Archer", 1300, Team.TeamB, Array.Empty<EquipItemCommand>())
             });
+
+            startBattleLoop();
         }
 
         [Inject]
-        public void construct(
-            ICharacterFactory injectCharacterFactory,
-            CharacterPrefabAggregate injectSlotPrefab,
-            [Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
-            CharacterAggregateContext injectCharacterAggregateContext) {
+        public void construct(ICharacterFactory injectCharacterFactory,
+                              CharacterPrefabAggregate injectSlotPrefab,
+                              [Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
+                              CharacterAggregateContext injectCharacterAggregateContext,
+                              BattleRuntime injectBattleRuntime) {
             characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
             characterFactory = NullGuard.NotNullOrThrow(injectCharacterFactory);
             characterPrefabAggregate = NullGuard.NotNullOrThrow(injectSlotPrefab);
             slotParent = NullGuard.NotNullOrThrow(injectSlotParent);
+            battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
         }
 
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
@@ -53,8 +61,23 @@ namespace MageFactory.BattleManager {
                     character = characterFactory.create(charactersToCreate[i]);
                 }
 
+                battleRuntime.register(character);
+
                 CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, character,
                     characterAggregateContext);
+            }
+        }
+
+        private void startBattleLoop() {
+            battleLoop = StartCoroutine(executeLoop());
+        }
+
+        private IEnumerator executeLoop() {
+            var wait = new WaitForSeconds(turnInterval);
+
+            while (true) {
+                battleRuntime.tick();
+                yield return wait;
             }
         }
     }

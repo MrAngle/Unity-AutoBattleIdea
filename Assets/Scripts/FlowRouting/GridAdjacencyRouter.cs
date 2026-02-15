@@ -1,19 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MageFactory.CombatContext.Contract;
+using MageFactory.Flow.Contract;
+using MageFactory.Shared.Contract;
 using UnityEngine;
 
 namespace MageFactory.FlowRouting {
     public class GridAdjacencyRouter : IFlowRouter {
-        private readonly ICharacterCombatCapabilities
-            characterCombatCapabilities; // it may be just query inspector instead of ICharacterCombatCapabilities
+        private readonly IRouterGridAdjacencyActions
+            routerActions; // it may be just query inspector instead of ICharacterCombatCapabilities
 
-        private GridAdjacencyRouter(ICharacterCombatCapabilities characterCombatCapabilities) {
-            this.characterCombatCapabilities = characterCombatCapabilities;
+        private GridAdjacencyRouter(IRouterGridAdjacencyActions routerActions) {
+            this.routerActions = routerActions;
         }
 
-        public ICombatCharacterEquippedItem decideNext(ICombatCharacterEquippedItem current,
-            IReadOnlyCollection<long> visitedNodeIds) {
+        public static IFlowRouter create(IRouterGridAdjacencyActions characterCombatCapabilities) {
+            return new GridAdjacencyRouter(characterCombatCapabilities);
+        }
+
+        public IFlowItem decideNext(IGridItemPlaced current,
+                                    IReadOnlyCollection<long> visitedNodeIds) {
             // if (!_inventoryAggregate.TryGetItemAtCell(current.Position, out IPlacedItem placedItem)) {
             //     
             // }
@@ -34,10 +39,10 @@ namespace MageFactory.FlowRouting {
 
             // 3) Kandydaci: kratki Occupied, należące do innego itemu
             // var candidates = new List<(ItemData item, Vector2Int origin, Vector2Int entryCell)>();
-            var candidates = new Dictionary<Vector2Int, ICombatCharacterEquippedItem>();
+            var candidates = new Dictionary<Vector2Int, IFlowItem>();
             // Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
             foreach (var vector2Int in boundary)
-                if (characterCombatCapabilities.query().tryGetItemAtCell(vector2Int, out var placedItem)) {
+                if (routerActions.tryGetItemAtCell(vector2Int, out var placedItem)) {
                     if (placedItem == current) continue; // ta sama bryła
                     // var neighborNodeId = $"Item:{neighborItem.Id}"; // TODO
                     if (visitedNodeIds.Contains(placedItem.getId())) continue; // już odwiedzony item
@@ -68,10 +73,6 @@ namespace MageFactory.FlowRouting {
             // return new RouteDecision(nextNodeToHandle, pick.entryCell);
             // Debug.Log("DecideNext - nextNodeToHandle:" + $" {nextNodeToHandle}");
             return nextNodeToHandle;
-        }
-
-        public static IFlowRouter create(ICharacterCombatCapabilities characterCombatCapabilities) {
-            return new GridAdjacencyRouter(characterCombatCapabilities);
         }
     }
 }

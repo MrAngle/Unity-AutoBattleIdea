@@ -1,15 +1,15 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.Flow.Contract;
 
 namespace MageFactory.Flow.Domain {
     internal class FlowContext {
-        private readonly ICombatCharacterEquippedItem placedEntryPoint;
+        private readonly IFlowItem placedEntryPoint;
         private int stepIndex;
 
-        internal FlowContext(ICombatCharacterEquippedItem placedEntryPoint) {
+        internal FlowContext(IFlowItem placedEntryPoint) {
             this.placedEntryPoint = placedEntryPoint;
         }
 
-        internal ICombatCharacterEquippedItem getPlacedEntryPoint() {
+        internal IFlowItem getPlacedEntryPoint() {
             return placedEntryPoint;
         }
 

@@ -5,8 +5,10 @@
     "MageFactory.Character.Contract",
     "MageFactory.CombatContext.Contract",
     "MageFactory.Shared",
-    
-    "Zenject"
+    "Zenject",
+    "MageFactory.FlowRouting",
+    "MageFactory.Flow.Api",
+    "MageFactory.Flow.Contract"
   ],
   "autoReferenced": true
 }

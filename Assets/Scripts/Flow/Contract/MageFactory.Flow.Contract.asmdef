@@ -1,8 +1,8 @@
 ﻿{
-  "name": "MageFactory.FlowRouting",
+  "name": "MageFactory.Flow.Contract",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Flow.Contract",
+    "MageFactory.ActionEffect",
     "MageFactory.Shared"
   ],
   "autoReferenced": true

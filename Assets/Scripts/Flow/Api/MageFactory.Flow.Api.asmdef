@@ -4,7 +4,8 @@
   "references": [
     "MageFactory.FlowRouting",
     "MageFactory.CombatContext.Contract",
-    "MageFactory.Shared"
+    "MageFactory.Shared",
+    "MageFactory.Flow.Contract"
   ],
   "autoReferenced": true
 }

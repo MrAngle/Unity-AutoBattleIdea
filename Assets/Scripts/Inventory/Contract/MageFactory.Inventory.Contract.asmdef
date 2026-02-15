@@ -4,6 +4,7 @@
   "references": [
     "MageFactory.Character.Contract",
     "MageFactory.CombatContext.Contract",
+    "MageFactory.Flow.Contract",
     "MageFactory.ActionEffect",
     "MageFactory.Shared"
   ],

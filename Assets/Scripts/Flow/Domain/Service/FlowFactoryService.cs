@@ -1,6 +1,6 @@
 ﻿using MageFactory.ActionExecutor.Api;
-using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
+using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
 using Zenject;
 
@@ -15,7 +15,7 @@ namespace MageFactory.Flow.Domain.Service {
             actionExecutor = injectActionExecutor;
         }
 
-        public IFlowAggregateFacade create(ICombatCharacterEquippedItem startNode, IFlowRouter router) {
+        public IFlowAggregateFacade create(IFlowItem startNode, IFlowRouter router) {
             return FlowAggregate.create(startNode, router, signalBus, actionExecutor);
         }
     }

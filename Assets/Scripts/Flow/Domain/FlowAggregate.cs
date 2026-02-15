@@ -6,8 +6,8 @@ using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Character.Contract.Event;
-using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
+using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
@@ -23,11 +23,11 @@ namespace MageFactory.Flow.Domain {
         private readonly List<long> visitedNodeIds = new();
 
         private CancellationTokenSource cancellationTokenSource;
-        private ICombatCharacterEquippedItem currentNode;
+        private IFlowItem currentNode;
         private bool isRunning;
 
-        private FlowAggregate(FlowModel flowModel, ICombatCharacterEquippedItem startNode, IFlowRouter flowRouter,
-            SignalBus signalBus, IActionExecutor actionExecutor) {
+        private FlowAggregate(FlowModel flowModel, IFlowItem startNode, IFlowRouter flowRouter,
+                              SignalBus signalBus, IActionExecutor actionExecutor) {
             router = NullGuard.NotNullOrThrow(flowRouter);
             this.flowModel = NullGuard.NotNullOrThrow(flowModel);
             currentNode = NullGuard.NotNullOrThrow(startNode);
@@ -37,8 +37,9 @@ namespace MageFactory.Flow.Domain {
             visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        internal static IFlowAggregateFacade create(ICombatCharacterEquippedItem placedEntryPoint,
-            IFlowRouter flowRouter, SignalBus signalBus, IActionExecutor actionExecutor) {
+        internal static IFlowAggregateFacade create(IFlowItem placedEntryPoint,
+                                                    IFlowRouter flowRouter, SignalBus signalBus,
+                                                    IActionExecutor actionExecutor) {
             var context = new FlowContext(placedEntryPoint);
             var model = new FlowModel(context);
             var startNode = placedEntryPoint;

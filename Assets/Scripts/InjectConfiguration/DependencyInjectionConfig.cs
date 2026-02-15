@@ -73,6 +73,10 @@ namespace MageFactory.InjectConfiguration {
             Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
                 .AsSingle()
                 .NonLazy();
+
+            Container.Bind<BattleRuntime>()
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindContexts() {

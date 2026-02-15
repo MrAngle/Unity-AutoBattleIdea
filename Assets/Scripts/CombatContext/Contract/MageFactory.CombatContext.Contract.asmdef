@@ -4,7 +4,9 @@
   "references": [
     "MageFactory.ActionEffect",
     "MageFactory.Shared",
-    "Zenject"
+    "Zenject",
+    "MageFactory.FlowRouting",
+    "MageFactory.Flow.Contract"
   ],
   "autoReferenced": true
 }

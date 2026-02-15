@@ -1,4 +1,5 @@
 ﻿using MageFactory.CombatContext.Contract;
+using MageFactory.Flow.Contract;
 using UnityEngine;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
@@ -11,6 +12,17 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
         public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem item) {
             return character.getInventoryAggregate().tryGetItemAtCell(cell, out item);
+        }
+
+        public bool tryGetItemAtCell(Vector2Int cell, out IFlowItem item) {
+            if (!character.getInventoryAggregate()
+                    .tryGetItemAtCell(cell, out ICombatCharacterEquippedItem combatItem)) {
+                item = null;
+                return false;
+            }
+
+            item = combatItem; // upcast
+            return true;
         }
     }
 }

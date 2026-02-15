@@ -6,6 +6,7 @@
     "MageFactory.Item.Catalog",
     "MageFactory.Character.Contract",
     "MageFactory.CombatContext.Contract",
+    "MageFactory.Flow.Contract",
     
     "MageFactory.Context",
     "MageFactory.UI",

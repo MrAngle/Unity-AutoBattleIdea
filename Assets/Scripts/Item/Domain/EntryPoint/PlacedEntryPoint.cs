@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using MageFactory.ActionEffect;
-using MageFactory.CombatContext.Contract;
-using MageFactory.Flow.Api;
-using MageFactory.FlowRouting;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Model;
@@ -15,11 +11,13 @@ using UnityEngine;
 
 namespace MageFactory.Item.Domain.EntryPoint {
     internal class PlacedEntryPoint : IInventoryPlacedEntryPoint, IDisposable {
-        private readonly long id;
         private readonly IEntryPointArchetype entryPointArchetype;
-        private readonly IFlowFactory flowFactory;
+
+        private readonly long id;
+
+        // private readonly IFlowFactory flowFactory;
         private readonly IInventoryPosition inventoryPosition;
-        private readonly ICharacterCombatCapabilities characterCombatCapabilities;
+        // private readonly ICharacterCombatCapabilities characterCombatCapabilities;
 
         private CancellationTokenSource cancellationTokenSource;
 
@@ -27,30 +25,17 @@ namespace MageFactory.Item.Domain.EntryPoint {
 
         private PlacedEntryPoint(
             IEntryPointArchetype entryPointArchetype,
-            IInventoryPosition inventoryPosition,
-            IFlowFactory flowFactory,
-            ICharacterCombatCapabilities characterCombatCapabilities
+            IInventoryPosition inventoryPosition
+            // IFlowFactory flowFactory,
+            // ICharacterCombatCapabilities characterCombatCapabilities
         ) {
             id = IdGenerator.Next();
             this.entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
-            this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
+            // this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
-            this.characterCombatCapabilities = NullGuard.NotNullOrThrow(characterCombatCapabilities);
+            // this.characterCombatCapabilities = NullGuard.NotNullOrThrow(characterCombatCapabilities);
             // this.inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
             NullGuard.NotNullCheckOrThrow(inventoryPosition);
-        }
-
-        internal static IInventoryPlacedEntryPoint create(
-            IEntryPointArchetype archetype,
-            IInventoryPosition inventoryPosition,
-            IFlowFactory flowFactory,
-            ICharacterCombatCapabilities characterCombatCapabilities
-        ) {
-            var placedEntryPoint =
-                new PlacedEntryPoint(archetype, inventoryPosition, flowFactory, characterCombatCapabilities);
-
-            placedEntryPoint.startBattle(); // for now
-            return placedEntryPoint;
         }
 
         public void Dispose() {
@@ -81,10 +66,23 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return id;
         }
 
-        public void startBattle() {
-            cancellationTokenSource = new CancellationTokenSource();
-            _ = battleLoopAsync(cancellationTokenSource.Token); // fire-and-forget
+        internal static IInventoryPlacedEntryPoint create(
+            IEntryPointArchetype archetype,
+            IInventoryPosition inventoryPosition
+            // IFlowFactory flowFactory,
+            // ICharacterCombatCapabilities characterCombatCapabilities
+        ) {
+            var placedEntryPoint =
+                new PlacedEntryPoint(archetype, inventoryPosition /*, flowFactory, characterCombatCapabilities*/);
+
+            // placedEntryPoint.startBattle(); // for now
+            return placedEntryPoint;
         }
+
+        // public void startBattle() {
+        //     cancellationTokenSource = new CancellationTokenSource();
+        //     _ = battleLoopAsync(cancellationTokenSource.Token); // fire-and-forget
+        // }
 
         private Duration prepareCastTime() {
             return new Duration(2f); // for now
@@ -96,25 +94,25 @@ namespace MageFactory.Item.Domain.EntryPoint {
             );
         }
 
-        private async Task battleLoopAsync(CancellationToken ct) {
-            while (isBattleRunning && !ct.IsCancellationRequested) {
-                await Task.Delay(TimeSpan.FromSeconds(entryPointArchetype.getTurnInterval()), ct);
+        // private async Task battleLoopAsync(CancellationToken ct) {
+        //     while (isBattleRunning && !ct.IsCancellationRequested) {
+        //         await Task.Delay(TimeSpan.FromSeconds(entryPointArchetype.getTurnInterval()), ct);
+        //
+        //         Debug.Log("Init proces for flow");
+        //         if (ct.IsCancellationRequested || !isBattleRunning) break;
+        //
+        //         var flowAggregate = prepareFlowAggregate();
+        //
+        //         Debug.Log("Start proces for flow");
+        //         flowAggregate.start();
+        //     }
+        // }
 
-                Debug.Log("Init proces for flow");
-                if (ct.IsCancellationRequested || !isBattleRunning) break;
-
-                var flowAggregate = prepareFlowAggregate();
-
-                Debug.Log("Start proces for flow");
-                flowAggregate.start();
-            }
-        }
-
-        private IFlowAggregateFacade prepareFlowAggregate() {
-            var flowRouter = GridAdjacencyRouter.create(characterCombatCapabilities);
-            var flowAggregate = flowFactory.create(this, flowRouter);
-            return flowAggregate;
-        }
+        // private IFlowAggregateFacade prepareFlowAggregate() {
+        //     var flowRouter = GridAdjacencyRouter.create(characterCombatCapabilities);
+        //     var flowAggregate = flowFactory.create(this, flowRouter);
+        //     return flowAggregate;
+        // }
 
         private void stopBattle() {
             if (!isBattleRunning) return;

@@ -1,18 +1,29 @@
 ﻿using UnityEngine;
+using Zenject;
 
 namespace MageFactory.BattleManager {
     public class BattleManager : MonoBehaviour {
-        [SerializeField] private float turnInterval = 1.5f; // co ile sekund tura
+        [SerializeField] private float turnInterval = 1.5f;
 
-        private bool _battleRunning;
+        private BattleRuntime _runtime;
+        private Coroutine loop;
 
-        private void Start() {
-            startBattle();
+        [Inject]
+        public void construct(BattleRuntime runtime) {
+            _runtime = runtime;
         }
 
-        private void startBattle() {
-            if (_battleRunning) return;
-            _battleRunning = true;
-        }
+        // private void Start() {
+        //     loop = StartCoroutine(executeLoop());
+        // }
+        //
+        // private IEnumerator executeLoop() {
+        //     var wait = new WaitForSeconds(turnInterval);
+        //
+        //     while (true) {
+        //         _runtime.tick();
+        //         yield return wait;
+        //     }
+        // }
     }
 }

@@ -14,5 +14,6 @@ namespace MageFactory.CombatContext.Contract {
         void apply(PowerAmount powerAmount);
         string getName();
         void cleanup();
+        void combatTick();
     }
 }

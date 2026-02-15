@@ -3,6 +3,8 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Flow.Api",
+    "MageFactory.Flow.Contract",
+
     "MageFactory.CombatContext.Contract",
 
     "MageFactory.ActionExecutor.Api",

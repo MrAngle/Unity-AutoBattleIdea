@@ -2,6 +2,7 @@
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Flow.Api;
 using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
@@ -10,19 +11,23 @@ namespace MageFactory.Character.Domain.Service {
     internal class CharacterFactoryService : ICharacterFactory {
         private readonly ICharacterCombatCapabilitiesFactory combatCapabilitiesFactory;
         private readonly IInventoryFactory inventoryFactory;
+        private readonly IFlowFactory flowFactory;
 
         [Inject]
         internal CharacterFactoryService(
             IInventoryFactory inventoryFactory,
-            ICharacterCombatCapabilitiesFactory combatCapabilitiesFactory
+            ICharacterCombatCapabilitiesFactory combatCapabilitiesFactory,
+            IFlowFactory flowFactory
         ) {
             this.inventoryFactory = inventoryFactory;
             this.combatCapabilitiesFactory = combatCapabilitiesFactory;
+            this.flowFactory = flowFactory;
         }
 
         public ICombatCharacter create(CreateCombatCharacterCommand command) {
             var characterInventory = inventoryFactory.createCharacterInventory();
-            var character = CharacterAggregate.createFrom(command, characterInventory, combatCapabilitiesFactory);
+            var character =
+                CharacterAggregate.createFrom(command, characterInventory, combatCapabilitiesFactory, flowFactory);
 
             foreach (var itemToEquip in command.itemsToEquip) character.equipItemOrThrow(itemToEquip);
 

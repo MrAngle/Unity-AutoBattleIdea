@@ -5,6 +5,7 @@
     "MageFactory.Inventory.Contract",
     "MageFactory.Character.Contract",
     "MageFactory.CombatContext.Contract",
+    "MageFactory.Flow.Contract",
 
     "MageFactory.Shared",
     "MageFactory.TimeSystem",

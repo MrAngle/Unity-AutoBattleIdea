@@ -3,24 +3,29 @@ using System;
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Flow.Api;
+using MageFactory.FlowRouting;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
     internal class CharacterAggregate : ICombatCharacter {
         private readonly CharacterData characterData;
-        private readonly ICharacterInventory characterInventoryFacade;
+        private readonly ICharacterInventory characterInventory;
         private readonly Team team;
         private readonly ICharacterCombatCapabilities characterCombatCapabilities;
+        private readonly IFlowFactory flowFactory;
 
         private CharacterAggregate(
             CharacterData data,
             ICharacterInventory characterInventoryFacade,
             Team team,
-            ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory
+            ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory,
+            IFlowFactory flowFactory
         ) {
+            this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             characterData = NullGuard.NotNullOrThrow(data);
-            this.characterInventoryFacade = NullGuard.NotNullOrThrow(characterInventoryFacade);
+            this.characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.team = NullGuard.enumDefinedOrThrow(team);
 
             characterData.OnHpChanged += handleCharacterDataHpChanged;
@@ -32,10 +37,11 @@ namespace MageFactory.Character.Domain {
         public static CharacterAggregate createFrom(
             CreateCombatCharacterCommand characterCreateCommand,
             ICharacterInventory characterInventoryFacade, // I think it will be better when a character creates inventory
-            ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory
+            ICharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory,
+            IFlowFactory flowFactory
         ) {
             return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
-                characterCreateCommand.team, characterCombatCapabilitiesFactory);
+                characterCreateCommand.team, characterCombatCapabilitiesFactory, flowFactory);
         }
 
 
@@ -44,7 +50,7 @@ namespace MageFactory.Character.Domain {
         }
 
         public ICombatCharacterInventory getInventoryAggregate() {
-            return characterInventoryFacade;
+            return characterInventory;
         }
 
         public long getMaxHp() {
@@ -64,7 +70,7 @@ namespace MageFactory.Character.Domain {
         }
 
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {
-            return characterInventoryFacade.canPlace(new PlaceItemQuery(equipItemQuery.itemDefinition,
+            return characterInventory.canPlace(new PlaceItemQuery(equipItemQuery.itemDefinition,
                 equipItemQuery.origin));
         }
 
@@ -73,13 +79,30 @@ namespace MageFactory.Character.Domain {
                 throw new ArgumentException("Cannot equip item");
             }
 
-            return characterInventoryFacade.place(
+            return characterInventory.place(
                 new PlaceItemCommand(equipItemCommand.itemDefinition, equipItemCommand.origin,
                     characterCombatCapabilities));
         }
 
         public void cleanup() {
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
+        }
+
+        public void combatTick() {
+            var entryPointsToTick = characterInventory.getEntryPointsToTick();
+            if (entryPointsToTick == null || entryPointsToTick.Count == 0)
+                return;
+
+            var router = GridAdjacencyRouter.create(characterCombatCapabilities.query());
+
+            foreach (var entryPoint in entryPointsToTick) {
+                if (entryPoint == null) {
+                    continue;
+                }
+
+                var flow = flowFactory.create(entryPoint, router);
+                flow.start();
+            }
         }
 
         public Team getTeam() {
