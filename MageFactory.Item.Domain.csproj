@@ -886,17 +886,13 @@
             <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
             <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.Flow.Contract.csproj">
+            <Project>{08264faf-c744-20dc-f924-bff46baf9f89}</Project>
+            <Name>MageFactory.Flow.Contract</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.ActionEffect.csproj">
             <Project>{5012a2a3-32ca-0641-945e-c5c58bfa74f4}</Project>
             <Name>MageFactory.ActionEffect</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.Flow.Api.csproj">
-            <Project>{423937dd-254f-915c-11bf-fee98cbe2d3f}</Project>
-            <Name>MageFactory.Flow.Api</Name>
-        </ProjectReference>
-        <ProjectReference Include="MageFactory.FlowRouting.csproj">
-            <Project>{292c7bfb-fdf6-95e9-1344-75e1776cf616}</Project>
-            <Name>MageFactory.FlowRouting</Name>
         </ProjectReference>
         <ProjectReference Include="MageFactory.Shared.csproj">
             <Project>{a5f04367-d0d9-bf5e-0ccf-9466247895cd}</Project>

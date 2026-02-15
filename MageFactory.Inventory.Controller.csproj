@@ -892,6 +892,10 @@
             <Project>{d53bb3a2-3d9b-792a-1903-ae974a53cae3}</Project>
             <Name>MageFactory.CombatContext.Contract</Name>
         </ProjectReference>
+        <ProjectReference Include="MageFactory.Flow.Contract.csproj">
+            <Project>{08264faf-c744-20dc-f924-bff46baf9f89}</Project>
+            <Name>MageFactory.Flow.Contract</Name>
+        </ProjectReference>
         <ProjectReference Include="MageFactory.Context.csproj">
             <Project>{fbe39c67-1ec1-6c1c-5132-7c9d6023b310}</Project>
             <Name>MageFactory.Context</Name>
