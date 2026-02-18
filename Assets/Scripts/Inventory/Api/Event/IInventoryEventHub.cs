@@ -3,6 +3,8 @@
         public void subscribe(IInventoryChangedEventListener inventoryEventListener);
         public void subscribe(IInventoryItemPlacedEventListener inventoryEventListener);
 
+        public void unsubscribe(IInventoryItemPlacedEventListener listener);
+
         public void enqueue(in InventoryChanged ev);
         public void enqueue(in NewItemPlacedDtoEvent ev);
 

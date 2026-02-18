@@ -170,7 +170,6 @@ namespace MageFactory.InjectConfiguration {
 
         private void installSignals() {
             SignalBusInstaller.Install(Container);
-            // Container.DeclareSignal<ItemPlacedDtoEvent>();
             Container.DeclareSignal<ItemRemovedDtoEvent>();
             Container.DeclareSignal<ItemPowerChangedDtoEvent>();
         }

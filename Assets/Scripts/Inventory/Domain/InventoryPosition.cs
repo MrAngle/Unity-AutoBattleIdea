@@ -7,7 +7,7 @@ namespace MageFactory.Inventory.Domain {
     internal class InventoryPosition : IInventoryPosition {
         private readonly ItemShape _itemShape;
 
-        private readonly HashSet<Vector2Int> _occupiedCells;
+        private readonly HashSet<Vector2Int> _occupiedCells; // replace Vector2Int 
         private readonly Vector2Int _origin;
 
         private InventoryPosition(Vector2Int origin, ItemShape itemItemShape) {

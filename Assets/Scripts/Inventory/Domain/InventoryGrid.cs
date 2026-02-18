@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
     internal class InventoryGrid : IInventoryGrid {
-        // TODO: make it internal
         private readonly Dictionary<Vector2Int, InventoryCell> _cells;
 
         internal InventoryGrid(int width, int height) {

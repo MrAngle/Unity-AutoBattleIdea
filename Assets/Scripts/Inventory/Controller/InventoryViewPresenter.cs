@@ -8,7 +8,6 @@ using MageFactory.Inventory.Api.Event;
 using MageFactory.Shared.Utility;
 using UI.Popup;
 using Zenject;
-// using MageFactory.Inventory.Api;
 using Object = UnityEngine.Object;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
@@ -38,13 +37,13 @@ namespace MageFactory.Inventory.Controller {
         }
 
         public void Dispose() {
-            // _signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             _signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
+
+            inventoryEventHub.unsubscribe(this);
         }
 
         public void Initialize() {
-            // _signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
@@ -65,11 +64,6 @@ namespace MageFactory.Inventory.Controller {
 
             _views.Clear();
         }
-
-        // private void OnItemPlaced(ItemPlacedDtoEvent itemPlacedDtoEvent) {
-        //     PlacedItemView view = _factory.create(itemPlacedDtoEvent.Data, itemPlacedDtoEvent.Origin);
-        //     _views[itemPlacedDtoEvent.PlacedItemId] = view;
-        // }
 
         private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent) {
             if (_views.TryGetValue(itemRemovedEvent.PlacedItemId, out var itemView)) {

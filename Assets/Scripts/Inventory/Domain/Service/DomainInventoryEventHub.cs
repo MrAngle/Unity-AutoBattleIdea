@@ -12,6 +12,8 @@ namespace MageFactory.Inventory.Domain.Service {
         private readonly List<InventoryChanged> queueInventoryChanged = new();
         private readonly List<NewItemPlacedDtoEvent> queueItemPlaced = new();
 
+        private bool subscriberRemoved = false;
+
         public void subscribe(IInventoryChangedEventListener inventoryEventListener) {
             inventoryChangedListeners.Add(inventoryEventListener);
         }
@@ -19,6 +21,31 @@ namespace MageFactory.Inventory.Domain.Service {
         public void subscribe(IInventoryItemPlacedEventListener paramInventoryItemPlacedEventListener) {
             inventoryItemPlacedEventListener.Add(paramInventoryItemPlacedEventListener);
         }
+
+        public void unsubscribe(IInventoryChangedEventListener listener) {
+            for (int i = 0; i < inventoryChangedListeners.Count; i++) {
+                if (ReferenceEquals(inventoryChangedListeners[i], listener)) {
+                    inventoryChangedListeners[i] = null;
+                    subscriberRemoved = true;
+                }
+            }
+        }
+
+
+        public void unsubscribe(IInventoryItemPlacedEventListener listener) {
+            for (int i = 0; i < inventoryItemPlacedEventListener.Count; i++) {
+                if (ReferenceEquals(inventoryItemPlacedEventListener[i], listener)) {
+                    inventoryItemPlacedEventListener[i] = null;
+                    subscriberRemoved = true;
+                }
+            }
+        }
+
+        // public void unsubscribe(IInventoryItemPlacedEventListener l)
+        // {
+        //     if (_isPublishing) _pendingRemoveItemPlaced.Add(l);
+        //     else inventoryItemPlacedEventListener.Remove(l);
+        // }
 
         public void enqueue(in InventoryChanged ev) {
             queueInventoryChanged.Add(ev);
@@ -29,27 +56,48 @@ namespace MageFactory.Inventory.Domain.Service {
         }
 
         public void publishAll() {
-            if (queueInventoryChanged.Count > 0) {
-                var listenersSnapshot = inventoryChangedListeners.ToArray(); // bezpieczne przy unsubscribe w trakcie
-                for (int e = 0; e < queueInventoryChanged.Count; e++) {
-                    var ev = queueInventoryChanged[e];
-                    for (int i = 0; i < listenersSnapshot.Length; i++)
-                        listenersSnapshot[i].OnEvent(in ev);
+            for (int eventIndex = 0; eventIndex < queueInventoryChanged.Count; eventIndex++) {
+                var ev = queueInventoryChanged[eventIndex];
+                for (int listenerIndex = 0; listenerIndex < inventoryChangedListeners.Count; listenerIndex++) {
+                    var listener = inventoryChangedListeners[listenerIndex];
+                    listener?.OnEvent(in ev);
                 }
-
-                queueInventoryChanged.Clear();
             }
 
-            if (queueItemPlaced.Count > 0) {
-                var listenersSnapshot = inventoryItemPlacedEventListener.ToArray();
-                for (int e = 0; e < queueItemPlaced.Count; e++) {
-                    var ev = queueItemPlaced[e];
-                    for (int i = 0; i < listenersSnapshot.Length; i++)
-                        listenersSnapshot[i].OnEvent(in ev);
-                }
+            queueInventoryChanged.Clear();
 
-                queueItemPlaced.Clear();
+            for (int e = 0; e < queueItemPlaced.Count; e++) {
+                var ev = queueItemPlaced[e];
+                for (int i = 0; i < inventoryItemPlacedEventListener.Count; i++) {
+                    var listener = inventoryItemPlacedEventListener[i];
+                    listener?.OnEvent(in ev);
+                }
             }
+
+            queueItemPlaced.Clear();
+
+            compactSubscribers();
+        }
+
+        private void compactSubscribers() {
+            if (subscriberRemoved) {
+                compactCollection(inventoryChangedListeners);
+                compactCollection(inventoryItemPlacedEventListener);
+            }
+
+            subscriberRemoved = false;
+        }
+
+        private static void compactCollection<T>(List<T> list) where T : class {
+            int write = 0;
+            for (int read = 0; read < list.Count; read++) {
+                var v = list[read];
+                if (v == null) continue;
+                list[write++] = v;
+            }
+
+            if (write < list.Count)
+                list.RemoveRange(write, list.Count - write);
         }
     }
 }

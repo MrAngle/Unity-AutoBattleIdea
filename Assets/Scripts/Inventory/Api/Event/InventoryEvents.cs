@@ -12,13 +12,6 @@ namespace MageFactory.Inventory.Api.Event {
         void OnEvent(in NewItemPlacedDtoEvent ev);
     }
 
-    // public record InventoryChanged(ICombatInventory combatInventory)  : IInventoryDomainEvent
-    //
-    //
-    // public record NewItemPlacedDtoEvent(long PlacedItemId, 
-    //                                  ShapeArchetype shapeArchetype, 
-    //                                  Vector2Int origin) : IInventoryDomainEvent;
-
     public readonly struct InventoryChanged : IInventoryDomainEvent {
         public readonly ICombatInventory combatInventory;
 

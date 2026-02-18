@@ -8,7 +8,6 @@ using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public class InventoryPanelPrefabInitializer : MonoBehaviour, IInventoryChangedEventListener {
-        private SignalBus signalBus;
         private CellViewPrefabInventoryCellView cellViewPrefab;
         private GridViewPrefabInventoryGridView gridViewPrefab;
         private InventoryGridContext inventoryGridContext;
@@ -18,13 +17,11 @@ namespace MageFactory.Inventory.Controller {
 
         [Inject]
         private void construct(
-            SignalBus injectSignalBus,
             CellViewPrefabInventoryCellView injectCellViewPrefab,
             GridViewPrefabInventoryGridView injectGridViewPrefab,
             InventoryGridContext injectInventoryGridContext,
             IInventoryEventHub injectInventoryEventHub
         ) {
-            signalBus = NullGuard.NotNullOrThrow(injectSignalBus);
             cellViewPrefab = NullGuard.NotNullOrThrow(injectCellViewPrefab);
             gridViewPrefab = NullGuard.NotNullOrThrow(injectGridViewPrefab);
             inventoryGridContext = NullGuard.NotNullOrThrow(injectInventoryGridContext);
@@ -44,40 +41,9 @@ namespace MageFactory.Inventory.Controller {
 
         private void OnEnable() {
             inventoryGridContext.InventoryGridChanged += OnInventoryGridChanged;
-
-            // var current = inventoryGridContext.getInventoryGrid();
-            // if (current != null)
-            //     OnInventoryGridChanged(current);
         }
 
-        // private void OnDisable() {
-        //     inventoryGridContext.InventoryGridChanged -= OnInventoryGridChanged;
-        // }
-
-        // private void initialize() {
-        //     signalBus.Subscribe<ItemPlacedDtoEvent>(OnItemPlaced);
-        //     signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
-        //     signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
-        // }
-
-        // private void OnItemPlaced() {
-        //     throw new NotImplementedException();
-        // }
-        //
-        // private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent) {
-        //     throw new NotImplementedException();
-        // }
-        //
-        // private void OnPowerChanged(ItemPowerChangedDtoEvent changedDtoEvent) {
-        //     throw new NotImplementedException();
-        // }
-        //
-        // public void dispose() {
-        //     signalBus.TryUnsubscribe<ItemPlacedDtoEvent>(OnItemPlaced);
-        //     signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
-        //     signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
-        // }
-
+        // TODO: remove
         private void OnInventoryGridChanged(ICombatInventory grid) {
             _gridView.build(grid);
 
@@ -88,16 +54,8 @@ namespace MageFactory.Inventory.Controller {
             rt.offsetMax = Vector2.zero;
         }
 
-        // public void OnEvent(InventoryChanged ev) {
-        //     _gridView.build(ev.combatInventory);
-        //
-        //     var rt = (RectTransform)_gridView.transform;
-        //     rt.anchorMin = Vector2.zero;
-        //     rt.anchorMax = Vector2.one;
-        //     rt.offsetMin = Vector2.zero;
-        //     rt.offsetMax = Vector2.zero;
-        // }
 
+        // TODO: use it
         public void OnEvent(in InventoryChanged ev) {
             _gridView.build(ev.combatInventory);
 
