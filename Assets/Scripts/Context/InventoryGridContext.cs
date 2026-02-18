@@ -15,8 +15,8 @@ namespace MageFactory.Context {
             InventoryGridChanged?.Invoke(_inventoryGrid);
         }
 
-        public ICombatInventory getInventoryGrid() {
-            return _inventoryGrid;
-        }
+        // public ICombatInventory getInventoryGrid() {
+        //     return _inventoryGrid;
+        // }
     }
 }

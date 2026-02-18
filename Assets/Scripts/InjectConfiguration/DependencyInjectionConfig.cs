@@ -11,7 +11,7 @@ using MageFactory.CombatContext.Domain.Service;
 using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
-using MageFactory.Inventory.Api;
+using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Controller;
 using MageFactory.Inventory.Domain.Service;
 using MageFactory.Item.Domain.Service;
@@ -53,6 +53,8 @@ namespace MageFactory.InjectConfiguration {
             BindContexts();
 
             bindFactories();
+
+            bindEventHandlers();
 
             // PREFAB INITIALIZER
             Container.Bind<ItemViewPrefabItemView>()
@@ -128,6 +130,12 @@ namespace MageFactory.InjectConfiguration {
             bindCharactersAndBattleUI();
         }
 
+        private void bindEventHandlers() {
+            Container.Bind<IInventoryEventHub>()
+                .To<InventoryEventHub>()
+                .AsSingle();
+        }
+
         private void bindInventoryGridLayoutGroup() {
             Container.Bind<InventoryGridLayoutGroup>()
                 .FromMethod(_ => new InventoryGridLayoutGroup(inventoryGridLayout))
@@ -162,7 +170,7 @@ namespace MageFactory.InjectConfiguration {
 
         private void installSignals() {
             SignalBusInstaller.Install(Container);
-            Container.DeclareSignal<ItemPlacedDtoEvent>();
+            // Container.DeclareSignal<ItemPlacedDtoEvent>();
             Container.DeclareSignal<ItemRemovedDtoEvent>();
             Container.DeclareSignal<ItemPowerChangedDtoEvent>();
         }

@@ -1,5 +1,4 @@
-﻿using MageFactory.Inventory.Api;
-using MageFactory.Semantics;
+﻿using MageFactory.Semantics;
 using UnityEngine.UI;
 
 namespace MageFactory.Inventory.Controller {

@@ -14,9 +14,7 @@ namespace MageFactory.Character.Controller {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
-        // it should refer to ICombatCharacter
         private ICombatCharacter _character;
-
         private CharacterAggregateContext _characterAggregateContext;
 
         [Inject]
@@ -26,25 +24,9 @@ namespace MageFactory.Character.Controller {
             _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
         }
 
-
-        private void OnDisable() {
-            cleanup();
-        }
-
-        private void OnDestroy() {
-            cleanup();
-        }
-
-        public void OnPointerClick(PointerEventData eventData) {
-            if (_character == null) return;
-
-            Debug.Log($"Kliknięto postać: {_character.getName()}");
-
-            _characterAggregateContext.setCharacterAggregateContext(_character);
-        }
-
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-            ICombatCharacter characterData, CharacterAggregateContext characterAggregateContext) {
+                                                      ICombatCharacter characterData,
+                                                      CharacterAggregateContext characterAggregateContext) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
             prefab.setup(characterData, characterAggregateContext);
 
@@ -62,6 +44,22 @@ namespace MageFactory.Character.Controller {
             }
 
             refreshUI();
+        }
+
+        private void OnDisable() {
+            cleanup();
+        }
+
+        private void OnDestroy() {
+            cleanup();
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            if (_character == null) return;
+
+            Debug.Log($"Kliknięto postać: {_character.getName()}");
+
+            _characterAggregateContext.setCharacterAggregateContext(_character);
         }
 
         private void handleHpChanged(ICombatCharacter ch, long newHp, long previousHpValue) {

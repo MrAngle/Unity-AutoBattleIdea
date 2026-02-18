@@ -1,0 +1,10 @@
+﻿{
+  "name": "MageFactory.Inventory.Api",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Inventory.Contract",
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.Shared"
+  ],
+  "autoReferenced": true
+}

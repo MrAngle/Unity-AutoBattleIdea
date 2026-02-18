@@ -10,7 +10,8 @@
     "MageFactory.Shared",
     "MageFactory.TimeSystem",
     "MageFactory.Semantics",
-    "Zenject"
+    "Zenject",
+    "MageFactory.Inventory.Api"
   ],
   "autoReferenced": true
 }

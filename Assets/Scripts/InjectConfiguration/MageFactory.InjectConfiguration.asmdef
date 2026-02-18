@@ -20,7 +20,8 @@
     "MageFactory.UI",
     "Zenject",
     "MageFactory.CombatContext.Api",
-    "MageFactory.CombatContext.Domain"
+    "MageFactory.CombatContext.Domain",
+    "MageFactory.Inventory.Api"
   ],
   "autoReferenced": true
 }

@@ -3,7 +3,7 @@ using MageFactory.CombatContext.Contract;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Api {
+namespace MageFactory.Inventory.Controller {
     public class InventoryGridView : MonoBehaviour {
         [Header("Prefabs / Refs")] [SerializeField]
         private InventoryCellView cellPrefab;

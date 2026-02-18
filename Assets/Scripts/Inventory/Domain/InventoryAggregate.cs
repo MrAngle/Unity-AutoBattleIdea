@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Character.Contract;
-using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Contract;
+using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Shared.Utility;
 using UnityEngine;
-using Zenject;
 
 namespace MageFactory.Inventory.Domain {
     internal class InventoryAggregate : ICharacterInventory {
@@ -18,26 +17,28 @@ namespace MageFactory.Inventory.Domain {
 
         private readonly IInventoryGrid inventoryGrid;
         private readonly IItemFactory itemFactory;
-        private readonly SignalBus signalBus;
+
+        private readonly IInventoryEventHub inventoryEventHub;
 
         private InventoryAggregate(IInventoryGrid inventoryGrid,
                                    IItemFactory itemFactory,
-                                   SignalBus signalBus) {
-            NullGuard.NotNullCheckOrThrow(inventoryGrid, signalBus, itemFactory);
+                                   IInventoryEventHub inventoryEventHub) {
+            NullGuard.NotNullCheckOrThrow(inventoryGrid, itemFactory, inventoryEventHub);
             this.inventoryGrid = inventoryGrid;
-            this.signalBus = signalBus;
             this.itemFactory = itemFactory;
-            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, entryPoints, items, this.itemFactory, this.signalBus);
+            this.inventoryEventHub = inventoryEventHub;
+            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, entryPoints, items, this.itemFactory,
+                this.inventoryEventHub);
         }
 
         internal static ICharacterInventory create(IItemFactory itemFactory,
-                                                   SignalBus signalBus) {
+                                                   IInventoryEventHub inventoryEventHub) {
             IInventoryGrid grid = new InventoryGrid(12, 8);
 
             var aggregate = new InventoryAggregate(
                 grid,
                 itemFactory,
-                signalBus
+                inventoryEventHub
             );
 
             return aggregate;
@@ -91,20 +92,13 @@ namespace MageFactory.Inventory.Domain {
             }
 
             inventoryGrid.place(inventoryPlacedItem.getShape(), placeItemCommand.origin);
-            signalBus.Fire(new ItemPlacedDtoEvent(inventoryPlacedItem.getId(), inventoryPlacedItem.getShape(),
-                placeItemCommand.origin));
+
+            inventoryEventHub.enqueue(
+                new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(), inventoryPlacedItem.getShape(),
+                    placeItemCommand.origin));
+            inventoryEventHub.publishAll();
             return inventoryPlacedItem;
         }
-
-        // public bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
-        //     if (cellToItem.TryGetValue(cell, out var placedItem)) {
-        //         itemToReturn = placedItem;
-        //         return true;
-        //     }
-        //
-        //     itemToReturn = null;
-        //     return false;
-        // }
 
         public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem itemToReturn) {
             if (cellToItem.TryGetValue(cell, out var placedItem)) {
@@ -114,10 +108,6 @@ namespace MageFactory.Inventory.Domain {
 
             itemToReturn = null;
             return false;
-
-            // var found = tryGetItemAtCell(cell, out IInventoryPlacedItem placedItem);
-            // itemToReturn = placedItem; // jak found == false → null
-            // return found;
         }
     }
 }
