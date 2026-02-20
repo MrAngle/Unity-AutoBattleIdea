@@ -13,5 +13,6 @@
     "Zenject",
     "MageFactory.Inventory.Api"
   ],
-  "autoReferenced": true
+  "autoReferenced": true,
+  "allowUnsafeCode": false
 }

@@ -74,7 +74,7 @@ namespace MageFactory.InjectConfiguration {
                 .FromMethod(_ => new CellViewPrefabInventoryCellView(cellViewPrefab))
                 .AsSingle();
 
-            Container.BindInterfacesAndSelfTo<InventoryViewPresenter>()
+            Container.BindInterfacesAndSelfTo<ViewPresenter>()
                 .AsSingle()
                 .NonLazy();
 
@@ -131,7 +131,10 @@ namespace MageFactory.InjectConfiguration {
         }
 
         private void bindEventHandlers() {
-            Container.Bind<IInventoryEventHub>()
+            Container
+                .Bind(
+                    typeof(IInventoryEventPublisher),
+                    typeof(IInventoryEventRegistry))
                 .To<InventoryEventHub>()
                 .AsSingle();
         }

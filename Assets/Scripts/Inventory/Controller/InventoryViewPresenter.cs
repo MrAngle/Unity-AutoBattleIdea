@@ -5,6 +5,7 @@ using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Context;
 using MageFactory.Inventory.Api.Event;
+using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Shared.Utility;
 using UI.Popup;
 using Zenject;
@@ -13,34 +14,34 @@ using Object = UnityEngine.Object;
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.Inventory.Controller {
-    internal sealed class InventoryViewPresenter : IInitializable, IDisposable, IInventoryItemPlacedEventListener {
+    internal sealed class ViewPresenter : IInitializable, IDisposable, IItemPlacedEventListener {
         private readonly InventoryAggregateContext _aggregateContext;
         private readonly IInventoryItemViewFactory _factory;
-        private readonly IInventoryEventHub inventoryEventHub;
+        private readonly IInventoryEventRegistry inventoryEventRegistry;
         private readonly SignalBus _signalBus;
         private readonly Dictionary<long, PlacedItemView> _views = new();
 
         [Inject]
-        internal InventoryViewPresenter(
+        internal ViewPresenter(
             SignalBus signalBus,
             IInventoryItemViewFactory factory,
             InventoryAggregateContext aggregateContext,
-            IInventoryEventHub injectInventoryEventHub) {
+            IInventoryEventRegistry injectInventoryEventRegistry) {
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
             _factory = NullGuard.NotNullOrThrow(factory);
             _aggregateContext = NullGuard.NotNullOrThrow(aggregateContext);
-            inventoryEventHub = NullGuard.NotNullOrThrow(injectInventoryEventHub);
+            inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
 
             _aggregateContext.OnInventoryAggregateSet += printInventoryItems;
 
-            inventoryEventHub.subscribe(this);
+            inventoryEventRegistry.subscribe(this);
         }
 
         public void Dispose() {
             _signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
 
-            inventoryEventHub.unsubscribe(this);
+            inventoryEventRegistry.unsubscribe(this);
         }
 
         public void Initialize() {
@@ -77,7 +78,7 @@ namespace MageFactory.Inventory.Controller {
                 PopupManager.Instance.ShowHpChangeDamage(view, itemPowerChangedEvent.Delta);
         }
 
-        public void OnEvent(in NewItemPlacedDtoEvent ev) {
+        public void onDomainEvent(in NewItemPlacedDtoEvent ev) {
             PlacedItemView view = _factory.create(ev.shapeArchetype, ev.origin);
             _views[ev.placedItemId] = view;
         }

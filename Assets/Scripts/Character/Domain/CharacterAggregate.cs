@@ -28,7 +28,7 @@ namespace MageFactory.Character.Domain {
             characterId = new Id<CharacterId>(IdGenerator.Next());
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             characterData = NullGuard.NotNullOrThrow(data);
-            this.characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
+            characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.team = NullGuard.enumDefinedOrThrow(team);
 
 

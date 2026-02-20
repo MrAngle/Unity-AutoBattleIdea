@@ -10,16 +10,16 @@ using Zenject;
 namespace MageFactory.Inventory.Domain.Service {
     internal class InventoryFactoryService : IInventoryFactory {
         private readonly IItemFactory itemFactory;
-        private readonly IInventoryEventHub inventoryEventHub;
+        private readonly IInventoryEventPublisher inventoryEventPublisher;
 
         [Inject]
-        public InventoryFactoryService(IItemFactory itemFactory, IInventoryEventHub inventoryEventHub) {
+        public InventoryFactoryService(IItemFactory itemFactory, IInventoryEventPublisher inventoryEventPublisher) {
             this.itemFactory = NullGuard.NotNullOrThrow(itemFactory);
-            this.inventoryEventHub = NullGuard.NotNullOrThrow(inventoryEventHub);
+            this.inventoryEventPublisher = NullGuard.NotNullOrThrow(inventoryEventPublisher);
         }
 
         public ICharacterInventory createCharacterInventory() {
-            return InventoryAggregate.create(itemFactory, inventoryEventHub);
+            return InventoryAggregate.create(itemFactory, inventoryEventPublisher);
         }
     }
 }

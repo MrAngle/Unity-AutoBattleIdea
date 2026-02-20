@@ -7,11 +7,11 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Controller {
-    public class InventoryPanelPrefabInitializer : MonoBehaviour, IInventoryChangedEventListener {
+    public class InventoryPanelPrefabInitializer : MonoBehaviour {
         private CellViewPrefabInventoryCellView cellViewPrefab;
         private GridViewPrefabInventoryGridView gridViewPrefab;
         private InventoryGridContext inventoryGridContext;
-        private IInventoryEventHub inventoryEventHub;
+        private IInventoryEventRegistry inventoryEventRegistry;
 
         private InventoryGridView _gridView;
 
@@ -20,14 +20,14 @@ namespace MageFactory.Inventory.Controller {
             CellViewPrefabInventoryCellView injectCellViewPrefab,
             GridViewPrefabInventoryGridView injectGridViewPrefab,
             InventoryGridContext injectInventoryGridContext,
-            IInventoryEventHub injectInventoryEventHub
+            IInventoryEventRegistry injectInventoryEventHub
         ) {
             cellViewPrefab = NullGuard.NotNullOrThrow(injectCellViewPrefab);
             gridViewPrefab = NullGuard.NotNullOrThrow(injectGridViewPrefab);
             inventoryGridContext = NullGuard.NotNullOrThrow(injectInventoryGridContext);
-            inventoryEventHub = NullGuard.NotNullOrThrow(injectInventoryEventHub);
+            inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventHub);
 
-            inventoryEventHub.subscribe(this);
+            // inventoryEventHub.subscribe(this);
         }
 
         private void Awake() {
@@ -56,14 +56,14 @@ namespace MageFactory.Inventory.Controller {
 
 
         // TODO: use it
-        public void OnEvent(in InventoryChanged ev) {
-            _gridView.build(ev.combatInventory);
-
-            var rt = (RectTransform)_gridView.transform;
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-        }
+        // public void OnEvent(in InventoryChanged ev) {
+        //     _gridView.build(ev.combatInventory);
+        //
+        //     var rt = (RectTransform)_gridView.transform;
+        //     rt.anchorMin = Vector2.zero;
+        //     rt.anchorMax = Vector2.one;
+        //     rt.offsetMin = Vector2.zero;
+        //     rt.offsetMax = Vector2.zero;
+        // }
     }
 }

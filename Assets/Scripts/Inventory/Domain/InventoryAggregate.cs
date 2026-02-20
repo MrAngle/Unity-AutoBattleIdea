@@ -4,6 +4,7 @@ using System.Linq;
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Api.Event;
+using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Shared.Utility;
@@ -18,27 +19,27 @@ namespace MageFactory.Inventory.Domain {
         private readonly IInventoryGrid inventoryGrid;
         private readonly IItemFactory itemFactory;
 
-        private readonly IInventoryEventHub inventoryEventHub;
+        private readonly IInventoryEventPublisher inventoryEventHub;
 
         private InventoryAggregate(IInventoryGrid inventoryGrid,
                                    IItemFactory itemFactory,
-                                   IInventoryEventHub inventoryEventHub) {
-            NullGuard.NotNullCheckOrThrow(inventoryGrid, itemFactory, inventoryEventHub);
+                                   IInventoryEventPublisher inventoryEventPublisher) {
+            NullGuard.NotNullCheckOrThrow(inventoryGrid, itemFactory, inventoryEventPublisher);
             this.inventoryGrid = inventoryGrid;
             this.itemFactory = itemFactory;
-            this.inventoryEventHub = inventoryEventHub;
+            this.inventoryEventHub = inventoryEventPublisher;
             NullGuard.NotNullCheckOrThrow(this.inventoryGrid, entryPoints, items, this.itemFactory,
                 this.inventoryEventHub);
         }
 
         internal static ICharacterInventory create(IItemFactory itemFactory,
-                                                   IInventoryEventHub inventoryEventHub) {
+                                                   IInventoryEventPublisher inventoryEventPublisher) {
             IInventoryGrid grid = new InventoryGrid(12, 8);
 
             var aggregate = new InventoryAggregate(
                 grid,
                 itemFactory,
-                inventoryEventHub
+                inventoryEventPublisher
             );
 
             return aggregate;
@@ -93,10 +94,10 @@ namespace MageFactory.Inventory.Domain {
 
             inventoryGrid.place(inventoryPlacedItem.getShape(), placeItemCommand.origin);
 
-            inventoryEventHub.enqueue(
-                new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(), inventoryPlacedItem.getShape(),
-                    placeItemCommand.origin));
-            inventoryEventHub.publishAll();
+
+            inventoryEventHub.publish(new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(),
+                inventoryPlacedItem.getShape(),
+                placeItemCommand.origin));
             return inventoryPlacedItem;
         }
 

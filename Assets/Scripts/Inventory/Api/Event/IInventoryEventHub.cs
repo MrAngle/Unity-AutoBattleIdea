@@ -1,13 +1,12 @@
-﻿namespace MageFactory.Inventory.Api.Event {
-    public interface IInventoryEventHub {
-        public void subscribe(IInventoryChangedEventListener inventoryEventListener);
-        public void subscribe(IInventoryItemPlacedEventListener inventoryEventListener);
+﻿using MageFactory.Inventory.Api.Event.Dto;
 
-        public void unsubscribe(IInventoryItemPlacedEventListener listener);
+namespace MageFactory.Inventory.Api.Event {
+    public interface IInventoryEventPublisher {
+        void publish(in NewItemPlacedDtoEvent ev);
+    }
 
-        public void enqueue(in InventoryChanged ev);
-        public void enqueue(in NewItemPlacedDtoEvent ev);
-
-        public void publishAll();
+    public interface IInventoryEventRegistry {
+        void subscribe(IItemPlacedEventListener listener);
+        void unsubscribe(IItemPlacedEventListener listener);
     }
 }
