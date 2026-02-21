@@ -7,7 +7,7 @@ using MageFactory.Context;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Shared.Utility;
-using UI.Popup;
+using MageFactory.UI.Shared.Popup;
 using Zenject;
 using Object = UnityEngine.Object;
 

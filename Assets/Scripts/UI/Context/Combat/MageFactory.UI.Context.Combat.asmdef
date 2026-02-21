@@ -1,0 +1,9 @@
+﻿{
+  "name": "MageFactory.UI.Context.Combat",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.Shared",
+    "MageFactory.CombatContext.Api"
+  ],
+  "autoReferenced": true
+}

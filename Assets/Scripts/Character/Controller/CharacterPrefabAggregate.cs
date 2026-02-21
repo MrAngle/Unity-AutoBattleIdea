@@ -2,8 +2,8 @@
 using MageFactory.Context;
 using MageFactory.Registry;
 using MageFactory.Shared.Utility;
+using MageFactory.UI.Shared.Popup;
 using TMPro;
-using UI.Popup;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

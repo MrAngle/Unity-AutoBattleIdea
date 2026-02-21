@@ -9,7 +9,8 @@
     "MageFactory.CombatContext.Contract",
     "MageFactory.Semantics",
     "Unity.TextMeshPro",
-    "Zenject"
+    "Zenject",
+    "MageFactory.UI.Shared"
   ],
   "autoReferenced": true
 }

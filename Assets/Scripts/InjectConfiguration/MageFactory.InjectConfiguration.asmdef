@@ -22,7 +22,8 @@
     "MageFactory.CombatContext.Api",
     "MageFactory.CombatContext.Domain",
     "MageFactory.Inventory.Api",
-    "MageFactory.CombatContext.Controller"
+    "MageFactory.CombatContext.Controller",
+    "MageFactory.UI.Context.Combat"
   ],
   "autoReferenced": true
 }

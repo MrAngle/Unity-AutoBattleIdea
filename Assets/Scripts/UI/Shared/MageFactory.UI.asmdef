@@ -1,6 +1,6 @@
 ﻿{
-  "name": "MageFactory.UI",
-  "rootNamespace": "UI",
+  "name": "MageFactory.UI.Shared",
+  "rootNamespace": "MageFactory",
   "references": [
     "Unity.TextMeshPro",
     "Plugin.DOTween",

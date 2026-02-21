@@ -13,7 +13,8 @@
     "MageFactory.Semantics",
     "MageFactory.Shared",
     "Zenject",
-    "MageFactory.Inventory.Api"
+    "MageFactory.Inventory.Api",
+    "MageFactory.UI.Shared"
   ],
   "autoReferenced": true
 }
