@@ -43,7 +43,7 @@ namespace MageFactory.Inventory.Controller {
         }
 
         internal void setOriginInGrid(Vector2Int origin, Vector2 paramCellSize, Vector2 gridOrigin,
-            float spacing = 0f) {
+                                      float spacing = 0f) {
             cellSize = paramCellSize;
             var rt = (RectTransform)transform;
             rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
