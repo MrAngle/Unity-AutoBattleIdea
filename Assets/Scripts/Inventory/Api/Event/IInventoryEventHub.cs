@@ -6,7 +6,7 @@ namespace MageFactory.Inventory.Api.Event {
     }
 
     public interface IInventoryEventRegistry {
-        void subscribe(IItemPlacedEventListener listener);
-        void unsubscribe(IItemPlacedEventListener listener);
+        void subscribe(IItemPlacedEventEventListener eventListener);
+        void unsubscribe(IItemPlacedEventEventListener eventListener);
     }
 }

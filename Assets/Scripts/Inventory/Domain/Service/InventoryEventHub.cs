@@ -7,16 +7,16 @@ using MageFactory.Shared.Event;
 
 namespace MageFactory.Inventory.Domain.Service {
     internal sealed class InventoryEventHub : IInventoryEventPublisher, IInventoryEventRegistry {
-        private readonly InventoryEventChannel<NewItemPlacedDtoEvent, IItemPlacedEventListener> _itemPlacedChannel
+        private readonly DomainEventChannel<NewItemPlacedDtoEvent, IItemPlacedEventEventListener> itemPlacedChannel
             = new();
 
-        public void subscribe(IItemPlacedEventListener listener) =>
-            _itemPlacedChannel.subscribe(listener);
+        public void subscribe(IItemPlacedEventEventListener eventListener) =>
+            itemPlacedChannel.subscribe(eventListener);
 
-        public void unsubscribe(IItemPlacedEventListener listener) =>
-            _itemPlacedChannel.unsubscribe(listener);
+        public void unsubscribe(IItemPlacedEventEventListener eventListener) =>
+            itemPlacedChannel.unsubscribe(eventListener);
 
         public void publish(in NewItemPlacedDtoEvent ev) =>
-            _itemPlacedChannel.publish(in ev);
+            itemPlacedChannel.publish(in ev);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using MageFactory.Inventory.Api.Event.Dto;
-using MageFactory.Shared.Event.Listener;
+using MageFactory.Shared.Event;
 
 namespace MageFactory.Inventory.Api.Event {
-    public interface IItemPlacedEventListener
-        : IDomainListener<NewItemPlacedDtoEvent> {
+    public interface IItemPlacedEventEventListener
+        : IDomainEventListener<NewItemPlacedDtoEvent> {
     }
 }

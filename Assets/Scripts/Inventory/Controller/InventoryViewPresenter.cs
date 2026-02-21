@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.Inventory.Controller {
-    internal sealed class ViewPresenter : IInitializable, IDisposable, IItemPlacedEventListener {
+    internal sealed class ViewPresenter : IInitializable, IDisposable, IItemPlacedEventEventListener {
         private readonly InventoryAggregateContext _aggregateContext;
         private readonly IInventoryItemViewFactory _factory;
         private readonly IInventoryEventRegistry inventoryEventRegistry;
@@ -33,8 +33,6 @@ namespace MageFactory.Inventory.Controller {
             inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
 
             _aggregateContext.OnInventoryAggregateSet += printInventoryItems;
-
-            inventoryEventRegistry.subscribe(this);
         }
 
         public void Dispose() {
@@ -45,6 +43,8 @@ namespace MageFactory.Inventory.Controller {
         }
 
         public void Initialize() {
+            inventoryEventRegistry.subscribe(this);
+
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
@@ -78,7 +78,7 @@ namespace MageFactory.Inventory.Controller {
                 PopupManager.Instance.ShowHpChangeDamage(view, itemPowerChangedEvent.Delta);
         }
 
-        public void onDomainEvent(in NewItemPlacedDtoEvent ev) {
+        public void onEvent(in NewItemPlacedDtoEvent ev) {
             PlacedItemView view = _factory.create(ev.shapeArchetype, ev.origin);
             _views[ev.placedItemId] = view;
         }
