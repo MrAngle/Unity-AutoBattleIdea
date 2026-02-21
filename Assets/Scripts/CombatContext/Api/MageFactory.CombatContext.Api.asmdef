@@ -2,7 +2,8 @@
   "name": "MageFactory.CombatContext.Api",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.CombatContext.Contract"
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.Shared"
   ],
   "autoReferenced": true
 }

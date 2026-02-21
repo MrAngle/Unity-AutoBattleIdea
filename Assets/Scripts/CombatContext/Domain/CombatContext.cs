@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MageFactory.CombatContext.Api;
+using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Utility;
+
 // using MageFactory.CombatContext.Api.Dto;
 
 namespace MageFactory.CombatContext.Domain {
@@ -12,17 +15,21 @@ namespace MageFactory.CombatContext.Domain {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacter> characters = new();
 
         private readonly ICharacterFactory characterFactory;
+        private readonly ICombatContextEventPublisher combatContextEventPublisher;
 
-        private CombatContext(ICharacterFactory characterFactory) {
+        private CombatContext(ICharacterFactory characterFactory,
+                              ICombatContextEventPublisher combatContextEventPublisher) {
             this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
+            this.combatContextEventPublisher = NullGuard.NotNullOrThrow(combatContextEventPublisher);
             NullGuard.NotNullOrThrow(characters);
 
             // this.characters = NullGuard.NotNullOrThrow(characters);
         }
 
         internal static CombatContext create(ICharacterFactory paramCharacterFactory,
+                                             ICombatContextEventPublisher combatContextEventPublisher,
                                              IReadOnlyList<CreateCombatCharacterCommand> charactersToCreate) {
-            CombatContext combatContext = new CombatContext(paramCharacterFactory);
+            CombatContext combatContext = new CombatContext(paramCharacterFactory, combatContextEventPublisher);
 
             foreach (CreateCombatCharacterCommand createCombatCharacterCommand in charactersToCreate) {
                 combatContext.registerCharacter(createCombatCharacterCommand);
@@ -34,7 +41,14 @@ namespace MageFactory.CombatContext.Domain {
         private void registerCharacter(CreateCombatCharacterCommand createCombatCharacterCommand) {
             ICombatCharacter combatCharacter = characterFactory.create(createCombatCharacterCommand);
 
+            Id<CharacterId> characterId = combatCharacter.getId();
+            if (characters.ContainsKey(characterId)) {
+                throw new InvalidOperationException(
+                    $"Character with id '{characterId}' is already registered in CombatContext.");
+            }
+
             characters.Add(combatCharacter.getId(), combatCharacter);
+            combatContextEventPublisher.publish(new CombatCharacterCreatedDtoEvent());
         }
 
         // public CharacterSummaryView getSummary(long id) {

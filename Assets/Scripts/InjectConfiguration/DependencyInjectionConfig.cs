@@ -6,6 +6,7 @@ using MageFactory.Character.Contract.Event;
 using MageFactory.Character.Controller;
 using MageFactory.Character.Domain.Service;
 using MageFactory.CombatContext.Api;
+using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Domain.Service;
 using MageFactory.Context;
@@ -136,6 +137,13 @@ namespace MageFactory.InjectConfiguration {
                     typeof(IInventoryEventPublisher),
                     typeof(IInventoryEventRegistry))
                 .To<InventoryEventHub>()
+                .AsSingle();
+
+            Container
+                .Bind(
+                    typeof(ICombatContextEventPublisher),
+                    typeof(ICombatContextEventRegistry))
+                .To<CombatContextEventHub>()
                 .AsSingle();
         }
 
