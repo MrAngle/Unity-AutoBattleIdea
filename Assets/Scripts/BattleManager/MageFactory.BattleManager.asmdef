@@ -11,7 +11,8 @@
     "MageFactory.Registry",
     "MageFactory.Shared",
     "MageFactory.UI",
-    "MageFactory.CombatContext.Api"
+    "MageFactory.CombatContext.Api",
+    "MageFactory.UI.Context.Combat"
   ],
   "autoReferenced": true
 }

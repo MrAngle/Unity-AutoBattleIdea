@@ -3,7 +3,18 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Shared",
-    "MageFactory.CombatContext.Api"
+    "MageFactory.CombatContext.Api",
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.UI.Shared",
+    "MageFactory.Registry",
+    "MageFactory.Context",
+    "MageFactory.Flow.Contract",
+    "Unity.TextMeshPro",
+    "Zenject",
+    "MageFactory.Semantics",
+    "MageFactory.Inventory.Api",
+    "MageFactory.Item.Catalog",
+    "MageFactory.Item.Controller"
   ],
   "autoReferenced": true
 }

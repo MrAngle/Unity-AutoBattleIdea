@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 
-namespace MageFactory.Character.Controller {
+namespace MageFactory.UI.Context.Combat {
     public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;

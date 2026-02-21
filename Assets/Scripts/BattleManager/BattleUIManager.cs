@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using MageFactory.Character.Controller;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
@@ -9,6 +8,7 @@ using MageFactory.Inventory.Contract;
 using MageFactory.Item.Catalog;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
+using MageFactory.UI.Context.Combat;
 using UnityEngine;
 using Zenject;
 

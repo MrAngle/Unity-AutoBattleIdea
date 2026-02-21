@@ -7,7 +7,7 @@ using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
-namespace MageFactory.UI.Combat.Context {
+namespace MageFactory.UI.Context.Combat {
     internal class CombatContextPresentationHandler : ICombatCharacterCreatedEventListener, ICombatContextEventListener,
         IDisposable {
         private ICombatContext combatContext; // TODO: change to "view model"
