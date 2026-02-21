@@ -21,7 +21,8 @@
     "Zenject",
     "MageFactory.CombatContext.Api",
     "MageFactory.CombatContext.Domain",
-    "MageFactory.Inventory.Api"
+    "MageFactory.Inventory.Api",
+    "MageFactory.CombatContext.Controller"
   ],
   "autoReferenced": true
 }

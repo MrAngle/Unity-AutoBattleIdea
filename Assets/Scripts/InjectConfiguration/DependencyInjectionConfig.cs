@@ -8,6 +8,7 @@ using MageFactory.Character.Domain.Service;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Controller;
 using MageFactory.CombatContext.Domain.Service;
 using MageFactory.Context;
 using MageFactory.Flow.Api;
@@ -51,7 +52,7 @@ namespace MageFactory.InjectConfiguration {
 
             bindInventoryGridLayoutGroup();
 
-            BindContexts();
+            bindContexts();
 
             bindFactories();
 
@@ -84,7 +85,15 @@ namespace MageFactory.InjectConfiguration {
                 .NonLazy();
         }
 
-        private void BindContexts() {
+        private void bindContexts() {
+            // Container.Bind<CombatContextPresentationHandler>()
+            //     .To<CombatContextPresentationHandler>()
+            //     .AsSingle();
+
+            Container.BindInterfacesAndSelfTo<CombatContextPresentationHandler>()
+                .AsSingle()
+                .NonLazy();
+
             Container.Bind<InventoryGridContext>()
                 .AsSingle()
                 .NonLazy();

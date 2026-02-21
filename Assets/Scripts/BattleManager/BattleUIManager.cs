@@ -65,23 +65,6 @@ namespace MageFactory.BattleManager {
                 CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, combatCharacter,
                     characterAggregateContext);
             }
-
-            // for (var i = 0; i < charactersToCreate.Length; i++) {
-            //     ICombatCharacter character;
-            //     // TODO: change it of course
-            //     if (i == 0) {
-            //         character = characterFactory.create(charactersToCreate[i]);
-            //         characterAggregateContext.setCharacterAggregateContext(character); // for now
-            //     }
-            //     else {
-            //         character = characterFactory.create(charactersToCreate[i]);
-            //     }
-            //
-            //     battleRuntime.register(character);
-            //
-            //     CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, character,
-            //         characterAggregateContext);
-            // }
         }
 
         private void startBattleLoop() {

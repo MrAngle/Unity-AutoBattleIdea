@@ -22,8 +22,6 @@ namespace MageFactory.CombatContext.Domain {
             this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
             this.combatContextEventPublisher = NullGuard.NotNullOrThrow(combatContextEventPublisher);
             NullGuard.NotNullOrThrow(characters);
-
-            // this.characters = NullGuard.NotNullOrThrow(characters);
         }
 
         internal static CombatContext create(ICharacterFactory paramCharacterFactory,
@@ -35,6 +33,7 @@ namespace MageFactory.CombatContext.Domain {
                 combatContext.registerCharacter(createCombatCharacterCommand);
             }
 
+            combatContextEventPublisher.publish(new CombatContextCreatedDtoEvent(combatContext));
             return combatContext;
         }
 

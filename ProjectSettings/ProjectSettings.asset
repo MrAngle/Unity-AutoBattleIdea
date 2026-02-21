@@ -592,7 +592,7 @@ PlayerSettings:
     PS5: DOTWEEN
     QNX: DOTWEEN
     ReservedCFE: DOTWEEN
-    Standalone: DOTWEEN;MAGEFACTORY_INVENTORY_EVENT_LOG
+    Standalone: DOTWEEN;MAGEFACTORY_EVENT_LOG
     VisionOS: DOTWEEN
     WebGL: DOTWEEN
     Windows Store Apps: DOTWEEN
