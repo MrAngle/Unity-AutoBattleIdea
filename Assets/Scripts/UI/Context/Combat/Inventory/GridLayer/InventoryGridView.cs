@@ -30,18 +30,18 @@ namespace MageFactory.Inventory.Controller {
             return gridView;
         }
 
-        public void build(ICombatInventoryGridPanel.UiChangeInventoryCommand changeInventoryCommand) {
+        public void build(ICombatInventoryGridPanel.UiPrintInventoryGridCommand printInventoryGridCommand) {
             Debug.Log($"[Grid] Parent: {transform.name}, after build children: {transform.childCount}");
             clear();
 
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            gridLayout.constraintCount = changeInventoryCommand.width;
+            gridLayout.constraintCount = printInventoryGridCommand.width;
 
-            for (var y = 0; y < changeInventoryCommand.height; y++)
-            for (var x = 0; x < changeInventoryCommand.width; x++) {
+            for (var y = 0; y < printInventoryGridCommand.height; y++)
+            for (var x = 0; x < printInventoryGridCommand.width; x++) {
                 var coord = new Vector2Int(x, y);
                 var v = Instantiate(cellPrefab.Get(), gridLayout.transform);
-                v.Init(coord, changeInventoryCommand.getState(coord));
+                v.Init(coord, printInventoryGridCommand.getState(coord));
                 inventoryCellViews[coord] = v;
             }
         }

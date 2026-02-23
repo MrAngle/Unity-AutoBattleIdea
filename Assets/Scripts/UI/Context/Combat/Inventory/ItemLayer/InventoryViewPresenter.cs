@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
-using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Api.Event.Dto;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Shared.Popup;
 using Zenject;
@@ -14,15 +14,15 @@ using Object = UnityEngine.Object;
 
 namespace MageFactory.Inventory.Controller {
     public interface ICombatInventoryItemsPanel {
-        public readonly struct UiPrintInventoryCommand {
-            public readonly ICombatCharacterInventory characterInventory;
+        public readonly struct UiPrintInventoryItemsCommand {
+            public readonly IEnumerable<IGridItemPlaced> characterEquippedItems;
 
-            public UiPrintInventoryCommand(ICombatCharacterInventory characterInventory) {
-                this.characterInventory = characterInventory;
+            public UiPrintInventoryItemsCommand(IEnumerable<IGridItemPlaced> characterEquippedItems) {
+                this.characterEquippedItems = characterEquippedItems;
             }
         }
 
-        public void printInventoryItems(UiPrintInventoryCommand changeInventoryCommand);
+        public void printInventoryItems(UiPrintInventoryItemsCommand changeInventoryItemsCommand);
     }
 
 
@@ -54,10 +54,10 @@ namespace MageFactory.Inventory.Controller {
             inventoryEventRegistry.unsubscribe(this);
         }
 
-        public void printInventoryItems(ICombatInventoryItemsPanel.UiPrintInventoryCommand changeInventoryCommand) {
+        public void printInventoryItems(
+            ICombatInventoryItemsPanel.UiPrintInventoryItemsCommand changeInventoryItemsCommand) {
             clear();
-            var characterInventoryFacade = changeInventoryCommand.characterInventory;
-            foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
+            foreach (var placedItem in changeInventoryItemsCommand.characterEquippedItems) {
                 if (_views.ContainsKey(placedItem.getId())) continue;
                 PlacedItemView view = _factory.create(placedItem.getShape(), placedItem.getOrigin());
                 _views[placedItem.getId()] = view;

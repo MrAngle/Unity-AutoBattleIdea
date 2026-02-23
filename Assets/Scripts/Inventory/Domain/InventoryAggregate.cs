@@ -7,6 +7,7 @@ using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
@@ -51,7 +52,7 @@ namespace MageFactory.Inventory.Domain {
                 yield return item;
         }
 
-        IEnumerable<ICombatCharacterEquippedItem> ICombatCharacterInventory.getPlacedSnapshot() {
+        IEnumerable<IGridItemPlaced> ICombatCharacterInventory.getPlacedSnapshot() {
             return getPlacedSnapshot();
         }
 

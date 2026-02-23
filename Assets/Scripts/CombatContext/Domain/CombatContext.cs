@@ -8,8 +8,6 @@ using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Utility;
 
-// using MageFactory.CombatContext.Api.Dto;
-
 namespace MageFactory.CombatContext.Domain {
     internal class CombatContext : ICombatContext {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacter> characters = new();

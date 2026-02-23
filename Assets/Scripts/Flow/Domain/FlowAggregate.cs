@@ -38,7 +38,8 @@ namespace MageFactory.Flow.Domain {
         }
 
         internal static IFlowAggregateFacade create(IFlowItem placedEntryPoint,
-                                                    IFlowRouter flowRouter, SignalBus signalBus,
+                                                    IFlowRouter flowRouter,
+                                                    SignalBus signalBus,
                                                     IActionExecutor actionExecutor) {
             var context = new FlowContext(placedEntryPoint);
             var model = new FlowModel(context);

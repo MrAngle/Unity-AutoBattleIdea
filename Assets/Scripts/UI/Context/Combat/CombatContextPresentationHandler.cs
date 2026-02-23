@@ -59,16 +59,16 @@ namespace MageFactory.UI.Context.Combat {
             ICombatInventory combatInventory = combatCharacterInventory.getInventoryGrid();
             ICombatInventory invReferenceCopy = combatInventory;
 
-            ICombatInventoryGridPanel.UiChangeInventoryCommand changeInventoryCommand =
-                new ICombatInventoryGridPanel.UiChangeInventoryCommand(
+            ICombatInventoryGridPanel.UiPrintInventoryGridCommand printInventoryGridCommand =
+                new ICombatInventoryGridPanel.UiPrintInventoryGridCommand(
                     invReferenceCopy.Width,
                     invReferenceCopy.Height,
                     coord => invReferenceCopy.getState(coord));
+            combatInventoryGridPanel.printInventoryGrid(printInventoryGridCommand);
 
-            combatInventoryGridPanel.changeInventory(changeInventoryCommand);
-
-            ICombatInventoryItemsPanel.UiPrintInventoryCommand command = new(combatCharacterInventory);
-            combatInventoryItemsPanel.printInventoryItems(command);
+            ICombatInventoryItemsPanel.UiPrintInventoryItemsCommand itemsCommand =
+                new(combatCharacterInventory.getPlacedSnapshot());
+            combatInventoryItemsPanel.printInventoryItems(itemsCommand);
 
             this.itemDragService.setCharacterContext(selectedCharacter);
         }

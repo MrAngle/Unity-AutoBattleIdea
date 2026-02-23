@@ -5,19 +5,19 @@ using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public interface ICombatInventoryGridPanel {
-        public readonly struct UiChangeInventoryCommand {
+        public readonly struct UiPrintInventoryGridCommand {
             public readonly int width;
             public readonly int height;
             public readonly Func<Vector2Int, CellState> getState;
 
-            public UiChangeInventoryCommand(int width, int height, Func<Vector2Int, CellState> getState) {
+            public UiPrintInventoryGridCommand(int width, int height, Func<Vector2Int, CellState> getState) {
                 this.width = width;
                 this.height = height;
                 this.getState = getState;
             }
         }
 
-        public void changeInventory(UiChangeInventoryCommand changeInventoryCommand);
+        public void printInventoryGrid(UiPrintInventoryGridCommand printInventoryGridCommand);
     }
 
     public class InventoryGridLayerContainer : MonoBehaviour, ICombatInventoryGridPanel {
@@ -38,8 +38,9 @@ namespace MageFactory.Inventory.Controller {
             rt.offsetMax = Vector2.zero;
         }
 
-        public void changeInventory(ICombatInventoryGridPanel.UiChangeInventoryCommand changeInventoryCommand) {
-            instancedPrefabInventoryGridView.build(changeInventoryCommand);
+        public void printInventoryGrid(
+            ICombatInventoryGridPanel.UiPrintInventoryGridCommand printInventoryGridCommand) {
+            instancedPrefabInventoryGridView.build(printInventoryGridCommand);
         }
     }
 }
