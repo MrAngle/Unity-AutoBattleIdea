@@ -31,7 +31,6 @@ namespace MageFactory.InjectConfiguration {
         [SerializeField] private PlacedItemView dragGhostPrefab;
         [SerializeField] private InventoryGridView gridViewPrefab;
         [SerializeField] private InventoryCellView cellViewPrefab;
-        [SerializeField] private InventoryGridLayerContainer inventoryGridLayerContainer;
 
         [Header("RectTransforms")] [SerializeField]
         private RectTransform itemsLayerRectTransform;
@@ -82,13 +81,18 @@ namespace MageFactory.InjectConfiguration {
                 .FromMethod(_ => new CellViewPrefabInventoryCellView(cellViewPrefab))
                 .AsSingle();
 
-            Container.Bind<ICombatInventoryPanel>()
+            Container.Bind<ICombatInventoryGridPanel>()
                 .To<InventoryGridLayerContainer>()
                 .FromComponentInHierarchy()
                 .AsSingle()
                 .NonLazy();
 
-            Container.BindInterfacesAndSelfTo<ViewPresenter>()
+            Container.Bind<ICombatInventoryItemsPanel>()
+                .To<InventoryItemsViewPresenter>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<ItemDragService>()
                 .AsSingle()
                 .NonLazy();
 

@@ -4,7 +4,7 @@ using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Controller {
-    public interface ICombatInventoryPanel {
+    public interface ICombatInventoryGridPanel {
         public readonly struct UiChangeInventoryCommand {
             public readonly int width;
             public readonly int height;
@@ -20,7 +20,7 @@ namespace MageFactory.Inventory.Controller {
         public void changeInventory(UiChangeInventoryCommand changeInventoryCommand);
     }
 
-    public class InventoryGridLayerContainer : MonoBehaviour, ICombatInventoryPanel {
+    public class InventoryGridLayerContainer : MonoBehaviour, ICombatInventoryGridPanel {
         private InventoryGridView instancedPrefabInventoryGridView;
 
         [Inject]
@@ -38,7 +38,7 @@ namespace MageFactory.Inventory.Controller {
             rt.offsetMax = Vector2.zero;
         }
 
-        public void changeInventory(ICombatInventoryPanel.UiChangeInventoryCommand changeInventoryCommand) {
+        public void changeInventory(ICombatInventoryGridPanel.UiChangeInventoryCommand changeInventoryCommand) {
             instancedPrefabInventoryGridView.build(changeInventoryCommand);
         }
     }

@@ -14,17 +14,24 @@ namespace MageFactory.UI.Context.Combat {
     internal class CombatContextPresentationHandler : ICombatCharacterCreatedEventListener, ICombatContextEventListener,
         IDisposable, IUiCombatCharacterSelectedEventListener {
         private ICombatContext combatContext; // TODO: change to "view model"
+        private ICombatCharacter selectedCharacter;
         private readonly ICombatContextEventRegistry combatContextEventRegistry;
         private readonly IUiCombatContextEventRegistry uiCombatContextEventRegistry;
-        private readonly ICombatInventoryPanel combatInventoryPanel;
+        private readonly ICombatInventoryGridPanel combatInventoryGridPanel;
+        private readonly ICombatInventoryItemsPanel combatInventoryItemsPanel;
+        private readonly ItemDragService itemDragService;
 
         [Inject]
         public CombatContextPresentationHandler(ICombatContextEventRegistry combatContextEventRegistry,
-                                                ICombatInventoryPanel combatInventoryPanel,
-                                                IUiCombatContextEventRegistry uiCombatContextEventRegistry) {
+                                                ICombatInventoryGridPanel combatInventoryGridPanel,
+                                                IUiCombatContextEventRegistry uiCombatContextEventRegistry,
+                                                ICombatInventoryItemsPanel combatInventoryItemsPanel,
+                                                ItemDragService itemDragService) {
             this.combatContextEventRegistry = NullGuard.NotNullOrThrow(combatContextEventRegistry);
             this.uiCombatContextEventRegistry = NullGuard.NotNullOrThrow(uiCombatContextEventRegistry);
-            this.combatInventoryPanel = NullGuard.NotNullOrThrow(combatInventoryPanel);
+            this.combatInventoryGridPanel = NullGuard.NotNullOrThrow(combatInventoryGridPanel);
+            this.combatInventoryItemsPanel = NullGuard.NotNullOrThrow(combatInventoryItemsPanel);
+            this.itemDragService = NullGuard.NotNullOrThrow(itemDragService);
 
             this.combatContextEventRegistry
                 .subscribe((ICombatCharacterCreatedEventListener)this);
@@ -41,24 +48,29 @@ namespace MageFactory.UI.Context.Combat {
 
         public void onEvent(in CombatContextCreatedDtoEvent ev) {
             combatContext = ev.combatContext;
-            onEvent(new UiCombatCharacterSelectedEvent(combatContext.getRandomCharacter().getId()));
+
+            onEvent(new UiCombatCharacterSelectedEvent(combatContext.getRandomCharacter().getId())); // for now
         }
 
         public void onEvent(in UiCombatCharacterSelectedEvent characterSelectedEvent) {
-            ICombatCharacter combatCharacter =
-                combatContext.getCombatCharacterById(characterSelectedEvent.characterId);
+            selectedCharacter = combatContext.getCombatCharacterById(characterSelectedEvent.characterId);
 
-            ICombatCharacterInventory combatCharacterInventory = combatCharacter.getInventoryAggregate();
+            ICombatCharacterInventory combatCharacterInventory = selectedCharacter.getInventoryAggregate();
             ICombatInventory combatInventory = combatCharacterInventory.getInventoryGrid();
             ICombatInventory invReferenceCopy = combatInventory;
 
-            ICombatInventoryPanel.UiChangeInventoryCommand changeInventoryCommand =
-                new ICombatInventoryPanel.UiChangeInventoryCommand(
+            ICombatInventoryGridPanel.UiChangeInventoryCommand changeInventoryCommand =
+                new ICombatInventoryGridPanel.UiChangeInventoryCommand(
                     invReferenceCopy.Width,
                     invReferenceCopy.Height,
                     coord => invReferenceCopy.getState(coord));
 
-            combatInventoryPanel.changeInventory(changeInventoryCommand);
+            combatInventoryGridPanel.changeInventory(changeInventoryCommand);
+
+            ICombatInventoryItemsPanel.UiPrintInventoryCommand command = new(combatCharacterInventory);
+            combatInventoryItemsPanel.printInventoryItems2(command);
+
+            this.itemDragService.setCharacterContext(selectedCharacter);
         }
 
         public void Dispose() {

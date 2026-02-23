@@ -1,6 +1,5 @@
 ﻿using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Context;
 using MageFactory.Semantics;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Utility;
@@ -9,37 +8,32 @@ using UnityEngine.EventSystems;
 using Zenject;
 
 namespace MageFactory.Inventory.Controller {
-    public class ItemDragController : MonoBehaviour {
-        private CharacterAggregateContext characterAggregateContext;
-        private DragGhostPrefabItemView dragGhostPrefabItemView;
+    public class ItemDragService {
+        private readonly PlacedItemView ghostPlacedItem;
+        private readonly InventoryGridLayoutGroup inventoryGridLayout;
+        private readonly ItemsLayerRectTransform itemsLayer;
 
-        private PlacedItemView ghostPlacedItem;
-
-        private InventoryGridLayoutGroup inventoryGridLayout;
-
-        // private IInventoryPlaceableItem inventoryPlaceableItem;
         private IItemDefinition inventoryPlaceableItem; // todo change name
-        private ItemsLayerRectTransform itemsLayer;
+        private ICombatCharacter characterContext;
 
-        private void Start() {
-            ghostPlacedItem = Instantiate(dragGhostPrefabItemView.Get(), itemsLayer.Get(), false);
+        [Inject]
+        public ItemDragService(
+            ItemsLayerRectTransform injectItemsLayer,
+            InventoryGridLayoutGroup injectInventoryGridLayout,
+            DragGhostPrefabItemView injectDragGhostPrefabItemView
+        ) {
+            NullGuard.NotNullOrThrow(injectDragGhostPrefabItemView);
+            itemsLayer = NullGuard.NotNullOrThrow(injectItemsLayer);
+            inventoryGridLayout = NullGuard.NotNullOrThrow(injectInventoryGridLayout);
+
+            ghostPlacedItem = Object.Instantiate(injectDragGhostPrefabItemView.Get(), itemsLayer.Get(), false);
             ghostPlacedItem.gameObject.SetActive(false);
         }
 
-        [Inject]
-        public void construct(
-            ItemsLayerRectTransform injectItemsLayer,
-            InventoryGridLayoutGroup injectInventoryGridLayout,
-            CharacterAggregateContext injectCharacterAggregateContext,
-            DragGhostPrefabItemView injectDragGhostPrefabItemView
-        ) {
-            itemsLayer = NullGuard.NotNullOrThrow(injectItemsLayer);
-            inventoryGridLayout = NullGuard.NotNullOrThrow(injectInventoryGridLayout);
-            characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
-            dragGhostPrefabItemView = NullGuard.NotNullOrThrow(injectDragGhostPrefabItemView);
+        public void setCharacterContext(ICombatCharacter characterContext) {
+            this.characterContext = characterContext;
         }
 
-        // internal void beginDrag(IInventoryPlaceableItem data, PointerEventData eventData) {
         internal void beginDrag(IItemDefinition itemDefinition, PointerEventData eventData) {
             inventoryPlaceableItem = itemDefinition;
             var cellSize = inventoryGridLayout.Get().cellSize;
@@ -64,7 +58,7 @@ namespace MageFactory.Inventory.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-            var characterAggregateContext = this.characterAggregateContext.getCharacterAggregateContext();
+            var characterAggregateContext = characterContext;
 
             // 3) validacja
             var can = characterAggregateContext != null &&
@@ -92,10 +86,8 @@ namespace MageFactory.Inventory.Controller {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            ICombatCharacter character = characterAggregateContext.getCharacterAggregateContext();
-            if (characterAggregateContext != null)
-                // && characterAggregateContext.equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin))
-            {
+            ICombatCharacter character = characterContext;
+            if (character != null) {
                 var equippedItem = character.equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin));
                 NullGuard.NotNullCheckOrThrow(equippedItem);
             }

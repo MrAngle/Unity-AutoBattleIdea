@@ -8,31 +8,28 @@ using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
-        private ItemDragController _controller;
+        private ItemDragService service;
         private IItemDefinition inventoryPlaceableItem;
 
         [Inject]
-        public void construct() {
-        }
-
-        private void Awake() {
-            _controller = FindAnyObjectByType<ItemDragController>(FindObjectsInactive.Include);
+        public void construct(ItemDragService service) {
+            this.service = service;
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
             inventoryPlaceableItem = getRandomItemDefinition();
             if (inventoryPlaceableItem == null) return;
-            _controller?.beginDrag(inventoryPlaceableItem, eventData);
+            service?.beginDrag(inventoryPlaceableItem, eventData);
         }
 
         public void OnDrag(PointerEventData eventData) {
             if (inventoryPlaceableItem == null) return;
-            _controller?.updateDrag(eventData);
+            service?.updateDrag(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
             if (inventoryPlaceableItem == null) return;
-            _controller?.endDrag(eventData);
+            service?.endDrag(eventData);
             inventoryPlaceableItem = null;
         }
 

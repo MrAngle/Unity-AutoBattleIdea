@@ -30,7 +30,7 @@ namespace MageFactory.Inventory.Controller {
             return gridView;
         }
 
-        public void build(ICombatInventoryPanel.UiChangeInventoryCommand changeInventoryCommand) {
+        public void build(ICombatInventoryGridPanel.UiChangeInventoryCommand changeInventoryCommand) {
             Debug.Log($"[Grid] Parent: {transform.name}, after build children: {transform.childCount}");
             clear();
 

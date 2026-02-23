@@ -14,7 +14,21 @@ using Object = UnityEngine.Object;
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.Inventory.Controller {
-    internal sealed class ViewPresenter : IInitializable, IDisposable, IItemPlacedEventEventListener {
+    public interface ICombatInventoryItemsPanel {
+        public readonly struct UiPrintInventoryCommand {
+            public readonly ICombatCharacterInventory characterInventory;
+
+            public UiPrintInventoryCommand(ICombatCharacterInventory characterInventory) {
+                this.characterInventory = characterInventory;
+            }
+        }
+
+        public void printInventoryItems2(UiPrintInventoryCommand changeInventoryCommand);
+    }
+
+
+    internal sealed class InventoryItemsViewPresenter : IDisposable, IItemPlacedEventEventListener,
+        ICombatInventoryItemsPanel {
         private readonly InventoryAggregateContext _aggregateContext;
         private readonly IInventoryItemViewFactory _factory;
         private readonly IInventoryEventRegistry inventoryEventRegistry;
@@ -22,7 +36,7 @@ namespace MageFactory.Inventory.Controller {
         private readonly Dictionary<long, PlacedItemView> _views = new();
 
         [Inject]
-        internal ViewPresenter(
+        internal InventoryItemsViewPresenter(
             SignalBus signalBus,
             IInventoryItemViewFactory factory,
             InventoryAggregateContext aggregateContext,
@@ -32,7 +46,9 @@ namespace MageFactory.Inventory.Controller {
             _aggregateContext = NullGuard.NotNullOrThrow(aggregateContext);
             inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
 
-            _aggregateContext.OnInventoryAggregateSet += printInventoryItems;
+            inventoryEventRegistry.subscribe(this);
+            _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
+            _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
 
         public void Dispose() {
@@ -42,15 +58,9 @@ namespace MageFactory.Inventory.Controller {
             inventoryEventRegistry.unsubscribe(this);
         }
 
-        public void Initialize() {
-            inventoryEventRegistry.subscribe(this);
-
-            _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
-            _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
-        }
-
-        private void printInventoryItems(ICombatCharacterInventory characterInventoryFacade) {
+        public void printInventoryItems2(ICombatInventoryItemsPanel.UiPrintInventoryCommand changeInventoryCommand) {
             clear();
+            var characterInventoryFacade = changeInventoryCommand.characterInventory;
             foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {
                 if (_views.ContainsKey(placedItem.getId())) continue;
                 PlacedItemView view = _factory.create(placedItem.getShape(), placedItem.getOrigin());

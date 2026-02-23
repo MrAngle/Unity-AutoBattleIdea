@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace MageFactory.Inventory.Controller {
     public class PlacedItemView : MonoBehaviour {
         [Header("Visual")] [SerializeField] private Color cellColor = new(0.4f, 0.7f, 1f, 0.85f);
-        [SerializeField] private float cellSpacing = 2f; // odstęp między kafelkami (px)
+        [SerializeField] private float cellSpacing = 5f; // odstęp między kafelkami (px)
 
         private readonly List<ItemCellTileView> itemCellTileViews = new();
         private Vector2 cellSize;
