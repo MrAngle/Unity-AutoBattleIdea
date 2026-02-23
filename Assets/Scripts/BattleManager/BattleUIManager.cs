@@ -9,6 +9,7 @@ using MageFactory.Item.Catalog;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat;
+using MageFactory.UI.Context.Combat.Event;
 using UnityEngine;
 using Zenject;
 
@@ -22,6 +23,7 @@ namespace MageFactory.BattleManager {
         private BattleRuntime battleRuntime; // move to BattleManager
         private Coroutine battleLoop;
         private ICombatContextFactory combatContextFactory;
+        private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
 
         private ICombatContext combatContext;
 
@@ -46,13 +48,15 @@ namespace MageFactory.BattleManager {
                               [Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
                               CharacterAggregateContext injectCharacterAggregateContext,
                               BattleRuntime injectBattleRuntime,
-                              ICombatContextFactory injectCombatContextFactory) {
+                              ICombatContextFactory injectCombatContextFactory,
+                              IUiCombatContextEventPublisher injectUiCombatContextEventPublisher) {
             characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
             characterFactory = NullGuard.NotNullOrThrow(injectCharacterFactory);
             characterPrefabAggregate = NullGuard.NotNullOrThrow(injectSlotPrefab);
             slotParent = NullGuard.NotNullOrThrow(injectSlotParent);
             battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
             combatContextFactory = NullGuard.NotNullOrThrow(injectCombatContextFactory);
+            uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(injectUiCombatContextEventPublisher);
         }
 
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
@@ -63,7 +67,7 @@ namespace MageFactory.BattleManager {
             foreach (ICombatCharacter combatCharacter in combatContext.getAllCharacters()) {
                 battleRuntime.register(combatCharacter);
                 CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, combatCharacter,
-                    characterAggregateContext);
+                    characterAggregateContext, uiCombatContextEventPublisher);
             }
         }
 

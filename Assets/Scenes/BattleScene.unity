@@ -1101,9 +1101,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1035400457}
-  - component: {fileID: 1035400458}
   - component: {fileID: 1035400459}
   - component: {fileID: 1035400460}
+  - component: {fileID: 1035400461}
   m_Layer: 5
   m_Name: InventoryGridLayer
   m_TagString: Untagged
@@ -1130,18 +1130,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &1035400458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1035400456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05a80f2f81c542f9bf2ae86b22c4a731, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Inventory.Slots.InventoryPanelPrefabInitializer
 --- !u!114 &1035400459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1215,6 +1203,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1035400461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035400456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a80f2f81c542f9bf2ae86b22c4a731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MageFactory.UI.Context.Combat::MageFactory.Inventory.Controller.InventoryGridLayerInitializer
 --- !u!1 &1143051220
 GameObject:
   m_ObjectHideFlags: 0
@@ -1373,6 +1373,7 @@ MonoBehaviour:
   dragGhostPrefab: {fileID: 2924487675875916044, guid: 183609122503a5848b5e9a5d8c066c06, type: 3}
   gridViewPrefab: {fileID: 9180358797817463057, guid: 0ae867f624478bf4c83b9b6644deb44e, type: 3}
   cellViewPrefab: {fileID: 59291655769982536, guid: cd6df6a7ae3780f45ba268c167269258, type: 3}
+  inventoryGridLayerContainer: {fileID: 0}
   itemsLayerRectTransform: {fileID: 302993218}
   inventoryGridLayout: {fileID: 1035400459}
   battleSlotPrefab: {fileID: 2955251990443631779, guid: 04cc8323b825a554fb124dc61506c22e, type: 3}

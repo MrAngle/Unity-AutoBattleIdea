@@ -2,12 +2,12 @@
 using MageFactory.Context;
 using MageFactory.Registry;
 using MageFactory.Shared.Utility;
+using MageFactory.UI.Context.Combat.Event;
 using MageFactory.UI.Shared.Popup;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Zenject;
 
 namespace MageFactory.UI.Context.Combat {
     public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler {
@@ -16,26 +16,24 @@ namespace MageFactory.UI.Context.Combat {
 
         private ICombatCharacter _character;
         private CharacterAggregateContext _characterAggregateContext;
-
-        [Inject]
-        public void construct(
-            CharacterAggregateContext characterAggregateContext
-        ) {
-            _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
-        }
+        private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
                                                       ICombatCharacter characterData,
-                                                      CharacterAggregateContext characterAggregateContext) {
+                                                      CharacterAggregateContext characterAggregateContext,
+                                                      IUiCombatContextEventPublisher uiCombatContextEventPublisher) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
-            prefab.setup(characterData, characterAggregateContext);
+            prefab.setup(characterData, characterAggregateContext, uiCombatContextEventPublisher);
 
             return prefab;
         }
 
-        private void setup(ICombatCharacter character, CharacterAggregateContext characterAggregateContext) {
+        private void setup(ICombatCharacter character,
+                           CharacterAggregateContext characterAggregateContext,
+                           IUiCombatContextEventPublisher paramUiCombatContextEventPublisher) {
             _character = NullGuard.NotNullOrThrow(character);
             _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
+            uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(paramUiCombatContextEventPublisher);
 
             if (_character != null) {
                 _character.OnHpChanged += handleHpChanged;
@@ -59,7 +57,8 @@ namespace MageFactory.UI.Context.Combat {
 
             Debug.Log($"Kliknięto postać: {_character.getName()}");
 
-            _characterAggregateContext.setCharacterAggregateContext(_character);
+            // _characterAggregateContext.setCharacterAggregateContext(_character);
+            uiCombatContextEventPublisher.publish(new UiCombatCharacterSelectedEvent(_character.getId()));
         }
 
         private void handleHpChanged(ICombatCharacter ch, long newHp, long previousHpValue) {

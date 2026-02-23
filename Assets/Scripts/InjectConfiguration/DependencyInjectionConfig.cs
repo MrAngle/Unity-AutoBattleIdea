@@ -17,6 +17,7 @@ using MageFactory.Inventory.Domain.Service;
 using MageFactory.Item.Domain.Service;
 using MageFactory.Semantics;
 using MageFactory.UI.Context.Combat;
+using MageFactory.UI.Context.Combat.Event;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -24,14 +25,13 @@ using Zenject;
 
 namespace MageFactory.InjectConfiguration {
     public class DependencyInjectionConfig : MonoInstaller {
-        // [SerializeField] private int width = 8;
-
         [Header("Prefabs")] [SerializeField] [FormerlySerializedAs("itemViewPrefab")]
         private PlacedItemView placedItemViewPrefab;
 
         [SerializeField] private PlacedItemView dragGhostPrefab;
         [SerializeField] private InventoryGridView gridViewPrefab;
         [SerializeField] private InventoryCellView cellViewPrefab;
+        [SerializeField] private InventoryGridLayerContainer inventoryGridLayerContainer;
 
         [Header("RectTransforms")] [SerializeField]
         private RectTransform itemsLayerRectTransform;
@@ -56,8 +56,16 @@ namespace MageFactory.InjectConfiguration {
             bindFactories();
 
             bindEventHandlers();
+            bindUiEventHandlers();
 
             // PREFAB INITIALIZER
+            Container.Bind<InventoryCellView>()
+                .FromInstance(cellViewPrefab)
+                .AsSingle();
+            // Container.BindFactory<InventoryGridView, InventoryGridView.Factory>()
+            //     .FromComponentInNewPrefab(gridViewPrefab)
+            //     .AsSingle();
+
             Container.Bind<ItemViewPrefabItemView>()
                 .FromMethod(_ => new ItemViewPrefabItemView(placedItemViewPrefab))
                 .AsSingle();
@@ -66,14 +74,19 @@ namespace MageFactory.InjectConfiguration {
                 .FromMethod(_ => new DragGhostPrefabItemView(dragGhostPrefab))
                 .AsSingle();
 
-
             Container.Bind<GridViewPrefabInventoryGridView>()
-                .FromMethod(_ => new GridViewPrefabInventoryGridView(gridViewPrefab))
+                .FromInstance(new GridViewPrefabInventoryGridView(gridViewPrefab))
                 .AsSingle();
 
             Container.Bind<CellViewPrefabInventoryCellView>()
                 .FromMethod(_ => new CellViewPrefabInventoryCellView(cellViewPrefab))
                 .AsSingle();
+
+            Container.Bind<ICombatInventoryPanel>()
+                .To<InventoryGridLayerContainer>()
+                .FromComponentInHierarchy()
+                .AsSingle()
+                .NonLazy();
 
             Container.BindInterfacesAndSelfTo<ViewPresenter>()
                 .AsSingle()
@@ -83,6 +96,7 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle()
                 .NonLazy();
         }
+
 
         private void bindContexts() {
             // Container.Bind<CombatContextPresentationHandler>()
@@ -155,6 +169,11 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle();
         }
 
+        private void bindUiEventHandlers() {
+            Container.BindInterfacesTo<UiCombatContextEventHub>()
+                .AsSingle();
+        }
+
         private void bindInventoryGridLayoutGroup() {
             Container.Bind<InventoryGridLayoutGroup>()
                 .FromMethod(_ => new InventoryGridLayoutGroup(inventoryGridLayout))
@@ -174,6 +193,10 @@ namespace MageFactory.InjectConfiguration {
             Container.Bind<CharacterPrefabAggregate>()
                 .FromInstance(battleSlotPrefab)
                 .AsSingle();
+
+            // Container.Bind<CharacterPrefabAggregate>()
+            //     .FromComponentInHierarchy()
+            //     .AsSingle();
 
             // parent do slotów – identyfikujemy go ID, bo Transformów jest mnóstwo
             Container.Bind<Transform>()

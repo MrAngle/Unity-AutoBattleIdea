@@ -66,5 +66,9 @@ namespace MageFactory.CombatContext.Domain {
         public IReadOnlyCollection<ICombatCharacter> getAllCharacters() {
             return characters.Values;
         }
+
+        public ICombatCharacter getCombatCharacterById(Id<CharacterId> id) {
+            return characters[id];
+        }
     }
 }

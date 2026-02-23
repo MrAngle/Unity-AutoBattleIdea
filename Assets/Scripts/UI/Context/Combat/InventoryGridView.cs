@@ -1,40 +1,59 @@
 ﻿using System.Collections.Generic;
-using MageFactory.CombatContext.Contract;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MageFactory.Inventory.Controller {
     public class InventoryGridView : MonoBehaviour {
-        [Header("Prefabs / Refs")] [SerializeField]
-        private InventoryCellView cellPrefab;
-
-        [SerializeField] private GridLayoutGroup gridLayout;
-
-        private readonly Dictionary<Vector2Int, InventoryCellView> _views = new();
+        private readonly Dictionary<Vector2Int, InventoryCellView> inventoryCellViews = new();
+        private CellViewPrefabInventoryCellView cellPrefab;
+        private GridLayoutGroup gridLayout;
 
         private void Awake() {
-            if (!gridLayout) gridLayout = GetComponent<GridLayoutGroup>();
+            // gwarancja, że zawsze bierzemy GridLayoutGroup z tego konkretnego prefab GO
+            gridLayout = GetComponent<GridLayoutGroup>();
         }
 
-        public void build(ICombatInventory combatInventory) {
+        internal static InventoryGridView create(GridViewPrefabInventoryGridView prefab,
+                                                 Transform parentTransform,
+                                                 CellViewPrefabInventoryCellView cellPrefab) {
+            NullGuard.NotNullOrThrow(prefab);
+            NullGuard.NotNullOrThrow(parentTransform);
+            NullGuard.NotNullOrThrow(cellPrefab);
+
+            var gridView = NullGuard.NotNullOrThrow(
+                Instantiate(prefab.Get(), parentTransform, false)
+            );
+            gridView.transform.SetParent(parentTransform, false);
+            gridView.setCellPrefab(cellPrefab);
+
+            return gridView;
+        }
+
+        public void build(ICombatInventoryPanel.UiChangeInventoryCommand changeInventoryCommand) {
+            Debug.Log($"[Grid] Parent: {transform.name}, after build children: {transform.childCount}");
             clear();
 
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            gridLayout.constraintCount = combatInventory.Width;
+            gridLayout.constraintCount = changeInventoryCommand.width;
 
-            for (int y = 0; y < combatInventory.Height; y++)
-            for (int x = 0; x < combatInventory.Width; x++) {
+            for (var y = 0; y < changeInventoryCommand.height; y++)
+            for (var x = 0; x < changeInventoryCommand.width; x++) {
                 var coord = new Vector2Int(x, y);
-                var v = Instantiate(cellPrefab, transform);
-                v.Init(coord, combatInventory.getState(coord));
-                _views[coord] = v;
+                var v = Instantiate(cellPrefab.Get(), gridLayout.transform);
+                v.Init(coord, changeInventoryCommand.getState(coord));
+                inventoryCellViews[coord] = v;
             }
         }
 
         public void clear() {
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
-            _views.Clear();
+            inventoryCellViews.Clear();
+        }
+
+        private void setCellPrefab(CellViewPrefabInventoryCellView prefab) {
+            cellPrefab = NullGuard.NotNullOrThrow(prefab);
         }
     }
 }
