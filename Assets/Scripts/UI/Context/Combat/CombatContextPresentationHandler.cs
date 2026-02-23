@@ -5,10 +5,11 @@ using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Api.Event.Dto;
-using MageFactory.Inventory.Controller;
 using MageFactory.Shared.Utility;
+using MageFactory.UI.Component.Inventory;
+using MageFactory.UI.Component.Inventory.ItemLayer;
 using MageFactory.UI.Context.Combat.Event;
-using MageFactory.UI.Context.Combat.Inventory;
+using MageFactory.UI.Context.Combat.Feature.AddItem;
 using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]

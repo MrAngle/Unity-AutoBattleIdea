@@ -4,7 +4,7 @@ using MageFactory.Shared.Model;
 using UnityEngine;
 using Zenject;
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Component.Inventory.GridLayer {
     public interface ICombatInventoryGridPanel {
         public void printInventoryGrid(UiPrintInventoryGridCommand printInventoryGridCommand);
 

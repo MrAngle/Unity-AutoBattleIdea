@@ -3,7 +3,7 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Component.Inventory.GridLayer {
     public class InventoryGridView : MonoBehaviour {
         private readonly Dictionary<Vector2Int, InventoryCellView> inventoryCellViews = new();
         private CellViewPrefabInventoryCellView cellPrefab;

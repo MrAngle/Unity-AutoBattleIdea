@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Context.Combat.Feature.AddItem {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
         private ItemDragService service;
         private IItemDefinition inventoryPlaceableItem;
 
         [Inject]
-        public void construct(ItemDragService service) {
-            this.service = service;
+        public void construct(ItemDragService injectedService) {
+            this.service = injectedService;
         }
 
         public void OnBeginDrag(PointerEventData eventData) {

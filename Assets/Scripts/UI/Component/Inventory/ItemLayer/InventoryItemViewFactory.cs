@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Component.Inventory.ItemLayer {
     internal sealed class InventoryItemViewFactory : IInventoryItemViewFactory {
         private readonly GridLayoutGroup gridLayoutGroup;
         private readonly ItemsLayerRectTransform itemsLayerRectTransform;

@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Component.Inventory.ItemLayer {
     public interface ICombatInventoryItemsPanel {
         public readonly struct UiPrintInventoryItemsCommand {
             public readonly IEnumerable<IGridItemPlaced> characterEquippedItems;
@@ -42,24 +42,19 @@ namespace MageFactory.Inventory.Controller {
     }
 
 
-    internal sealed class InventoryItemsViewPresenter : IDisposable, /*IItemPlacedEventEventListener,*/
-        ICombatInventoryItemsPanel {
+    internal sealed class InventoryItemsViewPresenter : IDisposable, ICombatInventoryItemsPanel {
         private readonly IInventoryItemViewFactory _factory;
 
-        // private readonly IInventoryEventRegistry inventoryEventRegistry;
         private readonly SignalBus _signalBus;
         private readonly Dictionary<long, PlacedItemView> _views = new();
 
         [Inject]
         internal InventoryItemsViewPresenter(
             SignalBus signalBus,
-            IInventoryItemViewFactory factory
-            /*IInventoryEventRegistry injectInventoryEventRegistry*/) {
+            IInventoryItemViewFactory factory) {
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
             _factory = NullGuard.NotNullOrThrow(factory);
-            // inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
 
-            // inventoryEventRegistry.subscribe(this);
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
@@ -105,10 +100,5 @@ namespace MageFactory.Inventory.Controller {
             PlacedItemView view = _factory.create(command.shapeArchetype, command.origin);
             _views[command.placedItemId] = view;
         }
-
-        // public void onEvent(in NewItemPlacedDtoEvent ev) {
-        //     PlacedItemView view = _factory.create(ev.shapeArchetype, ev.origin);
-        //     _views[ev.placedItemId] = view;
-        // }
     }
 }

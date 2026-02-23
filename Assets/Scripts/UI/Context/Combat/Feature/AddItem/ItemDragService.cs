@@ -3,11 +3,13 @@ using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Semantics;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Utility;
+using MageFactory.UI.Component;
+using MageFactory.UI.Component.Inventory.ItemLayer;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Context.Combat.Feature.AddItem {
     public class ItemDragService {
         private readonly PlacedItemView ghostPlacedItem;
         private readonly InventoryGridLayoutGroup inventoryGridLayout;

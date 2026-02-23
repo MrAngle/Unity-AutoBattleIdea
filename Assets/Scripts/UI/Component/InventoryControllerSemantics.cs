@@ -1,7 +1,9 @@
 ﻿using MageFactory.Semantics;
+using MageFactory.UI.Component.Inventory.GridLayer;
+using MageFactory.UI.Component.Inventory.ItemLayer;
 using UnityEngine.UI;
 
-namespace MageFactory.Inventory.Controller {
+namespace MageFactory.UI.Component {
     public sealed class ItemViewPrefabItemView : Semantic<PlacedItemView> {
         public ItemViewPrefabItemView(PlacedItemView value) : base(value) {
         }

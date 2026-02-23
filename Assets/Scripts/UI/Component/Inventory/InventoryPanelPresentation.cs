@@ -1,9 +1,10 @@
 ﻿using MageFactory.CombatContext.Contract;
-using MageFactory.Inventory.Controller;
 using MageFactory.Shared.Utility;
+using MageFactory.UI.Component.Inventory.GridLayer;
+using MageFactory.UI.Component.Inventory.ItemLayer;
 using Zenject;
 
-namespace MageFactory.UI.Context.Combat.Inventory {
+namespace MageFactory.UI.Component.Inventory {
     public readonly struct UiPrintInventoryCommand {
         public readonly ICombatInventoryGridPanel.UiPrintInventoryGridCommand gridCommand;
         public readonly ICombatInventoryItemsPanel.UiPrintInventoryItemsCommand itemsCommand;
