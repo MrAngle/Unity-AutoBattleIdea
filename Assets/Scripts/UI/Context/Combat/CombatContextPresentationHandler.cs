@@ -6,6 +6,7 @@ using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Controller;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat.Event;
+using MageFactory.UI.Context.Combat.Inventory;
 using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
@@ -17,20 +18,17 @@ namespace MageFactory.UI.Context.Combat {
         private ICombatCharacter selectedCharacter;
         private readonly ICombatContextEventRegistry combatContextEventRegistry;
         private readonly IUiCombatContextEventRegistry uiCombatContextEventRegistry;
-        private readonly ICombatInventoryGridPanel combatInventoryGridPanel;
-        private readonly ICombatInventoryItemsPanel combatInventoryItemsPanel;
+        private readonly InventoryPanelPresentation inventoryPanelPresentation;
         private readonly ItemDragService itemDragService;
 
         [Inject]
         public CombatContextPresentationHandler(ICombatContextEventRegistry combatContextEventRegistry,
-                                                ICombatInventoryGridPanel combatInventoryGridPanel,
                                                 IUiCombatContextEventRegistry uiCombatContextEventRegistry,
-                                                ICombatInventoryItemsPanel combatInventoryItemsPanel,
+                                                InventoryPanelPresentation inventoryPanelPresentation,
                                                 ItemDragService itemDragService) {
             this.combatContextEventRegistry = NullGuard.NotNullOrThrow(combatContextEventRegistry);
             this.uiCombatContextEventRegistry = NullGuard.NotNullOrThrow(uiCombatContextEventRegistry);
-            this.combatInventoryGridPanel = NullGuard.NotNullOrThrow(combatInventoryGridPanel);
-            this.combatInventoryItemsPanel = NullGuard.NotNullOrThrow(combatInventoryItemsPanel);
+            this.inventoryPanelPresentation = NullGuard.NotNullOrThrow(inventoryPanelPresentation);
             this.itemDragService = NullGuard.NotNullOrThrow(itemDragService);
 
             this.combatContextEventRegistry
@@ -55,22 +53,9 @@ namespace MageFactory.UI.Context.Combat {
         public void onEvent(in UiCombatCharacterSelectedEvent characterSelectedEvent) {
             selectedCharacter = combatContext.getCombatCharacterById(characterSelectedEvent.characterId);
 
-            ICombatCharacterInventory combatCharacterInventory = selectedCharacter.getInventoryAggregate();
-            ICombatInventory combatInventory = combatCharacterInventory.getInventoryGrid();
-            ICombatInventory invReferenceCopy = combatInventory;
+            inventoryPanelPresentation.setInventory(selectedCharacter.getInventoryAggregate());
 
-            ICombatInventoryGridPanel.UiPrintInventoryGridCommand printInventoryGridCommand =
-                new ICombatInventoryGridPanel.UiPrintInventoryGridCommand(
-                    invReferenceCopy.Width,
-                    invReferenceCopy.Height,
-                    coord => invReferenceCopy.getState(coord));
-            combatInventoryGridPanel.printInventoryGrid(printInventoryGridCommand);
-
-            ICombatInventoryItemsPanel.UiPrintInventoryItemsCommand itemsCommand =
-                new(combatCharacterInventory.getPlacedSnapshot());
-            combatInventoryItemsPanel.printInventoryItems(itemsCommand);
-
-            this.itemDragService.setCharacterContext(selectedCharacter);
+            itemDragService.setCharacterContext(selectedCharacter);
         }
 
         public void Dispose() {

@@ -17,6 +17,7 @@ using MageFactory.Item.Domain.Service;
 using MageFactory.Semantics;
 using MageFactory.UI.Context.Combat;
 using MageFactory.UI.Context.Combat.Event;
+using MageFactory.UI.Context.Combat.Inventory;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -96,6 +97,10 @@ namespace MageFactory.InjectConfiguration {
                 .NonLazy();
 
             Container.Bind<BattleRuntime>()
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<InventoryPanelPresentation>()
                 .AsSingle()
                 .NonLazy();
         }
