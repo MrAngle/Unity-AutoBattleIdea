@@ -18,7 +18,8 @@
     "MageFactory.CombatContext.Api",
     "MageFactory.CombatContext.Domain",
     "MageFactory.Inventory.Api",
-    "MageFactory.UI.Context.Combat"
+    "MageFactory.UI.Context.Combat",
+    "MageFactory.UI.Component"
   ],
   "autoReferenced": true
 }

@@ -12,7 +12,8 @@
     "Zenject",
     "MageFactory.Semantics",
     "MageFactory.Inventory.Api",
-    "MageFactory.Item.Catalog"
+    "MageFactory.Item.Catalog",
+    "MageFactory.UI.Component"
   ],
   "autoReferenced": true
 }

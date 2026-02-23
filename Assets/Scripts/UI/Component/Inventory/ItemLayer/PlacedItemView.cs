@@ -14,7 +14,7 @@ namespace MageFactory.Inventory.Controller {
         private Vector2 cellSize;
         private Vector2Int[] shapeOffsets;
 
-        internal void build(ShapeArchetype data, Vector2 targetCellSize) {
+        public void build(ShapeArchetype data, Vector2 targetCellSize) {
             clear();
             cellSize = targetCellSize;
             shapeOffsets = data.Shape.Cells.ToArray();
@@ -42,8 +42,8 @@ namespace MageFactory.Inventory.Controller {
             resizeToFit();
         }
 
-        internal void setOriginInGrid(Vector2Int origin, Vector2 paramCellSize, Vector2 gridOrigin,
-                                      float spacing = 0f) {
+        public void setOriginInGrid(Vector2Int origin, Vector2 paramCellSize, Vector2 gridOrigin,
+                                    float spacing = 0f) {
             cellSize = paramCellSize;
             var rt = (RectTransform)transform;
             rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
@@ -54,7 +54,7 @@ namespace MageFactory.Inventory.Controller {
             rt.anchoredPosition = gridOrigin + new Vector2(x, y);
         }
 
-        internal void setColor(Color c) {
+        public void setColor(Color c) {
             foreach (var itemCellTileView in itemCellTileViews) {
                 itemCellTileView.setupVisual(c);
             }

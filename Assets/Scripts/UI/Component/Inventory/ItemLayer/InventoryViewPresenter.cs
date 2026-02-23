@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
-using MageFactory.Inventory.Api.Event;
-using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Shared.Popup;
+using UnityEngine;
 using Zenject;
 using Object = UnityEngine.Object;
 
@@ -22,27 +22,44 @@ namespace MageFactory.Inventory.Controller {
             }
         }
 
+        public readonly struct NewItemPrintCommand {
+            public readonly long placedItemId;
+            public readonly ShapeArchetype shapeArchetype;
+            public readonly Vector2Int origin;
+
+            public NewItemPrintCommand(
+                long placedItemId,
+                ShapeArchetype shapeArchetype,
+                Vector2Int origin) {
+                this.placedItemId = placedItemId;
+                this.shapeArchetype = shapeArchetype;
+                this.origin = origin;
+            }
+        }
+
         public void printInventoryItems(UiPrintInventoryItemsCommand changeInventoryItemsCommand);
+        public void printNewItem(NewItemPrintCommand command);
     }
 
 
-    internal sealed class InventoryItemsViewPresenter : IDisposable, IItemPlacedEventEventListener,
+    internal sealed class InventoryItemsViewPresenter : IDisposable, /*IItemPlacedEventEventListener,*/
         ICombatInventoryItemsPanel {
         private readonly IInventoryItemViewFactory _factory;
-        private readonly IInventoryEventRegistry inventoryEventRegistry;
+
+        // private readonly IInventoryEventRegistry inventoryEventRegistry;
         private readonly SignalBus _signalBus;
         private readonly Dictionary<long, PlacedItemView> _views = new();
 
         [Inject]
         internal InventoryItemsViewPresenter(
             SignalBus signalBus,
-            IInventoryItemViewFactory factory,
-            IInventoryEventRegistry injectInventoryEventRegistry) {
+            IInventoryItemViewFactory factory
+            /*IInventoryEventRegistry injectInventoryEventRegistry*/) {
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
             _factory = NullGuard.NotNullOrThrow(factory);
-            inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
+            // inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
 
-            inventoryEventRegistry.subscribe(this);
+            // inventoryEventRegistry.subscribe(this);
             _signalBus.Subscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.Subscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
         }
@@ -51,7 +68,7 @@ namespace MageFactory.Inventory.Controller {
             _signalBus.TryUnsubscribe<ItemRemovedDtoEvent>(OnItemRemoved);
             _signalBus.TryUnsubscribe<ItemPowerChangedDtoEvent>(OnPowerChanged);
 
-            inventoryEventRegistry.unsubscribe(this);
+            // inventoryEventRegistry.unsubscribe(this);
         }
 
         public void printInventoryItems(
@@ -84,9 +101,14 @@ namespace MageFactory.Inventory.Controller {
                 PopupManager.Instance.ShowHpChangeDamage(view, itemPowerChangedEvent.Delta);
         }
 
-        public void onEvent(in NewItemPlacedDtoEvent ev) {
-            PlacedItemView view = _factory.create(ev.shapeArchetype, ev.origin);
-            _views[ev.placedItemId] = view;
+        public void printNewItem(ICombatInventoryItemsPanel.NewItemPrintCommand command) {
+            PlacedItemView view = _factory.create(command.shapeArchetype, command.origin);
+            _views[command.placedItemId] = view;
         }
+
+        // public void onEvent(in NewItemPlacedDtoEvent ev) {
+        //     PlacedItemView view = _factory.create(ev.shapeArchetype, ev.origin);
+        //     _views[ev.placedItemId] = view;
+        // }
     }
 }

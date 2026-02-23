@@ -1,10 +1,13 @@
 ﻿using System;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Shared.Model;
 using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Inventory.Controller {
     public interface ICombatInventoryGridPanel {
+        public void printInventoryGrid(UiPrintInventoryGridCommand printInventoryGridCommand);
+
         public readonly struct UiPrintInventoryGridCommand {
             public readonly int width;
             public readonly int height;
@@ -15,9 +18,14 @@ namespace MageFactory.Inventory.Controller {
                 this.height = height;
                 this.getState = getState;
             }
-        }
 
-        public void printInventoryGrid(UiPrintInventoryGridCommand printInventoryGridCommand);
+            public static UiPrintInventoryGridCommand from(ICombatInventory characterInventory) {
+                return new UiPrintInventoryGridCommand(
+                    characterInventory.Width,
+                    characterInventory.Height,
+                    coord => characterInventory.getState(coord));
+            }
+        }
     }
 
     public class InventoryGridLayerContainer : MonoBehaviour, ICombatInventoryGridPanel {

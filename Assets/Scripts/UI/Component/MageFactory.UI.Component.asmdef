@@ -1,0 +1,13 @@
+﻿{
+  "name": "MageFactory.UI.Component",
+  "rootNamespace": "MageFactory",
+  "references": [
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.UI.Shared",
+    "MageFactory.Semantics",
+    "MageFactory.Shared",
+    "Unity.TextMeshPro",
+    "Zenject"
+  ],
+  "autoReferenced": true
+}
