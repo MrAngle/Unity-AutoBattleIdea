@@ -68,7 +68,7 @@ namespace MageFactory.UI.Context.Combat {
             combatInventoryGridPanel.changeInventory(changeInventoryCommand);
 
             ICombatInventoryItemsPanel.UiPrintInventoryCommand command = new(combatCharacterInventory);
-            combatInventoryItemsPanel.printInventoryItems2(command);
+            combatInventoryItemsPanel.printInventoryItems(command);
 
             this.itemDragService.setCharacterContext(selectedCharacter);
         }

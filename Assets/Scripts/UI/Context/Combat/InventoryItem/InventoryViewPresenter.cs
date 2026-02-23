@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Contract;
-using MageFactory.Context;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Shared.Utility;
@@ -23,13 +22,12 @@ namespace MageFactory.Inventory.Controller {
             }
         }
 
-        public void printInventoryItems2(UiPrintInventoryCommand changeInventoryCommand);
+        public void printInventoryItems(UiPrintInventoryCommand changeInventoryCommand);
     }
 
 
     internal sealed class InventoryItemsViewPresenter : IDisposable, IItemPlacedEventEventListener,
         ICombatInventoryItemsPanel {
-        private readonly InventoryAggregateContext _aggregateContext;
         private readonly IInventoryItemViewFactory _factory;
         private readonly IInventoryEventRegistry inventoryEventRegistry;
         private readonly SignalBus _signalBus;
@@ -39,11 +37,9 @@ namespace MageFactory.Inventory.Controller {
         internal InventoryItemsViewPresenter(
             SignalBus signalBus,
             IInventoryItemViewFactory factory,
-            InventoryAggregateContext aggregateContext,
             IInventoryEventRegistry injectInventoryEventRegistry) {
             _signalBus = NullGuard.NotNullOrThrow(signalBus);
             _factory = NullGuard.NotNullOrThrow(factory);
-            _aggregateContext = NullGuard.NotNullOrThrow(aggregateContext);
             inventoryEventRegistry = NullGuard.NotNullOrThrow(injectInventoryEventRegistry);
 
             inventoryEventRegistry.subscribe(this);
@@ -58,7 +54,7 @@ namespace MageFactory.Inventory.Controller {
             inventoryEventRegistry.unsubscribe(this);
         }
 
-        public void printInventoryItems2(ICombatInventoryItemsPanel.UiPrintInventoryCommand changeInventoryCommand) {
+        public void printInventoryItems(ICombatInventoryItemsPanel.UiPrintInventoryCommand changeInventoryCommand) {
             clear();
             var characterInventoryFacade = changeInventoryCommand.characterInventory;
             foreach (var placedItem in characterInventoryFacade.getPlacedSnapshot()) {

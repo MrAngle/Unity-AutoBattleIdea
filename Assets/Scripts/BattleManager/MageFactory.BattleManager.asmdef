@@ -2,15 +2,12 @@
   "name": "MageFactory.BattleManager",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Context",
     "MageFactory.CombatContext.Contract",
-    "MageFactory.Controller.Character",
     "MageFactory.Inventory.Contract",
 
     "MageFactory.Item.Catalog",
     "MageFactory.Registry",
     "MageFactory.Shared",
-    "MageFactory.UI",
     "MageFactory.CombatContext.Api",
     "MageFactory.UI.Context.Combat"
   ],

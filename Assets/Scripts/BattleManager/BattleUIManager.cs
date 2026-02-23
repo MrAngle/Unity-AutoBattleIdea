@@ -3,7 +3,6 @@ using System.Collections;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Context;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Catalog;
 using MageFactory.Shared.Model;
@@ -15,8 +14,6 @@ using Zenject;
 
 namespace MageFactory.BattleManager {
     public class BattleUIManager : MonoBehaviour {
-        private CharacterAggregateContext characterAggregateContext;
-        private ICharacterFactory characterFactory;
         private CharacterPrefabAggregate characterPrefabAggregate;
         private IEntryPointFactory entryPointFactory; // for now
         private Transform slotParent;
@@ -43,15 +40,11 @@ namespace MageFactory.BattleManager {
         }
 
         [Inject]
-        public void construct(ICharacterFactory injectCharacterFactory,
-                              CharacterPrefabAggregate injectSlotPrefab,
+        public void construct(CharacterPrefabAggregate injectSlotPrefab,
                               [Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
-                              CharacterAggregateContext injectCharacterAggregateContext,
                               BattleRuntime injectBattleRuntime,
                               ICombatContextFactory injectCombatContextFactory,
                               IUiCombatContextEventPublisher injectUiCombatContextEventPublisher) {
-            characterAggregateContext = NullGuard.NotNullOrThrow(injectCharacterAggregateContext);
-            characterFactory = NullGuard.NotNullOrThrow(injectCharacterFactory);
             characterPrefabAggregate = NullGuard.NotNullOrThrow(injectSlotPrefab);
             slotParent = NullGuard.NotNullOrThrow(injectSlotParent);
             battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
@@ -62,12 +55,10 @@ namespace MageFactory.BattleManager {
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
             combatContext = combatContextFactory.create(charactersToCreate);
 
-            characterAggregateContext.setCharacterAggregateContext(combatContext.getRandomCharacter()); // for now
-
             foreach (ICombatCharacter combatCharacter in combatContext.getAllCharacters()) {
                 battleRuntime.register(combatCharacter);
                 CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, combatCharacter,
-                    characterAggregateContext, uiCombatContextEventPublisher);
+                    uiCombatContextEventPublisher);
             }
         }
 

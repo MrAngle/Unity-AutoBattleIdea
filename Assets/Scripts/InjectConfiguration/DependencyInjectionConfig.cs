@@ -8,7 +8,6 @@ using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Domain.Service;
-using MageFactory.Context;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api.Event;
@@ -103,23 +102,7 @@ namespace MageFactory.InjectConfiguration {
 
 
         private void bindContexts() {
-            // Container.Bind<CombatContextPresentationHandler>()
-            //     .To<CombatContextPresentationHandler>()
-            //     .AsSingle();
-
             Container.BindInterfacesAndSelfTo<CombatContextPresentationHandler>()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<InventoryGridContext>()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<InventoryAggregateContext>()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<CharacterAggregateContext>()
                 .AsSingle()
                 .NonLazy();
         }
