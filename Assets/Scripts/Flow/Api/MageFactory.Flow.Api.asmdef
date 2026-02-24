@@ -5,7 +5,8 @@
     "MageFactory.FlowRouting",
     "MageFactory.CombatContext.Contract",
     "MageFactory.Shared",
-    "MageFactory.Flow.Contract"
+    "MageFactory.Flow.Contract",
+    "MageFactory.CombatContext.Api"
   ],
   "autoReferenced": true
 }

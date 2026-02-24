@@ -1,7 +1,8 @@
-﻿using MageFactory.CombatContext.Contract.Command;
+﻿using MageFactory.Flow.Contract;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.CombatContext.Contract {
     public interface ICombatCommandBus {
-        bool post(ICombatCommand command);
+        DamageToDeal consumeFlow(ProcessFlowCommand flowCommand, IReadCombatContext combatContext);
     }
 }

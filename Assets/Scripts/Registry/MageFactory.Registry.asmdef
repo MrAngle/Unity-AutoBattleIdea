@@ -1,8 +1,0 @@
-﻿{
-  "name": "MageFactory.Registry",
-  "rootNamespace": "MageFactory",
-  "references": [
-    "MageFactory.CombatContext.Contract"
-  ],
-  "autoReferenced": true
-}

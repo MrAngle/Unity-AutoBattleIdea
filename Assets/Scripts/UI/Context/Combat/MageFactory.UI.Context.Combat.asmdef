@@ -6,7 +6,6 @@
     "MageFactory.CombatContext.Api",
     "MageFactory.CombatContext.Contract",
     "MageFactory.UI.Shared",
-    "MageFactory.Registry",
     "MageFactory.Flow.Contract",
     "Unity.TextMeshPro",
     "Zenject",

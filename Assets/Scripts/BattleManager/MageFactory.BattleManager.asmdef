@@ -6,10 +6,10 @@
     "MageFactory.Inventory.Contract",
 
     "MageFactory.Item.Catalog",
-    "MageFactory.Registry",
     "MageFactory.Shared",
     "MageFactory.CombatContext.Api",
-    "MageFactory.UI.Context.Combat"
+    "MageFactory.UI.Context.Combat",
+    "MageFactory.Flow.Contract"
   ],
   "autoReferenced": true
 }

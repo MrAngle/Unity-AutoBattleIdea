@@ -40,8 +40,10 @@ namespace MageFactory.Flow.Domain {
         internal static IFlowAggregateFacade create(IFlowItem placedEntryPoint,
                                                     IFlowRouter flowRouter,
                                                     SignalBus signalBus,
-                                                    IActionExecutor actionExecutor) {
-            var context = new FlowContext(placedEntryPoint);
+                                                    IActionExecutor actionExecutor,
+                                                    IFlowConsumer flowConsumer,
+                                                    IFlowOwner flowOwner) {
+            var context = new FlowContext(placedEntryPoint, flowConsumer, flowOwner);
             var model = new FlowModel(context);
             var startNode = placedEntryPoint;
 
@@ -82,12 +84,9 @@ namespace MageFactory.Flow.Domain {
 
         private async Task processAsync(CancellationToken cancellationToken) {
             var actionSpecification = currentNode.prepareItemActionDescription();
-
-            // IPreparedAction preparedAction = actionSpecification.ToPreparedAction(this);
             var executeActionCommand = new ExecuteActionCommand(actionSpecification, this);
 
             try {
-                // await _actionExecutor.ExecuteAsync(preparedAction, cancellationToken);
                 await actionExecutor.executeAsync(executeActionCommand);
             }
             catch (OperationCanceledException) {
@@ -106,8 +105,9 @@ namespace MageFactory.Flow.Domain {
 
             var decision = router.decideNext(currentNode, visitedNodeIds);
             if (decision is null) {
-                FlowCompletionDispatcher
-                    .finishFlow(flowModel); // TODO: change it. Use service or something like that instead
+                finishFlow();
+                // FlowCompletionDispatcher
+                //     .finishFlow(flowModel); // TODO: change it. Use service or something like that instead
                 currentNode = null;
                 return false;
             }
@@ -117,6 +117,15 @@ namespace MageFactory.Flow.Domain {
 
             await Task.Yield();
             return true;
+        }
+
+        public void finishFlow() {
+            FlowContext flowContext = flowModel.getFlowContext();
+            IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
+
+            ProcessFlowCommand flowCommand =
+                new(flowContext.getFlowOwner(), flowModel.getFlowPayload().getDamageToDeal());
+            flowConsumer.consumeFlow(flowCommand);
         }
 
         public void stop() {

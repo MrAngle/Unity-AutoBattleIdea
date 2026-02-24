@@ -23,5 +23,7 @@
     public sealed class DamageToDeal : PowerAmount {
         public DamageToDeal(long power) : base(power) {
         }
+
+        public static DamageToDeal NO_POWER = new(0);
     }
 }

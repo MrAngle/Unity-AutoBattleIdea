@@ -4,13 +4,14 @@ using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Api;
+using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
-    internal class CharacterAggregate : ICombatCharacter {
+    internal class CharacterAggregate : ICombatCharacter, IFlowOwner {
         private readonly Id<CharacterId> characterId;
         private readonly CharacterData characterData;
         private readonly ICharacterInventory characterInventory;
@@ -95,7 +96,7 @@ namespace MageFactory.Character.Domain {
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
         }
 
-        public void combatTick() {
+        public void combatTick(IFlowConsumer flowConsumer) {
             var entryPointsToTick = characterInventory.getEntryPointsToTick();
             if (entryPointsToTick == null || entryPointsToTick.Count == 0)
                 return;
@@ -107,9 +108,13 @@ namespace MageFactory.Character.Domain {
                     continue;
                 }
 
-                var flow = flowFactory.create(entryPoint, router);
+                var flow = flowFactory.create(entryPoint, router, flowConsumer, this);
                 flow.start();
             }
+        }
+
+        public ICharacterCombatCapabilities getCharacterCombatCapabilities() {
+            return characterCombatCapabilities;
         }
 
         public Team getTeam() {
@@ -119,6 +124,10 @@ namespace MageFactory.Character.Domain {
         ~CharacterAggregate() {
             // finalizer — w razie gdyby ktoś zapomniał Cleanup (ale nie polegaj na tym)
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
+        }
+
+        public Id<CharacterId> getFlowOwnerCharacterId() {
+            return getId();
         }
 
         private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {

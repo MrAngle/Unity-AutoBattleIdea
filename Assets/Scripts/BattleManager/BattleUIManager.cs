@@ -56,7 +56,7 @@ namespace MageFactory.BattleManager {
             combatContext = combatContextFactory.create(charactersToCreate);
 
             foreach (ICombatCharacter combatCharacter in combatContext.getAllCharacters()) {
-                battleRuntime.register(combatCharacter);
+                // battleRuntime.register(combatCharacter);
                 CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, combatCharacter,
                     uiCombatContextEventPublisher);
             }
@@ -70,7 +70,7 @@ namespace MageFactory.BattleManager {
             var wait = new WaitForSeconds(turnInterval);
 
             while (true) {
-                battleRuntime.tick();
+                battleRuntime.tick(combatContext);
                 yield return wait;
             }
         }

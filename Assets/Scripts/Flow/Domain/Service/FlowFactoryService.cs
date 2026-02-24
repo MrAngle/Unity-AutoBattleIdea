@@ -15,8 +15,9 @@ namespace MageFactory.Flow.Domain.Service {
             actionExecutor = injectActionExecutor;
         }
 
-        public IFlowAggregateFacade create(IFlowItem startNode, IFlowRouter router) {
-            return FlowAggregate.create(startNode, router, signalBus, actionExecutor);
+        public IFlowAggregateFacade create(IFlowItem startNode, IFlowRouter router, IFlowConsumer flowConsumer,
+                                           IFlowOwner flowOwner) {
+            return FlowAggregate.create(startNode, router, signalBus, actionExecutor, flowConsumer, flowOwner);
         }
     }
 }

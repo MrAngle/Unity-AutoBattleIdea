@@ -1,13 +1,22 @@
 ﻿using MageFactory.CombatContext.Contract;
-using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Flow.Contract;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CombatCommandBus : ICombatCommandBus {
-        public CombatCommandBus() {
+        private ICombatCharacter character;
+
+        public CombatCommandBus(ICombatCharacter character) {
+            this.character = character;
         }
 
-        public bool post(ICombatCommand command) {
-            return false;
+        public DamageToDeal consumeFlow(ProcessFlowCommand flowCommand, IReadCombatContext combatContext) {
+            if (combatContext.tryGetRandomEnemyOf(character.getId(), out var enemy)) {
+                enemy.apply(flowCommand.damageToDeal);
+                return flowCommand.damageToDeal;
+            }
+
+            return DamageToDeal.NO_POWER;
         }
     }
 }

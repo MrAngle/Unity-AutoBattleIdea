@@ -1,5 +1,4 @@
 ﻿using MageFactory.CombatContext.Contract;
-using MageFactory.Registry;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat.Event;
 using MageFactory.UI.Shared.Popup;
@@ -14,13 +13,10 @@ namespace MageFactory.UI.Context.Combat {
         public Image hpBarImage;
 
         private ICombatCharacter _character;
-
-        // private CharacterAggregateContext _characterAggregateContext;
         private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
                                                       ICombatCharacter characterData,
-                                                      // CharacterAggregateContext characterAggregateContext,
                                                       IUiCombatContextEventPublisher uiCombatContextEventPublisher) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
             prefab.setup(characterData, uiCombatContextEventPublisher);
@@ -29,16 +25,13 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         private void setup(ICombatCharacter character,
-                           // CharacterAggregateContext characterAggregateContext,
                            IUiCombatContextEventPublisher paramUiCombatContextEventPublisher) {
             _character = NullGuard.NotNullOrThrow(character);
-            // _characterAggregateContext = NullGuard.NotNullOrThrow(characterAggregateContext);
             uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(paramUiCombatContextEventPublisher);
 
             if (_character != null) {
                 _character.OnHpChanged += handleHpChanged;
                 _character.OnDeath += OnDeath;
-                CharacterRegistry.Instance.register(_character);
             }
 
             refreshUI();
@@ -66,7 +59,6 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         private void OnDeath(ICombatCharacter ch) {
-            CharacterRegistry.Instance.unregister(_character);
             Destroy(gameObject);
         }
 

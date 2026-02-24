@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.BattleManager {
     public class BattleRuntime {
-        private readonly List<ICombatCharacter> combatCharacters = new();
+        public void tick(ICombatContext combatContext) {
+            IReadOnlyCollection<ICombatCharacter> combatCharacters = combatContext.getAllCharacters();
 
-        public void register(ICombatCharacter character) {
-            combatCharacters.Add(character);
-        }
-
-        public void tick() {
-            for (int i = 0; i < combatCharacters.Count; i++) {
-                combatCharacters[i].combatTick();
+            foreach (var character in combatCharacters.ToList()) {
+                character.combatTick(combatContext.getFlowConsumer());
             }
-            // remember that characters may die during tick
         }
     }
 }

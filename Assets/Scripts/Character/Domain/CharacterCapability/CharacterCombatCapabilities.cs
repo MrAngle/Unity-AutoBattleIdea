@@ -2,14 +2,12 @@
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CharacterCombatCapabilities : ICharacterCombatCapabilities {
-        private readonly ICombatCharacter character;
         private readonly CombatCommandBus combatCommandBus;
         private readonly CombatQueries combatQueries;
 
         internal CharacterCombatCapabilities(ICombatCharacter character) {
-            this.character = character;
-            combatCommandBus = new CombatCommandBus();
-            combatQueries = new CombatQueries(this.character);
+            combatCommandBus = new CombatCommandBus(character);
+            combatQueries = new CombatQueries(character);
         }
 
         public ICombatCommandBus command() {

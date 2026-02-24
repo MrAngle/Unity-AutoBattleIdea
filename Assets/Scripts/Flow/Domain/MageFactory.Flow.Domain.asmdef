@@ -6,12 +6,12 @@
     "MageFactory.Flow.Contract",
 
     "MageFactory.CombatContext.Contract",
+    "MageFactory.CombatContext.Api",
 
     "MageFactory.ActionExecutor.Api",
     "MageFactory.ActionEffect",
     "MageFactory.FlowRouting",
     
-    "MageFactory.Registry",
     "MageFactory.Shared",
     "Zenject"
   ],

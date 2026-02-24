@@ -5,15 +5,20 @@ using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
+using UnityEngine;
+using Random = System.Random;
 
 namespace MageFactory.CombatContext.Domain {
-    internal class CombatContext : ICombatContext {
+    internal class CombatContext : ICombatContext, IFlowConsumer, IReadCombatContext {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacter> characters = new();
 
         private readonly ICharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
+        private readonly Random random = new();
 
         private CombatContext(ICharacterFactory characterFactory,
                               ICombatContextEventPublisher combatContextEventPublisher) {
@@ -35,6 +40,22 @@ namespace MageFactory.CombatContext.Domain {
             return combatContext;
         }
 
+        public ICombatCharacter getRandomCharacter() {
+            return characters.Values.FirstOrDefault();
+        }
+
+        public IReadOnlyCollection<ICombatCharacter> getAllCharacters() {
+            return characters.Values;
+        }
+
+        public ICombatCharacter getCombatCharacterById(Id<CharacterId> id) {
+            return characters[id];
+        }
+
+        public IFlowConsumer getFlowConsumer() {
+            return this;
+        }
+
         private void registerCharacter(CreateCombatCharacterCommand createCombatCharacterCommand) {
             ICombatCharacter combatCharacter = characterFactory.create(createCombatCharacterCommand);
 
@@ -48,25 +69,41 @@ namespace MageFactory.CombatContext.Domain {
             combatContextEventPublisher.publish(new CombatCharacterCreatedDtoEvent());
         }
 
-        // public CharacterSummaryView getSummary(long id) {
-        //     var character = characters[id];
-        //     return new CharacterSummaryView(
-        //         character.Id,
-        //         character.Name,
-        //         character.CurrentHp,
-        //         character.MaxHp
-        //     );
-        // }
-        public ICombatCharacter getRandomCharacter() {
-            return characters.Values.FirstOrDefault();
+        public DamageToDeal consumeFlow(ProcessFlowCommand flowCommand) {
+            if (flowCommand.flowOwner?.getFlowOwnerCharacterId() == null) {
+                return DamageToDeal.NO_POWER;
+            }
+
+            ICombatCharacter combatCharacter = characters[flowCommand.flowOwner.getFlowOwnerCharacterId()];
+            if (combatCharacter == null) {
+                return DamageToDeal.NO_POWER;
+            }
+
+            return combatCharacter.getCharacterCombatCapabilities().command().consumeFlow(flowCommand, this);
         }
 
-        public IReadOnlyCollection<ICombatCharacter> getAllCharacters() {
-            return characters.Values;
-        }
+        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacter enemy) {
+            enemy = null;
+            if (!characters.TryGetValue(sourceId, out var source)) {
+                Debug.Log($"[CombatContext] sourceId {sourceId} not found");
+                return false;
+            }
 
-        public ICombatCharacter getCombatCharacterById(Id<CharacterId> id) {
-            return characters[id];
+            Team sourceTeam = source.getTeam();
+
+            var enemies = characters.Values
+                .Where(c => !Equals(c.getId(), sourceId))
+                .Where(c => c.getTeam() != sourceTeam)
+                // todo: filter out dead characters
+                .ToList();
+
+            if (enemies.Count == 0)
+                return false;
+
+            int index = random.Next(enemies.Count);
+            enemy = enemies[index];
+            Debug.Log($"[CombatContext] Picked enemy: {enemy.getName()}({enemy.getTeam()})");
+            return true;
         }
     }
 }

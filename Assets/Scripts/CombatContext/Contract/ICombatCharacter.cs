@@ -1,5 +1,6 @@
 ﻿using System;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 
@@ -16,6 +17,8 @@ namespace MageFactory.CombatContext.Contract {
         void apply(PowerAmount powerAmount);
         string getName();
         void cleanup();
-        void combatTick();
+        void combatTick(IFlowConsumer flowConsumer);
+        ICharacterCombatCapabilities getCharacterCombatCapabilities();
+        Team getTeam();
     }
 }
