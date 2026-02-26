@@ -1,4 +1,6 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.Character.Api.Event;
+using MageFactory.Character.Api.Event.Dto;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat.Event;
 using MageFactory.UI.Shared.Popup;
@@ -8,30 +10,36 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace MageFactory.UI.Context.Combat {
-    public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler {
+    public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler, IHpChangedEventListener,
+        ICharacterDeathEventListener {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
         private ICombatCharacter _character;
         private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
+        private ICharacterEventRegistry characterEventRegistry;
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
                                                       ICombatCharacter characterData,
-                                                      IUiCombatContextEventPublisher uiCombatContextEventPublisher) {
+                                                      IUiCombatContextEventPublisher uiCombatContextEventPublisher,
+                                                      ICharacterEventRegistry characterEventRegistry) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
-            prefab.setup(characterData, uiCombatContextEventPublisher);
+            prefab.setup(characterData, uiCombatContextEventPublisher, characterEventRegistry);
+
 
             return prefab;
         }
 
         private void setup(ICombatCharacter character,
-                           IUiCombatContextEventPublisher paramUiCombatContextEventPublisher) {
+                           IUiCombatContextEventPublisher paramUiCombatContextEventPublisher,
+                           ICharacterEventRegistry paramCharacterEventRegistry) {
             _character = NullGuard.NotNullOrThrow(character);
             uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(paramUiCombatContextEventPublisher);
+            characterEventRegistry = NullGuard.NotNullOrThrow(paramCharacterEventRegistry);
 
             if (_character != null) {
-                _character.OnHpChanged += handleHpChanged;
-                _character.OnDeath += OnDeath;
+                characterEventRegistry.subscribe((IHpChangedEventListener)this);
+                characterEventRegistry.subscribe((ICharacterDeathEventListener)this);
             }
 
             refreshUI();
@@ -53,15 +61,6 @@ namespace MageFactory.UI.Context.Combat {
             uiCombatContextEventPublisher.publish(new UiCombatCharacterSelectedEvent(_character.getId()));
         }
 
-        private void handleHpChanged(ICombatCharacter ch, long newHp, long previousHpValue) {
-            PopupManager.Instance.ShowHpChangeDamage(this, newHp - previousHpValue);
-            refreshUI();
-        }
-
-        private void OnDeath(ICombatCharacter ch) {
-            Destroy(gameObject);
-        }
-
         private void refreshUI() {
             if (_character == null) return;
 
@@ -75,13 +74,27 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         private void cleanup() {
-            if (_character == null) {
+            characterEventRegistry?.unsubscribe((IHpChangedEventListener)this);
+            characterEventRegistry?.unsubscribe((ICharacterDeathEventListener)this);
+
+            _character?.cleanup();
+        }
+
+        public void onEvent(in HpChangedDtoEvent ev) {
+            if (ev.characterId != _character.getId()) {
                 return;
             }
 
-            _character.OnHpChanged -= handleHpChanged;
-            _character.OnDeath -= OnDeath;
-            _character.cleanup();
+            PopupManager.Instance.ShowHpChangeDamage(this, ev.newHp - ev.previousHpValue);
+            refreshUI();
+        }
+
+        public void onEvent(in CharacterDeathDtoEvent ev) {
+            if (ev.characterId != _character.getId()) {
+                return;
+            }
+
+            Destroy(gameObject);
         }
     }
 }

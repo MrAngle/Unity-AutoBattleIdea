@@ -9,7 +9,8 @@
     "MageFactory.Shared",
     "MageFactory.CombatContext.Api",
     "MageFactory.UI.Context.Combat",
-    "MageFactory.Flow.Contract"
+    "MageFactory.Flow.Contract",
+    "MageFactory.Character.Api"
   ],
   "autoReferenced": true
 }

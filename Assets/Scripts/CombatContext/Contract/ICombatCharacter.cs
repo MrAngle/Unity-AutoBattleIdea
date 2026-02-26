@@ -1,5 +1,4 @@
-﻿using System;
-using MageFactory.CombatContext.Contract.Command;
+﻿using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -7,8 +6,6 @@ using MageFactory.Shared.Model;
 namespace MageFactory.CombatContext.Contract {
     public interface ICombatCharacter {
         public Id<CharacterId> getId();
-        public event Action<ICombatCharacter, long, long> OnHpChanged;
-        public event Action<ICombatCharacter> OnDeath;
         ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item);
         bool canPlaceItem(EquipItemQuery equipItemQuery);
         ICombatCharacterInventory getInventoryAggregate();

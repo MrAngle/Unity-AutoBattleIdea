@@ -8,7 +8,8 @@
     "Zenject",
     "MageFactory.FlowRouting",
     "MageFactory.Flow.Api",
-    "MageFactory.Flow.Contract"
+    "MageFactory.Flow.Contract",
+    "MageFactory.Character.Api"
   ],
   "autoReferenced": true
 }

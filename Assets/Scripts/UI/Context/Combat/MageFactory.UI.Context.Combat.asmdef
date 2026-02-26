@@ -12,7 +12,8 @@
     "MageFactory.Semantics",
     "MageFactory.Inventory.Api",
     "MageFactory.Item.Catalog",
-    "MageFactory.UI.Component"
+    "MageFactory.UI.Component",
+    "MageFactory.Character.Api"
   ],
   "autoReferenced": true
 }

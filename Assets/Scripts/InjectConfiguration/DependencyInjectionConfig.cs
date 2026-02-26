@@ -1,6 +1,7 @@
 ﻿using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Domain;
 using MageFactory.BattleManager;
+using MageFactory.Character.Api.Event;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Character.Domain.Service;
@@ -151,16 +152,23 @@ namespace MageFactory.InjectConfiguration {
         private void bindEventHandlers() {
             Container
                 .Bind(
-                    typeof(IInventoryEventPublisher),
-                    typeof(IInventoryEventRegistry))
-                .To<InventoryEventHub>()
+                    typeof(ICombatContextEventPublisher),
+                    typeof(ICombatContextEventRegistry))
+                .To<CombatContextEventHub>()
                 .AsSingle();
 
             Container
                 .Bind(
-                    typeof(ICombatContextEventPublisher),
-                    typeof(ICombatContextEventRegistry))
-                .To<CombatContextEventHub>()
+                    typeof(ICharacterEventPublisher),
+                    typeof(ICharacterEventRegistry))
+                .To<CharacterEventHub>()
+                .AsSingle();
+
+            Container
+                .Bind(
+                    typeof(IInventoryEventPublisher),
+                    typeof(IInventoryEventRegistry))
+                .To<InventoryEventHub>()
                 .AsSingle();
         }
 

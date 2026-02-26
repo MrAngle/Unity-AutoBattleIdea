@@ -8,6 +8,8 @@ namespace MageFactory.Character.Domain {
         private int maxHp;
         private string name;
 
+        internal event Action<CharacterData, long, long> OnHpChanged;
+
         private CharacterData(string name, int maxHp) {
             this.name = name;
             this.maxHp = maxHp;
@@ -36,15 +38,10 @@ namespace MageFactory.Character.Domain {
             }
         }
 
-        internal event Action<CharacterData, long, long> OnHpChanged;
-
         internal void applyDamage(PowerAmount damageAmount) {
             switch (damageAmount) {
                 case DamageToDeal deal:
                     takeDamage(deal.getPower());
-                    break;
-                case DamageToReceive receive:
-                    heal(receive.getPower());
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
@@ -54,11 +51,6 @@ namespace MageFactory.Character.Domain {
         private void takeDamage(long dmg) {
             CurrentHp -= dmg;
             if (CurrentHp < 0) CurrentHp = 0;
-        }
-
-        private void heal(long amount) {
-            CurrentHp += amount;
-            if (CurrentHp > maxHp) CurrentHp = maxHp;
         }
     }
 }
