@@ -1,11 +1,8 @@
-﻿using MageFactory.CombatContext.Contract;
-
-namespace MageFactory.Inventory.Contract {
+﻿namespace MageFactory.Inventory.Contract {
     public interface IEntryPointFactory {
         public IInventoryPlacedEntryPoint createPlacedEntryPoint(
             IEntryPointArchetype entryPointArchetype,
-            IInventoryPosition inventoryPosition,
-            ICharacterCombatCapabilities characterCombatCapabilities
+            IInventoryPosition inventoryPosition
         );
     }
 }

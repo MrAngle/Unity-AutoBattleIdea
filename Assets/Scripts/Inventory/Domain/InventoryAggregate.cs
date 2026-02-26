@@ -77,8 +77,8 @@ namespace MageFactory.Inventory.Domain {
 
             IInventoryPlacedItem inventoryPlacedItem =
                 inventoryPlaceableItem.toPlacedItem(
-                    InventoryPosition.create(placeItemCommand.origin, placeItemCommand.itemDefinition.getShape().Shape),
-                    placeItemCommand.characterCombatCapabilities);
+                    InventoryPosition.create(placeItemCommand.origin,
+                        placeItemCommand.itemDefinition.getShape().Shape));
 
             if (inventoryPlacedItem.getOccupiedCells().Any(vector2Int => cellToItem.ContainsKey(vector2Int))) {
                 throw new ArgumentException("Cannot place item");

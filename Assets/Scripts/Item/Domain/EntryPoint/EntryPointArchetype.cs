@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -17,7 +16,7 @@ namespace MageFactory.Item.Domain.EntryPoint {
         private CancellationTokenSource cancellationTokenSource;
 
         protected EntryPointArchetype(FlowKind flowKind, ShapeArchetype shapeArchetype,
-            IEntryPointFactory entryPointFactory) {
+                                      IEntryPointFactory entryPointFactory) {
             this.entryPointFactory = NullGuard.NotNullOrThrow(entryPointFactory);
 
             this.flowKind = flowKind;
@@ -26,9 +25,8 @@ namespace MageFactory.Item.Domain.EntryPoint {
             turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
-        public IInventoryPlacedItem toPlacedItem(IInventoryPosition inventoryPosition,
-            ICharacterCombatCapabilities characterCombatCapabilities) {
-            return entryPointFactory.createPlacedEntryPoint(this, inventoryPosition, characterCombatCapabilities);
+        public IInventoryPlacedItem toPlacedItem(IInventoryPosition inventoryPosition) {
+            return entryPointFactory.createPlacedEntryPoint(this, inventoryPosition);
         }
 
         public ShapeArchetype getShape() {

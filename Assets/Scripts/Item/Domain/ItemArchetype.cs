@@ -1,5 +1,4 @@
-﻿using MageFactory.CombatContext.Contract;
-using MageFactory.Inventory.Contract;
+﻿using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model.Shape;
 
@@ -16,10 +15,7 @@ namespace MageFactory.Item.Domain {
             return new ItemArchetype(itemDefinition.getShape());
         }
 
-        public IInventoryPlacedItem toPlacedItem(
-            IInventoryPosition inventoryPosition,
-            ICharacterCombatCapabilities characterCombatCapabilities
-        ) {
+        public IInventoryPlacedItem toPlacedItem(IInventoryPosition inventoryPosition) {
             return new BattleItem(this, inventoryPosition);
         }
 
