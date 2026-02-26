@@ -21,7 +21,7 @@ namespace MageFactory.UI.Context.Combat {
         ICombatContextEventListener,
         IDisposable, IUiCombatCharacterSelectedEventListener, IItemPlacedEventEventListener, IHpChangedEventListener,
         ICharacterDeathEventListener {
-        private ICombatContext combatContext; // TODO: change to "view model"
+        private ICombatContext combatContext;
         private ICombatCharacter selectedCharacter;
         private readonly ICombatContextEventRegistry combatContextEventRegistry;
         private readonly IUiCombatContextEventRegistry uiCombatContextEventRegistry;

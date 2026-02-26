@@ -1,33 +1,22 @@
 ﻿using System;
 using System.Collections;
-using MageFactory.Character.Api.Event;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Inventory.Contract;
 using MageFactory.Item.Catalog;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat;
 using UnityEngine;
 using Zenject;
-// using MageFactory.UI.Context.Combat;
-// using MageFactory.UI.Context.Combat.Event;
 
 namespace MageFactory.BattleManager {
     public class BattleUIManager : MonoBehaviour {
-        // private CharacterPrefabAggregate characterPrefabAggregate;
-        private IEntryPointFactory entryPointFactory; // for now
-        private Transform slotParent;
         private BattleRuntime battleRuntime; // move to BattleManager
         private Coroutine battleLoop;
 
         private ICombatContextFactory combatContextFactory;
-
-        // private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
-        private ICharacterEventRegistry characterEventRegistry;
-
-        private ICombatContext combatContext;
         private CombatContextPresentationFactory combatContextPresentationFactory;
+        private ICombatContext combatContext;
 
         private float turnInterval = 2f;
 
@@ -45,15 +34,11 @@ namespace MageFactory.BattleManager {
         }
 
         [Inject]
-        public void construct([Inject(Id = "BattleSlotParent")] Transform injectSlotParent,
-                              BattleRuntime injectBattleRuntime,
+        public void construct(BattleRuntime injectBattleRuntime,
                               ICombatContextFactory injectCombatContextFactory,
-                              ICharacterEventRegistry injectCharacterEventRegistry,
                               CombatContextPresentationFactory injectCombatContextPresentationFactory) {
-            slotParent = NullGuard.NotNullOrThrow(injectSlotParent);
             battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
             combatContextFactory = NullGuard.NotNullOrThrow(injectCombatContextFactory);
-            characterEventRegistry = NullGuard.NotNullOrThrow(injectCharacterEventRegistry);
             combatContextPresentationFactory = NullGuard.NotNullOrThrow(injectCombatContextPresentationFactory);
         }
 
@@ -61,11 +46,6 @@ namespace MageFactory.BattleManager {
             combatContext = combatContextFactory.create(charactersToCreate);
 
             combatContextPresentationFactory.createCombatContextPresentation(combatContext);
-
-            // foreach (ICombatCharacter combatCharacter in combatContext.getAllCharacters()) {
-            //     CharacterPrefabAggregate.create(characterPrefabAggregate, slotParent, combatCharacter,
-            //         uiCombatContextEventPublisher, characterEventRegistry);
-            // }
         }
 
         private void startBattleLoop() {
