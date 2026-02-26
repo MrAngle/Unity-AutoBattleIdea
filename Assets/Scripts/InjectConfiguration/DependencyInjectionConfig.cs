@@ -54,7 +54,7 @@ namespace MageFactory.InjectConfiguration {
 
             bindInventoryGridLayoutGroup();
 
-            bindContexts();
+            // bindContexts();
 
             bindFactories();
 
@@ -110,11 +110,11 @@ namespace MageFactory.InjectConfiguration {
         }
 
 
-        private void bindContexts() {
-            Container.BindInterfacesAndSelfTo<CombatContextPresentationHandler>()
-                .AsSingle()
-                .NonLazy();
-        }
+        // private void bindContexts() {
+        //     Container.BindInterfacesAndSelfTo<CombatContextPresentationHandler>()
+        //         .AsSingle()
+        //         .NonLazy();
+        // }
 
         private void bindFactories() {
             Container.Bind<IFlowFactory>()
@@ -146,6 +146,8 @@ namespace MageFactory.InjectConfiguration {
                 .To<CombatContextFactoryService>()
                 .AsSingle();
 
+            Container.Bind<CombatContextPresentationFactory>()
+                .AsSingle();
             bindCharactersAndBattleUI();
         }
 

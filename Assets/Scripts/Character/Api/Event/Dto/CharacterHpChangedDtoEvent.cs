@@ -2,14 +2,14 @@
 using MageFactory.Shared.Id;
 
 namespace MageFactory.Character.Api.Event.Dto {
-    public readonly struct HpChangedDtoEvent : IDomainEvent {
+    public readonly struct CharacterHpChangedDtoEvent : IDomainEvent {
         public readonly Id<CharacterId> characterId;
         public readonly long newHp;
         public readonly long previousHpValue;
 
-        public HpChangedDtoEvent(Id<CharacterId> characterId,
-                                 long newHp,
-                                 long previousHpValue) {
+        public CharacterHpChangedDtoEvent(Id<CharacterId> characterId,
+                                          long newHp,
+                                          long previousHpValue) {
             this.characterId = characterId;
             this.newHp = newHp;
             this.previousHpValue = previousHpValue;

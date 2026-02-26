@@ -1,5 +1,4 @@
-﻿using MageFactory.Character.Api.Event;
-using MageFactory.Character.Api.Event.Dto;
+﻿using MageFactory.Character.Api.Event.Dto;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat.Event;
@@ -9,40 +8,39 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MageFactory.UI.Context.Combat {
-    public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler, IHpChangedEventListener,
-        ICharacterDeathEventListener {
+namespace MageFactory.UI.Component {
+    public class CharacterPrefabAggregate : MonoBehaviour, IPointerClickHandler {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
         private ICombatCharacter _character;
         private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
-        private ICharacterEventRegistry characterEventRegistry;
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
                                                       ICombatCharacter characterData,
-                                                      IUiCombatContextEventPublisher uiCombatContextEventPublisher,
-                                                      ICharacterEventRegistry characterEventRegistry) {
+                                                      IUiCombatContextEventPublisher uiCombatContextEventPublisher) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
-            prefab.setup(characterData, uiCombatContextEventPublisher, characterEventRegistry);
+            prefab.setup(characterData, uiCombatContextEventPublisher);
 
 
             return prefab;
         }
 
         private void setup(ICombatCharacter character,
-                           IUiCombatContextEventPublisher paramUiCombatContextEventPublisher,
-                           ICharacterEventRegistry paramCharacterEventRegistry) {
+                           IUiCombatContextEventPublisher paramUiCombatContextEventPublisher) {
             _character = NullGuard.NotNullOrThrow(character);
             uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(paramUiCombatContextEventPublisher);
-            characterEventRegistry = NullGuard.NotNullOrThrow(paramCharacterEventRegistry);
-
-            if (_character != null) {
-                characterEventRegistry.subscribe((IHpChangedEventListener)this);
-                characterEventRegistry.subscribe((ICharacterDeathEventListener)this);
-            }
 
             refreshUI();
+        }
+
+        public void hpChange(in CharacterHpChangedDtoEvent ev) {
+            PopupManager.Instance.ShowHpChangeDamage(this, ev.newHp - ev.previousHpValue);
+            refreshUI();
+        }
+
+        public void destroy(in CharacterDeathDtoEvent ev) {
+            Destroy(gameObject);
         }
 
         private void OnDisable() {
@@ -74,27 +72,7 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         private void cleanup() {
-            characterEventRegistry?.unsubscribe((IHpChangedEventListener)this);
-            characterEventRegistry?.unsubscribe((ICharacterDeathEventListener)this);
-
             _character?.cleanup();
-        }
-
-        public void onEvent(in HpChangedDtoEvent ev) {
-            if (ev.characterId != _character.getId()) {
-                return;
-            }
-
-            PopupManager.Instance.ShowHpChangeDamage(this, ev.newHp - ev.previousHpValue);
-            refreshUI();
-        }
-
-        public void onEvent(in CharacterDeathDtoEvent ev) {
-            if (ev.characterId != _character.getId()) {
-                return;
-            }
-
-            Destroy(gameObject);
         }
     }
 }

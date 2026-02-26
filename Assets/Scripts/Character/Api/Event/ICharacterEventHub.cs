@@ -2,7 +2,7 @@
 
 namespace MageFactory.Character.Api.Event {
     public interface ICharacterEventPublisher {
-        void publish(in HpChangedDtoEvent ev);
+        void publish(in CharacterHpChangedDtoEvent ev);
         void publish(in CharacterDeathDtoEvent ev);
     }
 

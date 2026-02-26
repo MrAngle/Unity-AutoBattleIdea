@@ -135,7 +135,7 @@ namespace MageFactory.Character.Domain {
         }
 
         private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
-            characterEventPublisher.publish(new HpChangedDtoEvent(characterId, newHp, previousHpValue));
+            characterEventPublisher.publish(new CharacterHpChangedDtoEvent(characterId, newHp, previousHpValue));
         }
     }
 }

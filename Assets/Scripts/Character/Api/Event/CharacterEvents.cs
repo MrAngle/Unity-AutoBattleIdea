@@ -2,7 +2,7 @@
 using MageFactory.Shared.Event;
 
 namespace MageFactory.Character.Api.Event {
-    public interface IHpChangedEventListener : IDomainEventListener<HpChangedDtoEvent> {
+    public interface IHpChangedEventListener : IDomainEventListener<CharacterHpChangedDtoEvent> {
     }
 
     public interface ICharacterDeathEventListener : IDomainEventListener<CharacterDeathDtoEvent> {

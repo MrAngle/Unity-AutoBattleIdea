@@ -4,8 +4,9 @@ using MageFactory.Shared.Event;
 
 namespace MageFactory.Character.Domain.Service {
     internal sealed class CharacterEventHub : ICharacterEventPublisher, ICharacterEventRegistry {
-        private readonly DomainEventChannel<HpChangedDtoEvent, IHpChangedEventListener> characterHpChangedChannel =
-            new();
+        private readonly DomainEventChannel<CharacterHpChangedDtoEvent, IHpChangedEventListener>
+            characterHpChangedChannel =
+                new();
 
         private readonly DomainEventChannel<CharacterDeathDtoEvent, ICharacterDeathEventListener>
             characterDeathChannel = new();
@@ -22,7 +23,7 @@ namespace MageFactory.Character.Domain.Service {
         public void unsubscribe(ICharacterDeathEventListener eventListener) =>
             characterDeathChannel.unsubscribe(eventListener);
 
-        public void publish(in HpChangedDtoEvent ev) =>
+        public void publish(in CharacterHpChangedDtoEvent ev) =>
             characterHpChangedChannel.publish(in ev);
 
         public void publish(in CharacterDeathDtoEvent ev) =>
