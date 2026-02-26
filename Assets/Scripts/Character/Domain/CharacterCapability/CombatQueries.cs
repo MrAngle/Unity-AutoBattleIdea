@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CombatQueries : ICombatQueries {
-        private readonly ICombatCharacter character;
+        private readonly CharacterAggregate character;
 
-        internal CombatQueries(ICombatCharacter character) {
+        internal CombatQueries(CharacterAggregate character) {
             this.character = character;
         }
 

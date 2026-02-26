@@ -4,9 +4,9 @@ using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CombatCommandBus : ICombatCommandBus {
-        private ICombatCharacter character;
+        private CharacterAggregate character;
 
-        public CombatCommandBus(ICombatCharacter character) {
+        public CombatCommandBus(CharacterAggregate character) {
             this.character = character;
         }
 

@@ -1,60 +1,67 @@
-﻿using System;
-using MageFactory.CombatContext.Contract;
+﻿using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
+using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
     internal class CombatCharacter : ICombatCharacter {
         private readonly CharacterAggregate characterAggregate;
+        private readonly ICharacterCombatCapabilities characterCombatCapabilities;
+
+        internal CombatCharacter(CharacterAggregate characterAggregate,
+                                 ICharacterCombatCapabilities characterCombatCapabilities) {
+            this.characterAggregate = NullGuard.NotNullOrThrow(characterAggregate);
+            this.characterCombatCapabilities = NullGuard.NotNullOrThrow(characterCombatCapabilities);
+        }
 
         public Id<CharacterId> getId() {
-            throw new NotImplementedException();
+            return characterAggregate.getId();
         }
 
         public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item) {
-            throw new NotImplementedException();
+            return characterAggregate.equipItemOrThrow(item);
         }
 
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {
-            throw new NotImplementedException();
+            return characterAggregate.canPlaceItem(equipItemQuery);
         }
 
         public ICombatCharacterInventory getInventoryAggregate() {
-            throw new NotImplementedException();
+            return characterAggregate.getInventoryAggregate();
         }
 
         public long getMaxHp() {
-            throw new NotImplementedException();
+            return characterAggregate.getMaxHp();
         }
 
         public long getCurrentHp() {
-            throw new NotImplementedException();
+            return characterAggregate.getCurrentHp();
         }
 
         public void apply(PowerAmount powerAmount) {
-            throw new NotImplementedException();
+            characterAggregate.apply(powerAmount);
         }
 
         public string getName() {
-            throw new NotImplementedException();
+            return characterAggregate.getName();
         }
 
         public void cleanup() {
-            throw new NotImplementedException();
+            characterAggregate.cleanup();
         }
 
         public void combatTick(IFlowConsumer flowConsumer) {
-            throw new NotImplementedException();
+            characterAggregate.combatTick(flowConsumer, characterCombatCapabilities);
         }
 
         public ICharacterCombatCapabilities getCharacterCombatCapabilities() {
-            throw new NotImplementedException();
+            return characterCombatCapabilities;
         }
 
         public Team getTeam() {
-            throw new NotImplementedException();
+            return characterAggregate.getTeam();
         }
     }
 }

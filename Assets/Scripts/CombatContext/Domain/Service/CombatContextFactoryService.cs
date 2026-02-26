@@ -11,11 +11,11 @@ using Zenject;
 
 namespace MageFactory.CombatContext.Domain.Service {
     internal sealed class CombatContextFactoryService : ICombatContextFactory {
-        private readonly ICharacterFactory characterFactory;
+        private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
 
         [Inject]
-        public CombatContextFactoryService(ICharacterFactory injectedCharacterFactory,
+        public CombatContextFactoryService(ICombatCharacterFactory injectedCharacterFactory,
                                            ICombatContextEventPublisher injectedContextEventPublisher) {
             characterFactory = NullGuard.NotNullOrThrow(injectedCharacterFactory);
             combatContextEventPublisher = NullGuard.NotNullOrThrow(injectedContextEventPublisher);

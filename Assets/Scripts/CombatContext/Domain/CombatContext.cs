@@ -16,18 +16,18 @@ namespace MageFactory.CombatContext.Domain {
     internal class CombatContext : ICombatContext, IFlowConsumer, IReadCombatContext {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacter> characters = new();
 
-        private readonly ICharacterFactory characterFactory;
+        private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
         private readonly Random random = new();
 
-        private CombatContext(ICharacterFactory characterFactory,
+        private CombatContext(ICombatCharacterFactory characterFactory,
                               ICombatContextEventPublisher combatContextEventPublisher) {
             this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
             this.combatContextEventPublisher = NullGuard.NotNullOrThrow(combatContextEventPublisher);
             NullGuard.NotNullOrThrow(characters);
         }
 
-        internal static CombatContext create(ICharacterFactory paramCharacterFactory,
+        internal static CombatContext create(ICombatCharacterFactory paramCharacterFactory,
                                              ICombatContextEventPublisher combatContextEventPublisher,
                                              IReadOnlyList<CreateCombatCharacterCommand> charactersToCreate) {
             CombatContext combatContext = new CombatContext(paramCharacterFactory, combatContextEventPublisher);

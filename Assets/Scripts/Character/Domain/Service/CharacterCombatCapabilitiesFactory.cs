@@ -5,11 +5,9 @@ using MageFactory.CombatContext.Contract;
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]
 
 namespace MageFactory.Character.Domain.Service {
-    internal class CharacterCombatCapabilitiesFactoryService : ICharacterCombatCapabilitiesFactory {
-        // private ICharacter character;
-
+    internal class CharacterCombatCapabilitiesFactory {
         // [Inject] // tutaj pojawia sie ewentualne potrzebne serwisy
-        public ICharacterCombatCapabilities createCombatContextFactory(ICombatCharacter paramCharacter) {
+        public ICharacterCombatCapabilities createCombatContextFactory(CharacterAggregate paramCharacter) {
             return new CharacterCombatCapabilities(paramCharacter);
         }
     }

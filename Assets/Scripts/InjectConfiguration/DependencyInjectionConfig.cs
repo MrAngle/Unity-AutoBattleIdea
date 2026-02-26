@@ -127,9 +127,9 @@ namespace MageFactory.InjectConfiguration {
             Container.Bind<IInventoryFactory>()
                 .To<InventoryFactoryService>()
                 .AsSingle();
-            Container.Bind<ICharacterCombatCapabilitiesFactory>()
-                .To<CharacterCombatCapabilitiesFactoryService>()
-                .AsSingle();
+            // Container.Bind<ICharacterCombatCapabilitiesFactory>()
+            //     .To<CharacterCombatCapabilitiesFactoryService>()
+            //     .AsSingle();
             Container.Bind<IInventoryItemViewFactory>()
                 .To<InventoryItemViewFactory>()
                 .AsSingle();
@@ -138,8 +138,8 @@ namespace MageFactory.InjectConfiguration {
                 .To<ActionExecutorService>()
                 .AsSingle();
 
-            Container.Bind<ICharacterFactory>()
-                .To<CharacterFactoryService>()
+            Container.Bind<ICombatCharacterFactory>()
+                .To<CombatCharacterFactory>()
                 .AsSingle();
 
             Container.Bind<ICombatContextFactory>()
@@ -147,6 +147,11 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle();
 
             Container.Bind<CombatContextPresentationFactory>()
+                .AsSingle();
+
+            Container.Bind<CharacterFactory>()
+                .AsSingle();
+            Container.Bind<CharacterCombatCapabilitiesFactory>()
                 .AsSingle();
             bindCharactersAndBattleUI();
         }
