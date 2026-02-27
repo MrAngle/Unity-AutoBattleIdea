@@ -5,34 +5,25 @@ using MageFactory.Character.Api.Event.Dto;
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Flow.Api;
-using MageFactory.Flow.Contract;
-using MageFactory.FlowRouting;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
-    internal class CharacterAggregate : IFlowOwner {
+    internal class CharacterAggregate {
         private readonly Id<CharacterId> characterId;
         private readonly CharacterData characterData;
         private readonly ICharacterInventory characterInventory;
-        private readonly Team team;
-        private readonly IFlowFactory flowFactory;
         private readonly ICharacterEventPublisher characterEventPublisher;
 
         private CharacterAggregate(
             CharacterData data,
             ICharacterInventory characterInventoryFacade,
-            Team team,
-            IFlowFactory flowFactory,
             ICharacterEventPublisher characterEventPublisher
         ) {
             characterId = new Id<CharacterId>(IdGenerator.Next());
-            this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             characterData = NullGuard.NotNullOrThrow(data);
             characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
-            this.team = NullGuard.enumDefinedOrThrow(team);
             this.characterEventPublisher = NullGuard.NotNullOrThrow(characterEventPublisher);
 
             characterData.OnHpChanged += handleCharacterDataHpChanged;
@@ -41,11 +32,12 @@ namespace MageFactory.Character.Domain {
         public static CharacterAggregate createFrom(
             CreateCombatCharacterCommand characterCreateCommand,
             ICharacterInventory characterInventoryFacade, // I think it will be better when a character creates inventory
-            IFlowFactory flowFactory,
             ICharacterEventPublisher characterEventPublisher
         ) {
-            return new CharacterAggregate(CharacterData.from(characterCreateCommand), characterInventoryFacade,
-                characterCreateCommand.team, flowFactory, characterEventPublisher);
+            return new CharacterAggregate(
+                CharacterData.from(characterCreateCommand),
+                characterInventoryFacade,
+                characterEventPublisher);
         }
 
         public Id<CharacterId> getId() {
@@ -60,7 +52,7 @@ namespace MageFactory.Character.Domain {
             return characterData.getName();
         }
 
-        public ICombatCharacterInventory getInventoryAggregate() {
+        public ICharacterInventory getInventoryAggregate() {
             return characterInventory;
         }
 
@@ -95,27 +87,6 @@ namespace MageFactory.Character.Domain {
 
         public void cleanup() {
             characterData.OnHpChanged -= handleCharacterDataHpChanged;
-        }
-
-        public void combatTick(IFlowConsumer flowConsumer, ICharacterCombatCapabilities characterCombatCapabilities) {
-            var entryPointsToTick = characterInventory.getEntryPointsToTick();
-            if (entryPointsToTick == null || entryPointsToTick.Count == 0)
-                return;
-
-            var router = GridAdjacencyRouter.create(characterCombatCapabilities.query());
-
-            foreach (var entryPoint in entryPointsToTick) {
-                if (entryPoint == null) {
-                    continue;
-                }
-
-                var flow = flowFactory.create(entryPoint, router, flowConsumer, this);
-                flow.start();
-            }
-        }
-
-        public Team getTeam() {
-            return team;
         }
 
         ~CharacterAggregate() {
