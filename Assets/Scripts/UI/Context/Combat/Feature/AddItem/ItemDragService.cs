@@ -66,7 +66,8 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             var can = characterAggregateContext != null &&
                       // characterAggregateContext.getInventoryAggregate()
                       //     .canPlace(new PlaceItemQuery(inventoryPlaceableItem, origin));
-                      characterAggregateContext.canPlaceItem(new EquipItemQuery(inventoryPlaceableItem, origin));
+                      characterAggregateContext.getCharacterCombatCapabilities().query()
+                          .canPlaceItem(new EquipItemQuery(inventoryPlaceableItem, origin));
             ghostPlacedItem.setColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
@@ -90,7 +91,8 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
 
             ICombatCharacter character = characterContext;
             if (character != null) {
-                var equippedItem = character.equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin));
+                var equippedItem = character.getCharacterCombatCapabilities()
+                    .command().equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin));
                 NullGuard.NotNullCheckOrThrow(equippedItem);
             }
 

@@ -25,7 +25,9 @@ namespace MageFactory.Character.Domain.Service {
             var character =
                 CharacterAggregate.createFrom(command, characterInventory, characterEventPublisher);
 
-            foreach (var itemToEquip in command.itemsToEquip) character.equipItemOrThrow(itemToEquip);
+            foreach (var itemToEquip in command.itemsToEquip) {
+                character.equipItemOrThrow(itemToEquip);
+            }
 
             return character;
         }

@@ -65,10 +65,6 @@ namespace MageFactory.Character.Domain {
             characterAggregate.cleanup();
         }
 
-        // public void combatTick(IFlowConsumer flowConsumer) {
-        //     characterAggregate.combatTick(flowConsumer, characterCombatCapabilities);
-        // }
-
         public void combatTick(IFlowConsumer flowConsumer) {
             var entryPointsToTick = characterAggregate.getInventoryAggregate().getEntryPointsToTick();
             if (entryPointsToTick == null || entryPointsToTick.Count == 0)

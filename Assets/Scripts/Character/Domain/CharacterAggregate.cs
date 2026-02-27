@@ -44,10 +44,6 @@ namespace MageFactory.Character.Domain {
             return characterId;
         }
 
-        public Id<CharacterId> getFlowOwnerCharacterId() {
-            return getId();
-        }
-
         public string getName() {
             return characterData.getName();
         }

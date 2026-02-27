@@ -1,4 +1,5 @@
 ﻿using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Model;
 
@@ -12,11 +13,19 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
         public DamageToDeal consumeFlow(ProcessFlowCommand flowCommand, IReadCombatContext combatContext) {
             if (combatContext.tryGetRandomEnemyOf(character.getId(), out var enemy)) {
-                enemy.apply(flowCommand.damageToDeal);
+                enemy.getCharacterCombatCapabilities().command().apply(flowCommand.damageToDeal);
                 return flowCommand.damageToDeal;
             }
 
             return DamageToDeal.NO_POWER;
+        }
+
+        public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item) {
+            return character.equipItemOrThrow(item);
+        }
+
+        public void apply(PowerAmount powerAmount) {
+            character.apply(powerAmount);
         }
     }
 }

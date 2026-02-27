@@ -5,6 +5,7 @@
     "MageFactory.Shared",
     "MageFactory.CombatContext.Api",
     "MageFactory.CombatContext.Contract",
+    "MageFactory.FlowRouting",
     "MageFactory.UI.Shared",
     "MageFactory.Flow.Contract",
     "Unity.TextMeshPro",

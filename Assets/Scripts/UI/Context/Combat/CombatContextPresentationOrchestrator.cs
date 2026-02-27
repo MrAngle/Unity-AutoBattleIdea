@@ -111,7 +111,8 @@ namespace MageFactory.UI.Context.Combat {
         public void onEvent(in UiCombatCharacterSelectedEvent characterSelectedEvent) {
             selectedCharacter = combatContext.getCombatCharacterById(characterSelectedEvent.characterId);
 
-            inventoryPanelPresentation.printInventory(selectedCharacter.getInventoryAggregate());
+            inventoryPanelPresentation.printInventory(selectedCharacter.getCharacterCombatCapabilities().query()
+                .getInventoryAggregate());
 
             itemDragService.setCharacterContext(selectedCharacter);
         }

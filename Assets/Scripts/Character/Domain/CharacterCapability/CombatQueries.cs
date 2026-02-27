@@ -1,4 +1,5 @@
 ﻿using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Contract;
 using UnityEngine;
 
@@ -19,6 +20,14 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
             item = combatItem;
             return true;
+        }
+
+        public bool canPlaceItem(EquipItemQuery equipItemQuery) {
+            return character.canPlaceItem(equipItemQuery);
+        }
+
+        public ICombatCharacterInventory getInventoryAggregate() {
+            return character.getInventoryAggregate();
         }
     }
 }
