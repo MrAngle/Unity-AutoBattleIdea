@@ -37,15 +37,15 @@ namespace MageFactory.Flow.Domain {
             visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        internal static IFlowAggregateFacade create(IFlowItem placedEntryPoint,
+        internal static IFlowAggregateFacade create(IFlowItem startItem,
                                                     IFlowRouter flowRouter,
                                                     SignalBus signalBus,
                                                     IActionExecutor actionExecutor,
                                                     IFlowConsumer flowConsumer,
                                                     IFlowOwner flowOwner) {
-            var context = new FlowContext(placedEntryPoint, flowConsumer, flowOwner);
+            var context = new FlowContext(startItem, flowConsumer, flowOwner);
             var model = new FlowModel(context);
-            var startNode = placedEntryPoint;
+            var startNode = startItem;
 
             return new FlowAggregate(model, startNode, flowRouter, signalBus, actionExecutor);
         }
@@ -54,6 +54,14 @@ namespace MageFactory.Flow.Domain {
             flowModel.addPower(damageAmount);
 
             signalBus.Fire(new ItemPowerChangedDtoEvent(currentNode.getId(), damageAmount.getPower()));
+        }
+
+        public void pushRightAdjacentItemRight() {
+            // find right adjacent item
+            // capabilities.query().getInventoryAggregate().getAdjacentItems()
+
+            // move right
+            // foundItem.moveRight();
         }
 
         public void start() {

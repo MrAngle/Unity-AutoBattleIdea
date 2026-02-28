@@ -11,7 +11,8 @@
     "MageFactory.TimeSystem",
     "MageFactory.Semantics",
     "Zenject",
-    "MageFactory.Inventory.Api"
+    "MageFactory.Inventory.Api",
+    "MageFactory.ActionEffect"
   ],
   "autoReferenced": true,
   "allowUnsafeCode": false

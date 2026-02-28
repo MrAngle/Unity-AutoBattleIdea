@@ -1,4 +1,5 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using System;
+using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Contract;
 using UnityEngine;
@@ -28,6 +29,11 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
         public ICombatCharacterInventory getInventoryAggregate() {
             return character.getInventoryAggregate();
+        }
+
+        public bool tryGetRightAdjacentItem(IFlowItem sourceFlowItem, out IFlowItem adjacentFlowItem) {
+            // character.getInventoryAggregate().tryGetNeighborItems(sourceFlowItem, out adjacentFlowItem);
+            throw new NotImplementedException();
         }
     }
 }

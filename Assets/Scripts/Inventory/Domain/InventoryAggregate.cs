@@ -8,11 +8,13 @@ using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.ItemSearch;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
-    internal class InventoryAggregate : ICharacterInventory {
+    internal class InventoryAggregate {
         private readonly HashSet<IInventoryPlacedItem> items = new();
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
         private readonly HashSet<ICharacterEquippedEntryPointToTick> entryPoints = new();
@@ -33,15 +35,11 @@ namespace MageFactory.Inventory.Domain {
                 this.inventoryEventHub);
         }
 
-        internal static ICharacterInventory create(IItemFactory itemFactory,
-                                                   IInventoryEventPublisher inventoryEventPublisher) {
+        internal static InventoryAggregate create(IItemFactory itemFactory,
+                                                  IInventoryEventPublisher inventoryEventPublisher) {
             IInventoryGrid grid = new InventoryGrid(12, 8);
 
-            var aggregate = new InventoryAggregate(
-                grid,
-                itemFactory,
-                inventoryEventPublisher
-            );
+            var aggregate = new InventoryAggregate(grid, itemFactory, inventoryEventPublisher);
 
             return aggregate;
         }
@@ -50,10 +48,6 @@ namespace MageFactory.Inventory.Domain {
             // jeśli trzymasz IPlacedItem, dodaj na nim gettery albo mapuj z posiadanych struktur
             foreach (var item in items)
                 yield return item;
-        }
-
-        IEnumerable<IGridItemPlaced> ICombatCharacterInventory.getPlacedSnapshot() {
-            return getPlacedSnapshot();
         }
 
         public ICombatInventory getInventoryGrid() {
@@ -68,7 +62,7 @@ namespace MageFactory.Inventory.Domain {
             return entryPoints;
         }
 
-        public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand) {
+        public IInventoryPlacedItem place(PlaceItemCommand placeItemCommand) {
             if (!inventoryGrid.canPlace(placeItemCommand.itemDefinition.getShape(), placeItemCommand.origin))
                 throw new ArgumentException("Cannot place item");
 
@@ -100,6 +94,24 @@ namespace MageFactory.Inventory.Domain {
                 inventoryPlacedItem.getShape(),
                 placeItemCommand.origin));
             return inventoryPlacedItem;
+        }
+
+        public bool tryGetNeighborCells(IGridItemPlaced sourceGridItemPlaced,
+                                        out IEnumerable<IInventoryPlacedItem> neighborItems) {
+            if (sourceGridItemPlaced == null) {
+                neighborItems = Enumerable.Empty<IInventoryPlacedItem>();
+                return false;
+            }
+
+            IInventoryPlacedItem[] neighbors = GridAdjacencySearch
+                .getNeighborItems(
+                    sourceGridItemPlaced,
+                    cellToItem,
+                    GridDirectionSets.AllExcludeNone)
+                .ToArray();
+
+            neighborItems = neighbors;
+            return neighbors.Length > 0;
         }
 
         public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem itemToReturn) {

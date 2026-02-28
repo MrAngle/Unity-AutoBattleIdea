@@ -8,20 +8,20 @@ using Zenject;
 
 namespace MageFactory.Character.Domain.Service {
     internal class CharacterFactory {
-        private readonly IInventoryFactory inventoryFactory;
+        private readonly ICharacterInventoryFactory characterInventoryFactory;
         private readonly ICharacterEventPublisher characterEventPublisher;
 
         [Inject]
         internal CharacterFactory(
-            IInventoryFactory inventoryFactory,
+            ICharacterInventoryFactory characterInventoryFactory,
             ICharacterEventPublisher characterEventPublisher
         ) {
-            this.inventoryFactory = inventoryFactory;
+            this.characterInventoryFactory = characterInventoryFactory;
             this.characterEventPublisher = characterEventPublisher;
         }
 
         internal CharacterAggregate createCharacter(CreateCombatCharacterCommand command) {
-            var characterInventory = inventoryFactory.createCharacterInventory();
+            var characterInventory = characterInventoryFactory.createCharacterInventory();
             var character =
                 CharacterAggregate.createFrom(command, characterInventory, characterEventPublisher);
 

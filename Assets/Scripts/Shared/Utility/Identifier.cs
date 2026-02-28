@@ -1,6 +1,4 @@
-﻿// Shared/Identifier/StrongIds.cs
-
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 
 namespace MageFactory.Shared.Utility {

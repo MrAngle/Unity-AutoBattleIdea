@@ -1,4 +1,5 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using System;
+using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Model;
@@ -26,6 +27,10 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
         public void apply(PowerAmount powerAmount) {
             character.apply(powerAmount);
+        }
+
+        public bool tryMoveItemToRight(IFlowItem flowItem) {
+            throw new NotImplementedException();
         }
     }
 }

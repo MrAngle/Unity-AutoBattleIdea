@@ -124,8 +124,8 @@ namespace MageFactory.InjectConfiguration {
             Container.BindInterfacesTo<ItemFactoryService>()
                 .AsSingle();
 
-            Container.Bind<IInventoryFactory>()
-                .To<InventoryFactoryService>()
+            Container.Bind<ICharacterInventoryFactory>()
+                .To<CharacterInventoryFactory>()
                 .AsSingle();
             // Container.Bind<ICharacterCombatCapabilitiesFactory>()
             //     .To<CharacterCombatCapabilitiesFactoryService>()

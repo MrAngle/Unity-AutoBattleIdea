@@ -1,5 +1,5 @@
 ﻿namespace MageFactory.Character.Contract {
-    public interface IInventoryFactory {
+    public interface ICharacterInventoryFactory {
         ICharacterInventory createCharacterInventory();
     }
 }
