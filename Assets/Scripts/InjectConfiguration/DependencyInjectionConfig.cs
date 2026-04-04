@@ -153,6 +153,8 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle();
             Container.Bind<CharacterCombatCapabilitiesFactory>()
                 .AsSingle();
+            Container.Bind<ActionContextFactory>()
+                .AsSingle();
             bindCharactersAndBattleUI();
         }
 

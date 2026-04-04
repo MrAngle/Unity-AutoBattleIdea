@@ -1,5 +1,8 @@
-﻿namespace MageFactory.Flow.Contract {
-    public interface IFlowCapabilities {
+﻿using System.Collections.Generic;
+using MageFactory.ActionEffect;
+
+namespace MageFactory.Flow.Contract {
+    public interface IFlowCapabilities : IActionCapabilities {
         IFlowCommandBus command();
         IFlowQueries query();
     }
@@ -9,6 +12,6 @@
     }
 
     public interface IFlowQueries {
-        bool tryGetRightAdjacentItem(IFlowItem sourceFlowItem, out IFlowItem adjacentFlowItem);
+        bool tryGetRightAdjacentItems(IFlowItem sourceFlowItem, out IEnumerable<IFlowItem> adjacentFlowItem);
     }
 }

@@ -2,67 +2,71 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MageFactory.ActionEffect;
 using MageFactory.ActionExecutor.Api;
 using MageFactory.ActionExecutor.Api.Dto;
-using MageFactory.Character.Contract.Event;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
+using MageFactory.Flow.Domain.FlowCapability;
+using MageFactory.Flow.Domain.Service;
 using MageFactory.FlowRouting;
-using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 using Zenject;
 
 namespace MageFactory.Flow.Domain {
-    internal class FlowAggregate : IActionContext, IFlowAggregateFacade {
+    internal class FlowAggregate : IFlowAggregateFacade {
         private readonly IActionExecutor actionExecutor;
-        private readonly FlowModel flowModel;
-        private readonly IFlowRouter router;
-        private readonly SignalBus signalBus;
+
+        // private readonly FlowModel flowModel;
+        // private readonly IFlowRouter router;
+        private readonly FlowCapabilities flowCapabilities;
+
+        // private readonly SignalBus signalBus;
         private readonly List<long> visitedNodeIds = new();
 
         private CancellationTokenSource cancellationTokenSource;
         private IFlowItem currentNode;
         private bool isRunning;
 
-        private FlowAggregate(FlowModel flowModel, IFlowItem startNode, IFlowRouter flowRouter,
-                              SignalBus signalBus, IActionExecutor actionExecutor) {
-            router = NullGuard.NotNullOrThrow(flowRouter);
-            this.flowModel = NullGuard.NotNullOrThrow(flowModel);
+        private FlowAggregate(FlowCapabilities flowCapabilities, IFlowItem startNode, /*IFlowRouter flowRouter,*/
+                              /*SignalBus signalBus, */IActionExecutor actionExecutor) {
+            // router = NullGuard.NotNullOrThrow(flowRouter);
+            // this.flowModel = NullGuard.NotNullOrThrow(flowModel);
             currentNode = NullGuard.NotNullOrThrow(startNode);
-            this.signalBus = NullGuard.NotNullOrThrow(signalBus);
+            this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
+            // this.signalBus = NullGuard.NotNullOrThrow(signalBus);
             this.actionExecutor = NullGuard.NotNullOrThrow(actionExecutor);
 
             visitedNodeIds.Clear(); // shouldn't be needed
         }
 
-        internal static IFlowAggregateFacade create(IFlowItem startItem,
+        internal static IFlowAggregateFacade create(IFlowItem startNode,
                                                     IFlowRouter flowRouter,
                                                     SignalBus signalBus,
                                                     IActionExecutor actionExecutor,
                                                     IFlowConsumer flowConsumer,
-                                                    IFlowOwner flowOwner) {
-            var context = new FlowContext(startItem, flowConsumer, flowOwner);
-            var model = new FlowModel(context);
-            var startNode = startItem;
+                                                    IFlowOwner flowOwner,
+                                                    ActionContextFactory actionContextFactory) {
+            var context = new FlowContext(startNode, flowConsumer, flowOwner, flowRouter);
+            // var model = new FlowModel(context);
+            var flowCapabilities = new FlowCapabilities(context, actionContextFactory);
 
-            return new FlowAggregate(model, startNode, flowRouter, signalBus, actionExecutor);
+            return new FlowAggregate(flowCapabilities, startNode, /*flowRouter, signalBus,*/ actionExecutor);
         }
 
-        public void addPower(PowerAmount damageAmount) {
-            flowModel.addPower(damageAmount);
+        // public void addPower(PowerAmount damageAmount) {
+        //     flowModel.addPower(damageAmount);
+        //
+        //     signalBus.Fire(new ItemPowerChangedDtoEvent(currentNode.getId(), damageAmount.getPower()));
+        // }
 
-            signalBus.Fire(new ItemPowerChangedDtoEvent(currentNode.getId(), damageAmount.getPower()));
-        }
-
-        public void pushRightAdjacentItemRight() {
-            // find right adjacent item
-            // capabilities.query().getInventoryAggregate().getAdjacentItems()
-
-            // move right
-            // foundItem.moveRight();
-        }
+        // public void pushRightAdjacentItemRight() {
+        //     // find right adjacent item
+        //     // capabilities.query().getInventoryAggregate().getAdjacentItems()
+        //
+        //     // move right
+        //     // foundItem.moveRight();
+        // }
 
         public void start() {
             _ = startAsync();
@@ -79,7 +83,7 @@ namespace MageFactory.Flow.Domain {
             if (isRunning) return;
             isRunning = true;
             try {
-                while (!ct.IsCancellationRequested && currentNode != null && flowModel != null) {
+                while (!ct.IsCancellationRequested && currentNode != null) {
                     await processAsync(ct);
                     if (ct.IsCancellationRequested) break;
                     if (!await goNextAsync(ct)) break;
@@ -91,8 +95,11 @@ namespace MageFactory.Flow.Domain {
         }
 
         private async Task processAsync(CancellationToken cancellationToken) {
-            var actionSpecification = currentNode.prepareItemActionDescription();
-            var executeActionCommand = new ExecuteActionCommand(actionSpecification, this);
+            ExecuteActionCommand executeActionCommand =
+                flowCapabilities.query().prepareExecuteActionCommand(currentNode);
+
+            // var actionSpecification = currentNode.prepareItemActionDescription();
+            // var executeActionCommand = new ExecuteActionCommand(actionSpecification, this);
 
             try {
                 await actionExecutor.executeAsync(executeActionCommand);
@@ -109,31 +116,39 @@ namespace MageFactory.Flow.Domain {
         }
 
         private async Task<bool> goNextAsync(CancellationToken cancellationToken) {
-            NullGuard.NotNullCheckOrThrow(currentNode, flowModel);
-
-            var decision = router.decideNext(currentNode, visitedNodeIds);
-            if (decision is null) {
+            if (flowCapabilities.query().tryFindNextNode(currentNode, visitedNodeIds, out IFlowItem nextNode)) {
+                currentNode = nextNode;
+            }
+            else {
                 finishFlow();
-                // FlowCompletionDispatcher
-                //     .finishFlow(flowModel); // TODO: change it. Use service or something like that instead
                 currentNode = null;
                 return false;
             }
+            // var decision = router.decideNext(currentNode, visitedNodeIds);
+            // if (decision is null) {
+            //     finishFlow();
+            //     // FlowCompletionDispatcher
+            //     //     .finishFlow(flowModel); // TODO: change it. Use service or something like that instead
+            //     currentNode = null;
+            //     return false;
+            // }
 
-            currentNode = decision;
-            flowModel.getFlowContext().nextStep();
+            // currentNode = decision;
+            // flowModel.getFlowContext().nextStep();
 
             await Task.Yield();
             return true;
         }
 
         public void finishFlow() {
-            FlowContext flowContext = flowModel.getFlowContext();
-            IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
+            flowCapabilities.command().consumeFlow();
 
-            ProcessFlowCommand flowCommand =
-                new(flowContext.getFlowOwner(), flowModel.getFlowPayload().getDamageToDeal());
-            flowConsumer.consumeFlow(flowCommand);
+            // FlowContext flowContext = flowModel.getFlowContext();
+            // IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
+            //
+            // ProcessFlowCommand flowCommand =
+            //     new(flowContext.getFlowOwner(), flowModel.getFlowPayload().getDamageToDeal());
+            // flowConsumer.consumeFlow(flowCommand);
         }
 
         public void stop() {

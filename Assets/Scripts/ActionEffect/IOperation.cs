@@ -1,5 +1,5 @@
 ﻿namespace MageFactory.ActionEffect {
     public interface IOperation {
-        void apply(IActionContext actionContext);
+        void apply(IActionCapabilities actionCapabilities);
     }
 }

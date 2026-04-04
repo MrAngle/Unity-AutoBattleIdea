@@ -96,7 +96,8 @@ namespace MageFactory.Inventory.Domain {
             return inventoryPlacedItem;
         }
 
-        public bool tryGetNeighborCells(IGridItemPlaced sourceGridItemPlaced,
+        public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
+                                        IEnumerable<GridDirection> directions,
                                         out IEnumerable<IInventoryPlacedItem> neighborItems) {
             if (sourceGridItemPlaced == null) {
                 neighborItems = Enumerable.Empty<IInventoryPlacedItem>();
@@ -107,7 +108,7 @@ namespace MageFactory.Inventory.Domain {
                 .getNeighborItems(
                     sourceGridItemPlaced,
                     cellToItem,
-                    GridDirectionSets.AllExcludeNone)
+                    directions)
                 .ToArray();
 
             neighborItems = neighbors;

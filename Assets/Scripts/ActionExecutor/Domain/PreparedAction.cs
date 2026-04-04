@@ -8,23 +8,23 @@ namespace MageFactory.ActionExecutor.Domain {
     internal sealed class PreparedAction {
         private readonly Duration castTime;
         private readonly IReadOnlyList<IOperation> effects;
-        private readonly IActionContext actionContext;
+        private readonly IActionCapabilities actionCapabilities;
 
-        PreparedAction(Duration castTime, IReadOnlyList<IOperation> effects, IActionContext actionContext) {
+        PreparedAction(Duration castTime, IReadOnlyList<IOperation> effects, IActionCapabilities actionCapabilities) {
             this.castTime = castTime;
             this.effects = effects;
-            this.actionContext = actionContext;
-            NullGuard.NotNullCheckOrThrow(this.castTime, this.effects, this.actionContext);
+            this.actionCapabilities = actionCapabilities;
+            NullGuard.NotNullCheckOrThrow(this.castTime, this.effects, this.actionCapabilities);
         }
 
-        static PreparedAction from(IActionDescription actionDescription, IActionContext actionContext) {
+        static PreparedAction from(IActionDescription actionDescription, IActionCapabilities actionCapabilities) {
             return new PreparedAction(actionDescription.getCastTime(),
                 actionDescription.getEffectsDescriptor().getEffects(),
-                actionContext);
+                actionCapabilities);
         }
 
         internal static PreparedAction from(ExecuteActionCommand actionCommand) {
-            return from(actionCommand.itemActionDescription, actionCommand.flowContext);
+            return from(actionCommand.itemActionDescription, actionCommand.actionCapabilities);
         }
 
         internal Duration getCastTime() {
@@ -32,7 +32,7 @@ namespace MageFactory.ActionExecutor.Domain {
         }
 
         internal void execute() {
-            for (var i = 0; i < effects.Count; i++) effects[i].apply(actionContext);
+            for (var i = 0; i < effects.Count; i++) effects[i].apply(actionCapabilities);
         }
     }
 }

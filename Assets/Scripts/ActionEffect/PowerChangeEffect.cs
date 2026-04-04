@@ -8,8 +8,13 @@ namespace MageFactory.ActionEffect {
             this.damageAmount = damageAmount;
         }
 
-        public void apply(IActionContext actionContext) {
-            actionContext.addPower(damageAmount);
+        // public void apply(IActionContext actionContext) {
+        //     actionContext.addPower(damageAmount);
+        // }
+
+        public void apply(IActionCapabilities actionCapabilities) {
+            actionCapabilities.command().addPower(damageAmount);
+            // actionContext.addPower(damageAmount);
         }
     }
 }

@@ -4,6 +4,7 @@ using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
@@ -39,11 +40,12 @@ namespace MageFactory.Inventory.Domain {
             return inventoryAggregate.getEntryPointsToTick();
         }
 
-
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
+                                        IEnumerable<GridDirection> directions,
                                         out IEnumerable<ICharacterEquippedItem> neighborItems) {
-            if (!inventoryAggregate.tryGetNeighborCells(
+            if (!inventoryAggregate.tryGetNeighborItems(
                     sourceGridItemPlaced,
+                    directions,
                     out IEnumerable<IInventoryPlacedItem> placedNeighbors)) {
                 neighborItems = Enumerable.Empty<ICharacterEquippedItem>();
                 return false;

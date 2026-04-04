@@ -1,17 +1,26 @@
 ﻿using MageFactory.Flow.Contract;
+using MageFactory.FlowRouting;
+using MageFactory.Shared.Utility;
 
 namespace MageFactory.Flow.Domain {
     internal class FlowContext {
-        private readonly IFlowItem placedEntryPoint;
+        private readonly FlowPayload flowPayload;
+        private readonly IFlowItem startEntryPoint;
         private readonly IFlowConsumer flowConsumer;
         private readonly IFlowOwner flowOwner;
-        private readonly IFlowCapabilities flowCapabilities;
+        private readonly IFlowRouter router;
+
         private int stepIndex;
 
-        internal FlowContext(IFlowItem placedEntryPoint, IFlowConsumer flowConsumer, IFlowOwner flowOwner) {
-            this.placedEntryPoint = placedEntryPoint;
-            this.flowConsumer = flowConsumer;
-            this.flowOwner = flowOwner;
+        internal FlowContext(IFlowItem startEntryPoint, IFlowConsumer flowConsumer, IFlowOwner flowOwner,
+                             IFlowRouter router) {
+            this.startEntryPoint = NullGuard.NotNullOrThrow(startEntryPoint);
+            this.flowConsumer = NullGuard.NotNullOrThrow(flowConsumer);
+            this.flowOwner = NullGuard.NotNullOrThrow(flowOwner);
+            this.router = NullGuard.NotNullOrThrow(router);
+            this.flowPayload = new FlowPayload();
+            NullGuard.NotNullCheckOrThrow(this.startEntryPoint, this.flowConsumer, this.flowOwner, this.flowPayload,
+                this.router);
         }
 
         internal IFlowConsumer getFlowConsumer() {
@@ -22,22 +31,25 @@ namespace MageFactory.Flow.Domain {
             return flowOwner;
         }
 
-        internal IFlowItem getPlacedEntryPoint() {
-            return placedEntryPoint;
+        internal IFlowRouter getFlowRouter() {
+            return router;
         }
 
-        public bool pushRightAdjacentItemRight(IFlowItem sourceItem) {
-            if (flowCapabilities.query().tryGetRightAdjacentItem(sourceItem, out IFlowItem adjacentItem)) {
-                if (flowCapabilities.command().tryMoveItemToRight(adjacentItem)) {
-                    return true;
-                }
-            }
-
-            return false;
+        internal FlowPayload getFlowPayload() {
+            return flowPayload;
         }
 
-        internal void nextStep() {
-            stepIndex++;
-        }
+
+        // public bool pushRightAdjacentItemRight(IFlowItem sourceItem) {
+        //     if (flowCapabilities.query().tryGetRightAdjacentItems(sourceItem, out IEnumerable<IFlowItem> adjacentItems)) {
+        //         foreach (IFlowItem flowItem in adjacentItems) {
+        //             flowCapabilities.command().tryMoveItemToRight(flowItem);
+        //             // TODO: implement "result type"
+        //         }
+        //         return true;
+        //     }
+        //
+        //     return false;
+        // }
     }
 }

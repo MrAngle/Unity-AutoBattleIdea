@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Contract {
     public interface ICharacterInventory : ICombatCharacterInventory {
@@ -12,6 +13,7 @@ namespace MageFactory.Character.Contract {
         public HashSet<ICharacterEquippedEntryPointToTick> getEntryPointsToTick();
 
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
+                                        IEnumerable<GridDirection> directions,
                                         out IEnumerable<ICharacterEquippedItem> neighborItems);
     }
 }
