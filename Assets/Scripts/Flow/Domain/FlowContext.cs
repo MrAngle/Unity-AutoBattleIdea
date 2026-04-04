@@ -18,8 +18,8 @@ namespace MageFactory.Flow.Domain {
             this.flowConsumer = NullGuard.NotNullOrThrow(flowConsumer);
             this.flowOwner = NullGuard.NotNullOrThrow(flowOwner);
             this.router = NullGuard.NotNullOrThrow(router);
-            this.flowPayload = new FlowPayload();
-            NullGuard.NotNullCheckOrThrow(this.startEntryPoint, this.flowConsumer, this.flowOwner, this.flowPayload,
+            flowPayload = new FlowPayload();
+            NullGuard.NotNullCheckOrThrow(this.startEntryPoint, this.flowConsumer, this.flowOwner, flowPayload,
                 this.router);
         }
 

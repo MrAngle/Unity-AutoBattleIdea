@@ -1,5 +1,5 @@
 ﻿namespace MageFactory.Flow.Api {
-    public interface IFlowAggregateFacade {
+    public interface IFlowProcessor {
         public void start();
     }
 }

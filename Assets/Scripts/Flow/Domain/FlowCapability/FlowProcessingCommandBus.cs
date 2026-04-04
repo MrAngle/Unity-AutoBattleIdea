@@ -2,10 +2,10 @@
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Flow.Domain.FlowCapability {
-    internal class FlowCommandBus {
+    internal class FlowProcessingCommandBus {
         private readonly FlowContext flowContext;
 
-        public FlowCommandBus(FlowContext flowContext) {
+        public FlowProcessingCommandBus(FlowContext flowContext) {
             this.flowContext = NullGuard.NotNullOrThrow(flowContext);
         }
 

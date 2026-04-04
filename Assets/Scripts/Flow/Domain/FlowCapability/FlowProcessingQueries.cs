@@ -6,11 +6,11 @@ using MageFactory.Flow.Domain.Service;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Flow.Domain.FlowCapability {
-    internal class FlowQueries {
+    internal class FlowProcessingQueries {
         private readonly FlowContext flowContext;
         private readonly ActionContextFactory actionContextFactory;
 
-        public FlowQueries(FlowContext flowContext, ActionContextFactory actionContextFactory) {
+        public FlowProcessingQueries(FlowContext flowContext, ActionContextFactory actionContextFactory) {
             this.flowContext = NullGuard.NotNullOrThrow(flowContext);
             this.actionContextFactory = NullGuard.NotNullOrThrow(actionContextFactory);
         }
