@@ -4,7 +4,6 @@
   "references": [
     "MageFactory.Inventory.Contract",
     "MageFactory.Character.Contract",
-    "MageFactory.Flow.Contract",
 
     "MageFactory.Shared",
     "MageFactory.TimeSystem",

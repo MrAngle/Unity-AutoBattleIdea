@@ -31,7 +31,7 @@ namespace MageFactory.Tests.Unit.Shared.ItemSearch {
 
             // then
             Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That(result[0].getId(), Is.EqualTo(2));
+            Assert.That(result[0].getId().Value, Is.EqualTo(2L));
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace MageFactory.Tests.Unit.Shared.ItemSearch {
                 .ToArray();
 
             // then
-            var ids = result.Select(x => x.getId()).ToArray();
+            var ids = result.Select(x => x.getId().Value).ToArray();
             Assert.That(ids, Is.EquivalentTo(new[] { 2L, 3L }));
         }
 
@@ -135,7 +135,7 @@ namespace MageFactory.Tests.Unit.Shared.ItemSearch {
 
             // then
             Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That(result[0].getId(), Is.EqualTo(2));
+            Assert.That(result[0].getId().Value, Is.EqualTo((long)2));
         }
 
         [Test]
@@ -263,7 +263,7 @@ namespace MageFactory.Tests.Unit.Shared.ItemSearch {
                 .ToArray();
 
             // then
-            var ids = result.Select(x => x.getId()).ToArray();
+            var ids = result.Select(x => x.getId().Value).ToArray();
 
             Assert.That(ids.Length, Is.EqualTo(4));
             Assert.That(ids, Is.EquivalentTo(new[] { 2L, 3L, 4L, 5L }));

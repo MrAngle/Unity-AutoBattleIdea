@@ -2,6 +2,7 @@
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Item.Domain.EntryPoint;
+using MageFactory.Item.Domain.InventoryItems;
 using MageFactory.Shared.Contract;
 using Zenject;
 
@@ -17,9 +18,9 @@ namespace MageFactory.Item.Domain.Service {
             IEntryPointArchetype entryPointArchetype,
             IInventoryPosition inventoryPosition
         ) {
-            var placedEntryPoint = PlacedEntryPoint.create(entryPointArchetype, inventoryPosition);
+            var placedEntryPoint = EntryPointItem.create(entryPointArchetype, inventoryPosition);
 
-            return placedEntryPoint;
+            return new InventoryPlacedEntryPoint(placedEntryPoint);
         }
 
         public IInventoryPlaceableItem createPlacableItem(CreatePlaceableItemCommand createPlaceableItemCommand) {

@@ -3,8 +3,6 @@
   "rootNamespace": "MageFactory",
   "references": [
     "MageFactory.Inventory.Contract",
-    "MageFactory.Character.Contract",
-    "MageFactory.Flow.Contract",
     "MageFactory.ActionEffect",
     "MageFactory.Shared",
     "MageFactory.TimeSystem",

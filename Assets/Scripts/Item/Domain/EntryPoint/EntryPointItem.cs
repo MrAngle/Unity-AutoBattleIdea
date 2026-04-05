@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
@@ -11,16 +9,12 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain.EntryPoint {
-    internal class PlacedEntryPoint : IInventoryPlacedEntryPoint, IDisposable {
+    internal class EntryPointItem {
         private readonly IEntryPointArchetype entryPointArchetype;
         private readonly Id<ItemId> id;
         private readonly IInventoryPosition inventoryPosition;
 
-        private CancellationTokenSource cancellationTokenSource;
-
-        private bool isBattleRunning = true; /*for now*/
-
-        private PlacedEntryPoint(
+        private EntryPointItem(
             IEntryPointArchetype entryPointArchetype,
             IInventoryPosition inventoryPosition
         ) {
@@ -30,8 +24,14 @@ namespace MageFactory.Item.Domain.EntryPoint {
             NullGuard.NotNullCheckOrThrow(inventoryPosition);
         }
 
-        public void Dispose() {
-            stopBattle();
+        internal static EntryPointItem create(
+            IEntryPointArchetype archetype,
+            IInventoryPosition inventoryPosition
+        ) {
+            var placedEntryPoint =
+                new EntryPointItem(archetype, inventoryPosition);
+
+            return placedEntryPoint;
         }
 
         public IActionDescription prepareItemActionDescription() {
@@ -58,16 +58,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return id;
         }
 
-        internal static IInventoryPlacedEntryPoint create(
-            IEntryPointArchetype archetype,
-            IInventoryPosition inventoryPosition
-        ) {
-            var placedEntryPoint =
-                new PlacedEntryPoint(archetype, inventoryPosition);
-
-            return placedEntryPoint;
-        }
-
         private Duration prepareCastTime() {
             return new Duration(2f); // for now
         }
@@ -76,14 +66,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return new ItemOperationsDescription(
                 new AddPower(new DamageToDeal(3))
             );
-        }
-
-        private void stopBattle() {
-            if (!isBattleRunning) return;
-            isBattleRunning = false;
-            cancellationTokenSource?.Cancel();
-            cancellationTokenSource?.Dispose();
-            cancellationTokenSource = null;
         }
 
         public override string ToString() {

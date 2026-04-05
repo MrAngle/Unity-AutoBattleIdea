@@ -17,7 +17,7 @@ namespace MageFactory.Inventory.Domain {
         private readonly HashSet<IInventoryPlacedItem> items = new();
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
 
-        private readonly HashSet<ICharacterEquippedEntryPointToTick>
+        private readonly HashSet<IInventoryPlacedEntryPoint>
             entryPoints = new(); // to remove - use inventory related items instead
 
         private readonly IInventoryGrid inventoryGrid;
@@ -59,7 +59,7 @@ namespace MageFactory.Inventory.Domain {
             return inventoryGrid.canPlace(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
         }
 
-        public HashSet<ICharacterEquippedEntryPointToTick> getEntryPointsToTick() {
+        public HashSet<IInventoryPlacedEntryPoint> getEntryPointsToTick() {
             return entryPoints;
         }
 

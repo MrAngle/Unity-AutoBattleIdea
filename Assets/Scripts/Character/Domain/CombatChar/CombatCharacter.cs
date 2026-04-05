@@ -77,7 +77,8 @@ namespace MageFactory.Character.Domain.CombatChar {
                     continue;
                 }
 
-                var flow = flowFactory.create(entryPoint, router, flowConsumer, new FlowCapabilities(), this);
+                var flow = flowFactory.create(new CombatCharacterEquippedEntryPointItem(entryPoint), router,
+                    flowConsumer, new FlowCapabilities(), this);
                 flow.start();
             }
         }

@@ -42,7 +42,8 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
         }
 
         public HashSet<ICharacterEquippedEntryPointToTick> getEntryPointsToTick() {
-            return inventoryAggregate.getEntryPointsToTick();
+            HashSet<IInventoryPlacedEntryPoint> aggregateSet = inventoryAggregate.getEntryPointsToTick();
+            return mapToEquippedEntryPoints(aggregateSet);
         }
 
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
@@ -58,6 +59,13 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
             neighborItems = mapToEquippedItems(placedNeighbors);
             return true;
+        }
+
+        private static HashSet<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(
+            IEnumerable<IInventoryPlacedEntryPoint> source) {
+            return source
+                .Select(ep => (ICharacterEquippedEntryPointToTick)new CharacterEquippedEntryPointItem(ep))
+                .ToHashSet();
         }
 
         private static IEnumerable<ICharacterEquippedItem> mapToEquippedItems(
