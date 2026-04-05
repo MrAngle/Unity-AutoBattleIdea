@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -8,19 +9,16 @@ using UnityEngine;
 namespace MageFactory.Item.Domain.EntryPoint {
     internal abstract class EntryPointArchetype : IEntryPointArchetype {
         private readonly IEntryPointFactory entryPointFactory; // separate in future
-        private readonly FlowKind flowKind;
-        private readonly ShapeArchetype shapeArchetype;
+        private readonly IEntryPointDefinition entryPointDefinition;
         private readonly float turnInterval;
 
         private bool isBattleRunning;
         private CancellationTokenSource cancellationTokenSource;
 
-        protected EntryPointArchetype(FlowKind flowKind, ShapeArchetype shapeArchetype,
+        protected EntryPointArchetype(IEntryPointDefinition entryPointDefinition,
                                       IEntryPointFactory entryPointFactory) {
             this.entryPointFactory = NullGuard.NotNullOrThrow(entryPointFactory);
-
-            this.flowKind = flowKind;
-            this.shapeArchetype = NullGuard.NotNullOrThrow(shapeArchetype);
+            this.entryPointDefinition = NullGuard.NotNullOrThrow(entryPointDefinition);
 
             turnInterval = Mathf.Max(0.01f, 2.5f);
         }
@@ -29,12 +27,28 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return entryPointFactory.createPlacedEntryPoint(this, inventoryPosition);
         }
 
-        public ShapeArchetype getShape() {
-            return shapeArchetype;
+        IItemDefinition IInventoryPlaceableItem.getItemDefinition() {
+            return getItemDefinition();
         }
 
+        public ShapeArchetype getShape() {
+            return entryPointDefinition.getShape();
+        }
+
+        // public ShapeArchetype getShape() {
+        //     return shapeArchetype;
+        // }
+
         public FlowKind getFlowKind() {
-            return flowKind;
+            return entryPointDefinition.getFlowKind();
+        }
+
+        public IEntryPointDefinition getEntryPointDefinition() {
+            return entryPointDefinition;
+        }
+
+        public IEntryPointDefinition getItemDefinition() {
+            return entryPointDefinition;
         }
 
         public float getTurnInterval() {
@@ -42,7 +56,7 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         public override string ToString() {
-            return $"({flowKind})";
+            return $"({getFlowKind()})";
         }
     }
 }

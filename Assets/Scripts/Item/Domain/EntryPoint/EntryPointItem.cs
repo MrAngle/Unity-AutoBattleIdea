@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
-using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Id;
-using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -35,11 +33,11 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         public IActionDescription prepareItemActionDescription() {
-            IActionDescription actionSpecification = new ItemActionDescription(
-                prepareCastTime(),
-                prepareEffectsDescriptor());
+            // IActionDescription actionSpecification = new ItemActionDescription(
+            //     prepareCastTime(),
+            //     prepareEffectsDescriptor());
 
-            return actionSpecification;
+            return entryPointArchetype.getItemDefinition().getActionDescription();
         }
 
         public Vector2Int getOrigin() {
@@ -47,7 +45,7 @@ namespace MageFactory.Item.Domain.EntryPoint {
         }
 
         public ShapeArchetype getShape() {
-            return entryPointArchetype.getShape();
+            return entryPointArchetype.getItemDefinition().getShape();
         }
 
         public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
@@ -58,15 +56,15 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return id;
         }
 
-        private Duration prepareCastTime() {
-            return new Duration(2f); // for now
-        }
-
-        private IOperations prepareEffectsDescriptor() {
-            return new ItemOperationsDescription(
-                new AddPower(new DamageToDeal(3))
-            );
-        }
+        // private Duration prepareCastTime() {
+        //     return new Duration(2f); // for now
+        // }
+        //
+        // private IOperations prepareEffectsDescriptor() {
+        //     return new ItemOperationsDescription(
+        //         new AddPower(new DamageToDeal(3))
+        //     );
+        // }
 
         public override string ToString() {
             return $"({entryPointArchetype.getFlowKind()})";

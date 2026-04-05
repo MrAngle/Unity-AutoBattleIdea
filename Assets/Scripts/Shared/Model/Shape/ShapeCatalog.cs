@@ -7,6 +7,7 @@ namespace MageFactory.Shared.Model.Shape {
         public static readonly ShapeArchetypeId SQUARE_2X2 = Define(2);
         public static readonly ShapeArchetypeId L_BRACKET = Define(3);
         public static readonly ShapeArchetypeId STANDARD_SWORD = Define(4);
+        public static readonly ShapeArchetypeId UPSIDE_DOWN_T = Define(5);
     }
 
     /// <summary>
@@ -44,6 +45,13 @@ namespace MageFactory.Shared.Model.Shape {
             "Sword",
             ItemShape.sword(),
             "Icons/Sword"
+        );
+
+        public static readonly ShapeArchetype UpsideDownT = new(
+            ShapeArchetypeId.UPSIDE_DOWN_T,
+            "Sword",
+            ItemShape.upsideDownT(),
+            "Icons/Hammer"
         );
 
         public static readonly IReadOnlyList<ShapeArchetype> All = new[] {

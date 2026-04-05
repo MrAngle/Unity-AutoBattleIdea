@@ -1,10 +1,10 @@
-﻿using MageFactory.Shared.Model.Shape;
+﻿using MageFactory.ActionEffect;
 
 namespace MageFactory.Inventory.Contract {
     public interface IInventoryPlaceableItem {
         IInventoryPlacedItem toPlacedItem(
             IInventoryPosition inventoryPosition);
 
-        ShapeArchetype getShape();
+        public IItemDefinition getItemDefinition();
     }
 }

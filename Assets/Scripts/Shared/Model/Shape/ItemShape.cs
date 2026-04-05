@@ -57,5 +57,14 @@ namespace MageFactory.Shared.Model.Shape {
                 new Vector2Int(1, 2),
                 new Vector2Int(0, 3)
             });
+
+        public static ItemShape upsideDownT() =>
+            new(new[] {
+                Vector2Int.zero,
+                new Vector2Int(0, 1),
+                new Vector2Int(-1, 2),
+                new Vector2Int(0, 2),
+                new Vector2Int(1, 2)
+            });
     }
 }

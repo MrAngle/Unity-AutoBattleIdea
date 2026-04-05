@@ -1,6 +1,6 @@
 ﻿using MageFactory.Shared.Model;
 
-namespace MageFactory.ActionEffect {
+namespace MageFactory.ActionEffect.PredefinedOperations {
     public sealed class AddPower : IOperation {
         private readonly PowerAmount damageAmount;
 

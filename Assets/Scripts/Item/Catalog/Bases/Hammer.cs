@@ -4,23 +4,23 @@ using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 
 namespace MageFactory.Item.Catalog.Bases {
-    public class Shield : IItemDefinition {
+    public class Hammer : IItemDefinition {
         public ShapeArchetype getShape() {
-            return ShapeCatalog.Square2x2;
+            return ShapeCatalog.UpsideDownT;
         }
 
         public IActionDescription getActionDescription() {
-            return new ShieldActionDescription();
+            return new RustySwordActionDescription();
         }
 
-        private class ShieldActionDescription : IActionDescription {
+        private class RustySwordActionDescription : IActionDescription {
             public Duration getCastTime() {
-                return new Duration(0.25f);
+                return new Duration(0.15f);
             }
 
             public IOperations getEffectsDescriptor() {
                 return new ItemOperationsDescription(
-                    new AddPower(new DamageToDeal(4))
+                    new AddPower(new DamageToDeal(6))
                 );
             }
         }

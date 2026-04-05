@@ -1,4 +1,5 @@
-﻿using MageFactory.Character.Domain.FlowCapability;
+﻿using MageFactory.Character.Domain.CharacterCapability;
+using MageFactory.Character.Domain.FlowCapability;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
@@ -11,11 +12,11 @@ namespace MageFactory.Character.Domain.CombatChar {
     internal class CombatCharacter : ICombatCharacter, IFlowOwner {
         private readonly Team team;
         private readonly CharacterAggregate characterAggregate;
-        private readonly ICharacterCombatCapabilities characterCombatCapabilities;
+        private readonly CharacterCombatCapabilities characterCombatCapabilities;
         private readonly IFlowFactory flowFactory;
 
         internal CombatCharacter(CharacterAggregate characterAggregate,
-                                 ICharacterCombatCapabilities characterCombatCapabilities,
+                                 CharacterCombatCapabilities characterCombatCapabilities,
                                  Team team,
                                  IFlowFactory flowFactory) {
             this.characterAggregate = NullGuard.NotNullOrThrow(characterAggregate);
@@ -23,7 +24,6 @@ namespace MageFactory.Character.Domain.CombatChar {
             this.team = NullGuard.enumDefinedOrThrow(team);
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
-
 
         public Id<CharacterId> getFlowOwnerCharacterId() {
             return characterAggregate.getId();
@@ -33,18 +33,6 @@ namespace MageFactory.Character.Domain.CombatChar {
             return characterAggregate.getId();
         }
 
-        // public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item) {
-        //     return new CombatCharacterEquippedItem(characterAggregate.equipItemOrThrow(item));
-        // }
-
-        // public bool canPlaceItem(EquipItemQuery equipItemQuery) {
-        //     return characterAggregate.canPlaceItem(equipItemQuery);
-        // }
-
-        // public ICombatCharacterInventory getInventoryAggregate() {
-        //     return new CombatCharacterInventory(characterAggregate.getInventoryAggregate());
-        // }
-
         public long getMaxHp() {
             return characterAggregate.getMaxHp();
         }
@@ -52,10 +40,6 @@ namespace MageFactory.Character.Domain.CombatChar {
         public long getCurrentHp() {
             return characterAggregate.getCurrentHp();
         }
-
-        // public void apply(PowerAmount powerAmount) {
-        //     characterAggregate.apply(powerAmount);
-        // }
 
         public string getName() {
             return characterAggregate.getName();
@@ -78,7 +62,7 @@ namespace MageFactory.Character.Domain.CombatChar {
                 }
 
                 var flow = flowFactory.create(new CombatCharacterEquippedEntryPointItem(entryPoint), router,
-                    flowConsumer, new FlowCapabilities(), this);
+                    flowConsumer, new FlowCapabilities(characterCombatCapabilities), this);
                 flow.start();
             }
         }

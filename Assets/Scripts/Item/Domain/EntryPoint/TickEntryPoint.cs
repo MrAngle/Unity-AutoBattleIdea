@@ -1,18 +1,16 @@
 ﻿using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
-using MageFactory.Shared.Model;
-using MageFactory.Shared.Model.Shape;
 
 namespace MageFactory.Item.Domain.EntryPoint {
     internal class TickEntryPoint : EntryPointArchetype {
-        internal TickEntryPoint(FlowKind flowKind, ShapeArchetype shapeArchetype,
+        internal TickEntryPoint(IEntryPointDefinition itemDefinition,
                                 IEntryPointFactory entryPointFactory) :
-            base(flowKind, shapeArchetype, entryPointFactory) {
+            base(itemDefinition, entryPointFactory) {
         }
 
         internal static IEntryPointArchetype create(IEntryPointDefinition entryPointDefinition,
                                                     IEntryPointFactory entryPointFactory) {
-            return new TickEntryPoint(entryPointDefinition.getFlowKind(), entryPointDefinition.getShape(),
+            return new TickEntryPoint(entryPointDefinition,
                 entryPointFactory);
         }
     }

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
-using MageFactory.Item.Domain.ActionDescriptor;
 using MageFactory.Shared.Id;
-using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -37,21 +35,17 @@ namespace MageFactory.Item.Domain {
         }
 
         public IActionDescription prepareItemActionDescription() {
-            IActionDescription actionSpecification = new ItemActionDescription(
-                prepareActionTiming(),
-                prepareEffectsDescriptor());
-
-            return actionSpecification;
+            return itemArchetype.getActionDescription();
         }
-
-        private Duration prepareActionTiming() {
-            return new Duration(itemArchetype.getCastTime());
-        }
-
-        private static IOperations prepareEffectsDescriptor() {
-            return new ItemOperationsDescription(
-                new AddPower(new DamageToDeal(5))
-            );
-        }
+        //
+        // private Duration prepareActionTiming() {
+        //     return new Duration(itemArchetype.getCastTime());
+        // }
+        //
+        // private static IOperations prepareEffectsDescriptor() {
+        //     return new ItemOperationsDescription(
+        //         new AddPower(new DamageToDeal(5))
+        //     );
+        // }
     }
 }

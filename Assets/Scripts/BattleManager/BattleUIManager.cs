@@ -2,7 +2,7 @@
 using System.Collections;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Item.Catalog;
+using MageFactory.Item.Catalog.Bases;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Context.Combat;
@@ -24,7 +24,7 @@ namespace MageFactory.BattleManager {
             createSlots(new CreateCombatCharacterCommand[] {
                 new("Warrior", 120, Team.TeamA, new[] {
                     new EquipItemCommand(
-                        EntryPointDefinition.Standard, new Vector2Int(0, 0))
+                        new EntryPointGem(), new Vector2Int(0, 0))
                 }),
                 new("Mage", 1220, Team.TeamB, Array.Empty<EquipItemCommand>()),
                 new("Archer", 1300, Team.TeamB, Array.Empty<EquipItemCommand>())

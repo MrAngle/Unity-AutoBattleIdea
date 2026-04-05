@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
-using MageFactory.Flow.Contract;
 using MageFactory.Shared.Contract;
 using UnityEngine;
 
@@ -30,10 +28,6 @@ namespace MageFactory.Character.Domain.CombatChar {
 
             item = null;
             return false;
-        }
-
-        public bool tryGetRightAdjacentItems(IFlowItem sourceFlowItem, out IEnumerable<IFlowItem> adjacentFlowItem) {
-            throw new NotImplementedException();
         }
     }
 }
