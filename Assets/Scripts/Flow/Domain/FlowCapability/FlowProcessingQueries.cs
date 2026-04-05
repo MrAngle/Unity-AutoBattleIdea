@@ -9,10 +9,13 @@ namespace MageFactory.Flow.Domain.FlowCapability {
     internal class FlowProcessingQueries {
         private readonly FlowContext flowContext;
         private readonly ActionContextFactory actionContextFactory;
+        private readonly IFlowCapabilities flowCapabilities;
 
-        public FlowProcessingQueries(FlowContext flowContext, ActionContextFactory actionContextFactory) {
+        public FlowProcessingQueries(FlowContext flowContext, ActionContextFactory actionContextFactory,
+                                     IFlowCapabilities flowCapabilities) {
             this.flowContext = NullGuard.NotNullOrThrow(flowContext);
             this.actionContextFactory = NullGuard.NotNullOrThrow(actionContextFactory);
+            this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
         }
 
         internal bool tryFindNextNode(IFlowItem sourceNode, List<long> nodeIdsToIgnore, out IFlowItem nextNode) {
@@ -29,7 +32,7 @@ namespace MageFactory.Flow.Domain.FlowCapability {
             // maybe it may be optimized by caching/memoization
             ActionContext actionContext = actionContextFactory.create(flowContext, actionItemInvoker);
 
-            ActionCapabilities actionCapabilities = new ActionCapabilities(actionContext);
+            ActionCapabilities actionCapabilities = new ActionCapabilities(actionContext, flowCapabilities);
             return actionCapabilities;
         }
     }

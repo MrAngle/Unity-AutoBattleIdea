@@ -1,4 +1,5 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.Character.Domain.FlowCapability;
+using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
@@ -77,7 +78,7 @@ namespace MageFactory.Character.Domain {
                     continue;
                 }
 
-                var flow = flowFactory.create(entryPoint, router, flowConsumer, this);
+                var flow = flowFactory.create(entryPoint, router, flowConsumer, new FlowCapabilities(), this);
                 flow.start();
             }
         }

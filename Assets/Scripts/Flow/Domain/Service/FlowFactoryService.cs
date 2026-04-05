@@ -21,8 +21,9 @@ namespace MageFactory.Flow.Domain.Service {
         }
 
         public IFlowProcessor create(IFlowItem startNode, IFlowRouter router, IFlowConsumer flowConsumer,
+                                     IFlowCapabilities flowCapabilities,
                                      IFlowOwner flowOwner) {
-            return FlowProcessor.create(startNode, router, actionExecutor, flowConsumer, flowOwner,
+            return FlowProcessor.create(startNode, router, actionExecutor, flowConsumer, flowOwner, flowCapabilities,
                 actionContextFactory);
         }
     }

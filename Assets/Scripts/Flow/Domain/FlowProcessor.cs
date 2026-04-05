@@ -36,11 +36,13 @@ namespace MageFactory.Flow.Domain {
                                               IActionExecutor actionExecutor,
                                               IFlowConsumer flowConsumer,
                                               IFlowOwner flowOwner,
+                                              IFlowCapabilities flowCapabilities,
                                               ActionContextFactory actionContextFactory) {
             var context = new FlowContext(startNode, flowConsumer, flowOwner, flowRouter);
-            var flowCapabilities = new FlowProcessingCapabilities(context, actionContextFactory);
+            var flowProcessingCapabilities =
+                new FlowProcessingCapabilities(context, actionContextFactory, flowCapabilities);
 
-            return new FlowProcessor(flowCapabilities, startNode, actionExecutor);
+            return new FlowProcessor(flowProcessingCapabilities, startNode, actionExecutor);
         }
 
         public void start() {

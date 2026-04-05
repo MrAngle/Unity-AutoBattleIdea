@@ -3,7 +3,10 @@ using MageFactory.FlowRouting;
 
 namespace MageFactory.Flow.Api {
     public interface IFlowFactory {
-        IFlowProcessor create(IFlowItem startNode, IFlowRouter router, IFlowConsumer flowConsumer,
+        IFlowProcessor create(IFlowItem startNode,
+                              IFlowRouter router,
+                              IFlowConsumer flowConsumer,
+                              IFlowCapabilities flowCapabilities,
                               IFlowOwner flowOwner);
     }
 }

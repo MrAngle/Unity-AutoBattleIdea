@@ -8,9 +8,11 @@ using MageFactory.Shared.Utility;
 namespace MageFactory.Flow.Domain.ActionCapability {
     internal class ActionCommandBus : IActionCommandBus {
         private readonly ActionContext actionContext;
+        private readonly IFlowCapabilities flowCapabilities;
 
-        public ActionCommandBus(ActionContext actionContext) {
+        public ActionCommandBus(ActionContext actionContext, IFlowCapabilities flowCapabilities) {
             this.actionContext = NullGuard.NotNullOrThrow(actionContext);
+            this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
         }
 
         public void addPower(PowerAmount powerAmount) {

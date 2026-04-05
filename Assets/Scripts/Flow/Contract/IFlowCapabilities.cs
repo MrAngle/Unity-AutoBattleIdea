@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using MageFactory.ActionEffect;
 
 namespace MageFactory.Flow.Contract {
-    public interface IFlowCapabilities : IActionCapabilities {
+    public interface IFlowCapabilities {
         IFlowCommandBus command();
         IFlowQueries query();
     }
