@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using MageFactory.Shared.Contract;
+﻿using System;
+using System.Collections.Generic;
+using MageFactory.ActionEffect;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 
@@ -13,6 +14,10 @@ namespace MageFactory.Item.Catalog {
 
         public ShapeArchetype getShape() {
             return shapeArchetype;
+        }
+
+        public IActionDescription getActionDescription() {
+            throw new NotImplementedException();
         }
 
         public static readonly ItemDefinition GemShard =
@@ -48,6 +53,10 @@ namespace MageFactory.Item.Catalog {
 
         public ShapeArchetype getShape() {
             return shapeArchetype;
+        }
+
+        public IActionDescription getActionDescription() {
+            throw new NotImplementedException();
         }
 
         public FlowKind getFlowKind() {

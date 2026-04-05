@@ -1,13 +1,13 @@
 ﻿using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 
-namespace MageFactory.Shared.Contract {
+namespace MageFactory.ActionEffect {
     public interface IItemDefinition {
         ShapeArchetype getShape();
+        public IActionDescription getActionDescription();
     }
 
     public interface IEntryPointDefinition : IItemDefinition {
-        ShapeArchetype getShape();
         FlowKind getFlowKind();
     }
 }

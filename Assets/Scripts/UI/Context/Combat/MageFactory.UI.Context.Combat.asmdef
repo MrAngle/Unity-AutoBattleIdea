@@ -14,7 +14,8 @@
     "MageFactory.Inventory.Api",
     "MageFactory.Item.Catalog",
     "MageFactory.UI.Component",
-    "MageFactory.Character.Api"
+    "MageFactory.Character.Api",
+    "MageFactory.ActionEffect"
   ],
   "autoReferenced": true
 }

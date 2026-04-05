@@ -1,4 +1,4 @@
-﻿using MageFactory.Shared.Contract;
+﻿using MageFactory.ActionEffect;
 using UnityEngine;
 
 namespace MageFactory.CombatContext.Contract.Command {

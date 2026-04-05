@@ -4,6 +4,7 @@
   "references": [
     "MageFactory.CombatContext.Contract",
     "MageFactory.Inventory.Contract",
+    "MageFactory.ActionEffect",
 
     "MageFactory.Item.Catalog",
     "MageFactory.Shared",

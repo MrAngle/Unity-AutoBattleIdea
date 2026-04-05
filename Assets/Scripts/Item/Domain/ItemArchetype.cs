@@ -1,6 +1,6 @@
-﻿using MageFactory.Inventory.Contract;
+﻿using MageFactory.ActionEffect;
+using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.InventoryItems;
-using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model.Shape;
 
 namespace MageFactory.Item.Domain {

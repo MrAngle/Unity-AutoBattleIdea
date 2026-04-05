@@ -1,7 +1,7 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.ActionEffect;
+using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Semantics;
-using MageFactory.Shared.Contract;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Component;
 using MageFactory.UI.Component.Inventory.ItemLayer;

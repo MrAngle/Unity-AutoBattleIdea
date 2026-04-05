@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Item.Domain.InventoryItems;
-using MageFactory.Shared.Contract;
 using Zenject;
 
 [assembly: InternalsVisibleTo("MageFactory.InjectConfiguration")]

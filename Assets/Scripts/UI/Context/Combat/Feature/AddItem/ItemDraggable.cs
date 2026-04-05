@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using MageFactory.ActionEffect;
 using MageFactory.Item.Catalog;
 using MageFactory.Item.Catalog.Bases;
-using MageFactory.Shared.Contract;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
