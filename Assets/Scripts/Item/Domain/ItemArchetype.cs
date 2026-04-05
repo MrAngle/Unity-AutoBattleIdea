@@ -1,4 +1,5 @@
 ﻿using MageFactory.Inventory.Contract;
+using MageFactory.Item.Domain.InventoryItems;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model.Shape;
 
@@ -16,7 +17,7 @@ namespace MageFactory.Item.Domain {
         }
 
         public IInventoryPlacedItem toPlacedItem(IInventoryPosition inventoryPosition) {
-            return new BattleItem(this, inventoryPosition);
+            return new InventoryPlacedBattleItem(new BattleItem(this, inventoryPosition));
         }
 
         public ShapeArchetype getShape() {

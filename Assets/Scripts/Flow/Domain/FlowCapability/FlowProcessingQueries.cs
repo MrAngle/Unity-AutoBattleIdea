@@ -3,6 +3,7 @@ using MageFactory.ActionExecutor.Api.Dto;
 using MageFactory.Flow.Contract;
 using MageFactory.Flow.Domain.ActionCapability;
 using MageFactory.Flow.Domain.Service;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Flow.Domain.FlowCapability {
@@ -18,7 +19,7 @@ namespace MageFactory.Flow.Domain.FlowCapability {
             this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
         }
 
-        internal bool tryFindNextNode(IFlowItem sourceNode, List<long> nodeIdsToIgnore, out IFlowItem nextNode) {
+        internal bool tryFindNextNode(IFlowItem sourceNode, List<Id<ItemId>> nodeIdsToIgnore, out IFlowItem nextNode) {
             nextNode = flowContext.getFlowRouter().decideNext(sourceNode, nodeIdsToIgnore);
             return nextNode != null;
         }

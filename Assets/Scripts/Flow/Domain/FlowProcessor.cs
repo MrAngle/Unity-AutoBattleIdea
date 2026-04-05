@@ -9,6 +9,7 @@ using MageFactory.Flow.Contract;
 using MageFactory.Flow.Domain.FlowCapability;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.FlowRouting;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace MageFactory.Flow.Domain {
     internal class FlowProcessor : IFlowProcessor {
         private readonly IActionExecutor actionExecutor;
         private readonly FlowProcessingCapabilities flowProcessingCapabilities;
-        private readonly List<long> visitedNodeIds = new();
+        private readonly List<Id<ItemId>> visitedNodeIds = new();
 
         private CancellationTokenSource cancellationTokenSource;
         private IFlowItem currentNode;

@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 
 namespace MageFactory.FlowRouting {
     public interface IFlowRouter {
         /// Zwraca null — jeśli brak kandydata (koniec).
         IFlowItem decideNext(IGridItemPlaced current,
-                             IReadOnlyCollection<long> visitedNodeIds);
+                             IReadOnlyCollection<Id<ItemId>> visitedNodeIds);
     }
 
 

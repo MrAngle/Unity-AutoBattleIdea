@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace MageFactory.Shared.ItemSearch {
             var gridDirections = directions as GridDirection[]
                                  ?? directions.ToArray();
 
-            var seenItems = new HashSet<long>();
+            var seenItems = new HashSet<Id<ItemId>>();
 
             foreach (var cell in sourceItem.getOccupiedCells()) {
                 foreach (var gridDirection in gridDirections) {

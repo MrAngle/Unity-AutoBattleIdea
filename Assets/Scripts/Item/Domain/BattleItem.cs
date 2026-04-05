@@ -2,19 +2,20 @@
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain {
-    internal class BattleItem : IInventoryPlacedItem {
-        private readonly long id;
+    internal class BattleItem {
+        private readonly Id<ItemId> id;
         private readonly ItemArchetype itemArchetype;
         private readonly IInventoryPosition inventoryPosition;
 
         internal BattleItem(ItemArchetype itemArchetype, IInventoryPosition inventoryPosition) {
-            id = IdGenerator.Next();
+            id = new Id<ItemId>(IdGenerator.Next());
             this.itemArchetype = NullGuard.NotNullOrThrow(itemArchetype);
             this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
         }
@@ -27,7 +28,7 @@ namespace MageFactory.Item.Domain {
             return inventoryPosition.getOrigin();
         }
 
-        public long getId() {
+        public Id<ItemId> getId() {
             return id;
         }
 

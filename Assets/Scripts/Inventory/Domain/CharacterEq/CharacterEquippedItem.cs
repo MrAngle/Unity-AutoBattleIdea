@@ -2,6 +2,7 @@
 using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
 using MageFactory.Inventory.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             this.inventoryPlacedItem = NullGuard.NotNullOrThrow(inventoryPlacedItem);
         }
 
-        public long getId() {
+        public Id<ItemId> getId() {
             return inventoryPlacedItem.getId();
         }
 

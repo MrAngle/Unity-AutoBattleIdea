@@ -1,8 +1,10 @@
-﻿namespace MageFactory.Character.Contract.Event {
-    public readonly struct ItemRemovedDtoEvent {
-        public long PlacedItemId { get; }
+﻿using MageFactory.Shared.Id;
 
-        public ItemRemovedDtoEvent(long id) {
+namespace MageFactory.Character.Contract.Event {
+    public readonly struct ItemRemovedDtoEvent {
+        public Id<ItemId> PlacedItemId { get; }
+
+        public ItemRemovedDtoEvent(Id<ItemId> id) {
             PlacedItemId = id;
         }
     }

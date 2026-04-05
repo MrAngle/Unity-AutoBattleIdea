@@ -2,6 +2,7 @@
 using System.Linq;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using UnityEngine;
 
 namespace MageFactory.FlowRouting {
@@ -18,7 +19,7 @@ namespace MageFactory.FlowRouting {
         }
 
         public IFlowItem decideNext(IGridItemPlaced current,
-                                    IReadOnlyCollection<long> visitedNodeIds) {
+                                    IReadOnlyCollection<Id<ItemId>> visitedNodeIds) {
             // if (!_inventoryAggregate.TryGetItemAtCell(current.Position, out IPlacedItem placedItem)) {
             //     
             // }

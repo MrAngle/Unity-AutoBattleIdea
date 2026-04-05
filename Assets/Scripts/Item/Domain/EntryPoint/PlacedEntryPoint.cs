@@ -4,6 +4,7 @@ using System.Threading;
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.ActionDescriptor;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
@@ -12,12 +13,8 @@ using UnityEngine;
 namespace MageFactory.Item.Domain.EntryPoint {
     internal class PlacedEntryPoint : IInventoryPlacedEntryPoint, IDisposable {
         private readonly IEntryPointArchetype entryPointArchetype;
-
-        private readonly long id;
-
-        // private readonly IFlowFactory flowFactory;
+        private readonly Id<ItemId> id;
         private readonly IInventoryPosition inventoryPosition;
-        // private readonly ICharacterCombatCapabilities characterCombatCapabilities;
 
         private CancellationTokenSource cancellationTokenSource;
 
@@ -26,15 +23,10 @@ namespace MageFactory.Item.Domain.EntryPoint {
         private PlacedEntryPoint(
             IEntryPointArchetype entryPointArchetype,
             IInventoryPosition inventoryPosition
-            // IFlowFactory flowFactory,
-            // ICharacterCombatCapabilities characterCombatCapabilities
         ) {
-            id = IdGenerator.Next();
+            id = new Id<ItemId>(IdGenerator.Next());
             this.entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
-            // this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
             this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
-            // this.characterCombatCapabilities = NullGuard.NotNullOrThrow(characterCombatCapabilities);
-            // this.inventoryPosition = InventoryPosition.create(origin, ItemShape.SingleCell());
             NullGuard.NotNullCheckOrThrow(inventoryPosition);
         }
 
@@ -62,27 +54,19 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return inventoryPosition.getOccupiedCells();
         }
 
-        public long getId() {
+        public Id<ItemId> getId() {
             return id;
         }
 
         internal static IInventoryPlacedEntryPoint create(
             IEntryPointArchetype archetype,
             IInventoryPosition inventoryPosition
-            // IFlowFactory flowFactory,
-            // ICharacterCombatCapabilities characterCombatCapabilities
         ) {
             var placedEntryPoint =
-                new PlacedEntryPoint(archetype, inventoryPosition /*, flowFactory, characterCombatCapabilities*/);
+                new PlacedEntryPoint(archetype, inventoryPosition);
 
-            // placedEntryPoint.startBattle(); // for now
             return placedEntryPoint;
         }
-
-        // public void startBattle() {
-        //     cancellationTokenSource = new CancellationTokenSource();
-        //     _ = battleLoopAsync(cancellationTokenSource.Token); // fire-and-forget
-        // }
 
         private Duration prepareCastTime() {
             return new Duration(2f); // for now
@@ -93,26 +77,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
                 new AddPower(new DamageToDeal(3))
             );
         }
-
-        // private async Task battleLoopAsync(CancellationToken ct) {
-        //     while (isBattleRunning && !ct.IsCancellationRequested) {
-        //         await Task.Delay(TimeSpan.FromSeconds(entryPointArchetype.getTurnInterval()), ct);
-        //
-        //         Debug.Log("Init proces for flow");
-        //         if (ct.IsCancellationRequested || !isBattleRunning) break;
-        //
-        //         var flowAggregate = prepareFlowAggregate();
-        //
-        //         Debug.Log("Start proces for flow");
-        //         flowAggregate.start();
-        //     }
-        // }
-
-        // private IFlowAggregateFacade prepareFlowAggregate() {
-        //     var flowRouter = GridAdjacencyRouter.create(characterCombatCapabilities);
-        //     var flowAggregate = flowFactory.create(this, flowRouter);
-        //     return flowAggregate;
-        // }
 
         private void stopBattle() {
             if (!isBattleRunning) return;

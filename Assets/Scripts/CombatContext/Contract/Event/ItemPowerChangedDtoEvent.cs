@@ -1,9 +1,11 @@
-﻿namespace MageFactory.Character.Contract.Event {
+﻿using MageFactory.Shared.Id;
+
+namespace MageFactory.Character.Contract.Event {
     public readonly struct ItemPowerChangedDtoEvent {
-        public long ItemId { get; }
+        public Id<ItemId> ItemId { get; }
         public long Delta { get; }
 
-        public ItemPowerChangedDtoEvent(long id, long delta) {
+        public ItemPowerChangedDtoEvent(Id<ItemId> id, long delta) {
             ItemId = id;
             Delta = delta;
         }

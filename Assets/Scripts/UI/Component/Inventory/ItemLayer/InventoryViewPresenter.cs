@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Shared.Popup;
@@ -23,12 +24,12 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         }
 
         public readonly struct NewItemPrintCommand {
-            public readonly long placedItemId;
+            public readonly Id<ItemId> placedItemId;
             public readonly ShapeArchetype shapeArchetype;
             public readonly Vector2Int origin;
 
             public NewItemPrintCommand(
-                long placedItemId,
+                Id<ItemId> placedItemId,
                 ShapeArchetype shapeArchetype,
                 Vector2Int origin) {
                 this.placedItemId = placedItemId;
@@ -46,7 +47,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         private readonly IInventoryItemViewFactory _factory;
 
         private readonly SignalBus _signalBus;
-        private readonly Dictionary<long, PlacedItemView> _views = new();
+        private readonly Dictionary<Id<ItemId>, PlacedItemView> _views = new();
 
         [Inject]
         internal InventoryItemsViewPresenter(

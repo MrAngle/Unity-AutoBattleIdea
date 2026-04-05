@@ -2,6 +2,7 @@
 using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace MageFactory.Character.Domain.CombatChar {
             this.characterEquippedItem = characterEquippedItem;
         }
 
-        public long getId() {
+        public Id<ItemId> getId() {
             return characterEquippedItem.getId();
         }
 

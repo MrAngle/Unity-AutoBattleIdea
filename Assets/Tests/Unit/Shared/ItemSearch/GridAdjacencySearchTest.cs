@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.ItemSearch;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -271,14 +272,14 @@ namespace MageFactory.Tests.Unit.Shared.ItemSearch {
 
     internal class DummyGridItem : IGridItemPlaced {
         private readonly IReadOnlyCollection<Vector2Int> _cells;
-        private readonly long _id;
+        private readonly Id<ItemId> _id;
 
         public DummyGridItem(long id, IEnumerable<Vector2Int> cells) {
-            _id = id;
+            _id = new Id<ItemId>(id);
             _cells = cells.ToArray();
         }
 
-        public long getId() {
+        public Id<ItemId> getId() {
             return _id;
         }
 
