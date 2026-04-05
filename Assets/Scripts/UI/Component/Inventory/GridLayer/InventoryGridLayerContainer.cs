@@ -21,8 +21,8 @@ namespace MageFactory.UI.Component.Inventory.GridLayer {
 
             public static UiPrintInventoryGridCommand from(ICombatInventory characterInventory) {
                 return new UiPrintInventoryGridCommand(
-                    characterInventory.Width,
-                    characterInventory.Height,
+                    characterInventory.getWidthCellsNumber(),
+                    characterInventory.getHeightCellsNumber(),
                     coord => characterInventory.getState(coord));
             }
         }

@@ -2,6 +2,7 @@
 using MageFactory.Character.Contract;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Contract;
+using MageFactory.Inventory.Domain.CharacterEq;
 using MageFactory.Shared.Utility;
 using Zenject;
 

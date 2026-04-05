@@ -3,7 +3,6 @@ using System;
 using MageFactory.Character.Api.Event;
 using MageFactory.Character.Api.Event.Dto;
 using MageFactory.Character.Contract;
-using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -72,7 +71,7 @@ namespace MageFactory.Character.Domain {
                 equipItemQuery.origin));
         }
 
-        public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand equipItemCommand) {
+        public ICharacterEquippedItem equipItemOrThrow(EquipItemCommand equipItemCommand) {
             if (!canPlaceItem(new EquipItemQuery(equipItemCommand.itemDefinition, equipItemCommand.origin))) {
                 throw new ArgumentException("Cannot equip item");
             }

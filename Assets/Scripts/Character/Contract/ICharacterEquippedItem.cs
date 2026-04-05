@@ -1,6 +1,8 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.ActionEffect;
+using MageFactory.Shared.Contract;
 
 namespace MageFactory.Character.Contract {
-    public interface ICharacterEquippedItem : ICombatCharacterEquippedItem {
+    public interface ICharacterEquippedItem : IGridItemPlaced {
+        IActionDescription prepareItemActionDescription();
     }
 }

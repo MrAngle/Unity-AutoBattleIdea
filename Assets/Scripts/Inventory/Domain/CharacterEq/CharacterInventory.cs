@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Character.Contract;
-using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
-namespace MageFactory.Inventory.Domain {
+namespace MageFactory.Inventory.Domain.CharacterEq {
     internal class CharacterInventory : ICharacterInventory {
         private InventoryAggregate inventoryAggregate;
 
@@ -20,12 +19,18 @@ namespace MageFactory.Inventory.Domain {
             return inventoryAggregate.getPlacedSnapshot();
         }
 
-        public ICombatInventory getInventoryGrid() {
+        public IInventoryGrid getInventoryGrid() {
             return inventoryAggregate.getInventoryGrid();
         }
 
-        public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem item) {
-            return inventoryAggregate.tryGetItemAtCell(cell, out item);
+        public bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item) {
+            if (inventoryAggregate.tryGetItemAtCell(cell, out IInventoryPlacedItem inventoryPlacedItem)) {
+                item = new CharacterEquippedItem(inventoryPlacedItem);
+                return true;
+            }
+
+            item = null;
+            return false;
         }
 
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand) {
@@ -51,8 +56,13 @@ namespace MageFactory.Inventory.Domain {
                 return false;
             }
 
-            neighborItems = placedNeighbors;
+            neighborItems = mapToEquippedItems(placedNeighbors);
             return true;
+        }
+
+        private static IEnumerable<ICharacterEquippedItem> mapToEquippedItems(
+            IEnumerable<IInventoryPlacedItem> placedItems) {
+            return placedItems.Select(pi => (ICharacterEquippedItem)new CharacterEquippedItem(pi));
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using MageFactory.Character.Domain.FlowCapability;
 using MageFactory.CombatContext.Contract;
-using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
@@ -8,7 +7,7 @@ using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
-namespace MageFactory.Character.Domain {
+namespace MageFactory.Character.Domain.CombatChar {
     internal class CombatCharacter : ICombatCharacter, IFlowOwner {
         private readonly Team team;
         private readonly CharacterAggregate characterAggregate;
@@ -34,17 +33,17 @@ namespace MageFactory.Character.Domain {
             return characterAggregate.getId();
         }
 
-        public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item) {
-            return characterAggregate.equipItemOrThrow(item);
-        }
+        // public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item) {
+        //     return new CombatCharacterEquippedItem(characterAggregate.equipItemOrThrow(item));
+        // }
 
-        public bool canPlaceItem(EquipItemQuery equipItemQuery) {
-            return characterAggregate.canPlaceItem(equipItemQuery);
-        }
+        // public bool canPlaceItem(EquipItemQuery equipItemQuery) {
+        //     return characterAggregate.canPlaceItem(equipItemQuery);
+        // }
 
-        public ICombatCharacterInventory getInventoryAggregate() {
-            return characterAggregate.getInventoryAggregate();
-        }
+        // public ICombatCharacterInventory getInventoryAggregate() {
+        //     return new CombatCharacterInventory(characterAggregate.getInventoryAggregate());
+        // }
 
         public long getMaxHp() {
             return characterAggregate.getMaxHp();
@@ -54,9 +53,9 @@ namespace MageFactory.Character.Domain {
             return characterAggregate.getCurrentHp();
         }
 
-        public void apply(PowerAmount powerAmount) {
-            characterAggregate.apply(powerAmount);
-        }
+        // public void apply(PowerAmount powerAmount) {
+        //     characterAggregate.apply(powerAmount);
+        // }
 
         public string getName() {
             return characterAggregate.getName();

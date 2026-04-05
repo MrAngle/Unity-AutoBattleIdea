@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using MageFactory.Character.Domain.CharacterCapability;
+using MageFactory.Character.Domain.CombatChar;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Api;

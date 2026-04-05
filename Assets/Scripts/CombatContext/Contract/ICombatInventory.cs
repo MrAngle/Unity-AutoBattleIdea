@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace MageFactory.CombatContext.Contract {
     public interface ICombatInventory {
-        int Width { get; }
-        int Height { get; }
+        int getWidthCellsNumber();
+        int getHeightCellsNumber();
         CellState getState(Vector2Int coord);
     }
 }

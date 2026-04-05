@@ -5,9 +5,9 @@ namespace MageFactory.Character.Domain.CharacterCapability {
         private readonly CombatCommandBus combatCommandBus;
         private readonly CombatQueries combatQueries;
 
-        internal CharacterCombatCapabilities(CharacterAggregate character) {
-            combatCommandBus = new CombatCommandBus(character);
-            combatQueries = new CombatQueries(character);
+        internal CharacterCombatCapabilities(CharacterAggregate characterAggregate) {
+            combatCommandBus = new CombatCommandBus(characterAggregate);
+            combatQueries = new CombatQueries(characterAggregate);
         }
 
         public ICombatCommandBus command() {

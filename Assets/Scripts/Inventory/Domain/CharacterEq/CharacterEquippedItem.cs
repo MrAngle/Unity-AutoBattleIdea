@@ -6,7 +6,7 @@ using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
-namespace MageFactory.Inventory.Domain {
+namespace MageFactory.Inventory.Domain.CharacterEq {
     internal class CharacterEquippedItem : ICharacterEquippedItem {
         private IInventoryPlacedItem inventoryPlacedItem;
 
@@ -34,8 +34,8 @@ namespace MageFactory.Inventory.Domain {
             return inventoryPlacedItem.prepareItemActionDescription();
         }
 
-        internal IInventoryPlacedItem toInventoryPlacedItem() {
-            return inventoryPlacedItem;
-        }
+        // internal IInventoryPlacedItem toInventoryPlacedItem() {
+        //     return inventoryPlacedItem;
+        // }
     }
 }

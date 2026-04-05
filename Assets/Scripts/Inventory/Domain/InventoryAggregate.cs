@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Character.Contract;
-using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Inventory.Contract;
@@ -17,7 +16,9 @@ namespace MageFactory.Inventory.Domain {
     internal class InventoryAggregate {
         private readonly HashSet<IInventoryPlacedItem> items = new();
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
-        private readonly HashSet<ICharacterEquippedEntryPointToTick> entryPoints = new();
+
+        private readonly HashSet<ICharacterEquippedEntryPointToTick>
+            entryPoints = new(); // to remove - use inventory related items instead
 
         private readonly IInventoryGrid inventoryGrid;
         private readonly IItemFactory itemFactory;
@@ -44,13 +45,13 @@ namespace MageFactory.Inventory.Domain {
             return aggregate;
         }
 
-        public IEnumerable<ICharacterEquippedItem> getPlacedSnapshot() {
+        public IEnumerable<IGridItemPlaced> getPlacedSnapshot() {
             // jeśli trzymasz IPlacedItem, dodaj na nim gettery albo mapuj z posiadanych struktur
             foreach (var item in items)
                 yield return item;
         }
 
-        public ICombatInventory getInventoryGrid() {
+        public IInventoryGrid getInventoryGrid() {
             return inventoryGrid;
         }
 
@@ -115,8 +116,8 @@ namespace MageFactory.Inventory.Domain {
             return neighbors.Length > 0;
         }
 
-        public bool tryGetItemAtCell(Vector2Int cell, out ICombatCharacterEquippedItem itemToReturn) {
-            if (cellToItem.TryGetValue(cell, out var placedItem)) {
+        public bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
+            if (cellToItem.TryGetValue(cell, out IInventoryPlacedItem placedItem)) {
                 itemToReturn = placedItem;
                 return true;
             }
