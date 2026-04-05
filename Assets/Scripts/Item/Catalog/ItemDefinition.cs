@@ -15,8 +15,6 @@ namespace MageFactory.Item.Catalog {
             return shapeArchetype;
         }
 
-        // 🔽 statyczne instancje = „enum values”
-
         public static readonly ItemDefinition GemShard =
             new ItemDefinition(
                 ShapeCatalog.Square1x1

@@ -6,6 +6,7 @@ namespace MageFactory.Shared.Model.Shape {
         public static readonly ShapeArchetypeId SQUARE_1X1 = Define(1);
         public static readonly ShapeArchetypeId SQUARE_2X2 = Define(2);
         public static readonly ShapeArchetypeId L_BRACKET = Define(3);
+        public static readonly ShapeArchetypeId STANDARD_SWORD = Define(4);
     }
 
     /// <summary>
@@ -17,7 +18,7 @@ namespace MageFactory.Shared.Model.Shape {
         public static readonly ShapeArchetype Square1x1 = new(
             ShapeArchetypeId.SQUARE_1X1,
             "Gem Shard",
-            ItemShape.SingleCell(),
+            ItemShape.singleCell(),
             "Icons/GemShard"
         );
 
@@ -25,7 +26,7 @@ namespace MageFactory.Shared.Model.Shape {
         public static readonly ShapeArchetype Square2x2 = new(
             ShapeArchetypeId.SQUARE_2X2,
             "Shield Plate (2x2)",
-            ItemShape.Square2x2(),
+            ItemShape.square2x2(),
             "Icons/ShieldPlate"
         );
 
@@ -34,14 +35,22 @@ namespace MageFactory.Shared.Model.Shape {
             ShapeArchetypeId.L_BRACKET,
             // itemDataId: ItemDataId.,
             "L-Bracket",
-            ItemShape.LShape(),
+            ItemShape.shapeL(),
             "Icons/LBracket"
+        );
+
+        public static readonly ShapeArchetype StandardSword = new(
+            ShapeArchetypeId.STANDARD_SWORD,
+            "Sword",
+            ItemShape.sword(),
+            "Icons/Sword"
         );
 
         public static readonly IReadOnlyList<ShapeArchetype> All = new[] {
             Square1x1,
             Square2x2,
-            LBracket
+            LBracket,
+            StandardSword
         };
     }
 }

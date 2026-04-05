@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using MageFactory.Item.Catalog;
+using MageFactory.Item.Catalog.Bases;
 using MageFactory.Shared.Contract;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,9 +35,15 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
 
         private IItemDefinition getRandomItemDefinition() {
             IReadOnlyList<IItemDefinition> allItems =
-                ItemDefinition.All
-                    .Concat<IItemDefinition>(EntryPointDefinition.All)
-                    .ToList();
+                new List<IItemDefinition> {
+                    new RustySword(),
+                    new Shield(),
+                    EntryPointDefinition.Standard
+                };
+
+            // ItemDefinition.All
+            //     .Concat<IItemDefinition>(EntryPointDefinition.All)
+            //     .ToList();
             return allItems[Random.Range(0, allItems.Count)];
         }
     }

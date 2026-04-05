@@ -29,7 +29,7 @@ namespace MageFactory.Inventory.Domain {
         }
 
         private HashSet<Vector2Int> calculateOccupiedCellsByOrigin() {
-            return _itemShape.GetCellSetAt(_origin);
+            return _itemShape.getCellSetAt(_origin);
         }
     }
 }

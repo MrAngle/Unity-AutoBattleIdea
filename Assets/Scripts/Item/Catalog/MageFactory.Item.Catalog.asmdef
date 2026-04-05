@@ -2,7 +2,8 @@
   "name": "MageFactory.Item.Catalog",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Shared"
+    "MageFactory.Shared",
+    "MageFactory.ActionEffect"
   ],
   "autoReferenced": true
 }
