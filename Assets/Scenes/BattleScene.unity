@@ -1372,7 +1372,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df56686ec584909a3f811435c1e245e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager.BattleManager
-  turnInterval: 1.5
 --- !u!4 &1444058485
 Transform:
   m_ObjectHideFlags: 0

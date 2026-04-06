@@ -29,7 +29,7 @@ sysinfo.txt
 *.aab
 *.app
 *.exe
-*.zip
+# *.zip
 
 # --- Package Manager ---
 # NIE ignoruj całego Packages – zostaw manifesty (wersje paczek odtworzą się na innym PC)
