@@ -34,8 +34,6 @@ namespace MageFactory.Inventory.Domain {
         internal static InventoryAggregate create(IItemFactory itemFactory,
                                                   IInventoryEventPublisher inventoryEventPublisher) {
             InventoryRegistry registry = InventoryRegistry.createNew(17, 8);
-            // InventoryGrid grid = new InventoryGrid(registry);
-
             var aggregate = new InventoryAggregate(registry, itemFactory, inventoryEventPublisher);
 
             return aggregate;
@@ -53,8 +51,8 @@ namespace MageFactory.Inventory.Domain {
             return inventoryRegistry.canPlaceItem(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
         }
 
-        public HashSet<IInventoryPlacedEntryPoint> getEntryPointsToTick() {
-            return entryPoints;
+        public IReadOnlyCollection<IInventoryPlacedEntryPoint> getEntryPointsToTick() {
+            return inventoryRegistry.getEntryPoints();
         }
 
         public IInventoryPlacedItem place(PlaceItemCommand placeItemCommand) {

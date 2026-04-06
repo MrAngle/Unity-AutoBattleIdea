@@ -15,7 +15,7 @@ namespace MageFactory.Character.Contract {
 
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand);
         public bool canPlace(PlaceItemQuery placeItemCommand);
-        public HashSet<ICharacterEquippedEntryPointToTick> getEntryPointsToTick();
+        public IReadOnlyCollection<ICharacterEquippedEntryPointToTick> getEntryPointsToTick();
 
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
                                         IEnumerable<GridDirection> directions,

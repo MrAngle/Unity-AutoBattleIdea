@@ -41,8 +41,8 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return inventoryAggregate.canPlace(placeItemCommand);
         }
 
-        public HashSet<ICharacterEquippedEntryPointToTick> getEntryPointsToTick() {
-            HashSet<IInventoryPlacedEntryPoint> aggregateSet = inventoryAggregate.getEntryPointsToTick();
+        public IReadOnlyCollection<ICharacterEquippedEntryPointToTick> getEntryPointsToTick() {
+            IReadOnlyCollection<IInventoryPlacedEntryPoint> aggregateSet = inventoryAggregate.getEntryPointsToTick();
             return mapToEquippedEntryPoints(aggregateSet);
         }
 
@@ -65,7 +65,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return inventoryAggregate.tryChangeItemPosition(itemToMove.getId(), newPosition);
         }
 
-        private static HashSet<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(
+        private static IReadOnlyCollection<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(
             IEnumerable<IInventoryPlacedEntryPoint> source) {
             return source
                 .Select(ep => (ICharacterEquippedEntryPointToTick)new CharacterEquippedEntryPointItem(ep))

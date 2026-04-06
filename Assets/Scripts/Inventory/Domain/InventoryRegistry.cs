@@ -12,23 +12,17 @@ using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
     internal class InventoryRegistry {
-        // it should never be published by getter etc. It must be only 1 source of truth otherwise this class will be a mess
         private readonly HashSet<IInventoryPlacedItem> items;
         private readonly Dictionary<Vector2Int, InventoryCell> cells;
         private readonly int widthCellsNumber;
         private readonly int heightCellsNumber;
-
-        // Indexes - it may be better to group them.
-        private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem;
-        private readonly Dictionary<Id<ItemId>, IInventoryPlacedItem> itemIdToItem;
+        private readonly InventoryRegistryIndexes indexes;
 
         private InventoryRegistry(
             int widthCellsNumber,
             int heightCellsNumber,
             HashSet<IInventoryPlacedItem> items,
-            Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem,
-            Dictionary<Vector2Int, InventoryCell> cells,
-            Dictionary<Id<ItemId>, IInventoryPlacedItem> itemIdToItem) {
+            Dictionary<Vector2Int, InventoryCell> cells) {
             if (widthCellsNumber < 1) {
                 throw new ArgumentOutOfRangeException(nameof(widthCellsNumber), "Width must be greater than 0.");
             }
@@ -40,9 +34,10 @@ namespace MageFactory.Inventory.Domain {
             this.widthCellsNumber = widthCellsNumber;
             this.heightCellsNumber = heightCellsNumber;
             this.items = NullGuard.NotNullOrThrow(items);
-            this.cellToItem = NullGuard.NotNullOrThrow(cellToItem);
             this.cells = NullGuard.NotNullOrThrow(cells);
-            this.itemIdToItem = NullGuard.NotNullOrThrow(itemIdToItem);
+
+            indexes = new InventoryRegistryIndexes();
+            rebuildIndexes();
         }
 
         public static InventoryRegistry createNew(int widthCellsNumber, int heightCellsNumber) {
@@ -58,9 +53,7 @@ namespace MageFactory.Inventory.Domain {
                 widthCellsNumber,
                 heightCellsNumber,
                 new HashSet<IInventoryPlacedItem>(),
-                new Dictionary<Vector2Int, IInventoryPlacedItem>(),
-                cells,
-                new Dictionary<Id<ItemId>, IInventoryPlacedItem>()
+                cells
             );
         }
 
@@ -72,16 +65,22 @@ namespace MageFactory.Inventory.Domain {
             return widthCellsNumber;
         }
 
+        public IReadOnlyCollection<IInventoryPlacedEntryPoint> getEntryPoints() {
+            return indexes.getEntryPoints();
+        }
+
         public IEnumerable<IGridItemPlaced> getPlacedSnapshot() {
-            foreach (var item in items)
+            foreach (IInventoryPlacedItem item in items) {
                 yield return item;
+            }
         }
 
         internal CellState getCellState(Vector2Int coord) {
-            if (coord.x < 0 || coord.x >= getWidthCellsNumber() || coord.y < 0 || coord.y >= getHeightCellsNumber())
+            if (coord.x < 0 || coord.x >= getWidthCellsNumber() || coord.y < 0 || coord.y >= getHeightCellsNumber()) {
                 return CellState.Unreachable;
+            }
 
-            return cells.TryGetValue(coord, out var cell)
+            return cells.TryGetValue(coord, out InventoryCell cell)
                 ? cell.State
                 : CellState.Unreachable;
         }
@@ -91,7 +90,7 @@ namespace MageFactory.Inventory.Domain {
         }
 
         internal bool isCellAvailableForPlacement(Vector2Int cell) {
-            if (!cells.TryGetValue(cell, out var value) || value == null) {
+            if (!cells.TryGetValue(cell, out InventoryCell value) || value == null) {
                 return false;
             }
 
@@ -99,14 +98,14 @@ namespace MageFactory.Inventory.Domain {
                 return false;
             }
 
-            return !cellToItem.ContainsKey(cell);
+            return !indexes.isCellOccupied(cell);
         }
 
         internal bool canPlaceItem(ShapeArchetype shape, Vector2Int origin) {
-            foreach (var cellOffset in shape.Shape.Cells) {
+            foreach (Vector2Int cellOffset in shape.Shape.Cells) {
                 Vector2Int targetCell = origin + cellOffset;
 
-                if (!cells.TryGetValue(targetCell, out var inventoryCell) || inventoryCell == null) {
+                if (!cells.TryGetValue(targetCell, out InventoryCell inventoryCell) || inventoryCell == null) {
                     return false;
                 }
 
@@ -114,7 +113,7 @@ namespace MageFactory.Inventory.Domain {
                     return false;
                 }
 
-                if (cellToItem.ContainsKey(targetCell)) {
+                if (indexes.isCellOccupied(targetCell)) {
                     return false;
                 }
             }
@@ -129,94 +128,74 @@ namespace MageFactory.Inventory.Domain {
                 throw new InvalidOperationException("Item is already registered in inventory.");
             }
 
-            if (itemIdToItem.ContainsKey(inventoryPlacedItem.getId())) {
+            if (indexes.tryGetItem(inventoryPlacedItem.getId(), out _)) {
                 throw new InvalidOperationException($"Item id {inventoryPlacedItem.getId()} is already registered.");
             }
 
-            foreach (var occupiedCell in inventoryPlacedItem.getOccupiedCells()) {
-                if (!cells.TryGetValue(occupiedCell, out var inventoryCell) || inventoryCell == null) {
-                    throw new KeyNotFoundException($"Cell {occupiedCell} does not exist in inventory.");
-                }
-
-                if (!inventoryCell.IsAvailableForPlacement) {
-                    throw new InvalidOperationException($"Cell {occupiedCell} is not available for placement.");
-                }
-
-                if (cellToItem.ContainsKey(occupiedCell)) {
-                    throw new InvalidOperationException($"Cell {occupiedCell} is already occupied.");
-                }
+            if (!canPlaceItem(inventoryPlacedItem.getShape(), inventoryPlacedItem.getOrigin())) {
+                throw new InvalidOperationException("Item cannot be placed in the target position.");
             }
 
             items.Add(inventoryPlacedItem);
-            itemIdToItem[inventoryPlacedItem.getId()] = inventoryPlacedItem;
+            indexes.addItem(inventoryPlacedItem);
 
-            foreach (var occupiedCell in inventoryPlacedItem.getOccupiedCells()) {
-                cellToItem[occupiedCell] = inventoryPlacedItem;
+            foreach (Vector2Int occupiedCell in inventoryPlacedItem.getOccupiedCells()) {
                 cells[occupiedCell].State = CellState.Occupied;
             }
         }
 
         internal void removeItem(Id<ItemId> itemId) {
-            var inventoryPlacedItem = getItemOrThrow(itemId);
+            IInventoryPlacedItem inventoryPlacedItem = getItemOrThrow(itemId);
 
-            foreach (var occupiedCell in inventoryPlacedItem.getOccupiedCells()) {
-                if (cellToItem.TryGetValue(occupiedCell, out var mappedItem)
-                    && ReferenceEquals(mappedItem, inventoryPlacedItem)) {
-                    cellToItem.Remove(occupiedCell);
-                }
-
-                if (cells.TryGetValue(occupiedCell, out var inventoryCell) && inventoryCell != null) {
+            foreach (Vector2Int occupiedCell in inventoryPlacedItem.getOccupiedCells()) {
+                if (cells.TryGetValue(occupiedCell, out InventoryCell inventoryCell) && inventoryCell != null) {
                     inventoryCell.State = CellState.Empty;
                 }
             }
 
             items.Remove(inventoryPlacedItem);
-            itemIdToItem.Remove(itemId);
+            indexes.removeItem(inventoryPlacedItem);
         }
 
         internal bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
-            if (cellToItem.TryGetValue(cell, out var placedItem)) {
-                itemToReturn = placedItem;
-                return true;
-            }
-
-            itemToReturn = null;
-            return false;
+            return indexes.tryGetItemAtCell(cell, out itemToReturn);
         }
 
-        internal IEnumerable<IInventoryPlacedItem> getNeighborItems(IGridItemPlaced sourceGridItemPlaced,
-                                                                    IEnumerable<GridDirection> directions) {
+        internal IEnumerable<IInventoryPlacedItem> getNeighborItems(
+            IGridItemPlaced sourceGridItemPlaced,
+            IEnumerable<GridDirection> directions) {
             if (sourceGridItemPlaced == null) {
                 return Enumerable.Empty<IInventoryPlacedItem>();
             }
 
-            var neighbors = GridAdjacencySearch
+            IInventoryPlacedItem[] neighbors = GridAdjacencySearch
                 .getNeighborItems(
                     sourceGridItemPlaced,
-                    cellToItem,
+                    indexes.getCellToItem(),
                     directions)
                 .ToArray();
 
             return neighbors;
         }
 
-        internal bool tryMoveItem(Id<ItemId> idOfItemToMove,
-                                  Vector2Int newOriginCellPosition,
-                                  out IInventoryPlacedItem movedItem,
-                                  out Vector2Int oldOriginCellPosition) {
+        internal bool tryMoveItem(
+            Id<ItemId> idOfItemToMove,
+            Vector2Int newOriginCellPosition,
+            out IInventoryPlacedItem movedItem,
+            out Vector2Int oldOriginCellPosition) {
             movedItem = null;
             oldOriginCellPosition = default;
 
-            if (!itemIdToItem.TryGetValue(idOfItemToMove, out var inventoryPlacedItem)) {
+            if (!indexes.tryGetItem(idOfItemToMove, out IInventoryPlacedItem inventoryPlacedItem)) {
                 return false;
             }
 
-            var shape = inventoryPlacedItem.getShape();
+            ShapeArchetype shape = inventoryPlacedItem.getShape();
             oldOriginCellPosition = inventoryPlacedItem.getOrigin();
-            var oldOccupiedCells = inventoryPlacedItem.getOccupiedCells().ToArray();
+            Vector2Int[] oldOccupiedCells = inventoryPlacedItem.getOccupiedCells().ToArray();
 
-            var newInventoryPosition = InventoryPosition.create(newOriginCellPosition, shape.Shape);
-            var newOccupiedCells = newInventoryPosition.getOccupiedCells().ToArray();
+            InventoryPosition newInventoryPosition = InventoryPosition.create(newOriginCellPosition, shape.Shape);
+            Vector2Int[] newOccupiedCells = newInventoryPosition.getOccupiedCells().ToArray();
 
             if (!canMoveItemToTarget(inventoryPlacedItem, newOccupiedCells)) {
                 return false;
@@ -224,7 +203,13 @@ namespace MageFactory.Inventory.Domain {
 
             try {
                 clearOccupiedCellsForItem(inventoryPlacedItem, oldOccupiedCells);
-                updateItemPositionAndRegisterNewCells(inventoryPlacedItem, newInventoryPosition, newOccupiedCells);
+                inventoryPlacedItem.updateItemPosition(newInventoryPosition);
+                indexes.updateItem(inventoryPlacedItem, oldOccupiedCells);
+
+                foreach (Vector2Int newCell in newOccupiedCells) {
+                    cells[newCell].State = CellState.Occupied;
+                }
+
                 movedItem = inventoryPlacedItem;
                 return true;
             }
@@ -239,14 +224,19 @@ namespace MageFactory.Inventory.Domain {
             }
         }
 
-        private bool canMoveItemToTarget(IInventoryPlacedItem inventoryPlacedItem,
-                                         IEnumerable<Vector2Int> newOccupiedCells) {
-            foreach (var newCell in newOccupiedCells) {
-                if (!cells.TryGetValue(newCell, out var inventoryCell) || inventoryCell == null) {
+        private bool canMoveItemToTarget(
+            IInventoryPlacedItem inventoryPlacedItem,
+            IEnumerable<Vector2Int> newOccupiedCells) {
+            foreach (Vector2Int newCell in newOccupiedCells) {
+                if (!cells.TryGetValue(newCell, out InventoryCell inventoryCell) || inventoryCell == null) {
                     return false;
                 }
 
-                if (cellToItem.TryGetValue(newCell, out var occupyingItem)
+                if (!inventoryCell.IsAvailableForPlacement) {
+                    return false;
+                }
+
+                if (indexes.tryGetItemAtCell(newCell, out IInventoryPlacedItem occupyingItem)
                     && !ReferenceEquals(occupyingItem, inventoryPlacedItem)) {
                     return false;
                 }
@@ -256,7 +246,7 @@ namespace MageFactory.Inventory.Domain {
         }
 
         private IInventoryPlacedItem getItemOrThrow(Id<ItemId> itemId) {
-            if (itemIdToItem.TryGetValue(itemId, out var inventoryPlacedItem)) {
+            if (indexes.tryGetItem(itemId, out IInventoryPlacedItem inventoryPlacedItem)) {
                 return inventoryPlacedItem;
             }
 
@@ -266,27 +256,10 @@ namespace MageFactory.Inventory.Domain {
         private void clearOccupiedCellsForItem(
             IInventoryPlacedItem inventoryPlacedItem,
             IEnumerable<Vector2Int> occupiedCells) {
-            foreach (var occupiedCell in occupiedCells) {
-                if (cellToItem.TryGetValue(occupiedCell, out var mappedItem)
-                    && ReferenceEquals(mappedItem, inventoryPlacedItem)) {
-                    cellToItem.Remove(occupiedCell);
-                }
-
-                if (cells.TryGetValue(occupiedCell, out var inventoryCell) && inventoryCell != null) {
+            foreach (Vector2Int occupiedCell in occupiedCells) {
+                if (cells.TryGetValue(occupiedCell, out InventoryCell inventoryCell) && inventoryCell != null) {
                     inventoryCell.State = CellState.Empty;
                 }
-            }
-        }
-
-        private void updateItemPositionAndRegisterNewCells(
-            IInventoryPlacedItem inventoryPlacedItem,
-            InventoryPosition newInventoryPosition,
-            IEnumerable<Vector2Int> newOccupiedCells) {
-            inventoryPlacedItem.updateItemPosition(newInventoryPosition);
-
-            foreach (var newCell in newOccupiedCells) {
-                cellToItem[newCell] = inventoryPlacedItem;
-                cells[newCell].State = CellState.Occupied;
             }
         }
 
@@ -295,13 +268,41 @@ namespace MageFactory.Inventory.Domain {
             Vector2Int oldOriginCellPosition,
             ShapeArchetype shape,
             IEnumerable<Vector2Int> oldOccupiedCells) {
-            var oldInventoryPosition = InventoryPosition.create(oldOriginCellPosition, shape.Shape);
+            InventoryPosition oldInventoryPosition = InventoryPosition.create(oldOriginCellPosition, shape.Shape);
             inventoryPlacedItem.updateItemPosition(oldInventoryPosition);
 
-            foreach (var oldCell in oldOccupiedCells) {
-                cellToItem[oldCell] = inventoryPlacedItem;
+            indexes.updateItem(inventoryPlacedItem, inventoryPlacedItem.getOccupiedCells());
 
-                if (cells.TryGetValue(oldCell, out var inventoryCell) && inventoryCell != null) {
+            foreach (Vector2Int oldCell in oldOccupiedCells) {
+                if (cells.TryGetValue(oldCell, out InventoryCell inventoryCell) && inventoryCell != null) {
+                    inventoryCell.State = CellState.Occupied;
+                }
+            }
+        }
+
+        private void rebuildIndexes() {
+            indexes.clear();
+
+            foreach (KeyValuePair<Vector2Int, InventoryCell> pair in cells) {
+                InventoryCell inventoryCell = pair.Value;
+
+                if (inventoryCell == null) {
+                    throw new InvalidOperationException($"Cell {pair.Key} is null.");
+                }
+
+                inventoryCell.State = CellState.Empty;
+            }
+
+            foreach (IInventoryPlacedItem item in items) {
+                indexes.addItem(item);
+
+                foreach (Vector2Int occupiedCell in item.getOccupiedCells()) {
+                    if (!cells.TryGetValue(occupiedCell, out InventoryCell inventoryCell) || inventoryCell == null) {
+                        throw new InvalidOperationException(
+                            $"Item {item.getId()} occupies non-existing cell {occupiedCell}."
+                        );
+                    }
+
                     inventoryCell.State = CellState.Occupied;
                 }
             }
