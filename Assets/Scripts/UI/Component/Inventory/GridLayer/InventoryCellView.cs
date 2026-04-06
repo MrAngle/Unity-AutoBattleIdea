@@ -8,11 +8,11 @@ namespace MageFactory.UI.Component.Inventory.GridLayer {
 
         public void Init(Vector2Int coord, CellState state) {
             if (_image == null) _image = GetComponent<Image>();
-            ApplyStateVisual(state);
+            applyStateVisual(state);
             gameObject.name = $"Cell_{coord.x}_{coord.y}";
         }
 
-        public void ApplyStateVisual(CellState state) {
+        private void applyStateVisual(CellState state) {
             if (_image == null) _image = GetComponent<Image>();
             _image.color = state switch {
                 // CellState.Empty    => new Color(0.85f, 0.85f, 0.85f, 1f),

@@ -8,56 +8,49 @@ using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
-using MageFactory.Shared.ItemSearch;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
     internal class InventoryAggregate {
-        private readonly HashSet<IInventoryPlacedItem> items = new();
-        private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItem = new();
-
-        private readonly HashSet<IInventoryPlacedEntryPoint>
-            entryPoints = new(); // to remove - use inventory related items instead
-
-        private readonly IInventoryGrid inventoryGrid;
+        private readonly HashSet<IInventoryPlacedEntryPoint> entryPoints = new();
+        private readonly IInventoryEventPublisher inventoryEventHub;
+        private readonly InventoryRegistry inventoryRegistry;
         private readonly IItemFactory itemFactory;
 
-        private readonly IInventoryEventPublisher inventoryEventHub;
-
-        private InventoryAggregate(IInventoryGrid inventoryGrid,
+        private InventoryAggregate(InventoryRegistry inventoryRegistry,
                                    IItemFactory itemFactory,
                                    IInventoryEventPublisher inventoryEventPublisher) {
-            NullGuard.NotNullCheckOrThrow(inventoryGrid, itemFactory, inventoryEventPublisher);
-            this.inventoryGrid = inventoryGrid;
+            NullGuard.NotNullCheckOrThrow(inventoryRegistry, itemFactory, inventoryEventPublisher);
             this.itemFactory = itemFactory;
-            this.inventoryEventHub = inventoryEventPublisher;
-            NullGuard.NotNullCheckOrThrow(this.inventoryGrid, entryPoints, items, this.itemFactory,
+            inventoryEventHub = inventoryEventPublisher;
+            this.inventoryRegistry = inventoryRegistry;
+
+            NullGuard.NotNullCheckOrThrow(this.inventoryRegistry, this.entryPoints, this.itemFactory,
                 this.inventoryEventHub);
         }
 
         internal static InventoryAggregate create(IItemFactory itemFactory,
                                                   IInventoryEventPublisher inventoryEventPublisher) {
-            IInventoryGrid grid = new InventoryGrid(12, 8);
+            InventoryRegistry registry = InventoryRegistry.createNew(17, 8);
+            // InventoryGrid grid = new InventoryGrid(registry);
 
-            var aggregate = new InventoryAggregate(grid, itemFactory, inventoryEventPublisher);
+            var aggregate = new InventoryAggregate(registry, itemFactory, inventoryEventPublisher);
 
             return aggregate;
         }
 
         public IEnumerable<IGridItemPlaced> getPlacedSnapshot() {
-            // jeśli trzymasz IPlacedItem, dodaj na nim gettery albo mapuj z posiadanych struktur
-            foreach (var item in items)
-                yield return item;
+            return inventoryRegistry.getPlacedSnapshot();
         }
 
-        public IInventoryGrid getInventoryGrid() {
-            return inventoryGrid;
+        public IReadOnlyInventoryGrid getInventoryGrid() {
+            return new InventoryGrid(inventoryRegistry);
         }
 
         public bool canPlace(PlaceItemQuery placeItemQuery) {
-            return inventoryGrid.canPlace(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
+            return inventoryRegistry.canPlaceItem(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
         }
 
         public HashSet<IInventoryPlacedEntryPoint> getEntryPointsToTick() {
@@ -65,32 +58,23 @@ namespace MageFactory.Inventory.Domain {
         }
 
         public IInventoryPlacedItem place(PlaceItemCommand placeItemCommand) {
-            if (!inventoryGrid.canPlace(placeItemCommand.itemDefinition.getShape(), placeItemCommand.origin))
+            // change to tryPlace
+            if (!inventoryRegistry.canPlaceItem(placeItemCommand.itemDefinition.getShape(), placeItemCommand.origin))
                 throw new ArgumentException("Cannot place item");
 
             CreatePlaceableItemCommand createPlaceableItemCommand = new(placeItemCommand.itemDefinition);
-            IInventoryPlaceableItem inventoryPlaceableItem = itemFactory.createPlacableItem(createPlaceableItemCommand);
+            var inventoryPlaceableItem = itemFactory.createPlacableItem(createPlaceableItemCommand);
 
-            IInventoryPlacedItem inventoryPlacedItem =
+            var inventoryPlacedItem =
                 inventoryPlaceableItem.toPlacedItem(
                     InventoryPosition.create(placeItemCommand.origin,
                         placeItemCommand.itemDefinition.getShape().Shape));
 
-            if (inventoryPlacedItem.getOccupiedCells().Any(vector2Int => cellToItem.ContainsKey(vector2Int))) {
-                throw new ArgumentException("Cannot place item");
-            }
+            inventoryRegistry.placeItem(inventoryPlacedItem);
 
             if (inventoryPlacedItem is IInventoryPlacedEntryPoint entryPoint) {
                 entryPoints.Add(entryPoint);
             }
-
-            items.Add(inventoryPlacedItem);
-            foreach (var c in inventoryPlacedItem.getOccupiedCells()) {
-                cellToItem[c] = inventoryPlacedItem;
-            }
-
-            inventoryGrid.place(inventoryPlacedItem.getShape(), placeItemCommand.origin);
-
 
             inventoryEventHub.publish(new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(),
                 inventoryPlacedItem.getShape(),
@@ -101,95 +85,39 @@ namespace MageFactory.Inventory.Domain {
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
                                         IEnumerable<GridDirection> directions,
                                         out IEnumerable<IInventoryPlacedItem> neighborItems) {
-            if (sourceGridItemPlaced == null) {
+            var inventoryPlacedItems =
+                inventoryRegistry.getNeighborItems(sourceGridItemPlaced, directions).ToList();
+
+            if (inventoryPlacedItems.Count == 0) {
                 neighborItems = Enumerable.Empty<IInventoryPlacedItem>();
                 return false;
             }
 
-            IInventoryPlacedItem[] neighbors = GridAdjacencySearch
-                .getNeighborItems(
-                    sourceGridItemPlaced,
-                    cellToItem,
-                    directions)
-                .ToArray();
-
-            neighborItems = neighbors;
-            return neighbors.Length > 0;
+            neighborItems = inventoryPlacedItems;
+            return true;
         }
 
         public bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {
-            if (cellToItem.TryGetValue(cell, out IInventoryPlacedItem placedItem)) {
-                itemToReturn = placedItem;
-                return true;
-            }
+            inventoryRegistry.tryGetItemAtCell(cell, out itemToReturn);
 
-            itemToReturn = null;
-            return false;
+            return itemToReturn != null;
         }
 
-        // public void changeItemPosition(IInventoryPlacedItem itemToMove, Vector2Int newPosition) {
-        //     InventoryPosition inventoryPosition = InventoryPosition.create(newPosition, itemToMove.getShape().Shape);
-        //     itemToMove.updateItemPosition(inventoryPosition);
-        // }
-
-        // it must be thread safe / transactional
-        public void changeItemPosition(Id<ItemId> idOfItemToMove, Vector2Int newPosition) {
-            IInventoryPlacedItem itemToMove = items
-                .FirstOrDefault(item => item.getId().Equals(idOfItemToMove));
-
-            if (itemToMove == null) {
-                Debug.LogError("Item does not belong to this inventory. ItemId:" + idOfItemToMove);
-                throw new ArgumentException("Item does not belong to this inventory. ItemId:" + idOfItemToMove);
+        public bool tryChangeItemPosition(Id<ItemId> idOfItemToMove, Vector2Int newOriginPosition) {
+            if (!inventoryRegistry.tryMoveItem(
+                    idOfItemToMove,
+                    newOriginPosition,
+                    out var movedItem,
+                    out var oldOriginPosition)) {
+                return false;
             }
 
-            var shape = itemToMove.getShape();
-            Vector2Int oldItemOrigin = itemToMove.getOrigin();
-            var oldOccupiedCells = itemToMove.getOccupiedCells().ToArray();
+            inventoryEventHub.publish(new ItemPositionChangedDtoEvent(
+                movedItem.getId(),
+                newOriginPosition
+            ));
 
-            InventoryPosition newInventoryPosition = InventoryPosition.create(newPosition, shape.Shape);
-            var newOccupiedCells = newInventoryPosition.getOccupiedCells().ToArray();
-
-            foreach (var oldCell in oldOccupiedCells) {
-                if (cellToItem.TryGetValue(oldCell, out var mappedItem) && ReferenceEquals(mappedItem, itemToMove)) {
-                    cellToItem.Remove(oldCell);
-                }
-            }
-
-            inventoryGrid.remove(itemToMove.getShape(), itemToMove.getOrigin());
-
-            if (!inventoryGrid.canPlace(shape, newPosition)) {
-                Debug.LogError("Cannot move item to the target position. " + nameof(itemToMove));
-                throw new ArgumentException("Cannot move item to the target position.", nameof(itemToMove));
-            }
-
-            foreach (var cell in newOccupiedCells) {
-                if (cellToItem.TryGetValue(cell, out var occupyingItem) &&
-                    !ReferenceEquals(occupyingItem, itemToMove)) {
-                    Debug.LogError(
-                        "Cannot move item - target cells are occupied by another item. " + nameof(itemToMove));
-                    throw new ArgumentException(
-                        "Cannot move item - target cells are occupied by another item.",
-                        nameof(newPosition)
-                    );
-                }
-            }
-
-            // foreach (var oldCell in oldOccupiedCells) {
-            //     if (cellToItem.TryGetValue(oldCell, out var mappedItem) && ReferenceEquals(mappedItem, itemToMove)) {
-            //         cellToItem.Remove(oldCell);
-            //     }
-            // }
-
-            itemToMove.updateItemPosition(newInventoryPosition);
-
-            foreach (var newCell in newOccupiedCells) {
-                cellToItem[newCell] = itemToMove;
-            }
-
-            inventoryEventHub.publish(new ItemPositionChangedDtoEvent(itemToMove.getId(),
-                itemToMove.getShape(),
-                newPosition,
-                oldItemOrigin));
+            return true;
         }
     }
 }

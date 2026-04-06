@@ -41,19 +41,13 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
         public readonly struct MoveItemToPositionCommand {
             public readonly Id<ItemId> placedItemId;
-            public readonly ShapeArchetype shapeArchetype;
             public readonly Vector2Int newOrigin;
-            public readonly Vector2Int oldOrigin;
 
             public MoveItemToPositionCommand(
                 Id<ItemId> placedItemId,
-                ShapeArchetype shapeArchetype,
-                Vector2Int newOrigin,
-                Vector2Int oldOrigin) {
+                Vector2Int newOrigin) {
                 this.placedItemId = placedItemId;
-                this.shapeArchetype = shapeArchetype;
                 this.newOrigin = newOrigin;
-                this.oldOrigin = oldOrigin;
             }
         }
 

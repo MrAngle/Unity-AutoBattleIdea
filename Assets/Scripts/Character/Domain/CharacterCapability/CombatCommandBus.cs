@@ -31,8 +31,7 @@ namespace MageFactory.Character.Domain.CharacterCapability {
         }
 
         internal bool tryMoveItemToRight(ICharacterEquippedItem characterEquippedItem) {
-            characterAggregate.tryMoveItem(characterEquippedItem);
-            return true;
+            return characterAggregate.tryMoveItem(characterEquippedItem);
         }
     }
 }

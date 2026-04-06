@@ -5,22 +5,22 @@ using UnityEngine;
 
 namespace MageFactory.Character.Domain.CombatChar {
     internal class CombatCharacterGridInventory : ICombatInventory {
-        private readonly IInventoryGrid inventoryGrid;
+        private readonly IReadOnlyInventoryGrid readOnlyInventoryGrid;
 
-        public CombatCharacterGridInventory(IInventoryGrid inventoryGrid) {
-            this.inventoryGrid = inventoryGrid;
+        public CombatCharacterGridInventory(IReadOnlyInventoryGrid readOnlyInventoryGrid) {
+            this.readOnlyInventoryGrid = readOnlyInventoryGrid;
         }
 
         public int getWidthCellsNumber() {
-            return inventoryGrid.getWidthCellsNumber();
+            return readOnlyInventoryGrid.getWidthCellsNumber();
         }
 
         public int getHeightCellsNumber() {
-            return inventoryGrid.getHeightCellsNumber();
+            return readOnlyInventoryGrid.getHeightCellsNumber();
         }
 
         public CellState getState(Vector2Int coord) {
-            return inventoryGrid.getState(coord);
+            return readOnlyInventoryGrid.getState(coord);
         }
     }
 }

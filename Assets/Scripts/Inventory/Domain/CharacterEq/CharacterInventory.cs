@@ -19,7 +19,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return inventoryAggregate.getPlacedSnapshot();
         }
 
-        public IInventoryGrid getInventoryGrid() {
+        public IReadOnlyInventoryGrid getInventoryGrid() {
             return inventoryAggregate.getInventoryGrid();
         }
 
@@ -61,8 +61,8 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return true;
         }
 
-        public void moveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition) {
-            inventoryAggregate.changeItemPosition(itemToMove.getId(), newPosition);
+        public bool tryMoveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition) {
+            return inventoryAggregate.tryChangeItemPosition(itemToMove.getId(), newPosition);
         }
 
         private static HashSet<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(

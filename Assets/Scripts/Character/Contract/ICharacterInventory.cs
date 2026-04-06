@@ -10,7 +10,7 @@ namespace MageFactory.Character.Contract {
 
         IEnumerable<IGridItemPlaced> getPlacedSnapshot();
 
-        IInventoryGrid getInventoryGrid();
+        IReadOnlyInventoryGrid getInventoryGrid();
         bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item);
 
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand);
@@ -21,6 +21,6 @@ namespace MageFactory.Character.Contract {
                                         IEnumerable<GridDirection> directions,
                                         out IEnumerable<ICharacterEquippedItem> neighborItems);
 
-        void moveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition);
+        bool tryMoveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition);
     }
 }

@@ -132,7 +132,7 @@ namespace MageFactory.UI.Context.Combat {
 
         public void onEvent(in ItemPositionChangedDtoEvent ev) {
             ICombatInventoryItemsPanel.MoveItemToPositionCommand itemPrintCommand =
-                new(ev.placedItemId, ev.shapeArchetype, ev.newOriginPosition, ev.oldOriginPosition);
+                new(ev.placedItemId, ev.newOriginPosition);
             inventoryPanelPresentation.moveItemToPosition(itemPrintCommand);
         }
 

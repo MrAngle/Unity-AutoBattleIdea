@@ -48,9 +48,9 @@ namespace MageFactory.UI.Component.Inventory.GridLayer {
             for (var y = 0; y < heightCellsNumber; y++) {
                 for (var x = 0; x < widthCellsNumber; x++) {
                     var coord = new Vector2Int(x, y);
-                    var v = Instantiate(cellPrefab.Get(), gridLayout.transform);
-                    v.Init(coord, printInventoryGridCommand.getState(coord));
-                    inventoryCellViews[coord] = v;
+                    InventoryCellView inventoryCellView = Instantiate(cellPrefab.Get(), gridLayout.transform);
+                    inventoryCellView.Init(coord, printInventoryGridCommand.getState(coord));
+                    inventoryCellViews[coord] = inventoryCellView;
                 }
             }
         }

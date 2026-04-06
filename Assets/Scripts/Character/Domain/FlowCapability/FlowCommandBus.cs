@@ -15,6 +15,7 @@ namespace MageFactory.Character.Domain.FlowCapability {
         }
 
         public bool tryMoveRightAdjacentItemToRight(IFlowItem flowItem) {
+            //  return results of move
             if (characterCombatCapabilities.internalQuery()
                 .tryGetRightAdjacentItems(flowItem, out IEnumerable<ICharacterEquippedItem> adjacentItems)) {
                 foreach (var item in adjacentItems) {

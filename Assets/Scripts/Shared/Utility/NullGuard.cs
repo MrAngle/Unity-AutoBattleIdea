@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MageFactory.Shared.Utility {
     public static class NullGuard {
@@ -23,6 +25,16 @@ namespace MageFactory.Shared.Utility {
                     throw new ArgumentNullException($"arg{i + 1}");
         }
 
+        public static void ThrowIfNullOrEmpty<T>(this IEnumerable<T> source, string paramName = null) {
+            if (source is null) {
+                throw new ArgumentException("Collection null or empty.", paramName ?? nameof(source));
+            }
+
+            if (source.IsNullOrEmpty()) {
+                throw new ArgumentException("Collection cannot be empty.", paramName ?? nameof(source));
+            }
+        }
+
         public static TEnum enumDefinedOrThrow<TEnum>(
             TEnum value,
             string paramName = null
@@ -36,6 +48,10 @@ namespace MageFactory.Shared.Utility {
                 );
 
             return value;
+        }
+
+        private static bool IsNullOrEmpty<T>(this IEnumerable<T> source) {
+            return source == null || !source.Any();
         }
     }
 }

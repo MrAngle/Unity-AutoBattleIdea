@@ -94,8 +94,8 @@ namespace MageFactory.Character.Domain {
             characterEventPublisher.publish(new CharacterHpChangedDtoEvent(characterId, newHp, previousHpValue));
         }
 
-        public void tryMoveItem(ICharacterEquippedItem itemToMove) {
-            characterInventory.moveItem(itemToMove, itemToMove.getOrigin() + Vector2Int.right);
+        public bool tryMoveItem(ICharacterEquippedItem itemToMove) {
+            return characterInventory.tryMoveItem(itemToMove, itemToMove.getOrigin() + Vector2Int.right);
         }
     }
 }
