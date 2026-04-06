@@ -33,5 +33,9 @@ namespace MageFactory.Item.Domain.InventoryItems {
         public IActionDescription prepareItemActionDescription() {
             return battleItem.prepareItemActionDescription();
         }
+
+        public void updateItemPosition(IInventoryPosition inventoryPosition) {
+            battleItem.updateItemPosition(inventoryPosition);
+        }
     }
 }

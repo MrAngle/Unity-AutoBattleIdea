@@ -7,6 +7,7 @@ using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
+using UnityEngine;
 
 namespace MageFactory.Character.Domain {
     internal class CharacterAggregate {
@@ -91,6 +92,10 @@ namespace MageFactory.Character.Domain {
 
         private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
             characterEventPublisher.publish(new CharacterHpChangedDtoEvent(characterId, newHp, previousHpValue));
+        }
+
+        public void tryMoveItem(ICharacterEquippedItem itemToMove) {
+            characterInventory.moveItem(itemToMove, itemToMove.getOrigin() + Vector2Int.right);
         }
     }
 }

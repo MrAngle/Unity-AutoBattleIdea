@@ -47,5 +47,11 @@ namespace MageFactory.UI.Component.Inventory {
         public void printNewItem(ICombatInventoryItemsPanel.NewItemPrintCommand command) {
             combatInventoryItemsPanel.printNewItem(command);
         }
+
+        public void moveItemToPosition(ICombatInventoryItemsPanel.MoveItemToPositionCommand command) {
+            ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo =
+                combatInventoryGridPanel.getInventoryGridInfo();
+            combatInventoryItemsPanel.moveItemToPosition(command, inventoryGridInfo);
+        }
     }
 }

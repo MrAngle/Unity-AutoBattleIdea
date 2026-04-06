@@ -19,7 +19,7 @@ namespace MageFactory.Item.Catalog.Bases {
 
         private class EntryPointGemActionDescription : IActionDescription {
             public Duration getCastTime() {
-                return new Duration(0.15f);
+                return new Duration(0.5f);
             }
 
             public IOperations getEffectsDescriptor() {

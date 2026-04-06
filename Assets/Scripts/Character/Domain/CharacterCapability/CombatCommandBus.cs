@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MageFactory.Character.Contract;
 using MageFactory.Character.Domain.CombatChar;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
@@ -30,8 +30,9 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             characterAggregate.apply(powerAmount);
         }
 
-        public bool tryMoveItemToRight(IFlowItem flowItem) {
-            throw new NotImplementedException();
+        internal bool tryMoveItemToRight(ICharacterEquippedItem characterEquippedItem) {
+            characterAggregate.tryMoveItem(characterEquippedItem);
+            return true;
         }
     }
 }

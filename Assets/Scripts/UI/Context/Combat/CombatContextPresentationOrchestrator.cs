@@ -17,9 +17,14 @@ using MageFactory.UI.Context.Combat.Feature.AddItem;
 using Zenject;
 
 namespace MageFactory.UI.Context.Combat {
-    internal class CombatContextPresentationOrchestrator : ICombatCharacterCreatedEventListener,
+    internal class CombatContextPresentationOrchestrator :
+        ICombatCharacterCreatedEventListener,
         ICombatContextEventListener,
-        IDisposable, IUiCombatCharacterSelectedEventListener, IItemPlacedEventEventListener, IHpChangedEventListener,
+        IDisposable,
+        IUiCombatCharacterSelectedEventListener,
+        IItemPlacedEventEventListener,
+        IItemPositionChangedEventListener,
+        IHpChangedEventListener,
         ICharacterDeathEventListener {
         private ICombatContext combatContext;
         private ICombatCharacter selectedCharacter;
@@ -60,7 +65,8 @@ namespace MageFactory.UI.Context.Combat {
                 .subscribe((IHpChangedEventListener)this);
             this.characterEventRegistry
                 .subscribe((ICharacterDeathEventListener)this);
-            this.inventoryEventRegistry.subscribe(this);
+            this.inventoryEventRegistry.subscribe((IItemPlacedEventEventListener)this);
+            this.inventoryEventRegistry.subscribe((IItemPositionChangedEventListener)this);
         }
 
         public static void create(ICombatContextEventRegistry combatContextEventRegistry,
@@ -90,7 +96,8 @@ namespace MageFactory.UI.Context.Combat {
                 .unsubscribe((ICombatContextEventListener)this);
             this.uiCombatContextEventRegistry
                 .unsubscribe((IUiCombatCharacterSelectedEventListener)this);
-            this.inventoryEventRegistry.unsubscribe(this);
+            this.inventoryEventRegistry.unsubscribe((IItemPlacedEventEventListener)this);
+            this.inventoryEventRegistry.unsubscribe((IItemPositionChangedEventListener)this);
             this.characterEventRegistry
                 .unsubscribe((IHpChangedEventListener)this);
             this.characterEventRegistry
@@ -121,6 +128,12 @@ namespace MageFactory.UI.Context.Combat {
             ICombatInventoryItemsPanel.NewItemPrintCommand itemPrintCommand =
                 new(ev.placedItemId, ev.shapeArchetype, ev.origin);
             inventoryPanelPresentation.printNewItem(itemPrintCommand);
+        }
+
+        public void onEvent(in ItemPositionChangedDtoEvent ev) {
+            ICombatInventoryItemsPanel.MoveItemToPositionCommand itemPrintCommand =
+                new(ev.placedItemId, ev.shapeArchetype, ev.newOriginPosition, ev.oldOriginPosition);
+            inventoryPanelPresentation.moveItemToPosition(itemPrintCommand);
         }
 
         public void onEvent(in CharacterHpChangedDtoEvent ev) {

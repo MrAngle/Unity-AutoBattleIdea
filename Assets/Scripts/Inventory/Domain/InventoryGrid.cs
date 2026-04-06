@@ -48,11 +48,21 @@ namespace MageFactory.Inventory.Domain {
         }
 
         public bool canPlace(ShapeArchetype data, Vector2Int origin) {
-            foreach (var off in data.Shape.Cells) {
-                var p = origin + off;
-                if (p.x < 0 || p.x >= getWidthCellsNumber() || p.y < 0 || p.y >= getHeightCellsNumber()) return false;
-                if (!_cells.TryGetValue(p, out var c)) return false;
-                if (!c.IsAvailableForPlacement) return false;
+            foreach (var cell in data.Shape.Cells) {
+                Vector2Int placementCoordinate = origin + cell;
+                if (placementCoordinate.x < 0 || placementCoordinate.x >= getWidthCellsNumber()
+                                              || placementCoordinate.y < 0
+                                              || placementCoordinate.y >= getHeightCellsNumber()) {
+                    return false;
+                }
+
+                if (!_cells.TryGetValue(placementCoordinate, out var inventoryCell)) {
+                    return false;
+                }
+
+                if (!inventoryCell.IsAvailableForPlacement) {
+                    return false;
+                }
             }
 
             return true;
@@ -64,6 +74,13 @@ namespace MageFactory.Inventory.Domain {
             foreach (var off in data.Shape.Cells) {
                 var p = origin + off;
                 _cells[p].State = CellState.Occupied;
+            }
+        }
+
+        public void remove(ShapeArchetype data, Vector2Int origin) {
+            foreach (var off in data.Shape.Cells) {
+                var p = origin + off;
+                _cells[p].State = CellState.Empty;
             }
         }
     }

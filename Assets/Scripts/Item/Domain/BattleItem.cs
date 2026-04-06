@@ -10,7 +10,7 @@ namespace MageFactory.Item.Domain {
     internal class BattleItem {
         private readonly Id<ItemId> id;
         private readonly ItemArchetype itemArchetype;
-        private readonly IInventoryPosition inventoryPosition;
+        private IInventoryPosition inventoryPosition;
 
         internal BattleItem(ItemArchetype itemArchetype, IInventoryPosition inventoryPosition) {
             id = new Id<ItemId>(IdGenerator.Next());
@@ -37,6 +37,7 @@ namespace MageFactory.Item.Domain {
         public IActionDescription prepareItemActionDescription() {
             return itemArchetype.getActionDescription();
         }
+
         //
         // private Duration prepareActionTiming() {
         //     return new Duration(itemArchetype.getCastTime());
@@ -47,5 +48,8 @@ namespace MageFactory.Item.Domain {
         //         new AddPower(new DamageToDeal(5))
         //     );
         // }
+        public void updateItemPosition(IInventoryPosition paramInventoryPosition) {
+            inventoryPosition = paramInventoryPosition;
+        }
     }
 }

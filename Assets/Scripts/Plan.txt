@@ -6,3 +6,4 @@
 
 bugs
 - add item to inventory when not match
+- remove 2 sources of ocuppied cells (inventory and cell to item)

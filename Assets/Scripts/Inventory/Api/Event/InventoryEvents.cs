@@ -5,4 +5,8 @@ namespace MageFactory.Inventory.Api.Event {
     public interface IItemPlacedEventEventListener
         : IDomainEventListener<NewItemPlacedDtoEvent> {
     }
+
+    public interface IItemPositionChangedEventListener
+        : IDomainEventListener<ItemPositionChangedDtoEvent> {
+    }
 }

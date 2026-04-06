@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MageFactory.ActionEffect;
+﻿using MageFactory.ActionEffect;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Model;
@@ -24,12 +23,7 @@ namespace MageFactory.Flow.Domain.ActionCapability {
         }
 
         public void pushRightAdjacentItemRight() {
-            if (flowCapabilities.query().tryGetRightAdjacentItems(actionContext.getActionItemInvoker(),
-                    out IEnumerable<IFlowItem> adjacentFlowItem)) {
-                foreach (IFlowItem flowItem in adjacentFlowItem) {
-                    flowCapabilities.command().tryMoveItemToRight(flowItem);
-                }
-            }
+            flowCapabilities.command().tryMoveRightAdjacentItemToRight(actionContext.getActionItemInvoker());
         }
     }
 }

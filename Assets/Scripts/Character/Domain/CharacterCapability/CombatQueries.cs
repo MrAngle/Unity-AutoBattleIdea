@@ -35,17 +35,18 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return new CombatCharacterInventory(characterAggregate.getInventoryAggregate());
         }
 
-        public bool tryGetRightAdjacentItems(IFlowItem sourceFlowItem, out IEnumerable<IFlowItem> adjacentFlowItem) {
+        internal bool tryGetRightAdjacentItems(IFlowItem sourceFlowItem,
+                                               out IEnumerable<ICharacterEquippedItem> characterEquippedItems) {
             IEnumerable<GridDirection> gridDirections = new[] { GridDirection.Right };
             if (characterAggregate.getInventoryAggregate().tryGetNeighborItems(
                     sourceFlowItem,
                     gridDirections,
                     out IEnumerable<ICharacterEquippedItem> adjacentItems)) {
-                adjacentFlowItem = mapToEquippedItems(adjacentItems);
+                characterEquippedItems = adjacentItems;
                 return true;
             }
 
-            adjacentFlowItem = null;
+            characterEquippedItems = null;
             return false;
         }
 

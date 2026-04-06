@@ -20,5 +20,7 @@ namespace MageFactory.Character.Contract {
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
                                         IEnumerable<GridDirection> directions,
                                         out IEnumerable<ICharacterEquippedItem> neighborItems);
+
+        void moveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition);
     }
 }

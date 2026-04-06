@@ -38,18 +38,5 @@ namespace MageFactory.Flow.Domain {
         internal FlowPayload getFlowPayload() {
             return flowPayload;
         }
-
-
-        // public bool pushRightAdjacentItemRight(IFlowItem sourceItem) {
-        //     if (flowCapabilities.query().tryGetRightAdjacentItems(sourceItem, out IEnumerable<IFlowItem> adjacentItems)) {
-        //         foreach (IFlowItem flowItem in adjacentItems) {
-        //             flowCapabilities.command().tryMoveItemToRight(flowItem);
-        //             // TODO: implement "result type"
-        //         }
-        //         return true;
-        //     }
-        //
-        //     return false;
-        // }
     }
 }

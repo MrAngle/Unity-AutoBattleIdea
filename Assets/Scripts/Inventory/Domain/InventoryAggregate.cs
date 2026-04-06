@@ -7,6 +7,7 @@ using MageFactory.Inventory.Api.Event.Dto;
 using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Contract.Dto;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.ItemSearch;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
@@ -124,6 +125,71 @@ namespace MageFactory.Inventory.Domain {
 
             itemToReturn = null;
             return false;
+        }
+
+        // public void changeItemPosition(IInventoryPlacedItem itemToMove, Vector2Int newPosition) {
+        //     InventoryPosition inventoryPosition = InventoryPosition.create(newPosition, itemToMove.getShape().Shape);
+        //     itemToMove.updateItemPosition(inventoryPosition);
+        // }
+
+        // it must be thread safe / transactional
+        public void changeItemPosition(Id<ItemId> idOfItemToMove, Vector2Int newPosition) {
+            IInventoryPlacedItem itemToMove = items
+                .FirstOrDefault(item => item.getId().Equals(idOfItemToMove));
+
+            if (itemToMove == null) {
+                Debug.LogError("Item does not belong to this inventory. ItemId:" + idOfItemToMove);
+                throw new ArgumentException("Item does not belong to this inventory. ItemId:" + idOfItemToMove);
+            }
+
+            var shape = itemToMove.getShape();
+            Vector2Int oldItemOrigin = itemToMove.getOrigin();
+            var oldOccupiedCells = itemToMove.getOccupiedCells().ToArray();
+
+            InventoryPosition newInventoryPosition = InventoryPosition.create(newPosition, shape.Shape);
+            var newOccupiedCells = newInventoryPosition.getOccupiedCells().ToArray();
+
+            foreach (var oldCell in oldOccupiedCells) {
+                if (cellToItem.TryGetValue(oldCell, out var mappedItem) && ReferenceEquals(mappedItem, itemToMove)) {
+                    cellToItem.Remove(oldCell);
+                }
+            }
+
+            inventoryGrid.remove(itemToMove.getShape(), itemToMove.getOrigin());
+
+            if (!inventoryGrid.canPlace(shape, newPosition)) {
+                Debug.LogError("Cannot move item to the target position. " + nameof(itemToMove));
+                throw new ArgumentException("Cannot move item to the target position.", nameof(itemToMove));
+            }
+
+            foreach (var cell in newOccupiedCells) {
+                if (cellToItem.TryGetValue(cell, out var occupyingItem) &&
+                    !ReferenceEquals(occupyingItem, itemToMove)) {
+                    Debug.LogError(
+                        "Cannot move item - target cells are occupied by another item. " + nameof(itemToMove));
+                    throw new ArgumentException(
+                        "Cannot move item - target cells are occupied by another item.",
+                        nameof(newPosition)
+                    );
+                }
+            }
+
+            // foreach (var oldCell in oldOccupiedCells) {
+            //     if (cellToItem.TryGetValue(oldCell, out var mappedItem) && ReferenceEquals(mappedItem, itemToMove)) {
+            //         cellToItem.Remove(oldCell);
+            //     }
+            // }
+
+            itemToMove.updateItemPosition(newInventoryPosition);
+
+            foreach (var newCell in newOccupiedCells) {
+                cellToItem[newCell] = itemToMove;
+            }
+
+            inventoryEventHub.publish(new ItemPositionChangedDtoEvent(itemToMove.getId(),
+                itemToMove.getShape(),
+                newPosition,
+                oldItemOrigin));
         }
     }
 }

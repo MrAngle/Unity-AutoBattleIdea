@@ -3,10 +3,15 @@
 namespace MageFactory.Inventory.Api.Event {
     public interface IInventoryEventPublisher {
         void publish(in NewItemPlacedDtoEvent ev);
+
+        void publish(in ItemPositionChangedDtoEvent ev);
     }
 
     public interface IInventoryEventRegistry {
         void subscribe(IItemPlacedEventEventListener eventListener);
         void unsubscribe(IItemPlacedEventEventListener eventListener);
+
+        void subscribe(IItemPositionChangedEventListener eventListener);
+        void unsubscribe(IItemPositionChangedEventListener eventListener);
     }
 }

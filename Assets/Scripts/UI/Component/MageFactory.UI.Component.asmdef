@@ -8,7 +8,8 @@
     "MageFactory.Shared",
     "Unity.TextMeshPro",
     "Zenject",
-    "MageFactory.Character.Api"
+    "MageFactory.Character.Api",
+    "Plugin.DOTween"
   ],
   "autoReferenced": true
 }

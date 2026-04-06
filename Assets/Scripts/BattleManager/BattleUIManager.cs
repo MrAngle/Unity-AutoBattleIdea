@@ -18,7 +18,7 @@ namespace MageFactory.BattleManager {
         private CombatContextPresentationFactory combatContextPresentationFactory;
         private ICombatContext combatContext;
 
-        private float turnInterval = 2f;
+        private float turnInterval = 4f;
 
         private void Start() {
             createSlots(new CreateCombatCharacterCommand[] {

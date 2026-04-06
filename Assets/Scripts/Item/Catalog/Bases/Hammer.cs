@@ -20,7 +20,8 @@ namespace MageFactory.Item.Catalog.Bases {
 
             public IOperations getEffectsDescriptor() {
                 return new ItemOperationsDescription(
-                    new AddPower(new DamageToDeal(6))
+                    new AddPower(new DamageToDeal(6)),
+                    new PushItem(GridDirection.Right, new[] { GridDirection.Right })
                 );
             }
         }

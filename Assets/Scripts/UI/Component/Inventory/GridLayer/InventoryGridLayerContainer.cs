@@ -6,7 +6,8 @@ using Zenject;
 
 namespace MageFactory.UI.Component.Inventory.GridLayer {
     public interface ICombatInventoryGridPanel {
-        public void printInventoryGrid(UiPrintInventoryGridCommand printInventoryGridCommand);
+        void printInventoryGrid(UiPrintInventoryGridCommand printInventoryGridCommand);
+        InventoryGridInfo getInventoryGridInfo();
 
         public readonly struct UiPrintInventoryGridCommand {
             public readonly int width;
@@ -26,6 +27,27 @@ namespace MageFactory.UI.Component.Inventory.GridLayer {
                     coord => characterInventory.getState(coord));
             }
         }
+
+        public readonly struct InventoryGridInfo {
+            public readonly int WidthCellsNumber;
+            public readonly int HeightCellsNumber;
+            public readonly Vector2 CellSize;
+            public readonly Vector2 Spacing;
+            public readonly Vector2 GridOrigin;
+
+            public InventoryGridInfo(
+                int widthCellsNumber,
+                int heightCellsNumber,
+                Vector2 cellSize,
+                Vector2 spacing,
+                Vector2 gridOrigin) {
+                WidthCellsNumber = widthCellsNumber;
+                HeightCellsNumber = heightCellsNumber;
+                CellSize = cellSize;
+                Spacing = spacing;
+                GridOrigin = gridOrigin;
+            }
+        }
     }
 
     public class InventoryGridLayerContainer : MonoBehaviour, ICombatInventoryGridPanel {
@@ -39,16 +61,26 @@ namespace MageFactory.UI.Component.Inventory.GridLayer {
             instancedPrefabInventoryGridView = InventoryGridView.create(gridViewPrefabInventoryGridView,
                 transform, cellViewPrefabInventoryCellView);
 
-            var rt = (RectTransform)instancedPrefabInventoryGridView.transform;
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
+            var rectTransform = (RectTransform)instancedPrefabInventoryGridView.transform;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
         }
 
         public void printInventoryGrid(
             ICombatInventoryGridPanel.UiPrintInventoryGridCommand printInventoryGridCommand) {
             instancedPrefabInventoryGridView.build(printInventoryGridCommand);
+        }
+
+        public ICombatInventoryGridPanel.InventoryGridInfo getInventoryGridInfo() {
+            return new ICombatInventoryGridPanel.InventoryGridInfo(
+                instancedPrefabInventoryGridView.getWidthCellsNumber(),
+                instancedPrefabInventoryGridView.getHeightCellsNumber(),
+                instancedPrefabInventoryGridView.getCellSize(),
+                instancedPrefabInventoryGridView.getSpacing(),
+                instancedPrefabInventoryGridView.getGridOrigin()
+            );
         }
     }
 }

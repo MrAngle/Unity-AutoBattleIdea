@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MageFactory.Character.Contract;
 using MageFactory.Character.Domain.CharacterCapability;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Utility;
@@ -13,10 +14,14 @@ namespace MageFactory.Character.Domain.FlowCapability {
             this.flowQueries = NullGuard.NotNullOrThrow(flowQueries);
         }
 
-        public bool tryMoveItemToRight(IFlowItem flowItem) {
+        public bool tryMoveRightAdjacentItemToRight(IFlowItem flowItem) {
             if (characterCombatCapabilities.internalQuery()
-                .tryGetRightAdjacentItems(flowItem, out IEnumerable<IFlowItem> adjacentFlowItem)) {
-                // characterCombatCapabilities.command()
+                .tryGetRightAdjacentItems(flowItem, out IEnumerable<ICharacterEquippedItem> adjacentItems)) {
+                foreach (var item in adjacentItems) {
+                    characterCombatCapabilities.internalCommand().tryMoveItemToRight(item);
+                }
+
+                return true;
             }
 
             return false;

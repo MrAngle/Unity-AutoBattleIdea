@@ -61,6 +61,10 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return true;
         }
 
+        public void moveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition) {
+            inventoryAggregate.changeItemPosition(itemToMove.getId(), newPosition);
+        }
+
         private static HashSet<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(
             IEnumerable<IInventoryPlacedEntryPoint> source) {
             return source

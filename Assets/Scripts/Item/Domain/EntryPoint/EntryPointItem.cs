@@ -10,7 +10,7 @@ namespace MageFactory.Item.Domain.EntryPoint {
     internal class EntryPointItem {
         private readonly IEntryPointArchetype entryPointArchetype;
         private readonly Id<ItemId> id;
-        private readonly IInventoryPosition inventoryPosition;
+        private IInventoryPosition inventoryPosition;
 
         private EntryPointItem(
             IEntryPointArchetype entryPointArchetype,
@@ -68,6 +68,11 @@ namespace MageFactory.Item.Domain.EntryPoint {
 
         public override string ToString() {
             return $"({entryPointArchetype.getFlowKind()})";
+        }
+
+        // think about this - item should never be able to move itselv
+        public void updateItemPosition(IInventoryPosition paramInventoryPosition) {
+            inventoryPosition = paramInventoryPosition;
         }
     }
 }
