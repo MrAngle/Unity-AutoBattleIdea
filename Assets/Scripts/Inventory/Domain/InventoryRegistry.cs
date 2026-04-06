@@ -232,10 +232,6 @@ namespace MageFactory.Inventory.Domain {
                     return false;
                 }
 
-                if (!inventoryCell.IsAvailableForPlacement) {
-                    return false;
-                }
-
                 if (indexes.tryGetItemAtCell(newCell, out IInventoryPlacedItem occupyingItem)
                     && !ReferenceEquals(occupyingItem, inventoryPlacedItem)) {
                     return false;

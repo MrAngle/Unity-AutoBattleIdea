@@ -14,7 +14,6 @@ using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
     internal class InventoryAggregate {
-        private readonly HashSet<IInventoryPlacedEntryPoint> entryPoints = new();
         private readonly IInventoryEventPublisher inventoryEventHub;
         private readonly InventoryRegistry inventoryRegistry;
         private readonly IItemFactory itemFactory;
@@ -27,7 +26,7 @@ namespace MageFactory.Inventory.Domain {
             inventoryEventHub = inventoryEventPublisher;
             this.inventoryRegistry = inventoryRegistry;
 
-            NullGuard.NotNullCheckOrThrow(this.inventoryRegistry, this.entryPoints, this.itemFactory,
+            NullGuard.NotNullCheckOrThrow(this.inventoryRegistry, this.itemFactory,
                 this.inventoryEventHub);
         }
 
@@ -69,11 +68,6 @@ namespace MageFactory.Inventory.Domain {
                         placeItemCommand.itemDefinition.getShape().Shape));
 
             inventoryRegistry.placeItem(inventoryPlacedItem);
-
-            if (inventoryPlacedItem is IInventoryPlacedEntryPoint entryPoint) {
-                entryPoints.Add(entryPoint);
-            }
-
             inventoryEventHub.publish(new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(),
                 inventoryPlacedItem.getShape(),
                 placeItemCommand.origin));
@@ -114,7 +108,6 @@ namespace MageFactory.Inventory.Domain {
                 movedItem.getId(),
                 newOriginPosition
             ));
-
             return true;
         }
     }
