@@ -1,177 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using MageFactory.ActionEffect;
-using MageFactory.ActionEffect.PredefinedOperations;
-using MageFactory.ActionExecutor.Api;
-using MageFactory.ActionExecutor.Api.Dto;
+﻿using MageFactory.ActionEffect;
 using MageFactory.BattleManager;
-using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.InjectConfiguration;
+using MageFactory.Item.Catalog.Bases;
 using MageFactory.Shared.Model;
-using MageFactory.Shared.Model.Shape;
+using MageFactory.Tests.Unit.TestFixtures;
 using NUnit.Framework;
 using UnityEngine;
-using Zenject;
 
 namespace MageFactory.Tests.Unit.Battle {
     public sealed class DeterministicFlowScenarioTest {
         [Test]
-        public void should_run_deterministic_linear_flow_and_damage_enemy_in_edit_mode_without_time() {
-            // arrange: container (bez sceny)
-            var container = new DiContainer();
+        public void should_move_item_by_hammer_and_not_deal_damage_by_shield() {
+            // given
+            IItemDefinition entry = new EntryPointGem();
+            IItemDefinition sword = new RustySword();
+            IItemDefinition hammer = new Hammer();
+            IItemDefinition shield = new Shield();
 
-            MageFactoryDomainInstaller.Install(container);
-
-            // SignalBus.Fire też wymaga DeclareSignal<T>(), nawet jeśli nikt nie subskrybuje.
-            // W domenie ActionCommandBus.Fire(...) odpala sygnały itemowe.
-            container.DeclareSignal<ItemRemovedDtoEvent>();
-            container.DeclareSignal<ItemPowerChangedDtoEvent>();
-
-            // deterministycznie: ignorujemy cast time
-            container.Rebind<IActionExecutor>().To<InstantActionExecutor>().AsSingle();
-
-            var ctxFactory = container.Resolve<ICombatContextFactory>();
-
-            // deterministyczny łańcuch 1x1: (0,0)->(1,0)->(2,0)->(3,0)
-            // Router w każdym kroku ma dokładnie 1 kandydata, więc brak losowości.
-            var commands = new List<CreateCombatCharacterCommand> {
-                new CreateCombatCharacterCommand(
-                    name: "Attacker",
-                    maxHp: 100,
-                    team: Team.TeamA,
-                    itemsToEquip: new List<EquipItemCommand> {
-                        new EquipItemCommand(new TestEntryPoint(power: 2), new Vector2Int(0, 0)),
-                        new EquipItemCommand(new TestDamageItem(power: 3), new Vector2Int(1, 0)),
-                        new EquipItemCommand(new TestDamageItem(power: 4), new Vector2Int(2, 0)),
-                        new EquipItemCommand(new TestDamageItem(power: 5), new Vector2Int(3, 0))
-                    }
-                ),
-                new CreateCombatCharacterCommand(
-                    name: "Defender",
-                    maxHp: 50,
-                    team: Team.TeamB,
-                    itemsToEquip: Array.Empty<EquipItemCommand>()
-                )
+            EquipItemCommand[] itemCommands = {
+                new(entry, new Vector2Int(0, 0)),
+                new(sword, new Vector2Int(1, 0)),
+                new(hammer, new Vector2Int(3, 2)),
+                new(shield, new Vector2Int(5, 4))
             };
 
-            var context = ctxFactory.create(commands);
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .withInstantActionExecutorInstance()
+                .create1V1WithEnormousHp(itemCommands);
 
-            var runtime = new BattleRuntime();
-            var session = new BattleSession(runtime, context);
+            var session = BattleSessionTestFixtures.basic(combatContext);
+            var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
-            var defenderHpBefore = getTeamHp(context, Team.TeamB);
-
-            // act
+            // when
             session.tickOnce();
-            var sw = Stopwatch.StartNew();
-            while (sw.Elapsed < TimeSpan.FromSeconds(5)) {
-                var hp = getTeamHp(context, Team.TeamB);
-                if (hp < defenderHpBefore) break;
 
-                Thread.Sleep(10);
-            }
+            // then
+            IItemDefinition[] expectedDamageSources = {
+                entry, sword, hammer
+            };
 
-            var defenderHpAfter = getTeamHp(context, Team.TeamB);
+            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
-            // assert
-            Assert.That(defenderHpAfter, Is.LessThan(defenderHpBefore),
-                "Flow nie zadał obrażeń (albo nie został skonsumowany), mimo deterministycznego łańcucha.");
+            Assert.AreEqual(expectedHp, hpAfter);
         }
 
-        private static long getTeamHp(ICombatContext ctx, Team team) {
-            foreach (var ch in ctx.getAllCharacters()) {
-                if (ch.getTeam() == team)
-                    return ch.getCurrentHp();
-            }
+        [Test]
+        public void should_deal_damage_to_defender() {
+            // given
+            IItemDefinition entry = new EntryPointGem();
+            IItemDefinition sword = new RustySword();
+            IItemDefinition shield = new Shield();
+            IItemDefinition hammer = new Hammer();
 
-            throw new InvalidOperationException($"No character for team {team}.");
-        }
+            EquipItemCommand[] attackerItems = {
+                new(entry, new Vector2Int(0, 0)),
+                new(sword, new Vector2Int(1, 0)),
+                new(shield, new Vector2Int(3, 1)),
+                new(hammer, new Vector2Int(6, 0))
+            };
 
-        /// <summary>
-        /// Executor testowy: wykonuje efekty natychmiast (bez ContinueIn/czasu).
-        /// Dzięki temu test jest deterministyczny w EditMode.
-        /// </summary>
-        private sealed class InstantActionExecutor : IActionExecutor {
-            public Task executeAsync(ExecuteActionCommand actionCommand) {
-                var effects = actionCommand.itemActionDescription
-                    .getEffectsDescriptor()
-                    .getEffects();
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .withActionExecutorInstance(new InstantActionExecutor())
+                .create1V1WithEnormousHp(attackerItems);
 
-                for (var i = 0; i < effects.Count; i++) {
-                    effects[i].apply(actionCommand.actionCapabilities);
-                }
+            var session = new BattleSession(new BattleRuntime(), combatContext);
+            var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
-                return Task.CompletedTask;
-            }
-        }
+            // when
+            session.tickOnce();
 
-        private sealed class TestEntryPoint : IEntryPointDefinition {
-            private readonly int power;
+            // then
+            IItemDefinition[] expectedDamageSources = {
+                entry, sword, shield, hammer
+            };
 
-            public TestEntryPoint(int power) {
-                this.power = power;
-            }
+            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
-            public ShapeArchetype getShape() => ShapeCatalog.Square1x1;
-
-            public IActionDescription getActionDescription() => new ActionDesc(power);
-
-            public FlowKind getFlowKind() => FlowKind.Damage;
-
-            private sealed class ActionDesc : IActionDescription {
-                private readonly int power;
-
-                public ActionDesc(int power) {
-                    this.power = power;
-                }
-
-                public Duration getCastTime() => new Duration(0f);
-
-                public IOperations getEffectsDescriptor() => new Ops(
-                    new AddPower(new DamageToDeal(power))
-                );
-            }
-        }
-
-        private sealed class TestDamageItem : IItemDefinition {
-            private readonly int power;
-
-            public TestDamageItem(int power) {
-                this.power = power;
-            }
-
-            public ShapeArchetype getShape() => ShapeCatalog.Square1x1;
-
-            public IActionDescription getActionDescription() => new ActionDesc(power);
-
-            private sealed class ActionDesc : IActionDescription {
-                private readonly int power;
-
-                public ActionDesc(int power) {
-                    this.power = power;
-                }
-
-                public Duration getCastTime() => new Duration(0f);
-
-                public IOperations getEffectsDescriptor() => new Ops(
-                    new AddPower(new DamageToDeal(power))
-                );
-            }
-        }
-
-        private sealed class Ops : IOperations {
-            private readonly IReadOnlyList<IOperation> effects;
-
-            public Ops(params IOperation[] effects) {
-                this.effects = effects ?? Array.Empty<IOperation>();
-            }
-
-            public IReadOnlyList<IOperation> getEffects() => effects;
+            Assert.AreEqual(expectedHp, hpAfter);
         }
     }
 }

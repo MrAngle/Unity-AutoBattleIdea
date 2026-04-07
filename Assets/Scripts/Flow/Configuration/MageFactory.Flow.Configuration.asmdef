@@ -1,0 +1,7 @@
+﻿{
+  "name": "MageFactory.Flow.Configuration",
+  "rootNamespace": "MageFactory",
+  "references": [
+  ],
+  "autoReferenced": true
+}

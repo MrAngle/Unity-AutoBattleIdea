@@ -8,6 +8,8 @@ using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Domain.Service;
 using MageFactory.Flow.Api;
+using MageFactory.Flow.Configuration;
+using MageFactory.Flow.Domain;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Domain.Service;
@@ -75,6 +77,14 @@ namespace MageFactory.InjectConfiguration {
             // Flow factory
             Container.Bind<IFlowFactory>()
                 .To<FlowFactoryService>()
+                .AsSingle();
+
+            Container.Bind<FlowProcessorSettings>()
+                .FromMethod(_ => new FlowProcessorSettings(maxStepsPerSlice: 256))
+                .AsSingle();
+
+            Container.Bind<IFlowStepScheduler>()
+                .To<TaskYieldFlowStepScheduler>()
                 .AsSingle();
         }
 

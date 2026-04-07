@@ -1,12 +1,10 @@
-﻿using System.Threading;
+﻿using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("MageFactory.Tests")]
+
 namespace MageFactory.Flow.Domain {
-    /// <summary>
-    /// Abstrakcja "oddania sterowania" pomiędzy porcjami pracy flow.
-    /// Runtime może implementować to jako "kolejna klatka".
-    /// Testy mogą użyć implementacji natychmiastowej.
-    /// </summary>
     internal interface IFlowStepScheduler {
         Task yieldAsync(CancellationToken ct);
     }

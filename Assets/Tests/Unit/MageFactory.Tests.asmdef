@@ -14,7 +14,9 @@
     "MageFactory.Flow.Contract",
     "MageFactory.Character.Api",
     "MageFactory.InjectConfiguration",
-    "Zenject"
+    "Zenject",
+    "MageFactory.Flow.Configuration",
+    "MageFactory.Flow.Domain"
   ],
   "includePlatforms": [
     "Editor"

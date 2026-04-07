@@ -8,6 +8,10 @@ namespace MageFactory.ActionEffect.PredefinedOperations {
             this.damageAmount = damageAmount;
         }
 
+        public PowerAmount getDamageAmount() {
+            return damageAmount;
+        }
+
         public void apply(IActionCapabilities actionCapabilities) {
             actionCapabilities.command().addPower(damageAmount);
         }

@@ -1,5 +1,5 @@
-﻿namespace MageFactory.Flow.Domain {
-    internal sealed class FlowProcessorSettings {
+﻿namespace MageFactory.Flow.Configuration {
+    public sealed class FlowProcessorSettings {
         public int maxStepsPerSlice { get; }
 
         public FlowProcessorSettings(int maxStepsPerSlice = 64) {

@@ -4,6 +4,7 @@
   "references": [
     "MageFactory.Flow.Api",
     "MageFactory.Flow.Contract",
+    "MageFactory.Flow.Configuration",
 
     "MageFactory.CombatContext.Contract",
     "MageFactory.CombatContext.Api",

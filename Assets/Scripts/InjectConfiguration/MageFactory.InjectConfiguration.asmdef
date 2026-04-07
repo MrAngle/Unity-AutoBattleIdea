@@ -20,7 +20,8 @@
     "MageFactory.Inventory.Api",
     "MageFactory.UI.Context.Combat",
     "MageFactory.UI.Component",
-    "MageFactory.Character.Api"
+    "MageFactory.Character.Api",
+    "MageFactory.Flow.Configuration"
   ],
   "autoReferenced": true
 }
