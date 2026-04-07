@@ -1,5 +1,4 @@
 ﻿using MageFactory.ActionEffect;
-using MageFactory.BattleManager;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Item.Catalog.Bases;
@@ -62,10 +61,10 @@ namespace MageFactory.Tests.Unit.Battle {
             };
 
             ICombatContext combatContext = BattleScenarioTestHarness.create()
-                .withActionExecutorInstance(new InstantActionExecutor())
+                .withInstantActionExecutorInstance()
                 .create1V1WithEnormousHp(attackerItems);
 
-            var session = new BattleSession(new BattleRuntime(), combatContext);
+            var session = BattleSessionTestFixtures.basic(combatContext);
             var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             // when
@@ -77,6 +76,38 @@ namespace MageFactory.Tests.Unit.Battle {
             };
 
             var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+
+            Assert.AreEqual(expectedHp, hpAfter);
+        }
+
+        [Test]
+        public void should_deal_damage_by_two_entry_points() {
+            // given
+            IItemDefinition entry1 = new EntryPointGem();
+            IItemDefinition entry2 = new EntryPointGem();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry1, new Vector2Int(0, 0)),
+                new(entry2, new Vector2Int(1, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .withInstantActionExecutorInstance()
+                .create1V1WithEnormousHp(attackerItems);
+
+            var session = BattleSessionTestFixtures.basic(combatContext);
+            var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+
+            // when
+            session.tickOnce();
+
+            // then
+            IItemDefinition[] expectedDamageSources = {
+                entry1, entry2
+            };
+
+            var expectedHp = hpBefore - (TestHelpers.getDamage(expectedDamageSources) * 2);
             var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             Assert.AreEqual(expectedHp, hpAfter);
