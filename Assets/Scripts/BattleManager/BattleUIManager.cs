@@ -20,6 +20,8 @@ namespace MageFactory.BattleManager {
 
         private float turnInterval = 4f;
 
+        private BattleSession battleSession;
+
         private void Start() {
             createSlots(new CreateCombatCharacterCommand[] {
                 new("Warrior", 120, Team.TeamA, new[] {
@@ -44,6 +46,7 @@ namespace MageFactory.BattleManager {
 
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
             combatContext = combatContextFactory.create(charactersToCreate);
+            battleSession = new BattleSession(battleRuntime, combatContext);
 
             combatContextPresentationFactory.createCombatContextPresentation(combatContext);
         }
@@ -56,7 +59,7 @@ namespace MageFactory.BattleManager {
             var wait = new WaitForSeconds(turnInterval);
 
             while (true) {
-                battleRuntime.tick(combatContext);
+                battleSession.tickOnce();
                 yield return wait;
             }
         }

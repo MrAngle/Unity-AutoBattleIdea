@@ -2,7 +2,19 @@
   "name": "MageFactory.Tests",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Shared"
+    "MageFactory.Shared",
+    "MageFactory.CombatContext.Contract",
+    "MageFactory.BattleManager",
+    "MageFactory.Inventory.Contract",
+    "MageFactory.ActionEffect",
+    "MageFactory.ActionExecutor.Api",
+    "MageFactory.Item.Catalog",
+    "MageFactory.CombatContext.Api",
+    "MageFactory.UI.Context.Combat",
+    "MageFactory.Flow.Contract",
+    "MageFactory.Character.Api",
+    "MageFactory.InjectConfiguration",
+    "Zenject"
   ],
   "includePlatforms": [
     "Editor"

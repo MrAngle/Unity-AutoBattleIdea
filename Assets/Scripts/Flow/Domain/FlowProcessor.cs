@@ -19,31 +19,51 @@ namespace MageFactory.Flow.Domain {
         private readonly FlowProcessingCapabilities flowProcessingCapabilities;
         private readonly List<Id<ItemId>> visitedNodeIds = new();
 
+        private readonly IFlowStepScheduler stepScheduler;
+        private readonly FlowProcessorSettings settings;
+
         private CancellationTokenSource cancellationTokenSource;
         private IFlowItem currentNode;
         private bool isRunning;
 
-        private FlowProcessor(FlowProcessingCapabilities flowProcessingCapabilities, IFlowItem startNode,
-                              IActionExecutor actionExecutor) {
+        private FlowProcessor(
+            FlowProcessingCapabilities flowProcessingCapabilities,
+            IFlowItem startNode,
+            IActionExecutor actionExecutor,
+            IFlowStepScheduler stepScheduler,
+            FlowProcessorSettings settings
+        ) {
             currentNode = NullGuard.NotNullOrThrow(startNode);
             this.flowProcessingCapabilities = NullGuard.NotNullOrThrow(flowProcessingCapabilities);
             this.actionExecutor = NullGuard.NotNullOrThrow(actionExecutor);
+            this.stepScheduler = NullGuard.NotNullOrThrow(stepScheduler);
+            this.settings = NullGuard.NotNullOrThrow(settings);
 
-            visitedNodeIds.Clear(); // shouldn't be needed
+            visitedNodeIds.Clear();
         }
 
-        internal static IFlowProcessor create(IFlowItem startNode,
-                                              IFlowRouter flowRouter,
-                                              IActionExecutor actionExecutor,
-                                              IFlowConsumer flowConsumer,
-                                              IFlowOwner flowOwner,
-                                              IFlowCapabilities flowCapabilities,
-                                              ActionContextFactory actionContextFactory) {
+        internal static IFlowProcessor create(
+            IFlowItem startNode,
+            IFlowRouter flowRouter,
+            IActionExecutor actionExecutor,
+            IFlowConsumer flowConsumer,
+            IFlowOwner flowOwner,
+            IFlowCapabilities flowCapabilities,
+            ActionContextFactory actionContextFactory,
+            IFlowStepScheduler stepScheduler = null,
+            FlowProcessorSettings settings = null
+        ) {
             var context = new FlowContext(startNode, flowConsumer, flowOwner, flowRouter);
             var flowProcessingCapabilities =
                 new FlowProcessingCapabilities(context, actionContextFactory, flowCapabilities);
 
-            return new FlowProcessor(flowProcessingCapabilities, startNode, actionExecutor);
+            return new FlowProcessor(
+                flowProcessingCapabilities,
+                startNode,
+                actionExecutor,
+                stepScheduler ?? new TaskYieldFlowStepScheduler(),
+                settings ?? new FlowProcessorSettings()
+            );
         }
 
         public void start() {
@@ -60,11 +80,22 @@ namespace MageFactory.Flow.Domain {
         private async Task stepLoopAsync(CancellationToken ct) {
             if (isRunning) return;
             isRunning = true;
+
             try {
+                var stepsInSlice = 0;
+
                 while (!ct.IsCancellationRequested && currentNode != null) {
                     await processAsync(ct);
+
                     if (ct.IsCancellationRequested) break;
-                    if (!await goNextAsync(ct)) break;
+
+                    if (!goNext()) break;
+
+                    stepsInSlice++;
+                    if (stepsInSlice >= settings.maxStepsPerSlice) {
+                        stepsInSlice = 0;
+                        await stepScheduler.yieldAsync(ct);
+                    }
                 }
             }
             finally {
@@ -80,29 +111,26 @@ namespace MageFactory.Flow.Domain {
                 await actionExecutor.executeAsync(executeActionCommand);
             }
             catch (OperationCanceledException) {
-                throw; // for now
+                throw;
             }
             catch (Exception ex) {
                 Debug.LogException(ex);
-                throw; // for now
+                throw;
             }
 
             visitedNodeIds.Add(currentNode.getId());
         }
 
-        private async Task<bool> goNextAsync(CancellationToken cancellationToken) {
+        private bool goNext() {
             if (flowProcessingCapabilities.query()
                 .tryFindNextNode(currentNode, visitedNodeIds, out IFlowItem nextNode)) {
                 currentNode = nextNode;
-            }
-            else {
-                finishFlow();
-                currentNode = null;
-                return false;
+                return true;
             }
 
-            await Task.Yield();
-            return true;
+            finishFlow();
+            currentNode = null;
+            return false;
         }
 
         public void finishFlow() {
