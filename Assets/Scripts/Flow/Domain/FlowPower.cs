@@ -1,13 +1,16 @@
 ﻿using System;
 using MageFactory.Shared.Model;
+using MageFactory.Shared.Utility;
 
 namespace MageFactory.Flow.Domain {
-    public class FlowPayload {
+    public class FlowPower {
+        private readonly FlowKind flowKind;
         private readonly DamageToDeal damageToDeal;
         private readonly DamageToReceive damageToReceive;
 
-        internal FlowPayload(DamageToReceive damageToReceiveToReceive = null,
-            DamageToDeal damageToDeal = null) {
+        internal FlowPower(FlowKind flowKind, DamageToReceive damageToReceiveToReceive = null,
+                           DamageToDeal damageToDeal = null) {
+            this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
             damageToReceive = damageToReceiveToReceive ?? new DamageToReceive(0);
             this.damageToDeal = damageToDeal ?? new DamageToDeal(0);
         }

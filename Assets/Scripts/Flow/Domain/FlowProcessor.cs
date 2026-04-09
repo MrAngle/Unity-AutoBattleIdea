@@ -11,6 +11,7 @@ using MageFactory.Flow.Domain.FlowCapability;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.FlowRouting;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
@@ -44,6 +45,7 @@ namespace MageFactory.Flow.Domain {
         }
 
         internal static IFlowProcessor create(
+            FlowKind flowKind,
             IFlowItem startNode,
             IFlowRouter flowRouter,
             IActionExecutor actionExecutor,
@@ -54,7 +56,7 @@ namespace MageFactory.Flow.Domain {
             IFlowStepScheduler stepScheduler = null,
             FlowProcessorSettings settings = null
         ) {
-            var context = new FlowContext(startNode, flowConsumer, flowOwner, flowRouter);
+            var context = new FlowContext(flowKind, startNode, flowConsumer, flowOwner, flowRouter);
             var flowProcessingCapabilities =
                 new FlowProcessingCapabilities(context, actionContextFactory, flowCapabilities);
 

@@ -1,4 +1,6 @@
-﻿using MageFactory.Character.Domain.CharacterCapability;
+﻿using System.Collections.Generic;
+using MageFactory.Character.Contract;
+using MageFactory.Character.Domain.CharacterCapability;
 using MageFactory.Character.Domain.FlowCapability;
 using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
@@ -50,19 +52,25 @@ namespace MageFactory.Character.Domain.CombatChar {
         }
 
         public void combatTick(IFlowConsumer flowConsumer) {
-            var entryPointsToTick = characterAggregate.getInventoryAggregate().getEntryPointsToTick();
+            IReadOnlyCollection<ICharacterEquippedEntryPointToTick> entryPointsToTick =
+                characterAggregate.getInventoryAggregate().getEntryPointsToTick();
             if (entryPointsToTick == null || entryPointsToTick.Count == 0)
                 return;
 
             var router = GridAdjacencyRouter.create(characterCombatCapabilities.query());
 
-            foreach (var entryPoint in entryPointsToTick) {
+            foreach (ICharacterEquippedEntryPointToTick entryPoint in entryPointsToTick) {
                 if (entryPoint == null) {
                     continue;
                 }
 
-                var flow = flowFactory.create(new CombatCharacterEquippedEntryPointItem(entryPoint), router,
-                    flowConsumer, new FlowCapabilities(characterCombatCapabilities), this);
+                var flow = flowFactory.create(
+                    entryPoint.getFlowKind(),
+                    new CombatCharacterEquippedEntryPointItem(entryPoint),
+                    router,
+                    flowConsumer,
+                    new FlowCapabilities(characterCombatCapabilities),
+                    this);
                 flow.start();
             }
         }

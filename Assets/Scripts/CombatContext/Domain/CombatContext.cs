@@ -69,17 +69,40 @@ namespace MageFactory.CombatContext.Domain {
             combatContextEventPublisher.publish(new CombatCharacterCreatedDtoEvent());
         }
 
-        public DamageToDeal consumeFlow(ProcessFlowCommand flowCommand) {
-            if (flowCommand.flowOwner?.getFlowOwnerCharacterId() == null) {
+
+        // TODO: return flow result
+        public DamageToDeal consumeFlow(ConsumeFlowCommand consumeFlowCommand) {
+            if (consumeFlowCommand.flowOwner?.getFlowOwnerCharacterId() == null) {
                 return DamageToDeal.NO_POWER;
             }
 
-            ICombatCharacter combatCharacter = characters[flowCommand.flowOwner.getFlowOwnerCharacterId()];
+            ICombatCharacter combatCharacter = characters[consumeFlowCommand.flowOwner.getFlowOwnerCharacterId()];
             if (combatCharacter == null) {
                 return DamageToDeal.NO_POWER;
             }
 
-            return combatCharacter.getCharacterCombatCapabilities().command().consumeFlow(flowCommand, this);
+            return consumeFlowCommand.flowKind switch {
+                FlowKind.Damage => processOffensiveFlow(consumeFlowCommand),
+                FlowKind.Defense => processDefensiveFlow(combatCharacter, consumeFlowCommand),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        private DamageToDeal processDefensiveFlow(ICombatCharacter combatCharacter,
+                                                  ConsumeFlowCommand consumeFlowCommand) {
+            throw new NotImplementedException();
+        }
+
+        private DamageToDeal processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
+            // target selection should be specified in the flow command
+            if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
+                    out ICombatCharacter enemy)) {
+                enemy.getCharacterCombatCapabilities().command()
+                    .takeDamage(DamageToReceive.fromPowerAmount(consumeFlowCommand.damageToDeal));
+                return consumeFlowCommand.damageToDeal;
+            }
+
+            return DamageToDeal.NO_POWER;
         }
 
         public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacter enemy) {

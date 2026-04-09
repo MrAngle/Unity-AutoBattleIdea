@@ -3,6 +3,7 @@ using MageFactory.ActionExecutor.Api;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using Zenject;
 
@@ -10,8 +11,8 @@ using Zenject;
 
 namespace MageFactory.Flow.Domain.Service {
     public sealed class FlowFactoryService : IFlowFactory {
-        private readonly IActionExecutor actionExecutor;
         private readonly ActionContextFactory actionContextFactory;
+        private readonly IActionExecutor actionExecutor;
 
         [Inject]
         internal FlowFactoryService(IActionExecutor injectActionExecutor,
@@ -20,10 +21,14 @@ namespace MageFactory.Flow.Domain.Service {
             actionContextFactory = NullGuard.NotNullOrThrow(injectActionContextFactory);
         }
 
-        public IFlowProcessor create(IFlowItem startNode, IFlowRouter router, IFlowConsumer flowConsumer,
+        public IFlowProcessor create(FlowKind flowKind,
+                                     IFlowItem startNode,
+                                     IFlowRouter router,
+                                     IFlowConsumer flowConsumer,
                                      IFlowCapabilities flowCapabilities,
                                      IFlowOwner flowOwner) {
-            return FlowProcessor.create(startNode, router, actionExecutor, flowConsumer, flowOwner, flowCapabilities,
+            return FlowProcessor.create(flowKind, startNode, router, actionExecutor, flowConsumer, flowOwner,
+                flowCapabilities,
                 actionContextFactory);
         }
     }

@@ -2,7 +2,6 @@
 using MageFactory.Character.Domain.CombatChar;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Flow.Contract;
 using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
@@ -13,21 +12,22 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             this.characterAggregate = characterAggregate;
         }
 
-        public DamageToDeal consumeFlow(ProcessFlowCommand flowCommand, IReadCombatContext combatContext) {
-            if (combatContext.tryGetRandomEnemyOf(characterAggregate.getId(), out var enemy)) {
-                enemy.getCharacterCombatCapabilities().command().apply(flowCommand.damageToDeal);
-                return flowCommand.damageToDeal;
-            }
-
-            return DamageToDeal.NO_POWER;
-        }
+        // public DamageToDeal consumeFlow(ConsumeFlowCommand offensiveFlowCommand, IReadCombatContext combatContext) {
+        //     if (combatContext.tryGetRandomEnemyOf(characterAggregate.getId(), out ICombatCharacter enemy)) {
+        //         enemy.getCharacterCombatCapabilities().command().takeDamage(offensiveFlowCommand.damageToDeal);
+        //         return offensiveFlowCommand.damageToDeal;
+        //     }
+        //
+        //     return DamageToDeal.NO_POWER;
+        // }
 
         public ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item) {
             return new CombatCharacterEquippedItem(characterAggregate.equipItemOrThrow(item));
         }
 
-        public void apply(PowerAmount powerAmount) {
-            characterAggregate.apply(powerAmount);
+        public void takeDamage(DamageToReceive powerAmount) {
+            characterAggregate.takeDamage(powerAmount);
+            // characterAggregate.apply(powerAmount);
         }
 
         internal bool tryMoveItemToRight(ICharacterEquippedItem characterEquippedItem) {

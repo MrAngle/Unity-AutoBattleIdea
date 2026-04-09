@@ -26,7 +26,7 @@ namespace MageFactory.Flow.Domain.ActionCapability {
         }
 
         internal void addPower(PowerAmount damageAmount) {
-            flowContext.getFlowPayload().add(damageAmount);
+            flowContext.addPower(damageAmount);
         }
     }
 }

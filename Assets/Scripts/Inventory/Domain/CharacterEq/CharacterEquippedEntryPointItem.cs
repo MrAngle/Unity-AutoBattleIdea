@@ -3,6 +3,7 @@ using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -33,6 +34,10 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
         public IActionDescription prepareItemActionDescription() {
             return inventoryPlacedEntryPoint.prepareItemActionDescription();
+        }
+
+        public FlowKind getFlowKind() {
+            return inventoryPlacedEntryPoint.getFlowKind();
         }
     }
 }

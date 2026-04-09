@@ -38,15 +38,20 @@ namespace MageFactory.Character.Domain {
             }
         }
 
-        internal void applyDamage(PowerAmount damageAmount) {
-            switch (damageAmount) {
-                case DamageToDeal deal:
-                    takeDamage(deal.getPower());
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
-            }
+        internal void takeDamage(DamageToReceive damageToReceive) {
+            takeDamage(damageToReceive.getPower());
         }
+
+        // internal void applyDamage(PowerAmount damageAmount) {
+        //     switch (damageAmount) {
+        //         case DamageToDeal deal:
+        //             takeDamage(deal.getPower());
+        //             break;
+        //         case DamageToReceive 
+        //         default:
+        //             throw new InvalidOperationException($"Unsupported damage type: {damageAmount.GetType().Name}");
+        //     }
+        // }
 
         private void takeDamage(long dmg) {
             CurrentHp -= dmg;

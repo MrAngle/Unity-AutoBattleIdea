@@ -60,12 +60,19 @@ namespace MageFactory.Character.Domain {
             return characterData.CurrentHp;
         }
 
-        public void apply(PowerAmount powerAmount) {
-            characterData.applyDamage(powerAmount);
+        public void takeDamage(DamageToReceive damageToReceive) {
+            characterData.takeDamage(damageToReceive);
             if (characterData.CurrentHp <= 0) {
                 characterEventPublisher.publish(new CharacterDeathDtoEvent(characterId));
             }
         }
+
+        // public void apply(PowerAmount powerAmount) {
+        //     characterData.applyDamage(powerAmount);
+        //     if (characterData.CurrentHp <= 0) {
+        //         characterEventPublisher.publish(new CharacterDeathDtoEvent(characterId));
+        //     }
+        // }
 
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {
             return characterInventory.canPlace(new PlaceItemQuery(equipItemQuery.itemDefinition,

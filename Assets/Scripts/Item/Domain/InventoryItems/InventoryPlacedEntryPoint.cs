@@ -3,6 +3,7 @@ using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -37,6 +38,10 @@ namespace MageFactory.Item.Domain.InventoryItems {
 
         public void updateItemPosition(IInventoryPosition inventoryPosition) {
             entryPointItem.updateItemPosition(inventoryPosition);
+        }
+
+        public FlowKind getFlowKind() {
+            return entryPointItem.getFlowKind();
         }
     }
 }
