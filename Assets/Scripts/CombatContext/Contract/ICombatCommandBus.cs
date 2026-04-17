@@ -1,4 +1,5 @@
 ﻿using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatEvents;
 using MageFactory.Shared.Model;
 
 namespace MageFactory.CombatContext.Contract {
@@ -7,5 +8,7 @@ namespace MageFactory.CombatContext.Contract {
         ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item);
 
         void takeDamage(DamageToReceive damageToReceive);
+
+        void processCombatEvent(CombatEvent combatEvent);
     }
 }

@@ -10,7 +10,8 @@
     "MageFactory.Flow.Api",
     "MageFactory.Flow.Contract",
     "MageFactory.Character.Api",
-    "MageFactory.ActionEffect"
+    "MageFactory.ActionEffect",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true
 }

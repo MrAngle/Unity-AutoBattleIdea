@@ -1,0 +1,128 @@
+﻿Ustaliliśmy, że przy CombatEvent nie chcesz klasycznych eventów programistycznych, tylko synchroniczne, domenowe zdarzenia walki rozpatrywane przez postać. Postać jest orchestratoriem: dostaje CombatEvent, pyta itemy o reakcje, wybiera entry point i rozlicza wynik. Entry point jest szczególnym itemem, nie osobnym systemem obok itemów.
+
+Odrzuciliśmy pomysł interfejsów per event typu DamageIncomingEventEntryPointProcessor, bo przy dużej liczbie eventów i losowo generowanych itemach prowadziłoby to do eksplozji kombinacji. Zamiast tego kierunek jest taki, żeby item reagował na wspólny typ CombatEvent, a różne zachowania były rozstrzygane w ramach jednego mechanizmu.
+
+Wyszło też, że kontrakt matches(event) + react(event) jest słaby, bo poprawna kolejność użycia nie jest wymuszona i łatwo wywołać react() bez wcześniejszego matches(). Dlatego lepszy jest etapowy fluent API, który typami wymusza poprawny porządek.
+
+Docelowy kierunek fluent API to coś w stylu:
+start(item, combatEvent) -> match() -> validateProcessability() -> prepareExecution() -> react()
+
+Przykład użycia:
+
+CombatEventReactionChain
+    .start(item, combatEvent)
+    .match()
+    .validateProcessability()
+    .prepareExecution()
+    .react();
+
+Znaczenie etapów:
+
+start(item, combatEvent) — tworzysz kontekst reakcji konkretnego itemu na konkretne zdarzenie.
+match() — tylko dopasowanie domenowe: czy item w ogóle reaguje na taki event.
+validateProcessability() — runtime: cooldown, zasoby, blokady, capacity itp.
+prepareExecution() — przygotowanie wykonania, np. zbudowanie kontekstu, rezerwacja zasobów, start flow.
+react() — właściwe odpalenie reakcji.
+
+Kluczowy wniosek: nie wolno mieszać match() z cooldownem i zasobami. match() ma odpowiadać wyłącznie na pytanie „czy ten item reaguje na ten event”, a nie „czy może to teraz wykonać”. Dzięki temu zachowujesz ważne rozróżnienie:
+
+NoMatch
+Match but on cooldown
+Match but missing resources
+Ready to react
+
+Był sceptycyzm wobec rozbudowanego chaina, ale po doprecyzowaniu uznaliśmy, że u Ciebie umiarkowany staged fluent API ma sens, bo nie jest ozdobnikiem, tylko wymusza domenowy workflow i zachowuje informacje diagnostyczne. Nadal trzeba pilnować, żeby nie przesadzić z rozdrobnieniem typu validateCooldown(), validateResources(), validateCapacity() itd. Na start lepiej trzymać to w jednym validateProcessability().
+
+Wstępnie flow miałoby przyjmować:
+
+item — bo to item jest nośnikiem reakcji i entry point też jest itemem,
+combatEvent — wspólny bazowy typ zdarzenia domenowego, np. DamageIncomingCombatEvent.
+
+Wstępnie potrzebne modele:
+
+CombatEvent — baza eventów,
+DamageIncomingCombatEvent — pierwszy konkretny event,
+CombatEventReactionChain — obiekt prowadzący przez etapy fluent API,
+etapy pośrednie po match(), validateProcessability() i prepareExecution(), żeby wymuszać kolejność typami,
+CombatEventReactionResult jako wynik końcowy reakcji,
+ewentualnie bardziej szczegółowe wyniki pośrednie, żeby nie gubić informacji o powodach odrzucenia.
+
+Najważniejsza zasada projektowa, do której doszliśmy: publiczne API powinno opisywać domenowe etapy logiki gry, a nie techniczne kroki implementacji. Czyli nazwy mają mówić, co dzieje się w logice walki, a nie jak to jest zrobione pod spodem.
+
+Ustaliliśmy, że przy CombatEvent nie chcesz klasycznych eventów programistycznych, tylko synchroniczne, domenowe zdarzenia walki rozpatrywane przez postać. Postać jest orchestratoriem: dostaje CombatEvent, pyta itemy o reakcje, wybiera entry point i rozlicza wynik. Entry point jest szczególnym itemem, nie osobnym systemem obok itemów.
+
+Odrzuciliśmy pomysł interfejsów per event typu DamageIncomingEventEntryPointProcessor, bo przy dużej liczbie eventów i losowo generowanych itemach prowadziłoby to do eksplozji kombinacji. Zamiast tego kierunek jest taki, żeby item reagował na wspólny typ CombatEvent, a różne zachowania były rozstrzygane w ramach jednego mechanizmu.
+
+Wyszło też, że kontrakt matches(event) + react(event) jest słaby, bo poprawna kolejność użycia nie jest wymuszona i łatwo wywołać react() bez wcześniejszego matches(). Dlatego lepszy jest etapowy fluent API, który typami wymusza poprawny porządek.
+
+Docelowy kierunek fluent API to coś w stylu:
+start(item, combatEvent) -> match() -> validateProcessability() -> prepareExecution() -> react()
+
+Znaczenie etapów:
+
+match() to tylko dopasowanie domenowe: czy item w ogóle reaguje na taki event.
+validateProcessability() to runtime: cooldown, zasoby, blokady, capacity itp.
+prepareExecution() to przygotowanie wykonania, np. zbudowanie kontekstu, rezerwacja zasobów, start flow.
+react() to właściwe odpalenie reakcji.
+
+Kluczowy wniosek: nie wolno mieszać match() z cooldownem i zasobami. match() ma odpowiadać wyłącznie na pytanie „czy ten item reaguje na ten event”, a nie „czy może to teraz wykonać”. Dzięki temu zachowujesz ważne rozróżnienie:
+
+NoMatch
+Match but on cooldown
+Match but missing resources
+Ready to react
+
+Był sceptycyzm wobec rozbudowanego chaina, ale po doprecyzowaniu uznaliśmy, że u Ciebie umiarkowany staged fluent API ma sens, bo nie jest ozdobnikiem, tylko wymusza domenowy workflow i zachowuje informacje diagnostyczne. Nadal trzeba pilnować, żeby nie przesadzić z rozdrobnieniem typu validateCooldown(), validateResources(), validateCapacity() itd. Na start lepiej trzymać to w jednym validateProcessability().
+
+Najważniejsza zasada projektowa, do której doszliśmy: publiczne API powinno opisywać domenowe etapy logiki gry, a nie techniczne kroki implementacji. Czyli nazwy mają mówić, co dzieje się w logice walki, a nie jak to jest zrobione pod spodem.
+
+Jako przykład użycia ustaliliśmy taki kierunek flow:
+
+CombatEventReactionChain
+    .start(item, combatEvent)
+    .match()
+    .validateProcessability()
+    .prepareExecution()
+    .react();
+
+Znaczenie etapów:
+
+start(item, combatEvent) — tworzysz kontekst reakcji konkretnego itemu na konkretne zdarzenie.
+match() — sprawdzasz, czy item domenowo reaguje na ten typ eventu.
+validateProcessability() — sprawdzasz runtime, np. cooldown, zasoby, blokady.
+prepareExecution() — przygotowujesz wykonanie reakcji, np. kontekst, flow instance, rezerwacje.
+react() — odpalasz właściwą reakcję.
+
+Wstępnie flow miałoby przyjmować:
+
+item — bo to item jest nośnikiem reakcji i entry point też jest itemem,
+combatEvent — wspólny bazowy typ zdarzenia domenowego, np. DamageIncomingCombatEvent.
+
+Wstępnie potrzebne modele:
+
+CombatEvent — baza eventów,
+DamageIncomingCombatEvent — pierwszy konkretny event,
+CombatEventReactionChain — obiekt prowadzący przez etapy fluent API,
+coś w rodzaju etapu po match(), po validate...() i po prepare...(), żeby wymuszać kolejność typami,
+wynik końcowy reakcji, np. CombatEventReactionResult,
+oraz wyniki pośrednie walidacji/przygotowania, żeby nie gubić informacji typu:
+brak matcha,
+match jest, ale cooldown,
+match jest, ale brak zasobów,
+gotowe do reakcji.
+
+Najważniejsze założenie:
+
+match() dotyczy tylko dopasowania domenowego,
+validateProcessability() dotyczy tylko możliwości wykonania teraz,
+nie sklejamy tego w jedną rzecz.
+
+Rola postaci w tym modelu:
+
+postać dostaje CombatEvent,
+iteruje po itemach,
+dla każdego może odpalić taki chain,
+wybiera sensowną reakcję / entry point,
+a potem rozlicza wynik.
+
+Czyli w skrócie: flow ma być etapowe, typowane i domenowe, a nie „najpierw pamiętaj wywołać boola, potem może react”.

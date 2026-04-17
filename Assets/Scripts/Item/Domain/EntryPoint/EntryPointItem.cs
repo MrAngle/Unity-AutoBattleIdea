@@ -9,8 +9,8 @@ using UnityEngine;
 
 namespace MageFactory.Item.Domain.EntryPoint {
     internal class EntryPointItem {
-        private readonly IEntryPointArchetype entryPointArchetype;
         private readonly Id<ItemId> id;
+        private readonly IEntryPointArchetype entryPointArchetype;
         private IInventoryPosition inventoryPosition;
 
         private EntryPointItem(
@@ -20,7 +20,7 @@ namespace MageFactory.Item.Domain.EntryPoint {
             id = new Id<ItemId>(IdGenerator.Next());
             this.entryPointArchetype = NullGuard.NotNullOrThrow(entryPointArchetype);
             this.inventoryPosition = NullGuard.NotNullOrThrow(inventoryPosition);
-            NullGuard.NotNullCheckOrThrow(inventoryPosition);
+            NullGuard.NotNullCheckOrThrow(this.inventoryPosition);
         }
 
         internal static EntryPointItem create(
@@ -33,8 +33,8 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return placedEntryPoint;
         }
 
-        public IActionDescription prepareItemActionDescription() {
-            return entryPointArchetype.getItemDefinition().getActionDescription();
+        public Id<ItemId> getId() {
+            return id;
         }
 
         public Vector2Int getOrigin() {
@@ -49,12 +49,12 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return inventoryPosition.getOccupiedCells();
         }
 
-        public Id<ItemId> getId() {
-            return id;
-        }
-
         public FlowKind getFlowKind() {
             return entryPointArchetype.getFlowKind();
+        }
+
+        public IActionDescription prepareItemActionDescription() {
+            return entryPointArchetype.getItemDefinition().getActionDescription();
         }
 
         public override string ToString() {

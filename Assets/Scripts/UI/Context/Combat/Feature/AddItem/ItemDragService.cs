@@ -64,8 +64,6 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
 
             // 3) validacja
             var can = characterAggregateContext != null &&
-                      // characterAggregateContext.getInventoryAggregate()
-                      //     .canPlace(new PlaceItemQuery(inventoryPlaceableItem, origin));
                       characterAggregateContext.getCharacterCombatCapabilities().query()
                           .canPlaceItem(new EquipItemQuery(inventoryPlaceableItem, origin));
             ghostPlacedItem.setColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));

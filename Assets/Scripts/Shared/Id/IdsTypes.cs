@@ -18,6 +18,9 @@ namespace MageFactory.Shared.Id {
     public readonly struct CharacterId {
     }
 
+    public readonly struct CombatEventId {
+    }
+
     public readonly struct ItemId {
     }
 }

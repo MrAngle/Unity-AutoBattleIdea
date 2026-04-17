@@ -6,7 +6,8 @@
     "MageFactory.Shared",
     "Zenject",
     "MageFactory.FlowRouting",
-    "MageFactory.Flow.Contract"
+    "MageFactory.Flow.Contract",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true
 }
