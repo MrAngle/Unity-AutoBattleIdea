@@ -3,15 +3,14 @@ using System;
 using MageFactory.Character.Api.Event;
 using MageFactory.Character.Api.Event.Dto;
 using MageFactory.Character.Contract;
+using MageFactory.Character.Domain.Service;
 using MageFactory.CombatContext.Contract.Command;
-using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Character.Domain {
     internal class CharacterAggregate {
-        private readonly Id<CharacterId> characterId;
         private readonly CharacterData characterData;
         private readonly ICharacterInventory characterInventory;
         private readonly ICharacterEventPublisher characterEventPublisher;
@@ -21,7 +20,6 @@ namespace MageFactory.Character.Domain {
             ICharacterInventory characterInventoryFacade,
             ICharacterEventPublisher characterEventPublisher
         ) {
-            characterId = new Id<CharacterId>(IdGenerator.Next());
             characterData = NullGuard.NotNullOrThrow(data);
             characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.characterEventPublisher = NullGuard.NotNullOrThrow(characterEventPublisher);
@@ -40,30 +38,34 @@ namespace MageFactory.Character.Domain {
                 characterEventPublisher);
         }
 
-        public Id<CharacterId> getId() {
-            return characterId;
+        public IReadOnlyCharacterData getCharacterInfo() {
+            return characterData;
         }
 
-        public string getName() {
-            return characterData.getName();
-        }
+        // public Id<CharacterId> getId() {
+        //     return characterId;
+        // }
+
+        // public string getName() {
+        //     return characterData.getName();
+        // }
 
         public ICharacterInventory getInventoryAggregate() {
             return characterInventory;
         }
-
-        public long getMaxHp() {
-            return characterData.getMaxHp();
-        }
-
-        public long getCurrentHp() {
-            return characterData.CurrentHp;
-        }
+        //
+        // public long getMaxHp() {
+        //     return characterData.getMaxHp();
+        // }
+        //
+        // public long getCurrentHp() {
+        //     return characterData.CurrentHp;
+        // }
 
         public void takeDamage(DamageToReceive damageToReceive) {
             characterData.takeDamage(damageToReceive);
             if (characterData.CurrentHp <= 0) {
-                characterEventPublisher.publish(new CharacterDeathDtoEvent(characterId));
+                characterEventPublisher.publish(new CharacterDeathDtoEvent(characterData.getCharacterId()));
             }
         }
 
@@ -98,7 +100,8 @@ namespace MageFactory.Character.Domain {
         }
 
         private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {
-            characterEventPublisher.publish(new CharacterHpChangedDtoEvent(characterId, newHp, previousHpValue));
+            characterEventPublisher.publish(new CharacterHpChangedDtoEvent(characterData.getCharacterId(), newHp,
+                previousHpValue));
         }
 
         public bool tryMoveItem(ICharacterEquippedItem itemToMove) {

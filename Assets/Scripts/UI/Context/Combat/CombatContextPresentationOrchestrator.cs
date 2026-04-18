@@ -27,7 +27,7 @@ namespace MageFactory.UI.Context.Combat {
         IHpChangedEventListener,
         ICharacterDeathEventListener {
         private ICombatContext combatContext;
-        private ICharacterCombatCapabilities selectedCharacter;
+        private ICombatCharacterFacade selectedCombatCharacter;
         private readonly ICombatContextEventRegistry combatContextEventRegistry;
         private readonly IUiCombatContextEventRegistry uiCombatContextEventRegistry;
         private readonly IInventoryEventRegistry inventoryEventRegistry;
@@ -107,7 +107,7 @@ namespace MageFactory.UI.Context.Combat {
         public void onEvent(in CombatContextCreatedDtoEvent ev) {
             combatContext = ev.combatContext;
 
-            onEvent(new UiCombatCharacterSelectedEvent(combatContext.getRandomCharacter().query()
+            onEvent(new UiCombatCharacterSelectedEvent(combatContext.getRandomCharacter().query().getCharacterInfo()
                 .getCharacterId())); // for now
         }
 
@@ -117,12 +117,12 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         public void onEvent(in UiCombatCharacterSelectedEvent characterSelectedEvent) {
-            selectedCharacter = combatContext.getCombatCharacterById(characterSelectedEvent.characterId);
+            selectedCombatCharacter = combatContext.getCombatCharacterById(characterSelectedEvent.characterId);
 
-            inventoryPanelPresentation.printInventory(selectedCharacter.query()
+            inventoryPanelPresentation.printInventory(selectedCombatCharacter.query()
                 .getInventoryAggregate());
 
-            itemDragService.setCharacterContext(selectedCharacter);
+            itemDragService.setCharacterContext(selectedCombatCharacter);
         }
 
         public void onEvent(in NewItemPlacedDtoEvent ev) {

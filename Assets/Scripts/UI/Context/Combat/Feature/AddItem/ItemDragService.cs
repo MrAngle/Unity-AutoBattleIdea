@@ -16,7 +16,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
         private readonly ItemsLayerRectTransform itemsLayer;
 
         private IItemDefinition inventoryPlaceableItem; // todo change name
-        private ICharacterCombatCapabilities characterContext;
+        private ICombatCharacterFacade combatCharacterContext;
 
         [Inject]
         public ItemDragService(
@@ -32,8 +32,8 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             ghostPlacedItem.gameObject.SetActive(false);
         }
 
-        public void setCharacterContext(ICharacterCombatCapabilities characterContext) {
-            this.characterContext = characterContext;
+        public void setCharacterContext(ICombatCharacterFacade combatCharacterContext) {
+            this.combatCharacterContext = combatCharacterContext;
         }
 
         internal void beginDrag(IItemDefinition itemDefinition, PointerEventData eventData) {
@@ -60,7 +60,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y)); // pivot (0,1) -> oś Y w dół
 
             var origin = new Vector2Int(x, y);
-            var characterAggregateContext = characterContext;
+            var characterAggregateContext = combatCharacterContext;
 
             // 3) validacja
             var can = characterAggregateContext != null &&
@@ -87,9 +87,9 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            ICharacterCombatCapabilities character = characterContext;
-            if (character != null) {
-                var equippedItem = character
+            ICombatCharacterFacade combatCharacter = combatCharacterContext;
+            if (combatCharacter != null) {
+                var equippedItem = combatCharacter
                     .command().equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin));
                 NullGuard.NotNullCheckOrThrow(equippedItem);
             }

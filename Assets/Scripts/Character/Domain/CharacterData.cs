@@ -1,34 +1,48 @@
 ﻿using System;
+using MageFactory.Character.Domain.Service;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain {
-    internal class CharacterData {
+    internal class CharacterData : IReadOnlyCharacterData {
+        private readonly Id<CharacterId> characterId;
         private long currentHp;
         private int maxHp;
         private string name;
-        private Team team;
 
         internal event Action<CharacterData, long, long> OnHpChanged;
 
-        private CharacterData(string name, int maxHp, Team team) {
+        private CharacterData(string name, int maxHp) {
+            this.characterId = new Id<CharacterId>(IdGenerator.Next());
             this.name = name;
             this.maxHp = maxHp;
             this.currentHp = maxHp;
-            this.team = NullGuard.enumDefinedOrThrow(team);
         }
 
         internal static CharacterData from(CreateCombatCharacterCommand command) {
-            return new CharacterData(command.name, command.maxHp, command.team);
+            return new CharacterData(command.name, command.maxHp);
         }
 
         internal string getName() {
             return name;
         }
 
-        internal int getMaxHp() {
+        public Id<CharacterId> getCharacterId() {
+            return characterId;
+        }
+
+        public string getCharacterName() {
+            return name;
+        }
+
+        public long getMaxHp() {
             return maxHp;
+        }
+
+        public long getCurrentHp() {
+            return currentHp;
         }
 
         internal long CurrentHp {

@@ -13,8 +13,8 @@ using UnityEngine;
 using Random = System.Random;
 
 namespace MageFactory.CombatContext.Domain {
-    internal class CombatContext : ICombatContext, IFlowConsumer, IReadCombatContext {
-        private readonly Dictionary<Id<CharacterId>, ICharacterCombatCapabilities> characters = new();
+    internal class CombatContext : ICombatContext, IFlowConsumer {
+        private readonly Dictionary<Id<CharacterId>, ICombatCharacterFacade> characters = new();
 
         private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
@@ -40,15 +40,15 @@ namespace MageFactory.CombatContext.Domain {
             return combatContext;
         }
 
-        public ICharacterCombatCapabilities getRandomCharacter() {
+        public ICombatCharacterFacade getRandomCharacter() {
             return characters.Values.FirstOrDefault();
         }
 
-        public IReadOnlyCollection<ICharacterCombatCapabilities> getAllCharacters() {
+        public IReadOnlyCollection<ICombatCharacterFacade> getAllCharacters() {
             return characters.Values;
         }
 
-        public ICharacterCombatCapabilities getCombatCharacterById(Id<CharacterId> id) {
+        public ICombatCharacterFacade getCombatCharacterById(Id<CharacterId> id) {
             return characters[id];
         }
 
@@ -57,15 +57,15 @@ namespace MageFactory.CombatContext.Domain {
         }
 
         private void registerCharacter(CreateCombatCharacterCommand createCombatCharacterCommand) {
-            ICharacterCombatCapabilities combatCharacter = characterFactory.create(createCombatCharacterCommand);
+            ICombatCharacterFacade combatCombatCharacter = characterFactory.create(createCombatCharacterCommand);
 
-            Id<CharacterId> characterId = combatCharacter.query().getCharacterId();
+            Id<CharacterId> characterId = combatCombatCharacter.query().getCharacterInfo().getCharacterId();
             if (characters.ContainsKey(characterId)) {
                 throw new InvalidOperationException(
                     $"Character with id '{characterId}' is already registered in CombatContext.");
             }
 
-            characters.Add(combatCharacter.query().getCharacterId(), combatCharacter);
+            characters.Add(characterId, combatCombatCharacter);
             combatContextEventPublisher.publish(new CombatCharacterCreatedDtoEvent());
         }
 
@@ -76,20 +76,20 @@ namespace MageFactory.CombatContext.Domain {
                 return DamageToDeal.NO_POWER;
             }
 
-            ICharacterCombatCapabilities combatCharacter =
+            ICombatCharacterFacade combatCombatCharacter =
                 characters[consumeFlowCommand.flowOwner.getFlowOwnerCharacterId()];
-            if (combatCharacter == null) {
+            if (combatCombatCharacter == null) {
                 return DamageToDeal.NO_POWER;
             }
 
             return consumeFlowCommand.flowKind switch {
                 FlowKind.Damage => processOffensiveFlow(consumeFlowCommand),
-                FlowKind.Defense => processDefensiveFlow(combatCharacter, consumeFlowCommand),
+                FlowKind.Defense => processDefensiveFlow(combatCombatCharacter, consumeFlowCommand),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
 
-        private DamageToDeal processDefensiveFlow(ICharacterCombatCapabilities characterCombatCapabilities,
+        private DamageToDeal processDefensiveFlow(ICombatCharacterFacade combatCharacterFacade,
                                                   ConsumeFlowCommand consumeFlowCommand) {
             throw new NotImplementedException();
         }
@@ -97,7 +97,7 @@ namespace MageFactory.CombatContext.Domain {
         private DamageToDeal processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
             // target selection should be specified in the flow command
             if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
-                    out ICharacterCombatCapabilities enemy)) {
+                    out ICombatCharacterFacade enemy)) {
                 enemy.command()
                     .takeDamage(DamageToReceive.fromPowerAmount(consumeFlowCommand.damageToDeal));
                 return consumeFlowCommand.damageToDeal;
@@ -106,17 +106,17 @@ namespace MageFactory.CombatContext.Domain {
             return DamageToDeal.NO_POWER;
         }
 
-        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICharacterCombatCapabilities enemy) {
+        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacterFacade enemy) {
             enemy = null;
-            if (!characters.TryGetValue(sourceId, out ICharacterCombatCapabilities sourceCharacter)) {
+            if (!characters.TryGetValue(sourceId, out ICombatCharacterFacade sourceCharacter)) {
                 Debug.Log($"[CombatContext] sourceId {sourceId} not found");
                 return false;
             }
 
-            Team sourceTeam = sourceCharacter.query().getTeam();
+            Team sourceTeam = sourceCharacter.query().getCharacterInfo().getTeam();
             var enemies = characters.Values
-                .Where(c => !Equals(c.query().getCharacterId(), sourceId))
-                .Where(c => c.query().getTeam() != sourceTeam)
+                .Where(c => !Equals(c.query().getCharacterInfo().getCharacterId(), sourceId))
+                .Where(c => c.query().getCharacterInfo().getTeam() != sourceTeam)
                 // todo: filter out dead characters
                 .ToList();
 
@@ -125,7 +125,8 @@ namespace MageFactory.CombatContext.Domain {
 
             int index = random.Next(enemies.Count);
             enemy = enemies[index];
-            Debug.Log($"[CombatContext] Picked enemy: {enemy.query().getCharacterName()}({enemy.query().getTeam()})");
+            Debug.Log(
+                $"[CombatContext] Picked enemy: {enemy.query().getCharacterInfo().getCharacterName()}({enemy.query().getCharacterInfo().getTeam()})");
             return true;
         }
     }

@@ -6,7 +6,7 @@ using MageFactory.CombatContext.Contract;
 namespace MageFactory.BattleManager {
     public class BattleRuntime {
         public void tick(ICombatContext combatContext) {
-            IReadOnlyCollection<ICharacterCombatCapabilities> combatCharacters = combatContext.getAllCharacters();
+            IReadOnlyCollection<ICombatCharacterFacade> combatCharacters = combatContext.getAllCharacters();
 
             foreach (var character in combatCharacters.ToList()) {
                 character.command().combatTick(combatContext.getFlowConsumer());

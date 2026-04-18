@@ -1,5 +1,5 @@
 ﻿namespace MageFactory.CombatContext.Contract {
-    public interface ICharacterCombatCapabilities {
+    public interface ICombatCharacterFacade {
         ICombatCommandBus command();
         ICombatQueries query();
     }

@@ -7,8 +7,8 @@ using MageFactory.Character.Domain.CombatChar;
 namespace MageFactory.Character.Domain.Service {
     internal class CharacterCombatCapabilitiesFactory {
         // [Inject] // tutaj pojawia sie ewentualne potrzebne serwisy
-        public CharacterCombatCapabilities createCombatContextFactory(CombatCharacter combatCharacter) {
-            return new CharacterCombatCapabilities(combatCharacter);
+        public CombatCharacterFacade createCombatContextFactory(CombatCharacter combatCharacter) {
+            return new CombatCharacterFacade(combatCharacter);
         }
     }
 }

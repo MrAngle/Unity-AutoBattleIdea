@@ -32,8 +32,8 @@ namespace MageFactory.Tests.Unit.TestFixtures {
 
         public static long getTeamHp(ICombatContext ctx, Team team) {
             foreach (var ch in ctx.getAllCharacters()) {
-                if (ch.query().getTeam() == team)
-                    return ch.query().getCurrentHp();
+                if (ch.query().getCharacterInfo().getTeam() == team)
+                    return ch.query().getCharacterInfo().getCurrentHp();
             }
 
             throw new InvalidOperationException($"No character for team {team}.");

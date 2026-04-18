@@ -13,22 +13,22 @@ namespace MageFactory.UI.Component {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
-        private ICharacterCombatCapabilities _character;
+        private ICombatCharacterFacade combatCharacter;
         private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-                                                      ICharacterCombatCapabilities characterData,
+                                                      ICombatCharacterFacade combatCharacterData,
                                                       IUiCombatContextEventPublisher uiCombatContextEventPublisher) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
-            prefab.setup(characterData, uiCombatContextEventPublisher);
+            prefab.setup(combatCharacterData, uiCombatContextEventPublisher);
 
 
             return prefab;
         }
 
-        private void setup(ICharacterCombatCapabilities character,
+        private void setup(ICombatCharacterFacade combatCharacter,
                            IUiCombatContextEventPublisher paramUiCombatContextEventPublisher) {
-            _character = NullGuard.NotNullOrThrow(character);
+            this.combatCharacter = NullGuard.NotNullOrThrow(combatCharacter);
             uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(paramUiCombatContextEventPublisher);
 
             refreshUI();
@@ -52,28 +52,31 @@ namespace MageFactory.UI.Component {
         }
 
         public void OnPointerClick(PointerEventData eventData) {
-            if (_character == null) return;
+            if (combatCharacter == null) return;
 
-            Debug.Log($"Kliknięto postać: {_character.query().getCharacterName()}");
+            Debug.Log($"Kliknięto postać: {combatCharacter.query().getCharacterInfo().getCharacterName()}");
 
             uiCombatContextEventPublisher.publish(
-                new UiCombatCharacterSelectedEvent(_character.query().getCharacterId()));
+                new UiCombatCharacterSelectedEvent(combatCharacter.query().getCharacterInfo().getCharacterId()));
         }
 
         private void refreshUI() {
-            if (_character == null) return;
+            if (combatCharacter == null) return;
 
-            nameText.text = _character.query().getCharacterName();
+            nameText.text = combatCharacter.query().getCharacterInfo().getCharacterName();
+            long characterMaxHp = combatCharacter.query().getCharacterInfo().getMaxHp();
+            long characterCurrentHp = combatCharacter.query().getCharacterInfo().getCurrentHp();
 
             var ratio = 0f;
-            if (_character.query().getMaxHp() > 0)
-                ratio = (float)_character.query().getCurrentHp() / _character.query().getMaxHp();
+            if (characterMaxHp > 0) {
+                ratio = (float)characterCurrentHp / characterMaxHp;
+            }
 
             hpBarImage.fillAmount = ratio;
         }
 
         private void cleanup() {
-            _character?.command().cleanup();
+            combatCharacter?.command().cleanup();
         }
     }
 }

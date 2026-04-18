@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Domain.FlowCapability;
+using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
@@ -12,41 +13,21 @@ using UnityEngine;
 
 namespace MageFactory.Character.Domain.CombatChar {
     internal class CombatCharacter : IFlowOwner {
-        private readonly Team team;
-
+        private readonly CombatCharacterData combatCharacterData;
         private readonly CharacterAggregate characterAggregate;
-
-        // private readonly CharacterCombatCapabilities characterCombatCapabilities;
         private readonly IFlowFactory flowFactory;
 
         internal CombatCharacter(CharacterAggregate characterAggregate,
-                                 // CharacterCombatCapabilities characterCombatCapabilities,
                                  Team team,
                                  IFlowFactory flowFactory) {
             this.characterAggregate = NullGuard.NotNullOrThrow(characterAggregate);
-            // this.characterCombatCapabilities = NullGuard.NotNullOrThrow(characterCombatCapabilities);
-            this.team = NullGuard.enumDefinedOrThrow(team);
+            this.combatCharacterData =
+                NullGuard.NotNullOrThrow(new CombatCharacterData(this.characterAggregate.getCharacterInfo(), team));
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
 
         public Id<CharacterId> getFlowOwnerCharacterId() {
-            return characterAggregate.getId();
-        }
-
-        public Id<CharacterId> getId() {
-            return characterAggregate.getId();
-        }
-
-        public long getMaxHp() {
-            return characterAggregate.getMaxHp();
-        }
-
-        public long getCurrentHp() {
-            return characterAggregate.getCurrentHp();
-        }
-
-        public string getName() {
-            return characterAggregate.getName();
+            return combatCharacterData.getCharacterId();
         }
 
         public void cleanup() {
@@ -77,8 +58,8 @@ namespace MageFactory.Character.Domain.CombatChar {
             }
         }
 
-        public Team getTeam() {
-            return team;
+        public IReadOnlyCombatCharacterData getCharacterInfo() {
+            return combatCharacterData;
         }
 
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {
@@ -101,8 +82,7 @@ namespace MageFactory.Character.Domain.CombatChar {
             return characterAggregate.equipItemOrThrow(item);
         }
 
-
-        public bool tryGetItemAtCell(Vector2Int cell, out IFlowItem item) {
+        internal bool tryGetItemAtCell(Vector2Int cell, out IFlowItem item) {
             if (this.getInventoryAggregate()
                 .tryGetItemAtCell(cell, out ICharacterEquippedItem combatItem)) {
                 item = new CombatCharacterEquippedItem(combatItem);

@@ -2,11 +2,11 @@
 using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
-    internal class CharacterCombatCapabilities : ICharacterCombatCapabilities {
+    internal class CombatCharacterFacade : ICombatCharacterFacade {
         private readonly CombatCommandBus combatCommandBus;
         private readonly CombatQueries combatQueries;
 
-        internal CharacterCombatCapabilities(CombatCharacter characterAggregate) {
+        internal CombatCharacterFacade(CombatCharacter characterAggregate) {
             combatCommandBus = new CombatCommandBus(characterAggregate);
             combatQueries = new CombatQueries(characterAggregate);
         }
@@ -19,12 +19,12 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return combatQueries;
         }
 
-        internal CombatCommandBus internalCommand() {
-            return combatCommandBus;
-        }
-
-        internal CombatQueries internalQuery() {
-            return combatQueries;
-        }
+        // internal CombatCommandBus internalCommand() {
+        //     return combatCommandBus;
+        // }
+        //
+        // internal CombatQueries internalQuery() {
+        //     return combatQueries;
+        // }
     }
 }

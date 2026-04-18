@@ -5,10 +5,10 @@ using MageFactory.Shared.Id;
 
 namespace MageFactory.CombatContext.Api {
     public interface ICombatContext {
-        ICharacterCombatCapabilities getRandomCharacter(); // TODO remove
+        ICombatCharacterFacade getRandomCharacter(); // TODO remove
 
-        public IReadOnlyCollection<ICharacterCombatCapabilities> getAllCharacters();
-        public ICharacterCombatCapabilities getCombatCharacterById(Id<CharacterId> id);
+        public IReadOnlyCollection<ICombatCharacterFacade> getAllCharacters();
+        public ICombatCharacterFacade getCombatCharacterById(Id<CharacterId> id);
         public IFlowConsumer getFlowConsumer();
     }
 }
