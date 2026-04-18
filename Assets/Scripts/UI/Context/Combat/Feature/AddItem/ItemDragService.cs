@@ -16,7 +16,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
         private readonly ItemsLayerRectTransform itemsLayer;
 
         private IItemDefinition inventoryPlaceableItem; // todo change name
-        private ICombatCharacter characterContext;
+        private ICharacterCombatCapabilities characterContext;
 
         [Inject]
         public ItemDragService(
@@ -32,7 +32,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             ghostPlacedItem.gameObject.SetActive(false);
         }
 
-        public void setCharacterContext(ICombatCharacter characterContext) {
+        public void setCharacterContext(ICharacterCombatCapabilities characterContext) {
             this.characterContext = characterContext;
         }
 
@@ -64,7 +64,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
 
             // 3) validacja
             var can = characterAggregateContext != null &&
-                      characterAggregateContext.getCharacterCombatCapabilities().query()
+                      characterAggregateContext.query()
                           .canPlaceItem(new EquipItemQuery(inventoryPlaceableItem, origin));
             ghostPlacedItem.setColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
@@ -87,9 +87,9 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             var y = Mathf.FloorToInt(-localPos.y / (cell.y + spacing.y));
             var origin = new Vector2Int(x, y);
 
-            ICombatCharacter character = characterContext;
+            ICharacterCombatCapabilities character = characterContext;
             if (character != null) {
-                var equippedItem = character.getCharacterCombatCapabilities()
+                var equippedItem = character
                     .command().equipItemOrThrow(new EquipItemCommand(inventoryPlaceableItem, origin));
                 NullGuard.NotNullCheckOrThrow(equippedItem);
             }

@@ -67,7 +67,7 @@ namespace MageFactory.UI.Context.Combat {
                     combatContextEventPublisher
                 );
 
-                characterPrefabs[combatCharacter.getId()] = prefab;
+                characterPrefabs[combatCharacter.query().getCharacterId()] = prefab;
             }
 
             CombatContextPresentationOrchestrator.create(combatContextEventRegistry,

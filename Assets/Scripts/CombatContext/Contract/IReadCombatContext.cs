@@ -2,6 +2,6 @@
 
 namespace MageFactory.CombatContext.Contract {
     public interface IReadCombatContext {
-        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacter enemy);
+        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICharacterCombatCapabilities enemy);
     }
 }

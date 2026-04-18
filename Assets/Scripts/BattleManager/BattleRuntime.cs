@@ -6,10 +6,10 @@ using MageFactory.CombatContext.Contract;
 namespace MageFactory.BattleManager {
     public class BattleRuntime {
         public void tick(ICombatContext combatContext) {
-            IReadOnlyCollection<ICombatCharacter> combatCharacters = combatContext.getAllCharacters();
+            IReadOnlyCollection<ICharacterCombatCapabilities> combatCharacters = combatContext.getAllCharacters();
 
             foreach (var character in combatCharacters.ToList()) {
-                character.combatTick(combatContext.getFlowConsumer());
+                character.command().combatTick(combatContext.getFlowConsumer());
             }
         }
     }

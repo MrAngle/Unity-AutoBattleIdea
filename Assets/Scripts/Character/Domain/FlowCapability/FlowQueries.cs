@@ -1,13 +1,13 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.Character.Domain.CombatChar;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain.FlowCapability {
     internal class FlowQueries : IFlowQueries {
-        private ICombatQueries combatQueries;
+        private CombatCharacter combatCharacter;
 
-        public FlowQueries(ICombatQueries combatQueries) {
-            this.combatQueries = NullGuard.NotNullOrThrow(combatQueries);
+        public FlowQueries(CombatCharacter combatCharacter) {
+            this.combatCharacter = NullGuard.NotNullOrThrow(combatCharacter);
         }
 
         // public bool tryGetRightAdjacentItems(IFlowItem sourceFlowItem, out IEnumerable<IFlowItem> adjacentFlowItem) {

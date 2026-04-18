@@ -1,11 +1,12 @@
-﻿using MageFactory.CombatContext.Contract;
+﻿using MageFactory.Character.Domain.CombatChar;
+using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CharacterCombatCapabilities : ICharacterCombatCapabilities {
         private readonly CombatCommandBus combatCommandBus;
         private readonly CombatQueries combatQueries;
 
-        internal CharacterCombatCapabilities(CharacterAggregate characterAggregate) {
+        internal CharacterCombatCapabilities(CombatCharacter characterAggregate) {
             combatCommandBus = new CombatCommandBus(characterAggregate);
             combatQueries = new CombatQueries(characterAggregate);
         }

@@ -2,7 +2,9 @@
 using UnityEngine;
 
 namespace MageFactory.FlowRouting {
-    public interface IRouterGridAdjacencyActions {
-        bool tryGetItemAtCell(Vector2Int cell, out IFlowItem item);
-    }
+    public delegate bool TryGetFlowItemAtCell(Vector2Int cell, out IFlowItem item);
+
+    // public interface IRouterGridAdjacencyActions {
+    //     bool tryGetItemAtCell(Vector2Int cell, out IFlowItem item);
+    // }
 }

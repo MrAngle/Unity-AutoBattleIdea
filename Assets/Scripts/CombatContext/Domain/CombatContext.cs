@@ -14,7 +14,7 @@ using Random = System.Random;
 
 namespace MageFactory.CombatContext.Domain {
     internal class CombatContext : ICombatContext, IFlowConsumer, IReadCombatContext {
-        private readonly Dictionary<Id<CharacterId>, ICombatCharacter> characters = new();
+        private readonly Dictionary<Id<CharacterId>, ICharacterCombatCapabilities> characters = new();
 
         private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
@@ -40,15 +40,15 @@ namespace MageFactory.CombatContext.Domain {
             return combatContext;
         }
 
-        public ICombatCharacter getRandomCharacter() {
+        public ICharacterCombatCapabilities getRandomCharacter() {
             return characters.Values.FirstOrDefault();
         }
 
-        public IReadOnlyCollection<ICombatCharacter> getAllCharacters() {
+        public IReadOnlyCollection<ICharacterCombatCapabilities> getAllCharacters() {
             return characters.Values;
         }
 
-        public ICombatCharacter getCombatCharacterById(Id<CharacterId> id) {
+        public ICharacterCombatCapabilities getCombatCharacterById(Id<CharacterId> id) {
             return characters[id];
         }
 
@@ -57,15 +57,15 @@ namespace MageFactory.CombatContext.Domain {
         }
 
         private void registerCharacter(CreateCombatCharacterCommand createCombatCharacterCommand) {
-            ICombatCharacter combatCharacter = characterFactory.create(createCombatCharacterCommand);
+            ICharacterCombatCapabilities combatCharacter = characterFactory.create(createCombatCharacterCommand);
 
-            Id<CharacterId> characterId = combatCharacter.getId();
+            Id<CharacterId> characterId = combatCharacter.query().getCharacterId();
             if (characters.ContainsKey(characterId)) {
                 throw new InvalidOperationException(
                     $"Character with id '{characterId}' is already registered in CombatContext.");
             }
 
-            characters.Add(combatCharacter.getId(), combatCharacter);
+            characters.Add(combatCharacter.query().getCharacterId(), combatCharacter);
             combatContextEventPublisher.publish(new CombatCharacterCreatedDtoEvent());
         }
 
@@ -76,7 +76,8 @@ namespace MageFactory.CombatContext.Domain {
                 return DamageToDeal.NO_POWER;
             }
 
-            ICombatCharacter combatCharacter = characters[consumeFlowCommand.flowOwner.getFlowOwnerCharacterId()];
+            ICharacterCombatCapabilities combatCharacter =
+                characters[consumeFlowCommand.flowOwner.getFlowOwnerCharacterId()];
             if (combatCharacter == null) {
                 return DamageToDeal.NO_POWER;
             }
@@ -88,7 +89,7 @@ namespace MageFactory.CombatContext.Domain {
             };
         }
 
-        private DamageToDeal processDefensiveFlow(ICombatCharacter combatCharacter,
+        private DamageToDeal processDefensiveFlow(ICharacterCombatCapabilities characterCombatCapabilities,
                                                   ConsumeFlowCommand consumeFlowCommand) {
             throw new NotImplementedException();
         }
@@ -96,8 +97,8 @@ namespace MageFactory.CombatContext.Domain {
         private DamageToDeal processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
             // target selection should be specified in the flow command
             if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
-                    out ICombatCharacter enemy)) {
-                enemy.getCharacterCombatCapabilities().command()
+                    out ICharacterCombatCapabilities enemy)) {
+                enemy.command()
                     .takeDamage(DamageToReceive.fromPowerAmount(consumeFlowCommand.damageToDeal));
                 return consumeFlowCommand.damageToDeal;
             }
@@ -105,18 +106,17 @@ namespace MageFactory.CombatContext.Domain {
             return DamageToDeal.NO_POWER;
         }
 
-        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacter enemy) {
+        public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICharacterCombatCapabilities enemy) {
             enemy = null;
-            if (!characters.TryGetValue(sourceId, out var source)) {
+            if (!characters.TryGetValue(sourceId, out ICharacterCombatCapabilities sourceCharacter)) {
                 Debug.Log($"[CombatContext] sourceId {sourceId} not found");
                 return false;
             }
 
-            Team sourceTeam = source.getTeam();
-
+            Team sourceTeam = sourceCharacter.query().getTeam();
             var enemies = characters.Values
-                .Where(c => !Equals(c.getId(), sourceId))
-                .Where(c => c.getTeam() != sourceTeam)
+                .Where(c => !Equals(c.query().getCharacterId(), sourceId))
+                .Where(c => c.query().getTeam() != sourceTeam)
                 // todo: filter out dead characters
                 .ToList();
 
@@ -125,7 +125,7 @@ namespace MageFactory.CombatContext.Domain {
 
             int index = random.Next(enemies.Count);
             enemy = enemies[index];
-            Debug.Log($"[CombatContext] Picked enemy: {enemy.getName()}({enemy.getTeam()})");
+            Debug.Log($"[CombatContext] Picked enemy: {enemy.query().getCharacterName()}({enemy.query().getTeam()})");
             return true;
         }
     }

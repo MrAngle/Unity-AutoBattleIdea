@@ -26,12 +26,13 @@ namespace MageFactory.Character.Domain.Service {
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
 
-        public ICombatCharacter create(CreateCombatCharacterCommand command) {
+        public ICharacterCombatCapabilities create(CreateCombatCharacterCommand command) {
             CharacterAggregate character = characterFactory.createCharacter(command);
+            CombatCharacter combatCharacter = new CombatCharacter(character, command.team, flowFactory);
             CharacterCombatCapabilities characterCombatCapabilities =
-                characterCombatCapabilitiesFactory.createCombatContextFactory(character);
+                characterCombatCapabilitiesFactory.createCombatContextFactory(combatCharacter);
 
-            return new CombatCharacter(character, characterCombatCapabilities, command.team, flowFactory);
+            return characterCombatCapabilities;
         }
     }
 }

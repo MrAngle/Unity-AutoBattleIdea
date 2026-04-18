@@ -2,6 +2,6 @@
 
 namespace MageFactory.CombatContext.Contract {
     public interface ICombatCharacterFactory {
-        ICombatCharacter create(CreateCombatCharacterCommand command);
+        ICharacterCombatCapabilities create(CreateCombatCharacterCommand command);
     }
 }

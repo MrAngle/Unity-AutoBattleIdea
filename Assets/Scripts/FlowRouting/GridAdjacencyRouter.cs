@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace MageFactory.FlowRouting {
     public class GridAdjacencyRouter : IFlowRouter {
-        private readonly IRouterGridAdjacencyActions
-            routerActions; // it may be just query inspector instead of ICharacterCombatCapabilities
+        private readonly TryGetFlowItemAtCell
+            tryGetItemAtCell; // it may be just query inspector instead of ICharacterCombatCapabilities
 
-        private GridAdjacencyRouter(IRouterGridAdjacencyActions routerActions) {
-            this.routerActions = routerActions;
+        private GridAdjacencyRouter(TryGetFlowItemAtCell tryGetItemAtCell) {
+            this.tryGetItemAtCell = tryGetItemAtCell;
         }
 
-        public static IFlowRouter create(IRouterGridAdjacencyActions characterCombatCapabilities) {
+        public static IFlowRouter create(TryGetFlowItemAtCell characterCombatCapabilities) {
             return new GridAdjacencyRouter(characterCombatCapabilities);
         }
 
@@ -43,7 +43,7 @@ namespace MageFactory.FlowRouting {
             var candidates = new Dictionary<Vector2Int, IFlowItem>();
             // Debug.Log("Candidates DecideNext for flow:" + $" {candidates}");
             foreach (var vector2Int in boundary)
-                if (routerActions.tryGetItemAtCell(vector2Int, out var placedItem)) {
+                if (tryGetItemAtCell(vector2Int, out var placedItem)) {
                     if (placedItem == current) continue; // ta sama bryła
                     // var neighborNodeId = $"Item:{neighborItem.Id}"; // TODO
                     if (visitedNodeIds.Contains(placedItem.getId())) continue; // już odwiedzony item

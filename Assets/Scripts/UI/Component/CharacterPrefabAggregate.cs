@@ -13,11 +13,11 @@ namespace MageFactory.UI.Component {
         public TextMeshProUGUI nameText;
         public Image hpBarImage;
 
-        private ICombatCharacter _character;
+        private ICharacterCombatCapabilities _character;
         private IUiCombatContextEventPublisher uiCombatContextEventPublisher;
 
         public static CharacterPrefabAggregate create(CharacterPrefabAggregate slotPrefab, Transform slotParent,
-                                                      ICombatCharacter characterData,
+                                                      ICharacterCombatCapabilities characterData,
                                                       IUiCombatContextEventPublisher uiCombatContextEventPublisher) {
             var prefab = Instantiate(slotPrefab, slotParent, false);
             prefab.setup(characterData, uiCombatContextEventPublisher);
@@ -26,7 +26,7 @@ namespace MageFactory.UI.Component {
             return prefab;
         }
 
-        private void setup(ICombatCharacter character,
+        private void setup(ICharacterCombatCapabilities character,
                            IUiCombatContextEventPublisher paramUiCombatContextEventPublisher) {
             _character = NullGuard.NotNullOrThrow(character);
             uiCombatContextEventPublisher = NullGuard.NotNullOrThrow(paramUiCombatContextEventPublisher);
@@ -54,25 +54,26 @@ namespace MageFactory.UI.Component {
         public void OnPointerClick(PointerEventData eventData) {
             if (_character == null) return;
 
-            Debug.Log($"Kliknięto postać: {_character.getName()}");
+            Debug.Log($"Kliknięto postać: {_character.query().getCharacterName()}");
 
-            uiCombatContextEventPublisher.publish(new UiCombatCharacterSelectedEvent(_character.getId()));
+            uiCombatContextEventPublisher.publish(
+                new UiCombatCharacterSelectedEvent(_character.query().getCharacterId()));
         }
 
         private void refreshUI() {
             if (_character == null) return;
 
-            nameText.text = _character.getName();
+            nameText.text = _character.query().getCharacterName();
 
             var ratio = 0f;
-            if (_character.getMaxHp() > 0)
-                ratio = (float)_character.getCurrentHp() / _character.getMaxHp();
+            if (_character.query().getMaxHp() > 0)
+                ratio = (float)_character.query().getCurrentHp() / _character.query().getMaxHp();
 
             hpBarImage.fillAmount = ratio;
         }
 
         private void cleanup() {
-            _character?.cleanup();
+            _character?.command().cleanup();
         }
     }
 }

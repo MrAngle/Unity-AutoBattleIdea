@@ -1,5 +1,6 @@
 ﻿using MageFactory.CombatContext.Contract.Command;
 using MageFactory.CombatEvents;
+using MageFactory.Flow.Contract;
 using MageFactory.Shared.Model;
 
 namespace MageFactory.CombatContext.Contract {
@@ -7,8 +8,12 @@ namespace MageFactory.CombatContext.Contract {
         // DamageToDeal consumeFlow(ConsumeFlowCommand offensiveFlowCommand, IReadCombatContext combatContext);
         ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item);
 
+        void combatTick(IFlowConsumer flowConsumer);
+
         void takeDamage(DamageToReceive damageToReceive);
 
         void processCombatEvent(CombatEvent combatEvent);
+
+        void cleanup();
     }
 }

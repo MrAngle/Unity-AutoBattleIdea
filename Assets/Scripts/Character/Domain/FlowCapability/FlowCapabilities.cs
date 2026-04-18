@@ -1,4 +1,4 @@
-﻿using MageFactory.Character.Domain.CharacterCapability;
+﻿using MageFactory.Character.Domain.CombatChar;
 using MageFactory.Flow.Contract;
 
 namespace MageFactory.Character.Domain.FlowCapability {
@@ -6,9 +6,9 @@ namespace MageFactory.Character.Domain.FlowCapability {
         private readonly FlowQueries flowQueries;
         private readonly FlowCommandBus flowCommandBus;
 
-        public FlowCapabilities(CharacterCombatCapabilities characterCombatCapabilities) {
-            flowQueries = new FlowQueries(characterCombatCapabilities.query());
-            flowCommandBus = new FlowCommandBus(flowQueries, characterCombatCapabilities);
+        public FlowCapabilities(CombatCharacter combatCharacter) {
+            flowQueries = new FlowQueries(combatCharacter);
+            flowCommandBus = new FlowCommandBus(flowQueries, combatCharacter);
         }
 
         IFlowQueries IFlowCapabilities.query() {
