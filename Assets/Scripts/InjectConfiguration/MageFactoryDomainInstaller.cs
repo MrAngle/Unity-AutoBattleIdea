@@ -99,6 +99,7 @@ namespace MageFactory.InjectConfiguration {
         private void installCombatAndCharacters() {
             // Character creation & capabilities
             Container.Bind<CharacterFactory>().AsSingle();
+            Container.Bind<CharacterCombatEventProcessorFactory>().AsSingle();
             Container.Bind<CharacterCombatCapabilitiesFactory>().AsSingle();
 
             // Combat character factory (łączy CharacterAggregate + capabilities + flowFactory)

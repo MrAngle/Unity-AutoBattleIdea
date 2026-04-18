@@ -13,22 +13,26 @@ namespace MageFactory.Character.Domain.Service {
     internal class CombatCharacterFactory : ICombatCharacterFactory {
         private readonly CharacterFactory characterFactory;
         private readonly CharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory;
+        private readonly CharacterCombatEventProcessorFactory characterCombatEventProcessorFactory;
         private readonly IFlowFactory flowFactory;
 
         [Inject]
         internal CombatCharacterFactory(
             CharacterFactory characterFactory,
             CharacterCombatCapabilitiesFactory characterCombatCapabilitiesFactory,
+            CharacterCombatEventProcessorFactory characterCombatEventProcessorFactory,
             IFlowFactory flowFactory
         ) {
             this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
             this.characterCombatCapabilitiesFactory = NullGuard.NotNullOrThrow(characterCombatCapabilitiesFactory);
+            this.characterCombatEventProcessorFactory = NullGuard.NotNullOrThrow(characterCombatEventProcessorFactory);
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
         }
 
         public ICombatCharacterFacade create(CreateCombatCharacterCommand command) {
             CharacterAggregate character = characterFactory.createCharacter(command);
-            CombatCharacter combatCharacter = new CombatCharacter(character, command.team, flowFactory);
+            CombatCharacter combatCharacter = new CombatCharacter(character, command.team, flowFactory,
+                characterCombatEventProcessorFactory.create());
             CombatCharacterFacade combatCharacterFacade =
                 characterCombatCapabilitiesFactory.createCombatContextFactory(combatCharacter);
 

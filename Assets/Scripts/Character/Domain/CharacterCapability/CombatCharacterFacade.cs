@@ -18,13 +18,5 @@ namespace MageFactory.Character.Domain.CharacterCapability {
         public ICombatQueries query() {
             return combatQueries;
         }
-
-        // internal CombatCommandBus internalCommand() {
-        //     return combatCommandBus;
-        // }
-        //
-        // internal CombatQueries internalQuery() {
-        //     return combatQueries;
-        // }
     }
 }

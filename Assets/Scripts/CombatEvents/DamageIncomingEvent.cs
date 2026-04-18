@@ -1,20 +1,22 @@
 ﻿using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
+using MageFactory.Shared.Utility;
 
 namespace MageFactory.CombatEvents {
-    internal class DamageIncomingCombatEvent : CombatEvent {
+    public sealed class DamageIncomingCombatEvent : CombatEvent {
         private readonly Id<CharacterId> sourceCharacterId;
         private readonly DamageSourceType damageSourceType;
-        private readonly int rawDamage;
+        private readonly DamageToReceive rawDamageToReceive;
 
         public DamageIncomingCombatEvent(
             Id<CharacterId> targetCharacterId,
             Id<CharacterId> sourceCharacterId,
             DamageSourceType damageSourceType,
-            int rawDamage
+            DamageToDeal rawDamageToDeal
         ) : base(targetCharacterId) {
             this.sourceCharacterId = sourceCharacterId;
             this.damageSourceType = damageSourceType;
-            this.rawDamage = rawDamage;
+            this.rawDamageToReceive = NullGuard.NotNullOrThrow(DamageToReceive.fromDamageToDeal(rawDamageToDeal));
         }
 
         public override CombatEventType getType() {
@@ -29,8 +31,8 @@ namespace MageFactory.CombatEvents {
             return damageSourceType;
         }
 
-        public int getRawDamage() {
-            return rawDamage;
+        public DamageToReceive getRawDamageToReceive() {
+            return rawDamageToReceive;
         }
     }
 }

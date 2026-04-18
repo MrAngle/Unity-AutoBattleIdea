@@ -26,7 +26,38 @@ namespace MageFactory.Shared.Model {
             return new DamageToReceive(power.getPower());
         }
 
+        public static DamageToReceive fromDamageToDeal(DamageToDeal damageToDeal) {
+            if (damageToDeal == null) {
+                throw new ArgumentNullException(nameof(damageToDeal));
+            }
+
+            return new DamageToReceive(damageToDeal.getPower());
+        }
+
         public DamageToReceive(long power) : base(power) {
+        }
+    }
+
+    public sealed class ResolvedDamage : PowerAmount {
+        public static readonly ResolvedDamage NO_DAMAGE = new(0);
+
+        public ResolvedDamage(long power) : base(power) {
+        }
+
+        public static ResolvedDamage fromPowerAmount(PowerAmount power) {
+            if (power == null) {
+                throw new ArgumentNullException(nameof(power));
+            }
+
+            return new ResolvedDamage(power.getPower());
+        }
+
+        public static ResolvedDamage fromDamageToReceive(DamageToReceive damageToReceive) {
+            if (damageToReceive == null) {
+                throw new ArgumentNullException(nameof(damageToReceive));
+            }
+
+            return new ResolvedDamage(damageToReceive.getPower());
         }
     }
 
@@ -43,5 +74,19 @@ namespace MageFactory.Shared.Model {
         }
 
         public static DamageToDeal NO_POWER = new(0);
+    }
+
+
+    public sealed class DamageTaken : PowerAmount {
+        public DamageTaken(long power) : base(power) {
+        }
+
+        public static DamageTaken fromDamageToReceive(DamageToReceive damageToReceive) {
+            if (damageToReceive == null) {
+                throw new ArgumentNullException(nameof(damageToReceive));
+            }
+
+            return new DamageTaken(damageToReceive.getPower());
+        }
     }
 }

@@ -14,6 +14,6 @@ namespace MageFactory.Flow.Contract {
     }
 
     public interface IFlowConsumer {
-        DamageToDeal consumeFlow(ConsumeFlowCommand consumeFlowCommand); // TODO flow response etc.
+        void consumeFlow(ConsumeFlowCommand consumeFlowCommand); // TODO flow response etc.
     }
 }

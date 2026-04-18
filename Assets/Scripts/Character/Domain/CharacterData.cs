@@ -12,7 +12,7 @@ namespace MageFactory.Character.Domain {
         private int maxHp;
         private string name;
 
-        internal event Action<CharacterData, long, long> OnHpChanged;
+        internal event Action<CharacterData, long, long> onHpChanged;
 
         private CharacterData(string name, int maxHp) {
             this.characterId = new Id<CharacterId>(IdGenerator.Next());
@@ -23,10 +23,6 @@ namespace MageFactory.Character.Domain {
 
         internal static CharacterData from(CreateCombatCharacterCommand command) {
             return new CharacterData(command.name, command.maxHp);
-        }
-
-        internal string getName() {
-            return name;
         }
 
         public Id<CharacterId> getCharacterId() {
@@ -45,23 +41,29 @@ namespace MageFactory.Character.Domain {
             return currentHp;
         }
 
-        internal long CurrentHp {
-            get => currentHp;
-            private set {
-                if (currentHp == value) return;
-                var hpBeforeChange = currentHp;
-                currentHp = value;
-                OnHpChanged?.Invoke(this, currentHp, hpBeforeChange);
+        internal DamageTaken takeDamage(ResolvedDamage resolvedDamage) {
+            if (resolvedDamage == null) {
+                throw new ArgumentNullException(nameof(resolvedDamage));
             }
+
+            return takeDamage(resolvedDamage.getPower());
         }
 
-        internal void takeDamage(DamageToReceive damageToReceive) {
-            takeDamage(damageToReceive.getPower());
-        }
+        private DamageTaken takeDamage(long damage) {
+            if (damage < 0) {
+                throw new ArgumentOutOfRangeException(nameof(damage));
+            }
 
-        private void takeDamage(long dmg) {
-            CurrentHp -= dmg;
-            if (CurrentHp < 0) CurrentHp = 0;
+            long hpBeforeChange = currentHp;
+            long hpAfterChange = Math.Max(0, currentHp - damage);
+            long actualDamageReceived = hpBeforeChange - hpAfterChange;
+
+            if (hpBeforeChange != hpAfterChange) {
+                currentHp = hpAfterChange;
+            }
+
+            onHpChanged?.Invoke(this, currentHp, hpBeforeChange);
+            return new DamageTaken(actualDamageReceived);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using MageFactory.Character.Api.Event;
 using MageFactory.Character.Api.Event.Dto;
 using MageFactory.Character.Contract;
@@ -24,7 +23,7 @@ namespace MageFactory.Character.Domain {
             characterInventory = NullGuard.NotNullOrThrow(characterInventoryFacade);
             this.characterEventPublisher = NullGuard.NotNullOrThrow(characterEventPublisher);
 
-            characterData.OnHpChanged += handleCharacterDataHpChanged;
+            characterData.onHpChanged += handleCharacterDataHpChanged;
         }
 
         public static CharacterAggregate createFrom(
@@ -42,39 +41,18 @@ namespace MageFactory.Character.Domain {
             return characterData;
         }
 
-        // public Id<CharacterId> getId() {
-        //     return characterId;
-        // }
-
-        // public string getName() {
-        //     return characterData.getName();
-        // }
-
         public ICharacterInventory getInventoryAggregate() {
             return characterInventory;
         }
-        //
-        // public long getMaxHp() {
-        //     return characterData.getMaxHp();
-        // }
-        //
-        // public long getCurrentHp() {
-        //     return characterData.CurrentHp;
-        // }
 
-        public void takeDamage(DamageToReceive damageToReceive) {
-            characterData.takeDamage(damageToReceive);
-            if (characterData.CurrentHp <= 0) {
+        public DamageTaken takeDamage(ResolvedDamage resolvedDamage) {
+            DamageTaken damageTaken = characterData.takeDamage(resolvedDamage);
+            if (characterData.getCurrentHp() <= 0) {
                 characterEventPublisher.publish(new CharacterDeathDtoEvent(characterData.getCharacterId()));
             }
-        }
 
-        // public void apply(PowerAmount powerAmount) {
-        //     characterData.applyDamage(powerAmount);
-        //     if (characterData.CurrentHp <= 0) {
-        //         characterEventPublisher.publish(new CharacterDeathDtoEvent(characterId));
-        //     }
-        // }
+            return damageTaken;
+        }
 
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {
             return characterInventory.canPlace(new PlaceItemQuery(equipItemQuery.itemDefinition,
@@ -91,12 +69,12 @@ namespace MageFactory.Character.Domain {
         }
 
         public void cleanup() {
-            characterData.OnHpChanged -= handleCharacterDataHpChanged;
+            characterData.onHpChanged -= handleCharacterDataHpChanged;
         }
 
         ~CharacterAggregate() {
             // finalizer — w razie gdyby ktoś zapomniał Cleanup (ale nie polegaj na tym)
-            characterData.OnHpChanged -= handleCharacterDataHpChanged;
+            characterData.onHpChanged -= handleCharacterDataHpChanged;
         }
 
         private void handleCharacterDataHpChanged(CharacterData data, long newHp, long previousHpValue) {

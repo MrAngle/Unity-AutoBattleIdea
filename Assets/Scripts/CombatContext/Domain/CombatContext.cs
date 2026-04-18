@@ -5,6 +5,7 @@ using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatEvents;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -71,22 +72,28 @@ namespace MageFactory.CombatContext.Domain {
 
 
         // TODO: return flow result
-        public DamageToDeal consumeFlow(ConsumeFlowCommand consumeFlowCommand) {
+        public void consumeFlow(ConsumeFlowCommand consumeFlowCommand) {
             if (consumeFlowCommand.flowOwner?.getFlowOwnerCharacterId() == null) {
-                return DamageToDeal.NO_POWER;
+                return;
             }
 
             ICombatCharacterFacade combatCombatCharacter =
                 characters[consumeFlowCommand.flowOwner.getFlowOwnerCharacterId()];
             if (combatCombatCharacter == null) {
-                return DamageToDeal.NO_POWER;
+                return;
             }
 
-            return consumeFlowCommand.flowKind switch {
-                FlowKind.Damage => processOffensiveFlow(consumeFlowCommand),
-                FlowKind.Defense => processDefensiveFlow(combatCombatCharacter, consumeFlowCommand),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            switch (consumeFlowCommand.flowKind) {
+                case FlowKind.Damage:
+                    processOffensiveFlow(consumeFlowCommand);
+                    break;
+                case FlowKind.Defense:
+                    processDefensiveFlow(combatCombatCharacter, consumeFlowCommand);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(consumeFlowCommand.flowKind),
+                        "Unsupported flow kind.");
+            }
         }
 
         private DamageToDeal processDefensiveFlow(ICombatCharacterFacade combatCharacterFacade,
@@ -94,16 +101,17 @@ namespace MageFactory.CombatContext.Domain {
             throw new NotImplementedException();
         }
 
-        private DamageToDeal processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
-            // target selection should be specified in the flow command
+        private void processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
             if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
                     out ICombatCharacterFacade enemy)) {
-                enemy.command()
-                    .takeDamage(DamageToReceive.fromPowerAmount(consumeFlowCommand.damageToDeal));
-                return consumeFlowCommand.damageToDeal;
-            }
+                DamageIncomingCombatEvent damageIncomingCombatEvent = new DamageIncomingCombatEvent(
+                    enemy.query().getCharacterInfo().getCharacterId(),
+                    consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
+                    DamageSourceType.EnemyAttack,
+                    consumeFlowCommand.damageToDeal);
 
-            return DamageToDeal.NO_POWER;
+                dispatchCombatEvent(damageIncomingCombatEvent);
+            }
         }
 
         public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacterFacade enemy) {
@@ -128,6 +136,24 @@ namespace MageFactory.CombatContext.Domain {
             Debug.Log(
                 $"[CombatContext] Picked enemy: {enemy.query().getCharacterInfo().getCharacterName()}({enemy.query().getCharacterInfo().getTeam()})");
             return true;
+        }
+
+        private void dispatchCombatEvent(CombatEvent combatEvent) {
+            if (combatEvent == null) {
+                throw new ArgumentNullException(nameof(combatEvent));
+            }
+
+            if (!characters.TryGetValue(combatEvent.getTargetCharacterId(),
+                    out ICombatCharacterFacade targetCharacter)) {
+                throw new InvalidOperationException(
+                    $"Target character with id '{combatEvent.getTargetCharacterId()}' is not registered in CombatContext.");
+            }
+
+            // W przyszłości:
+            // 1. apply global modifiers
+            // 2. update global combat statistics
+
+            targetCharacter.command().consumeCombatEvent(combatEvent);
         }
     }
 }

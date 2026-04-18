@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using MageFactory.Character.Contract;
+using MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors;
 using MageFactory.Character.Domain.FlowCapability;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatEvents;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
@@ -16,14 +18,17 @@ namespace MageFactory.Character.Domain.CombatChar {
         private readonly CombatCharacterData combatCharacterData;
         private readonly CharacterAggregate characterAggregate;
         private readonly IFlowFactory flowFactory;
+        private readonly CharacterCombatEventProcessor characterCombatEventProcessor;
 
         internal CombatCharacter(CharacterAggregate characterAggregate,
                                  Team team,
-                                 IFlowFactory flowFactory) {
+                                 IFlowFactory flowFactory,
+                                 CharacterCombatEventProcessor characterCombatEventProcessor) {
             this.characterAggregate = NullGuard.NotNullOrThrow(characterAggregate);
             this.combatCharacterData =
                 NullGuard.NotNullOrThrow(new CombatCharacterData(this.characterAggregate.getCharacterInfo(), team));
             this.flowFactory = NullGuard.NotNullOrThrow(flowFactory);
+            this.characterCombatEventProcessor = NullGuard.NotNullOrThrow(characterCombatEventProcessor);
         }
 
         public Id<CharacterId> getFlowOwnerCharacterId() {
@@ -70,8 +75,8 @@ namespace MageFactory.Character.Domain.CombatChar {
             return characterAggregate.getInventoryAggregate();
         }
 
-        public void takeDamage(DamageToReceive powerAmount) {
-            characterAggregate.takeDamage(powerAmount);
+        public DamageTaken takeDamage(ResolvedDamage resolvedDamage) {
+            return characterAggregate.takeDamage(resolvedDamage);
         }
 
         public bool tryMoveItem(ICharacterEquippedItem characterEquippedItem) {
@@ -91,6 +96,10 @@ namespace MageFactory.Character.Domain.CombatChar {
 
             item = null;
             return false;
+        }
+
+        public void consumeCombatEvent(CombatEvent combatEvent) {
+            characterCombatEventProcessor.process(this, combatEvent);
         }
     }
 }
