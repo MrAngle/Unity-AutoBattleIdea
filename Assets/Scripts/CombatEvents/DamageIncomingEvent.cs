@@ -1,21 +1,22 @@
-﻿using MageFactory.Shared.Id;
+﻿using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.CombatEvents {
     public sealed class DamageIncomingCombatEvent : CombatEvent {
         private readonly Id<CharacterId> sourceCharacterId;
-        private readonly DamageSourceType damageSourceType;
+        private readonly DamageRole damageRole;
         private readonly DamageToReceive rawDamageToReceive;
 
         public DamageIncomingCombatEvent(
             Id<CharacterId> targetCharacterId,
             Id<CharacterId> sourceCharacterId,
-            DamageSourceType damageSourceType,
+            DamageRole damageRole,
             DamageToDeal rawDamageToDeal
         ) : base(targetCharacterId) {
             this.sourceCharacterId = sourceCharacterId;
-            this.damageSourceType = damageSourceType;
+            this.damageRole = damageRole;
             this.rawDamageToReceive = NullGuard.NotNullOrThrow(DamageToReceive.fromDamageToDeal(rawDamageToDeal));
         }
 
@@ -27,8 +28,8 @@ namespace MageFactory.CombatEvents {
             return sourceCharacterId;
         }
 
-        public DamageSourceType getDamageSourceType() {
-            return damageSourceType;
+        public DamageRole getDamageSourceType() {
+            return damageRole;
         }
 
         public DamageToReceive getRawDamageToReceive() {

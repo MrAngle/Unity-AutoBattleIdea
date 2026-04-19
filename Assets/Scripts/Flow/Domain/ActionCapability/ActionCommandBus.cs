@@ -1,6 +1,7 @@
 ﻿using MageFactory.ActionEffect;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Flow.Contract;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
@@ -14,8 +15,8 @@ namespace MageFactory.Flow.Domain.ActionCapability {
             this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
         }
 
-        public void addPower(PowerAmount powerAmount) {
-            actionContext.addPower(powerAmount);
+        public void addPower(DamageRole damageRole, PowerAmount powerAmount) {
+            actionContext.addPower(damageRole, powerAmount);
 
             IFlowItem actionItemInvoker = actionContext.getActionItemInvoker();
             actionContext.getSignalBus()

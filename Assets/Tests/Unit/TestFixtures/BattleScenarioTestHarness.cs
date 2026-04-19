@@ -16,7 +16,7 @@ namespace MageFactory.Tests.Unit.TestFixtures {
     internal sealed class BattleScenarioTestHarness {
         private readonly DiContainer container;
 
-        private const int EnormousHp = 1_000_000;
+        private readonly int enormousHp = 1_000_000;
 
         private BattleScenarioTestHarness(DiContainer container) {
             this.container = container;
@@ -75,8 +75,8 @@ namespace MageFactory.Tests.Unit.TestFixtures {
             defenderItems ??= Array.Empty<EquipItemCommand>();
 
             return createContext(
-                new CreateCombatCharacterCommand(attackerName, EnormousHp, Team.TeamA, attackerItems),
-                new CreateCombatCharacterCommand(defenderName, EnormousHp, Team.TeamB, defenderItems)
+                new CreateCombatCharacterCommand(attackerName, enormousHp, Team.TeamA, attackerItems),
+                new CreateCombatCharacterCommand(defenderName, enormousHp, Team.TeamB, defenderItems)
             );
         }
     }

@@ -15,8 +15,10 @@ namespace MageFactory.Flow.Domain.FlowCapability {
             IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
 
             ConsumeFlowCommand offensiveFlowCommand =
-                new(flowContext.getFlowKind(), flowContext.getFlowOwner(),
-                    DamageToDeal.fromPowerAmount(flowContext.getDamagePower()));
+                new(flowContext.getFlowKind(),
+                    flowContext.getFlowOwner(),
+                    DamageToDeal.fromPowerAmount(flowContext
+                        .getAttackPower())); // flow should decide what to do with damage
             flowConsumer.consumeFlow(offensiveFlowCommand);
         }
     }

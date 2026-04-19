@@ -19,10 +19,17 @@ namespace MageFactory.Tests.Unit.TestFixtures {
                 var effects = actionDesc.getEffectsDescriptor()?.getEffects();
                 if (effects == null) continue;
 
+
                 foreach (var effect in effects) {
-                    if (effect is AddPower addPower &&
-                        addPower.getDamageAmount() is DamageToDeal damage) {
-                        totalDamage += damage.getPower();
+                    if (effect is not AddPower addPower) {
+                        continue;
+                    }
+
+                    PowerAmount powerAmount = addPower.getDamageAmount();
+                    totalDamage += powerAmount.getPower();
+
+                    if (totalDamage < 0) {
+                        totalDamage = 0;
                     }
                 }
             }

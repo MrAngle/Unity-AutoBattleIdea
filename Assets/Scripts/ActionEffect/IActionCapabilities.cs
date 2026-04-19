@@ -1,4 +1,5 @@
-﻿using MageFactory.Shared.Model;
+﻿using MageFactory.Shared.Contract;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.ActionEffect {
     public interface IActionCapabilities {
@@ -7,7 +8,7 @@ namespace MageFactory.ActionEffect {
     }
 
     public interface IActionCommandBus {
-        void addPower(PowerAmount damageAmount);
+        void addPower(DamageRole damageRole, PowerAmount damageAmount);
 
         void pushRightAdjacentItemRight();
     }

@@ -14,7 +14,8 @@
     "MageFactory.FlowRouting",
     
     "MageFactory.Shared",
-    "Zenject"
+    "Zenject",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true
 }

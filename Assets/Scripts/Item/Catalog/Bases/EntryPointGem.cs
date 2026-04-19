@@ -1,5 +1,6 @@
 ﻿using MageFactory.ActionEffect;
 using MageFactory.ActionEffect.PredefinedOperations;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 
@@ -24,7 +25,7 @@ namespace MageFactory.Item.Catalog.Bases {
 
             public IOperations getEffectsDescriptor() {
                 return new ItemOperationsDescription(
-                    new AddPower(new DamageToDeal(2))
+                    new AddPower(DamageRole.ATTACK, new PowerAmount(2))
                 );
             }
         }

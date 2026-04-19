@@ -112,5 +112,39 @@ namespace MageFactory.Tests.Unit.Battle {
 
             Assert.AreEqual(expectedHp, hpAfter);
         }
+
+        [Test]
+        public void should_deal_2_damage_when_shield_is_second_in_flow() {
+            // given
+            IItemDefinition entry = new EntryPointGem();
+            IItemDefinition shield = new Shield();
+            IItemDefinition sword = new RustySword();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry, new Vector2Int(0, 0)),
+                new(shield, new Vector2Int(1, 0)),
+                new(sword, new Vector2Int(3, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .withInstantActionExecutorInstance()
+                .create1V1WithEnormousHp(attackerItems);
+
+            var session = BattleSessionTestFixtures.basic(combatContext);
+            var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+
+            // when
+            session.tickOnce();
+
+            // then
+            IItemDefinition[] expectedDamageSources = {
+                entry, shield, sword
+            };
+
+            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+
+            Assert.AreEqual(expectedHp, hpAfter);
+        }
     }
 }

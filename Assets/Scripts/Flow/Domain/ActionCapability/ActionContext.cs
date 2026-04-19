@@ -1,4 +1,5 @@
 ﻿using MageFactory.Flow.Contract;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using Zenject;
@@ -25,8 +26,8 @@ namespace MageFactory.Flow.Domain.ActionCapability {
             return signalBus;
         }
 
-        internal void addPower(PowerAmount damageAmount) {
-            flowContext.addPower(damageAmount);
+        internal void addPower(DamageRole damageRole, PowerAmount damageAmount) {
+            flowContext.changeDamagePower(damageRole, damageAmount);
         }
     }
 }

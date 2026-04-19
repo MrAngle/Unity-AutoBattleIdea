@@ -5,6 +5,8 @@ using MageFactory.Shared.Utility;
 namespace MageFactory.Flow.Domain {
     public class FlowPower {
         private readonly FlowKind flowKind;
+
+
         private readonly DamageToDeal damageToDeal;
         private readonly DamageToReceive damageToReceive;
 

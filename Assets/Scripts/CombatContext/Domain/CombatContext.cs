@@ -7,6 +7,7 @@ using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.CombatEvents;
 using MageFactory.Flow.Contract;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
@@ -104,10 +105,11 @@ namespace MageFactory.CombatContext.Domain {
         private void processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
             if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
                     out ICombatCharacterFacade enemy)) {
+                // TODO: targeting should be in flow
                 DamageIncomingCombatEvent damageIncomingCombatEvent = new DamageIncomingCombatEvent(
                     enemy.query().getCharacterInfo().getCharacterId(),
                     consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
-                    DamageSourceType.EnemyAttack,
+                    DamageRole.ATTACK,
                     consumeFlowCommand.damageToDeal);
 
                 dispatchCombatEvent(damageIncomingCombatEvent);

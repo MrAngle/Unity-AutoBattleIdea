@@ -32,10 +32,4 @@ namespace MageFactory.CombatEvents {
         DAMAGE_RESOLVED,
         HEALTH_LOST
     }
-
-    public enum DamageSourceType {
-        EnemyAttack,
-        SelfDamage,
-        Sacrifice
-    }
 }

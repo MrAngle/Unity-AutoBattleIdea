@@ -2,6 +2,7 @@
 
 namespace MageFactory.Shared.Model {
     public class PowerAmount {
+        // Maybe it should be composite instead of inheritance?
         protected long power;
 
         public PowerAmount(long power) {
@@ -14,6 +15,10 @@ namespace MageFactory.Shared.Model {
 
         public void change(PowerAmount amount) {
             power += amount.getPower();
+        }
+
+        public static PowerAmount noPower() {
+            return new PowerAmount(0);
         }
     }
 
@@ -39,8 +44,6 @@ namespace MageFactory.Shared.Model {
     }
 
     public sealed class ResolvedDamage : PowerAmount {
-        public static readonly ResolvedDamage NO_DAMAGE = new(0);
-
         public ResolvedDamage(long power) : base(power) {
         }
 
@@ -72,8 +75,6 @@ namespace MageFactory.Shared.Model {
 
             return new DamageToDeal(power.getPower());
         }
-
-        public static DamageToDeal NO_POWER = new(0);
     }
 
 
