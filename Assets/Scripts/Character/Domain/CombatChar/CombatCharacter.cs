@@ -41,7 +41,7 @@ namespace MageFactory.Character.Domain.CombatChar {
             characterAggregate.cleanup();
         }
 
-        public void combatTick(IFlowConsumer flowConsumer, ICombatCapabilities combatCapabilities) {
+        public void combatTick(ICombatCapabilities combatCapabilities) {
             IReadOnlyCollection<CharacterCombatTickableItemAction> characterCombatTickableItemActions =
                 characterAggregate.getInventoryAggregate().getTickableItems();
             foreach (CharacterCombatTickableItemAction tickableItemAction in characterCombatTickableItemActions) {
@@ -92,7 +92,7 @@ namespace MageFactory.Character.Domain.CombatChar {
             NullGuard.NotNullOrThrow(combatCapabilities);
 
             if (!characterAggregate.getInventoryAggregate()
-                    .tryGetEntryPointById(entryPointItemId, out ICharacterEquippedEntryPointToTick entryPoint)) {
+                    .tryGetEntryPointById(entryPointItemId, out ICharacterEquippedEntryPoint entryPoint)) {
                 throw new InvalidOperationException(
                     $"EntryPoint with id '{entryPointItemId}' was not found in character inventory.");
             }

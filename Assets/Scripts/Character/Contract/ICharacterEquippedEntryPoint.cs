@@ -1,7 +1,7 @@
 ﻿using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Contract {
-    public interface ICharacterEquippedEntryPointToTick : ICharacterEquippedItem {
+    public interface ICharacterEquippedEntryPoint : ICharacterEquippedItem {
         FlowKind getFlowKind();
     }
 }

@@ -46,7 +46,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return true;
         }
 
-        public bool tryGetEntryPointById(Id<ItemId> itemId, out ICharacterEquippedEntryPointToTick entryPoint) {
+        public bool tryGetEntryPointById(Id<ItemId> itemId, out ICharacterEquippedEntryPoint entryPoint) {
             NullGuard.ValidIdOrThrow(itemId);
 
             if (inventoryAggregate.tryGetEntryPointById(itemId,
@@ -67,7 +67,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return inventoryAggregate.canPlace(placeItemCommand);
         }
 
-        public IReadOnlyCollection<ICharacterEquippedEntryPointToTick> getEntryPointsToTick() {
+        public IReadOnlyCollection<ICharacterEquippedEntryPoint> getEntryPoints() {
             IReadOnlyCollection<IInventoryPlacedEntryPoint> aggregateSet = inventoryAggregate.getEntryPointsToTick();
             return mapToEquippedEntryPoints(aggregateSet);
         }
@@ -99,10 +99,10 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
                 .ToHashSet();
         }
 
-        private static IReadOnlyCollection<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(
+        private static IReadOnlyCollection<ICharacterEquippedEntryPoint> mapToEquippedEntryPoints(
             IEnumerable<IInventoryPlacedEntryPoint> source) {
             return source
-                .Select(ep => (ICharacterEquippedEntryPointToTick)new CharacterEquippedEntryPointItem(ep))
+                .Select(ep => (ICharacterEquippedEntryPoint)new CharacterEquippedEntryPointItem(ep))
                 .ToHashSet();
         }
 

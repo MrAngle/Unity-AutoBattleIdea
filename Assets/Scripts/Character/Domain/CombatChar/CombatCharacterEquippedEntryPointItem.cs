@@ -9,10 +9,10 @@ using UnityEngine;
 
 namespace MageFactory.Character.Domain.CombatChar {
     internal class CombatCharacterEquippedEntryPointItem : IFlowItem {
-        private readonly ICharacterEquippedEntryPointToTick characterEquippedEntryPointToTick;
+        private readonly ICharacterEquippedEntryPoint characterEquippedEntryPointToTick;
 
         public CombatCharacterEquippedEntryPointItem(
-            ICharacterEquippedEntryPointToTick characterEquippedEntryPointToTick) {
+            ICharacterEquippedEntryPoint characterEquippedEntryPointToTick) {
             this.characterEquippedEntryPointToTick = NullGuard.NotNullOrThrow(characterEquippedEntryPointToTick);
         }
 

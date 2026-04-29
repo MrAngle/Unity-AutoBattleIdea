@@ -9,7 +9,7 @@ namespace MageFactory.CombatContext.Contract {
         // todo: change name to ICharacterCommandBus
         ICombatCharacterEquippedItem equipItemOrThrow(EquipItemCommand item);
 
-        void combatTick(IFlowConsumer flowConsumer, ICombatCapabilities combatCapabilities);
+        void combatTick(ICombatCapabilities combatCapabilities);
 
         void createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
                         ICombatCapabilities combatCapabilities);

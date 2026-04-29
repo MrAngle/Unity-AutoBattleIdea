@@ -9,7 +9,7 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain.CharacterEq {
-    internal class CharacterEquippedEntryPointItem : ICharacterEquippedEntryPointToTick {
+    internal class CharacterEquippedEntryPointItem : ICharacterEquippedEntryPoint {
         private readonly IInventoryPlacedEntryPoint inventoryPlacedEntryPoint;
 
         public CharacterEquippedEntryPointItem(IInventoryPlacedEntryPoint inventoryPlacedEntryPoint) {

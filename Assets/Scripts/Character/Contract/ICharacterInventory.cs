@@ -15,11 +15,11 @@ namespace MageFactory.Character.Contract {
         bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item);
         bool tryGetItemById(Id<ItemId> itemId, out ICharacterEquippedItem item);
 
-        bool tryGetEntryPointById(Id<ItemId> itemId, out ICharacterEquippedEntryPointToTick entryPoint);
+        bool tryGetEntryPointById(Id<ItemId> itemId, out ICharacterEquippedEntryPoint entryPoint);
 
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand);
         public bool canPlace(PlaceItemQuery placeItemCommand);
-        public IReadOnlyCollection<ICharacterEquippedEntryPointToTick> getEntryPointsToTick();
+        public IReadOnlyCollection<ICharacterEquippedEntryPoint> getEntryPoints();
 
         public bool tryGetNeighborItems(IGridItemPlaced sourceGridItemPlaced,
                                         IEnumerable<GridDirection> directions,

@@ -18,8 +18,8 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return new CombatCharacterEquippedItem(combatCharacter.equipItemOrThrow(item));
         }
 
-        public void combatTick(IFlowConsumer flowConsumer, ICombatCapabilities combatCapabilities) {
-            combatCharacter.combatTick(flowConsumer, combatCapabilities);
+        public void combatTick(ICombatCapabilities combatCapabilities) {
+            combatCharacter.combatTick(combatCapabilities);
         }
 
         public void createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
