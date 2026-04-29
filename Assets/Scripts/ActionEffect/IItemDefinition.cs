@@ -9,5 +9,7 @@ namespace MageFactory.ActionEffect {
 
     public interface IEntryPointDefinition : IItemDefinition {
         FlowKind getFlowKind();
+
+        CombatTicks getTriggerIntervalTicks();
     }
 }

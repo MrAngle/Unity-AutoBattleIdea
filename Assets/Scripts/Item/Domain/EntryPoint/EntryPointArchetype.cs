@@ -4,13 +4,11 @@ using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
-using UnityEngine;
 
 namespace MageFactory.Item.Domain.EntryPoint {
     internal abstract class EntryPointArchetype : IEntryPointArchetype {
         private readonly IEntryPointFactory entryPointFactory; // separate in future
         private readonly IEntryPointDefinition entryPointDefinition;
-        private readonly float turnInterval;
 
         private bool isBattleRunning;
         private CancellationTokenSource cancellationTokenSource;
@@ -19,8 +17,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
                                       IEntryPointFactory entryPointFactory) {
             this.entryPointFactory = NullGuard.NotNullOrThrow(entryPointFactory);
             this.entryPointDefinition = NullGuard.NotNullOrThrow(entryPointDefinition);
-
-            turnInterval = Mathf.Max(0.01f, 2.5f);
         }
 
         public IInventoryPlacedItem toPlacedItem(IInventoryPosition inventoryPosition) {
@@ -35,12 +31,12 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return entryPointDefinition.getShape();
         }
 
-        // public ShapeArchetype getShape() {
-        //     return shapeArchetype;
-        // }
-
         public FlowKind getFlowKind() {
             return entryPointDefinition.getFlowKind();
+        }
+
+        public CombatTicks getTriggerInterval() {
+            return entryPointDefinition.getTriggerIntervalTicks();
         }
 
         public IEntryPointDefinition getEntryPointDefinition() {
@@ -49,10 +45,6 @@ namespace MageFactory.Item.Domain.EntryPoint {
 
         public IEntryPointDefinition getItemDefinition() {
             return entryPointDefinition;
-        }
-
-        public float getTurnInterval() {
-            return turnInterval;
         }
 
         public override string ToString() {

@@ -18,6 +18,10 @@ namespace MageFactory.Item.Catalog.Bases {
             return FlowKind.Damage;
         }
 
+        public CombatTicks getTriggerIntervalTicks() {
+            return CombatTicks.of(1);
+        }
+
         private class EntryPointGemActionDescription : IActionDescription {
             public Duration getCastTime() {
                 return new Duration(0.5f);

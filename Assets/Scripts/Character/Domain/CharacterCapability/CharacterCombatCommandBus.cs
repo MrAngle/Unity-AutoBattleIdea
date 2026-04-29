@@ -5,6 +5,7 @@ using MageFactory.CombatContextRuntime;
 using MageFactory.CombatEvents;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CharacterCombatCommandBus : ICharacterCombatCommandBus {
@@ -18,8 +19,8 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return new CombatCharacterEquippedItem(combatCharacter.equipItemOrThrow(item));
         }
 
-        public void combatTick(ICombatCapabilities combatCapabilities) {
-            combatCharacter.combatTick(combatCapabilities);
+        public void combatTick(CombatTicks combatTicks, ICombatCapabilities combatCapabilities) {
+            combatCharacter.combatTick(combatTicks, combatCapabilities);
         }
 
         public void createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,

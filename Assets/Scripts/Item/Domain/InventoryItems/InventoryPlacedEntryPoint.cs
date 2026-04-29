@@ -12,9 +12,11 @@ using UnityEngine;
 namespace MageFactory.Item.Domain.InventoryItems {
     internal class InventoryPlacedEntryPoint : IInventoryPlacedEntryPoint {
         private readonly EntryPointItem entryPointItem;
+        private CombatTicks ticksUntilNextTrigger;
 
         public InventoryPlacedEntryPoint(EntryPointItem entryPointItem) {
             this.entryPointItem = NullGuard.NotNullOrThrow(entryPointItem);
+            ticksUntilNextTrigger = entryPointItem.getTriggerInterval();
         }
 
         public Id<ItemId> getId() {
@@ -45,13 +47,25 @@ namespace MageFactory.Item.Domain.InventoryItems {
             return entryPointItem.getFlowKind();
         }
 
-        public void tick(Id<CharacterId> characterId, ICombatCapabilities combatCapabilities) {
+        public void tick(
+            CombatTicks combatTicks,
+            Id<CharacterId> characterId,
+            ICombatCapabilities combatCapabilities
+        ) {
+            ticksUntilNextTrigger -= combatTicks;
+
+            if (ticksUntilNextTrigger > CombatTicks.ZERO) {
+                return;
+            }
+
             CreateFlowCombatCommand createFlowCombatCommand = new CreateFlowCombatCommand(
                 characterId,
                 getId()
             );
 
             combatCapabilities.command().dispatch(createFlowCombatCommand);
+
+            ticksUntilNextTrigger += entryPointItem.getTriggerInterval();
         }
     }
 }

@@ -3,5 +3,7 @@
 namespace MageFactory.Inventory.Contract {
     public interface IEntryPointArchetype : IInventoryPlaceableItem {
         FlowKind getFlowKind();
+
+        CombatTicks getTriggerInterval();
     }
 }

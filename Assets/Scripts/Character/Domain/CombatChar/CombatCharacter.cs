@@ -41,11 +41,11 @@ namespace MageFactory.Character.Domain.CombatChar {
             characterAggregate.cleanup();
         }
 
-        public void combatTick(ICombatCapabilities combatCapabilities) {
+        public void combatTick(CombatTicks combatTicks, ICombatCapabilities combatCapabilities) {
             IReadOnlyCollection<CharacterCombatTickableItemAction> characterCombatTickableItemActions =
                 characterAggregate.getInventoryAggregate().getTickableItems();
             foreach (CharacterCombatTickableItemAction tickableItemAction in characterCombatTickableItemActions) {
-                tickableItemAction?.Invoke(combatCharacterData.getCharacterId(), combatCapabilities);
+                tickableItemAction?.Invoke(combatTicks, combatCharacterData.getCharacterId(), combatCapabilities);
             }
         }
 

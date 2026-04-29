@@ -41,6 +41,10 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return inventoryPosition.getOrigin();
         }
 
+        public CombatTicks getTriggerInterval() {
+            return entryPointArchetype.getTriggerInterval();
+        }
+
         public ShapeArchetype getShape() {
             return entryPointArchetype.getItemDefinition().getShape();
         }

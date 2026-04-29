@@ -94,8 +94,8 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
         public IReadOnlyCollection<CharacterCombatTickableItemAction> getTickableItems() {
             return inventoryAggregate.getTickableItems()
                 .Select(inventoryTickableItem =>
-                    (CharacterCombatTickableItemAction)((characterId, combatCapabilities) =>
-                        inventoryTickableItem.tick(characterId, combatCapabilities)))
+                    (CharacterCombatTickableItemAction)((combatTicks, characterId, combatCapabilities) =>
+                        inventoryTickableItem.tick(combatTicks, characterId, combatCapabilities)))
                 .ToHashSet();
         }
 
