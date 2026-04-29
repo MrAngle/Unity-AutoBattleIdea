@@ -11,7 +11,8 @@
     "MageFactory.CombatContext.Api",
     "MageFactory.UI.Context.Combat",
     "MageFactory.Flow.Contract",
-    "MageFactory.Character.Api"
+    "MageFactory.Character.Api",
+    "MageFactory.CombatContextRuntime"
   ],
   "autoReferenced": true
 }

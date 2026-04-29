@@ -3,20 +3,20 @@ using MageFactory.CombatContext.Contract;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CombatCharacterFacade : ICombatCharacterFacade {
-        private readonly CombatCommandBus combatCommandBus;
-        private readonly CombatQueries combatQueries;
+        private readonly CharacterCombatCommandBus characterCombatCommandBus;
+        private readonly CharacterCombatQueries characterCombatQueries;
 
         internal CombatCharacterFacade(CombatCharacter characterAggregate) {
-            combatCommandBus = new CombatCommandBus(characterAggregate);
-            combatQueries = new CombatQueries(characterAggregate);
+            characterCombatCommandBus = new CharacterCombatCommandBus(characterAggregate);
+            characterCombatQueries = new CharacterCombatQueries(characterAggregate);
         }
 
-        public ICombatCommandBus command() {
-            return combatCommandBus;
+        public ICharacterCombatCommandBus command() {
+            return characterCombatCommandBus;
         }
 
-        public ICombatQueries query() {
-            return combatQueries;
+        public ICharacterCombatQueries query() {
+            return characterCombatQueries;
         }
     }
 }

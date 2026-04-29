@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using UnityEngine;
 
@@ -12,6 +13,9 @@ namespace MageFactory.Character.Contract {
 
         IReadOnlyInventoryGrid getInventoryGrid();
         bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item);
+        bool tryGetItemById(Id<ItemId> itemId, out ICharacterEquippedItem item);
+
+        bool tryGetEntryPointById(Id<ItemId> itemId, out ICharacterEquippedEntryPointToTick entryPoint);
 
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand);
         public bool canPlace(PlaceItemQuery placeItemCommand);
@@ -22,5 +26,7 @@ namespace MageFactory.Character.Contract {
                                         out IEnumerable<ICharacterEquippedItem> neighborItems);
 
         bool tryMoveItem(ICharacterEquippedItem itemToMove, Vector2Int newPosition);
+
+        public IReadOnlyCollection<CharacterCombatTickableItemAction> getTickableItems();
     }
 }

@@ -9,7 +9,7 @@ namespace MageFactory.BattleManager {
             IReadOnlyCollection<ICombatCharacterFacade> combatCharacters = combatContext.getAllCharacters();
 
             foreach (var character in combatCharacters.ToList()) {
-                character.command().combatTick(combatContext.getFlowConsumer());
+                character.command().combatTick(combatContext.getFlowConsumer(), combatContext.getCombatCapabilities());
             }
         }
     }

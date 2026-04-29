@@ -163,3 +163,697 @@ AI_Properties:
   testing.framework: "Unity Test Framework (NUnit)"
   logging: "Debug.Log/Warning/Error (warunkowo)"
   performance.focus: "Minimalizacja alokacji, pooling, profilowanie"
+  
+Jasne. Zwięźle:
+
+Doszliśmy do tego, że CombatContext powinien być głównie dispatcherem CombatEvent, a nie miejscem pełnej logiki walki. Finalnym konsumentem eventu ma być CombatCharacter. Dlatego lepiej myśleć w kategoriach:
+
+CombatContext.DispatchCombatEvent(...)
+CombatCharacter.ConsumeCombatEvent(...)
+
+Ustaliliśmy też, że CombatEvent to u Ciebie domenowy, synchroniczny obiekt, a nie programistyczny event C#. Nie chcesz pub/sub i to jest sensowny kierunek.
+
+Przy damage rozdzieliliśmy etapy semantycznie:
+
+DamageToDeal — intencja / damage po stronie source
+DamageToReceive — incoming damage dla targetu
+ResolvedDamage — damage po modyfikatorach, gotowy do wejścia w CharacterAggregate
+DamageTaken — damage faktycznie zdjęty z HP
+
+Doszliśmy też do tego, że CharacterAggregate.takeDamage(...) powinien przyjmować już ResolvedDamage, a nie surowe incoming damage.
+
+W CharacterData.takeDamage(...) powinieneś zwracać faktycznie zadane obrażenia, a nie próbę zadania obrażeń. Dlatego DamageTaken ma sens jako osobny byt.
+
+Wyszło też, że statyczne singletony typu NO_POWER przy mutowalnym PowerAmount są złe, bo mogą przeciekać stan między testami. Dla mutowalnych obiektów lepiej zwracać nową instancję niż trzymać współdzieloną stałą.
+
+Potem długo rozkładaliśmy flow i tu najważniejsza zmiana była taka, że wcześniejsze myślenie:
+
+target -> bucket
+dużo generycznego targetingu
+
+zaczęło śmierdzieć. Finalnie lepszy okazał się model:
+
+1 flow
+1 bucket per DamageRole
+a FlowKind interpretuje znaczenie danego DamageRole
+
+Czyli bucket nie jest już przypisany do targetu, tylko do roli logicznego strumienia obrażeń w flow.
+
+Ustaliliśmy, że nazwa DamageRole jest lepsza niż DamageKind i lepsza niż DamageSourceType, bo nie chodzi o żywioł ani surowe źródło, tylko o rolę strumienia damage w flow.
+
+Przykładowe role:
+
+ATTACK
+SELF_DAMAGE
+SACRIFICE_DAMAGE
+SPIKE_DAMAGE
+
+I to flow nadaje im sens:
+
+w offensive flow ATTACK to atak wychodzący
+w defensive flow ATTACK to damage przychodzący
+SPIKE_DAMAGE w defensive flow może oznaczać oddawane obrażenia wrogowi
+
+Bardzo ważny wniosek był taki, że raczej nie ma sensu walczyć z podziałem na offensive / defensive flow. To jest realna oś znaczenia i lepiej ją zostawić niż próbować wszystko uogólniać.
+
+Dla itemów wypracowaliśmy prostą narrację:
+
+zwykłe itemy typu miecz czy tarcza robią po prostu +/- do konkretnego DamageRole
+item nie musi wiedzieć komu dokładnie dodaje obrażenia
+flow samo rozumie to w swoim kontekście
+
+Na przykład:
+
+Shield robi -5 do ATTACK
+Sword robi +5 do ATTACK
+
+I to działa sensownie zarówno w offensive, jak i defensive flow.
+
+Ustaliliśmy też, że zmiana targetu nie powinna być swobodna. Jeśli już, to raczej:
+
+dodatkowy cel
+dystrybucja obrażeń
+albo osobny rodzaj obrażeń, np. SPIKE_DAMAGE
+
+To rozwiązuje problem absurdów typu przerzucenie damage z defensive flow prosto na wroga zwykłym ATTACK.
+
+W warstwie kodu uprościliśmy FlowEffectBucket i FlowPendingDamage:
+
+1 bucket = 1 DamageRole
+bucket ma power i później może dostać distribution/targeting
+FlowContext ma mapę:
+Dictionary<DamageRole, FlowEffectBucket>
+
+i metodę w stylu:
+
+changeDamagePower(DamageRole role, PowerAmount delta)
+
+Wyszło też, że nazwa changeBucketPower(...) jest słaba, bo eksponuje detal implementacyjny. Lepsza jest nazwa odnosząca się do domeny, nie do bucketu.
+
+W testach odkryłeś ważną rzecz: helper liczący damage zwykłą sumą przestał być poprawny, bo nowy model liczy damage krok po kroku z clampem do zera po każdej operacji, a nie przez sumowanie wszystkich modyfikatorów. Czyli scenariusz:
+
++2
+-5
++5
+
+kończy się teraz jako 5, a nie 2.
+
+Na koniec ustaliliśmy też filozofię komunikacji do gracza:
+
+nie chcesz opisów typu „zmniejsza obrażenia od wroga o 5”
+chcesz opisy mechaniczne typu -5 do ATTACK
+gracz ma myśleć mechaniką gry, a nie domyślać się ukrytych reguł
+
+I to uznaliśmy za dobry kierunek, pod warunkiem że słownik pojęć będzie mały, konsekwentny i dobrze nauczony w UI.
+
+Najkrótsza esencja całej rozmowy:
+
+CombatContext dispatchuje, CombatCharacter konsumuje
+damage został rozbity na etapy semantyczne
+flow uprościliśmy do bucketów per DamageRole
+FlowKind nadaje znaczenie tym bucketom
+itemy modyfikują role damage, a nie zgadują targety
+czytelność mechaniczna wygrała z nadmierną ogólnością  
+
+Tak. Rozpiszę to dokładniej, ale nadal konkretnie.
+
+1. Główna zmiana myślenia o flow
+
+Na początku flow było rozumiane bardziej jak:
+
+zbiór „surowych obrażeń”
+targetowanie per postać
+dużo rozumowania typu „komu to leci”
+
+Po długiej dyskusji wyszło, że to prowadzi do chaosu, bo zwykły item typu:
+
++5 do obrażeń
+
+nagle musiałby wiedzieć:
+
+komu dodaje,
+czy jednemu targetowi,
+czy wszystkim,
+czy nowemu,
+czy istniejącemu,
+czy w offensive,
+czy w defensive.
+
+To było za ciężkie i dla kodu, i dla czytelności gry.
+
+Finalnie doszliśmy do modelu:
+
+flow nie rozumuje głównie przez targety, tylko przez role obrażeń.
+
+Czyli:
+
+item modyfikuje rolę obrażeń
+a FlowContext rozumie, co ta rola znaczy w danym FlowKind
+
+To był najważniejszy zwrot.
+
+2. FlowContext — co ma reprezentować
+
+FlowContext przestał być miejscem typu:
+
+„trzymam damage dla targetów”
+„szukam bucketu po characterId”
+„kombinuję jak rozkładać obrażenia po postaciach”
+
+A stał się czymś bardziej takim:
+
+FlowContext trzyma aktualny stan logicznych strumieni obrażeń w ramach jednego flow.
+
+Czyli ma:
+
+FlowKind
+flowOwner
+router
+startEntryPoint
+oraz mapę:
+Dictionary<DamageRole, FlowEffectBucket>
+
+Ta mapa mówi:
+
+w tym flow istnieje bucket ATTACK
+w tym flow istnieje bucket SELF_DAMAGE
+w tym flow istnieje bucket SPIKE_DAMAGE
+itd.
+
+Nie ma już:
+
+jednego bucketu per target
+skomplikowanego targetingu jako podstawy całego modelu
+
+Tylko:
+
+jeden bucket per DamageRole
+
+I to jest twardy invariant, który uznaliśmy za dobry.
+
+3. Dlaczego DamageRole, a nie target
+
+Bo celem było osiągnięcie takiej narracji:
+
+Shield daje -5 do ATTACK
+Sword daje +5 do ATTACK
+
+i to ma działać:
+
+w offensive flow
+w defensive flow
+
+bez tego, żeby item wiedział:
+
+kogo atakuje,
+czy to wróg,
+czy owner,
+czy ally.
+
+To właśnie FlowContext ma rozumieć:
+
+co znaczy ATTACK w offensive flow
+co znaczy ATTACK w defensive flow
+
+Czyli:
+
+Offensive flow
+
+ATTACK = główny atak wychodzący
+
+Defensive flow
+
+ATTACK = obrażenia przychodzące
+
+Dzięki temu:
+
+miecz +5 do ATTACK może też „psuć” flow defensywne
+tarcza -5 do ATTACK może sensownie działać w obu flow
+nie trzeba robić wyjątków w itemach
+
+To dokładnie wspierało Twój cel:
+
+te same itemy mogą działać w obu flow
+efekt może być sensowny albo „dziwnie sensowny”
+ale nie jest to ukryta magia
+4. FlowEffectBucket — do czego służy
+
+Ustaliliśmy, że FlowEffectBucket ma być:
+
+pojemnikiem dla jednego logicznego strumienia efektu danego DamageRole w ramach flow.
+
+Czyli:
+
+bucket nie jest już kolekcją wielu typów obrażeń
+bucket nie ma w środku mapy po DamageSourceType
+bucket reprezentuje już jedną rolę
+
+Przykładowo:
+
+bucket ATTACK
+bucket SELF_DAMAGE
+bucket SACRIFICE_DAMAGE
+bucket SPIKE_DAMAGE
+
+I każdy bucket trzyma:
+
+swój DamageRole
+aktualny power
+
+A później potencjalnie może trzymać też:
+
+distribution
+targeting
+ewentualnie jakieś dodatkowe metadane
+
+Ale na teraz najważniejsze było uproszczenie:
+
+1 bucket = 1 rola = 1 aktualny stan power
+
+Czyli bucket przestał być skomplikowaną agregacją, a stał się prostym, semantycznym bytem.
+
+5. FlowPendingDamage — po co został
+
+Wyszło, że po uproszczeniu modelu FlowPendingDamage i FlowEffectBucket zaczynają być do siebie bardzo podobne.
+
+I to jest normalne.
+
+FlowPendingDamage został jako cienki byt semantyczny:
+
+przechowuje DamageRole
+przechowuje power
+ma prostą logikę typu:
+changePower(...)
+hasNoEffect()
+
+Jego rola jest taka:
+
+nie jest to już „damage dla konkretnego targetu”
+tylko „pending damage dla konkretnej roli w flow”
+
+Czyli FlowPendingDamage już nie odpowiada na pytanie:
+
+komu to zadaje obrażenia
+
+tylko na pytanie:
+
+jaki jest aktualny stan logicznego strumienia obrażeń tej roli
+
+To było ważne, bo wcześniej PendingDamage było powiązane z targetem i source type. Finalnie uznaliśmy, że na tym etapie to za dużo.
+
+6. Dlaczego odrzuciliśmy target -> bucket
+
+To był ważny etap.
+
+Rozważaliśmy model:
+
+Dictionary<Id<CharacterId>, FlowEffectBucket>
+
+czyli bucket per target.
+
+Problem był taki, że prowadziło to do pytań:
+
+który target jest główny?
+co znaczy „dodaj +15 do obrażeń”?
+czy do wszystkich targetów?
+do jednego?
+do nowego?
+do istniejącego?
+jeśli target zniknął, to co dalej?
+
+To bardzo szybko robiło nieczytelny model mechaniczny.
+
+Gracz widząc:
+
++15 do obrażeń
+
+nie powinien musieć zgadywać:
+
+„któremu targetowi?”
+
+Z tego powodu uznaliśmy, że targetowanie nie powinno być podstawową osią flow.
+
+7. Dlaczego odrzuciliśmy zbyt ogólny targeting
+
+Próbowaliśmy też myślenia typu:
+
+FlowDamageTargeting
+FlowDamageDistribution
+FlowDamageOperation
+dużo targetingu, dystrybucji i apply mode
+
+I choć to dawało elastyczność, to zaczynało śmierdzieć:
+
+za dużo ogólnych kombinacji
+za dużo decyzji per item
+za dużo niejasności semantycznych
+
+Największy problem był taki, że każdy item musiałby być przesadnie świadomy:
+
+jak rozkłada obrażenia
+po jakich targetach
+w jakim trybie
+
+To było za ciężkie.
+
+Finalnie uznaliśmy, że:
+
+zwykły item nie powinien być ekspertem od targetingu
+zwykły item ma po prostu robić +/- dla konkretnego DamageRole
+a flow ma rozumieć, co to znaczy
+8. DamageRole — co dokładnie ma znaczyć
+
+Doszliśmy do tego, że obecny enum nie powinien być rozumiany jako:
+
+typ żywiołu
+typ natury obrażeń typu fire/ice/physical
+czyste źródło obrażeń
+
+Tylko jako:
+
+rola logicznego strumienia obrażeń w flow
+
+Czyli coś w rodzaju:
+
+ATTACK
+SELF_DAMAGE
+SACRIFICE_DAMAGE
+SPIKE_DAMAGE
+
+I bardzo ważne:
+
+ten sam ATTACK znaczy coś innego zależnie od FlowKind
+ale item może nadal po prostu powiedzieć:
++5 do ATTACK
+
+To było jednym z głównych powodów, dla których DamageRole wygrało z DamageKind i zaczęło wygrywać też z DamageSourceType.
+
+9. Jak FlowContext ma pracować na bucketach
+
+Ustaliliśmy prosty invariant:
+
+jeśli bucket istnieje
+
+to znaczy, że:
+
+realnie niesie jakiś efekt
+jeśli bucket po zmianie nie ma już efektu
+
+to jest usuwany
+
+Czyli:
+
+bucket nie istnieje „na zapas”
+bucket nie istnieje jako pusty placeholder
+bucket żyje tylko wtedy, gdy ma sens
+
+Stąd metoda typu:
+
+changeDamagePower(DamageRole role, PowerAmount delta)
+
+ma robić mniej więcej tak:
+
+jeśli delta = 0 → nic nie rób
+jeśli bucket dla roli istnieje → zmień jego power
+jeśli po zmianie bucket nie ma efektu → usuń go
+jeśli bucket nie istnieje:
+dodatnia wartość → utwórz bucket
+ujemna wartość → nic nie rób
+
+To jest proste i czytelne.
+
+10. Dlaczego clamp do zera po każdej operacji jest ważny
+
+To też było ważne ustalenie.
+
+Scenariusz:
+
++2
+-5
++5
+
+przy obecnym modelu daje:
+
+2
+0
+5
+
+a nie:
+
+2 - 5 + 5 = 2
+
+Czyli:
+
+bucket jest obcinany do zera po każdej operacji
+nie przechowuje „ukrytego długu ujemnego”
+
+To jest prostsze do rozumienia mechanicznie i spójne z tym, że:
+
+bucket istnieje tylko wtedy, gdy realnie coś niesie
+
+To wpłynęło też na helpery testowe.
+
+11. FlowPendingDamage i FlowEffectBucket po uproszczeniu
+
+Po ostatnich ustaleniach model wygląda tak:
+
+FlowPendingDamage
+
+cienki byt semantyczny:
+
+DamageRole
+power
+changePower(...)
+hasNoEffect()
+FlowEffectBucket
+
+wrapper / byt wyższego poziomu:
+
+zawiera FlowPendingDamage
+może później dostać:
+distribution
+targeting
+inne metadata
+
+To znaczy:
+
+dziś są podobne
+ale to nie szkodzi
+bo FlowEffectBucket zostawia miejsce na rozwój
+a FlowPendingDamage pilnuje semantyki samego damage
+12. Co zostawiliśmy na później
+
+Celowo nie domknęliśmy jeszcze:
+
+dokładnego modelu distribution
+dokładnego modelu targetingu
+czy ally może być legalnym dodatkowym targetem w offensive
+jak dokładnie prezentować to w UI
+czy SPIKE_DAMAGE ma bardziej pasować do COUNTER_DAMAGE/RETALIATE itd.
+
+Ale kluczowy fundament został ustalony:
+
+flow operuje na rolach damage
+nie na targetach
+nie na zbyt ogólnych operacjach targetowania
+nie na wielu równoległych bucketach tej samej roli
+13. Ostateczny model rozumowania
+
+Najkrócej, co ustaliliśmy w tych trzech bytach:
+
+FlowContext
+
+to właściciel stanu jednego flow
+Trzyma:
+
+FlowKind
+owner
+router
+mapę DamageRole -> FlowEffectBucket
+
+I rozumie:
+
+czy dana rola w tym flow ma sens
+jak ją interpretować
+FlowEffectBucket
+
+to logiczny bucket jednej roli damage w flow
+Trzyma:
+
+aktualny stan strumienia danej roli
+FlowPendingDamage
+
+to najniższy, semantyczny byt trzymający:
+
+rolę
+moc
+i prostą logikę zmiany tej mocy
+14. Główna zaleta tego modelu
+
+To był chyba najważniejszy końcowy wniosek:
+
+zwykły item nie musi wiedzieć, komu dodaje obrażenia.
+Wystarczy, że mówi:
+
++5 do ATTACK
+-3 do SELF_DAMAGE
++4 do SPIKE_DAMAGE
+
+A flow rozumie, co to znaczy w swoim kontekście.
+
+To daje:
+
+czytelność gry
+czytelność kodu
+brak ukrytych reguł targetowania
+i nadal pozwala na dziwne, ciekawe synergie
+
+To właśnie uznaliśmy za najlepszy balans.
+
+Jeśli chcesz, mogę teraz jeszcze zrobić krótsze, „architektoniczne” podsumowanie tylko w formacie:
+
+odpowiedzialność klasy
+invariant
+czego ma nie robić.
+
+
+CombatCommand
+
+To jest zlecenie / intencja wykonania czegoś.
+
+Nie opisuje faktu, tylko mówi:
+
+„spróbuj to zrobić”
+„rozpatrz to”
+„uruchom to”
+
+Przykłady:
+
+DamageIncomingCombatCommand
+StartFlowCombatCommand
+MoveItemInFlowCombatCommand
+Cechy
+warstwa bardziej techniczna / orchestration
+gracz nie musi tego znać
+command może zakończyć się sukcesem, porażką albo zostać zmodyfikowany po drodze
+command nie jest dobrym źródłem statystyk, bo nie mówi jeszcze, co naprawdę zaszło
+CombatEvent
+
+To jest fakt domenowy, że coś się wydarzyło.
+
+Nie mówi:
+
+„zrób to”
+
+Tylko:
+
+„to już się stało”
+„to zostało zarejestrowane w walce”
+„to jest element historii walki”
+
+Przykłady:
+
+DamageIncomingCombatEvent
+FlowCreatedCombatEvent
+FlowItemMovedCombatEvent
+DamageResolvedCombatEvent
+DamageTakenCombatEvent
+Cechy
+nadaje się do statystyk
+nadaje się do logów i historii walki
+nadaje się do triggerów i reakcji
+to jest język mechaniki, który może być zrozumiały także dla gracza
+Ważne
+
+Ustaliliśmy, że:
+
+event powinien opisywać fakt
+a nie być ukrytym commandem pod inną nazwą
+
+Czyli np. obecne DamageIncomingCombatEvent w starej semantyce bardziej przypominało command niż fakt — i to właśnie był powód rozdzielenia tych pojęć.
+
+CombatHook
+
+To jest reakcja na CombatEvent.
+
+Nie jest:
+
+zleceniem
+faktem
+
+Tylko:
+
+punktem zaczepienia
+warunkiem aktywacji
+sposobem, w jaki item / efekt / pasywka reaguje na event
+
+Przykłady:
+
+OnDamageIncoming
+OnFlowCreated
+OnFlowItemMoved
+Cechy
+hook reaguje na CombatEvent
+hook nie powinien reagować na CombatCommand
+hook to dobre miejsce na logikę typu:
+„gdy wydarzy się X, zrób Y”
+„po 15 takich eventach dodaj bonus”
+„za każdym razem gdy item został przesunięty w flow, dodaj +1 ATTACK”
+Najkrótszy podział
+CombatCommand
+
+co system ma spróbować zrobić
+
+CombatEvent
+
+co faktycznie się wydarzyło
+
+CombatHook
+
+jak reagujemy na to, co się wydarzyło
+
+Perspektywa gracza
+
+Ustaliliśmy też ważną rzecz:
+
+CombatCommand jest głównie wewnętrzne i techniczne
+gracz powinien rozumieć raczej:
+CombatEvent
+CombatHook
+
+Czyli dla gracza świat gry jest opisywany przez:
+
+wydarzenia w walce
+reakcje na wydarzenia
+
+a nie przez systemowe komendy.
+
+Dodatkowa zasada, którą ustaliliśmy
+
+Nie używać On... w nazwach eventów.
+
+Czyli:
+
+FlowCreatedCombatEvent — tak
+OnFlowCreatedCombatEvent — nie
+
+Za to On... pasuje dobrze do hooków:
+
+OnFlowCreated
+OnDamageIncoming
+Praktyczny przykład
+Command
+
+DamageIncomingCombatCommand
+
+zleca rozpatrzenie incoming damage
+Event
+
+DamageIncomingCombatEvent
+
+incoming damage zostało już zarejestrowane jako fakt w pipeline walki
+Hook
+
+OnDamageIncoming
+
+item / efekt może zareagować na ten fakt

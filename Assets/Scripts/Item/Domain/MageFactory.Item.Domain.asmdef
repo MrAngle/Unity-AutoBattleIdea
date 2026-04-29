@@ -7,7 +7,9 @@
     "MageFactory.Shared",
     "MageFactory.TimeSystem",
     "MageFactory.Semantics",
-    "Zenject"
+    "Zenject",
+    "MageFactory.CombatStateContext",
+    "MageFactory.CombatContextRuntime"
   ],
   "autoReferenced": true
 }

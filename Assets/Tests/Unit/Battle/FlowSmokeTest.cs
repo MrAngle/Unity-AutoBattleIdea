@@ -114,7 +114,7 @@ namespace MageFactory.Tests.Unit.Battle {
         }
 
         [Test]
-        public void should_deal_2_damage_when_shield_is_second_in_flow() {
+        public void should_deal_damage_when_reduce_damage_to_0_shield_flow() {
             // given
             IItemDefinition entry = new EntryPointGem();
             IItemDefinition shield = new Shield();

@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors;
 using MageFactory.Character.Domain.FlowCapability;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatContextRuntime;
 using MageFactory.CombatEvents;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Contract;
@@ -39,27 +41,11 @@ namespace MageFactory.Character.Domain.CombatChar {
             characterAggregate.cleanup();
         }
 
-        public void combatTick(IFlowConsumer flowConsumer) {
-            IReadOnlyCollection<ICharacterEquippedEntryPointToTick> entryPointsToTick =
-                characterAggregate.getInventoryAggregate().getEntryPointsToTick();
-            if (entryPointsToTick == null || entryPointsToTick.Count == 0)
-                return;
-
-            var router = GridAdjacencyRouter.create(tryGetItemAtCell);
-
-            foreach (ICharacterEquippedEntryPointToTick entryPoint in entryPointsToTick) {
-                if (entryPoint == null) {
-                    continue;
-                }
-
-                var flow = flowFactory.create(
-                    entryPoint.getFlowKind(),
-                    new CombatCharacterEquippedEntryPointItem(entryPoint),
-                    router,
-                    flowConsumer,
-                    new FlowCapabilities(this),
-                    this);
-                flow.start();
+        public void combatTick(IFlowConsumer flowConsumer, ICombatCapabilities combatCapabilities) {
+            IReadOnlyCollection<CharacterCombatTickableItemAction> characterCombatTickableItemActions =
+                characterAggregate.getInventoryAggregate().getTickableItems();
+            foreach (CharacterCombatTickableItemAction tickableItemAction in characterCombatTickableItemActions) {
+                tickableItemAction?.Invoke(combatCharacterData.getCharacterId(), combatCapabilities);
             }
         }
 
@@ -96,6 +82,33 @@ namespace MageFactory.Character.Domain.CombatChar {
 
             item = null;
             return false;
+        }
+
+        internal void createFlow(Id<ItemId> entryPointItemId,
+                                 IFlowConsumer flowConsumer,
+                                 ICombatCapabilities combatCapabilities) {
+            NullGuard.ValidIdOrThrow(entryPointItemId);
+            NullGuard.NotNullOrThrow(flowConsumer);
+            NullGuard.NotNullOrThrow(combatCapabilities);
+
+            if (!characterAggregate.getInventoryAggregate()
+                    .tryGetEntryPointById(entryPointItemId, out ICharacterEquippedEntryPointToTick entryPoint)) {
+                throw new InvalidOperationException(
+                    $"EntryPoint with id '{entryPointItemId}' was not found in character inventory.");
+            }
+
+            var router = GridAdjacencyRouter.create(tryGetItemAtCell);
+
+            var flow = flowFactory.create(
+                entryPoint.getFlowKind(),
+                new CombatCharacterEquippedEntryPointItem(entryPoint),
+                router,
+                flowConsumer,
+                new FlowCapabilities(this),
+                this
+            );
+
+            flow.start();
         }
 
         public void consumeCombatEvent(CombatEvent combatEvent) {

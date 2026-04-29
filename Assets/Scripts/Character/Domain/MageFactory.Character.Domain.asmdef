@@ -11,7 +11,8 @@
     "MageFactory.Flow.Contract",
     "MageFactory.Character.Api",
     "MageFactory.ActionEffect",
-    "MageFactory.CombatEvents"
+    "MageFactory.CombatEvents",
+    "MageFactory.CombatContextRuntime"
   ],
   "autoReferenced": true
 }

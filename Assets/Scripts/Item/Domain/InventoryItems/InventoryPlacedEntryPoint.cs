@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
+using MageFactory.CombatContextRuntime;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Shared.Id;
@@ -42,6 +43,15 @@ namespace MageFactory.Item.Domain.InventoryItems {
 
         public FlowKind getFlowKind() {
             return entryPointItem.getFlowKind();
+        }
+
+        public void tick(Id<CharacterId> characterId, ICombatCapabilities combatCapabilities) {
+            CreateFlowCombatCommand createFlowCombatCommand = new CreateFlowCombatCommand(
+                characterId,
+                getId()
+            );
+
+            combatCapabilities.command().dispatch(createFlowCombatCommand);
         }
     }
 }

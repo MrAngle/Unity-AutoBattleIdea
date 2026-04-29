@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MageFactory.CombatContext.Contract;
+using MageFactory.CombatContextRuntime;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
 
@@ -9,5 +10,6 @@ namespace MageFactory.CombatContext.Api {
         public IReadOnlyCollection<ICombatCharacterFacade> getAllCharacters();
         public ICombatCharacterFacade getCombatCharacterById(Id<CharacterId> id);
         public IFlowConsumer getFlowConsumer();
+        public ICombatCapabilities getCombatCapabilities();
     }
 }

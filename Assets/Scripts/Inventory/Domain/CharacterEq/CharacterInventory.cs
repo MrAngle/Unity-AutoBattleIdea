@@ -3,6 +3,7 @@ using System.Linq;
 using MageFactory.Character.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -30,6 +31,31 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             }
 
             item = null;
+            return false;
+        }
+
+        public bool tryGetItemById(Id<ItemId> itemId, out ICharacterEquippedItem item) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            if (!inventoryAggregate.tryGetItemById(itemId, out IInventoryPlacedItem inventoryPlacedItem)) {
+                item = null;
+                return false;
+            }
+
+            item = mapToCharacterEquippedItem(inventoryPlacedItem);
+            return true;
+        }
+
+        public bool tryGetEntryPointById(Id<ItemId> itemId, out ICharacterEquippedEntryPointToTick entryPoint) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            if (inventoryAggregate.tryGetEntryPointById(itemId,
+                    out IInventoryPlacedEntryPoint inventoryPlacedEntryPoint)) {
+                entryPoint = new CharacterEquippedEntryPointItem(inventoryPlacedEntryPoint);
+                return true;
+            }
+
+            entryPoint = null;
             return false;
         }
 
@@ -65,6 +91,14 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return inventoryAggregate.tryChangeItemPosition(itemToMove.getId(), newPosition);
         }
 
+        public IReadOnlyCollection<CharacterCombatTickableItemAction> getTickableItems() {
+            return inventoryAggregate.getTickableItems()
+                .Select(inventoryTickableItem =>
+                    (CharacterCombatTickableItemAction)((characterId, combatCapabilities) =>
+                        inventoryTickableItem.tick(characterId, combatCapabilities)))
+                .ToHashSet();
+        }
+
         private static IReadOnlyCollection<ICharacterEquippedEntryPointToTick> mapToEquippedEntryPoints(
             IEnumerable<IInventoryPlacedEntryPoint> source) {
             return source
@@ -75,6 +109,15 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
         private static IEnumerable<ICharacterEquippedItem> mapToEquippedItems(
             IEnumerable<IInventoryPlacedItem> placedItems) {
             return placedItems.Select(pi => (ICharacterEquippedItem)new CharacterEquippedItem(pi));
+        }
+
+        private static ICharacterEquippedItem mapToCharacterEquippedItem(IInventoryPlacedItem inventoryPlacedItem) {
+            return inventoryPlacedItem switch {
+                IInventoryPlacedEntryPoint inventoryPlacedEntryPoint =>
+                    new CharacterEquippedEntryPointItem(inventoryPlacedEntryPoint),
+
+                _ => new CharacterEquippedItem(inventoryPlacedItem)
+            };
         }
     }
 }

@@ -69,6 +69,12 @@ namespace MageFactory.Inventory.Domain {
             return indexes.getEntryPoints();
         }
 
+        internal IReadOnlyCollection<IInventoryCombatTickableItem> getTickableItems() {
+            return items
+                .OfType<IInventoryCombatTickableItem>()
+                .ToHashSet();
+        }
+
         public IEnumerable<IGridItemPlaced> getPlacedSnapshot() {
             foreach (IInventoryPlacedItem item in items) {
                 yield return item;
@@ -155,6 +161,18 @@ namespace MageFactory.Inventory.Domain {
 
             items.Remove(inventoryPlacedItem);
             indexes.removeItem(inventoryPlacedItem);
+        }
+
+        internal bool tryGetItem(Id<ItemId> itemId, out IInventoryPlacedItem itemToReturn) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            return indexes.tryGetItem(itemId, out itemToReturn);
+        }
+
+        internal bool tryGetEntryPoint(Id<ItemId> itemId, out IInventoryPlacedEntryPoint entryPoint) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            return indexes.tryGetEntryPoint(itemId, out entryPoint);
         }
 
         internal bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem itemToReturn) {

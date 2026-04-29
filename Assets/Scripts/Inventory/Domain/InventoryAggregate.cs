@@ -50,6 +50,16 @@ namespace MageFactory.Inventory.Domain {
             return inventoryRegistry.canPlaceItem(placeItemQuery.itemDefinition.getShape(), placeItemQuery.origin);
         }
 
+        public IReadOnlyCollection<IInventoryCombatTickableItem> getTickableItems() {
+            return inventoryRegistry.getTickableItems();
+        }
+
+        public bool tryGetItemById(Id<ItemId> itemId, out IInventoryPlacedItem itemToReturn) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            return inventoryRegistry.tryGetItem(itemId, out itemToReturn);
+        }
+
         public IReadOnlyCollection<IInventoryPlacedEntryPoint> getEntryPointsToTick() {
             return inventoryRegistry.getEntryPoints();
         }
@@ -109,6 +119,12 @@ namespace MageFactory.Inventory.Domain {
                 newOriginPosition
             ));
             return true;
+        }
+
+        public bool tryGetEntryPointById(Id<ItemId> itemId, out IInventoryPlacedEntryPoint entryPoint) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            return inventoryRegistry.tryGetEntryPoint(itemId, out entryPoint);
         }
     }
 }

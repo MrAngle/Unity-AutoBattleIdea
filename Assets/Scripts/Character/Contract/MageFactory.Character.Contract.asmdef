@@ -5,7 +5,9 @@
     "MageFactory.CombatContext.Contract",
     "MageFactory.ActionEffect",
     "MageFactory.Shared",
-    "MageFactory.Flow.Contract"
+    "MageFactory.Flow.Contract",
+    "MageFactory.CombatStateContext",
+    "MageFactory.CombatContextRuntime"
   ],
   "autoReferenced": true
 }

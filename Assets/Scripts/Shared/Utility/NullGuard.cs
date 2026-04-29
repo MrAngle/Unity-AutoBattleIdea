@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MageFactory.Shared.Id;
 
 namespace MageFactory.Shared.Utility {
     public static class NullGuard {
@@ -17,6 +18,18 @@ namespace MageFactory.Shared.Utility {
             if (value is null)
                 throw new ArgumentNullException(paramName ?? typeof(T).Name);
             return value.Value;
+        }
+
+        public static Id<T> ValidIdOrThrow<T>(Id<T> id, string paramName = null) {
+            if (id.Value <= 0) {
+                throw new ArgumentOutOfRangeException(
+                    paramName ?? typeof(T).Name,
+                    id,
+                    "Id must be greater than 0."
+                );
+            }
+
+            return id;
         }
 
         public static void NotNullCheckOrThrow(params object[] values) {

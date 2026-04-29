@@ -1,11 +1,7 @@
-﻿using MageFactory.ActionEffect;
-using MageFactory.Shared.Contract;
-using MageFactory.Shared.Model;
+﻿using MageFactory.Shared.Model;
 
 namespace MageFactory.Character.Contract {
-    public interface ICharacterEquippedEntryPointToTick : IGridItemPlaced {
-        IActionDescription prepareItemActionDescription();
-
+    public interface ICharacterEquippedEntryPointToTick : ICharacterEquippedItem {
         FlowKind getFlowKind();
     }
 }

@@ -57,13 +57,13 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return entryPointArchetype.getItemDefinition().getActionDescription();
         }
 
-        public override string ToString() {
-            return $"({entryPointArchetype.getFlowKind()})";
-        }
-
         // think about this - item should never be able to move itselv
         public void updateItemPosition(IInventoryPosition paramInventoryPosition) {
             inventoryPosition = paramInventoryPosition;
+        }
+
+        public override string ToString() {
+            return $"({entryPointArchetype.getFlowKind()})";
         }
     }
 }

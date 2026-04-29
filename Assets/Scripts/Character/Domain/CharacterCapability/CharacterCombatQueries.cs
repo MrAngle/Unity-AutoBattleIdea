@@ -3,10 +3,10 @@ using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
-    internal class CombatQueries : ICombatQueries {
+    internal class CharacterCombatQueries : ICharacterCombatQueries {
         private readonly CombatCharacter combatCharacter;
 
-        internal CombatQueries(CombatCharacter combatCharacter) {
+        internal CharacterCombatQueries(CombatCharacter combatCharacter) {
             this.combatCharacter = combatCharacter;
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain {
@@ -81,6 +82,20 @@ namespace MageFactory.Inventory.Domain {
 
         internal bool tryGetItem(Id<ItemId> itemId, out IInventoryPlacedItem item) {
             return itemIdToItemIndex.TryGetValue(itemId, out item);
+        }
+
+        internal bool tryGetEntryPoint(Id<ItemId> itemId, out IInventoryPlacedEntryPoint entryPoint) {
+            NullGuard.ValidIdOrThrow(itemId);
+
+            foreach (IInventoryPlacedEntryPoint indexedEntryPoint in entryPointsIndex) {
+                if (Equals(indexedEntryPoint.getId(), itemId)) {
+                    entryPoint = indexedEntryPoint;
+                    return true;
+                }
+            }
+
+            entryPoint = null;
+            return false;
         }
 
         internal bool tryGetItemAtCell(Vector2Int cell, out IInventoryPlacedItem item) {

@@ -126,3 +126,234 @@ wybiera sensowną reakcję / entry point,
 a potem rozlicza wynik.
 
 Czyli w skrócie: flow ma być etapowe, typowane i domenowe, a nie „najpierw pamiętaj wywołać boola, potem może react”.
+
+
+1. Doszliśmy do tego, że nie wystarczy zwykły read model
+
+Na początku rozważaliśmy snapshot / read model na tick, ale wyszło, że to jest za słabe dla Twojej gry.
+
+Powód:
+
+część warunków musi widzieć aktualny stan już po zmianach wykonanych w tym samym ticku
+to dotyczy nie tylko „stanu”, ale też liczników/historycznych wartości, jeśli mają wpływać na mechanikę od razu
+
+Przykład:
+
+„nie twórz flow, jeśli aktywnych flow jest więcej niż 10”
+„co 50. utworzone flow zrób efekt”
+
+W obu przypadkach system musi widzieć żywe, aktualne dane, a nie tylko snapshot z początku ticka.
+
+2. Rozróżniliśmy stan i statystyki, ale oba są runtime
+
+Ustaliliśmy, że dobrze odróżniać:
+
+stan
+
+czyli aktualna sytuacja świata, np.:
+
+liczba aktywnych flow
+hp
+cooldown
+pozycja itemu
+czy coś jest aktualnie zajęte / aktywne
+statystyki / liczniki
+
+czyli narastające informacje o tym, co już zaszło, np.:
+
+ile flow utworzono łącznie
+ile razy przesunięto item
+ile obrażeń przyjęto łącznie
+
+Ale finalny wniosek był taki:
+
+oba te zbiory danych są „żywe”
+
+czyli:
+
+oba są częścią aktualnego runtime modelu walki
+oba mogą być odczytywane i modyfikowane w trakcie przetwarzania gry
+nie można traktować „statystyk” wyłącznie jako czegoś martwego / raportowego
+3. Nie iść w ciężki snapshot, tylko w żywy interfejs do danych runtime
+
+Wyszło, że potrzebujesz ogólnego interfejsu dostępu do aktualnego stanu i liczników, z którego:
+
+itemy
+entry pointy
+logika flow
+warunki efektów
+
+mogą jawnie odpytywać potrzebne informacje.
+
+Czyli zamiast:
+
+budować skomplikowany read model per tick
+albo odtwarzać wszystko od zera
+
+lepiej mieć:
+
+jeden żywy interfejs query do runtime danych walki
+
+Ten interfejs nie powinien być związany tylko z tickiem, bo:
+
+będzie używany także przy ticku
+ale też przy flow
+przy sprawdzaniu warunków efektów
+przy reakcjach na eventy / hooki
+przy dowolnych decyzjach mechanicznych
+
+Czyli dobrze, żeby nazwa była ogólna, a nie typu TickContext.
+
+4. API powinno być lekkie i prymitywne
+
+Ustaliliśmy, że takie API powinno zwracać raczej:
+
+bool
+int
+long
+enum
+
+i unikać:
+
+dużych DTO
+kolekcji
+obiektów budowanych przy każdym odczycie
+wrapperów generowanych na gorąco
+
+To ważne, bo chcesz:
+
+10 ticków/s
+potencjalnie tysiące itemów
+bardzo częste odpytywanie w gorącej ścieżce
+
+Więc odpowiedzi muszą być:
+
+tanie
+przewidywalne
+najlepiej O(1)
+bez alokacji
+5. Implementacja musi być „żywa”, ale ostrożna
+
+Doszliśmy do tego, że implementacja tego interfejsu:
+
+nie może polegać na pełnym recompute wszystkiego przy każdym pytaniu
+nie może też być martwym snapshotem
+nie powinna opierać się na magicznym, ogólnym lazy cache z trudnym invalidation
+
+Najzdrowszy kierunek, który z tego wyszedł, to:
+
+utrzymywać żywy runtime model walki
+
+czyli:
+
+aktualny stan
+aktualne liczniki
+aktualizowane na bieżąco, synchronicznie
+
+A potem interfejs query tylko to odczytuje.
+
+Czyli:
+
+query ma być tanie
+cięższa logika ma siedzieć w tym, jak utrzymujesz runtime state/liczniki
+nie w tym, jak je za każdym razem wyliczasz
+6. Ten mechanizm będzie centralny dla spójności gry
+
+Ustaliliśmy też, że to nie jest detal techniczny, tylko bardzo ważny fundament.
+
+Bo od tego zależy:
+
+czy warunki będą oceniane spójnie
+czy hooki i eventy zadziałają w dobrym momencie
+czy liczniki typu „co 50 flow” nie będą gubić progów
+czy itemy będą mogły podejmować decyzje na podstawie faktycznego stanu walki
+czy architektura będzie wydajna przy większej skali
+
+Czyli ten mechanizm:
+
+jest jednym z kluczowych elementów spójności i skalowalności gry
+7. Nazwa powinna być ogólna, nie tylko tickowa
+
+Tak jak zauważyłeś: tego nie będziesz używał tylko przy ticku.
+
+To będzie potrzebne też np.:
+
+przy procesowaniu flow
+przy sprawdzaniu warunków efektów
+przy hookach
+przy commandach
+przy decyzjach itemów poza tickiem
+
+Więc lepiej nie nazywać tego:
+
+TickContext
+CombatTickContext
+
+jeśli ma służyć szerzej.
+
+Lepszy kierunek nazewniczy
+
+Coś w stylu:
+
+CombatRuntimeContext
+CombatRuntimeStateQuery
+CombatStateContext
+CombatConditionContext
+CombatEvaluationContext
+
+Z tych nazw najbardziej pasuje mi na ten moment:
+
+CombatRuntimeContext
+
+albo
+
+ICombatRuntimeContext
+
+bo dobrze mówi:
+
+to jest coś żywego
+odnosi się do całej walki
+nie tylko do ticka
+nadaje się do odczytu aktualnego stanu i liczników
+8. Najkrótsza esencja
+
+Finalny wniosek był mniej więcej taki:
+
+potrzebujesz ogólnego, żywego interfejsu do runtime danych walki
+ten interfejs ma być używany nie tylko przy ticku, ale wszędzie tam, gdzie sprawdzasz warunki mechaniczne
+ma zwracać proste, tanie wartości
+nie może polegać wyłącznie na snapshotach
+nie może też robić ciężkiego przeliczania przy każdym odczycie
+ma opierać się na utrzymywanym na bieżąco runtime stanie i licznikach
+
+Najkrócej:
+
+nie „read model na tick”, tylko „żywy runtime context walki”
+
+Jasne. Konkretne podsumowanie tego, co ustaliliśmy od tamtego momentu:
+
+Przeszliśmy od myślenia o ticku i flow jako czymś dość luźnym do dużo bardziej świadomego modelu runtime walki. Punktem wyjścia było pytanie, czy tick gry powinien być eventem. Finalnie odrzuciliśmy traktowanie ticka jako zwykłego CombatEvent. Tick nie jest domenowym faktem jak damage czy utworzenie flow, tylko mechaniką symulacji. Jednocześnie doprecyzowałeś bardzo ważną rzecz: u Ciebie przetwarzanie obrażeń może realnie trwać wiele sekund i to jest feature gry, nie problem architektury. Z tego wyszedł kluczowy wniosek, że nie potrzebujesz asynchroniczności w sensie Task/await, tylko tickowanego, deterministycznego runtime state. Czyli flow ma być rozłożone w czasie, ale nie fire-and-forget async. To dobrze pasuje do Twojej gry z cast time, cooldownami i opóźnionym procesowaniem damage.
+
+Potem skupiliśmy się na tym, kto powinien być właścicielem flow. Ustaliliśmy, że pełne, aktywne flow powinny być trzymane przez CombatCharacter albo docelowo warstwę wyżej, a nie przez entry point jako pełne obiekty runtime. Jednocześnie trafnie zauważyłeś, że entry point musi mieć możliwość decydowania, czy może wystartować nowe flow, bo chcesz wspierać cooldowny, maksymalną liczbę aktywnych flow i inne warunki strategiczne. Z tego wyszedł kompromis: entry point nie powinien posiadać pełnego flow lifecycle, ale powinien mieć własny runtime state albo dostęp do runtime informacji, które pozwolą mu podjąć decyzję o starcie. Nie poszliśmy w callbacki onFlowStarted/onFlowFinished, bo to pachniało ukrytym podwójnym źródłem prawdy. Lepiej było oprzeć się na jawnych danych runtime i centralnym zarządzaniu prawdziwymi flow.
+
+Bardzo ważny zwrot nastąpił przy tickContext. Najpierw rozważaliśmy snapshot per tick, ale szybko wyszło, że czysty, zamrożony snapshot dla całego ticka nie pasuje do Twojej gry. Podałeś dobry kontrprzykład: dwa entry pointy sprawdzające limit aktywnych flow. Gdyby każdy widział tylko stan z początku ticka, oba mogłyby podjąć złą decyzję. To doprowadziło do mocnego wniosku, że nie wystarczy podział na snapshot i historię. Zarówno stan bieżący, jak i liczniki typu „ile flow utworzono łącznie” muszą być żywe i aktualizowane w trakcie ticka, bo od nich zależą realne warunki mechaniki. Przykład z „co 50-te flow” dobrze pokazał, że liczniki historyczne też są runtime, jeśli wpływają na decyzje i efekty w tej samej walce.
+
+Na tej podstawie ustaliliśmy nowy model: potrzebujesz ogólnego, żywego interfejsu dostępu do stanu i liczników walki, nie tylko tickowego read modelu. Ten byt przestał być rozumiany jako sam tickContext, a zaczął jako ogólny runtime context walki, z którego mogą korzystać itemy, flow, warunki i hooki. Ważna zasada była taka, że API powinno zwracać tylko lekkie typy: int, long, bool, enum, ewentualnie proste value objecty, a nie ciężkie DTO i kolekcje. Jednocześnie implementacja tego API ma być żywa i tania, a nie oparta na pełnym recompute albo na niebezpiecznym globalnym lazy cache z trudnym invalidation.
+
+Z nazewnictwem też przeszliśmy sporą drogę. Początkowo rozważaliśmy CombatContextRuntime, ale uznaliśmy, że lepiej wydzielić osobny moduł obok CombatContext, nie w środku niego. Potem szukaliśmy lepszej nazwy i doszliśmy do tego, że sam readonly StateContext to za mało, jeśli chcesz też zlecać działania. Finalnie pojawił się kierunek analogiczny do Twojego IActionCapabilities: zamiast osobnego ICombatStateContext i osobnego dispatchera zacząłeś iść w ICombatCapabilities, które zawiera command() i query(). To dobrze pasuje do Twojego stylu architektury. Ustaliliśmy też, że ICombatQueries powinno być readonly, a command side trzymać osobno przez ICombatCommandBus. Później doszliśmy do wniosku, że najlepiej mieć osobne implementacje CombatQueries, CombatCommandBus i lekkie CombatCapabilities, które tylko je składa.
+
+Duża część rozmowy dotyczyła też semantyki commandów, eventów i hooków. Ustaliliśmy wyraźnie, że CombatCommand to zlecenie, CombatEvent to fakt domenowy, a CombatHook to reakcja na fakt. Z tego wynikało, że stare DamageIncomingCombatEvent tak naprawdę było bardziej commandem niż eventem. Rozdzielenie na CombatCommand i CombatEvent uznaliśmy za dobry kierunek. Do tego doprecyzowaliśmy, że On... powinno być raczej w hookach i triggerach itemów, a nie w nazwach eventów klasowych. Jednocześnie zauważyłeś bardzo ważną rzecz: skoro chcesz budować mechaniki w stylu „dodaj +15 ATTACK jeśli utworzono 15 flow” albo „licz każde utworzenie flow podwójnie”, to CombatEvent staje się jednym z głównych nośników faktów walki i źródłem dla statystyk oraz triggerów. To był dobry wniosek, ale przy zachowaniu zasady: command zleca, event opisuje fakt po wykonaniu.
+
+Potem zeszliśmy do konkretu: jak entry point ma startować flow. Odrzuciliśmy pomysł, żeby entry point tworzył jakiś „pół-flow” obiekt albo sam zarządzał lifecycle prawdziwych flow przez callbacki. Zamiast tego ustaliliśmy, że entry point jako item dostaje combat capabilities, podejmuje decyzję i w razie potrzeby dispatchuje CreateFlowCombatCommand. Czyli nie tworzy flow samodzielnie, tylko zleca to wyższej warstwie. Flow runtime jest tworzone dopiero po stronie combatowej, przy użyciu prostych danych z commandu, takich jak characterId i itemId. To dobrze wpisuje się w zasadę, że commandy powinny przenosić lekkie, stabilne dane, a nie runtime obiekty i wrappery.
+
+Z tym wiązała się kolejna rzecz: item potrzebował znać ownera. Rozważaliśmy globalny ICombatCapabilities, ale zauważyłeś, że item musi wiedzieć, do którego charactera należy. Odrzuciliśmy pomysł mutowalnego „current owner” w capabilities, bo to byłoby niebezpieczne. Pojawiła się sugestia na scoped capabilities dla konkretnego charactera, ale równolegle zauważyłeś, że masz już podobny wzorzec w CombatCharacterFacade. Finalnie nie domknęliśmy tu jednej ostatecznej formy, ale wyszedł ważny kierunek: owner context powinien być częścią bezpiecznego, scoped kontekstu, a nie ukrytego globalnego mutable state.
+
+Bardzo dużo pracy poszło też w temat warstwowania między Character, Inventory i Item. Potwierdziliśmy, że Twoje podejście jest bliskie consumer-driven contracts: Character definiuje, czego oczekuje od inventory, inventory definiuje, czego oczekuje od itemów, a wyższe warstwy nie muszą znać implementacyjnych detali niższych modułów. To ma sens architektonicznie i nie uznaliśmy tego za zły kierunek. Jednocześnie wyraźnie wyszedł koszt tego podejścia: dużo wrapperów i mapowania typów. Sam zauważyłeś, że zaczyna to boleć. Werdykt był taki, że samo warstwowanie ma sens, ale trzeba je trzymać krótko i nie robić nowej warstwy dla każdej drobnej capability.
+
+W tym kontekście przeszliśmy przez sporo decyzji typowych dla inventory. Ustaliliśmy, że IInventoryPlacedEntryPoint powinno rozszerzać IInventoryPlacedItem i IInventoryCombatTickableItem, jeśli entry point jest z definicji tickowalny. Analogicznie po stronie character ICharacterEquippedEntryPointToTick powinno rozszerzać ICharacterEquippedItem, bo entry point jest szczególnym rodzajem equipped itemu. Rozważaliśmy też osobny interfejs IInventoryTickablePlacedItem, ale uznaliśmy, że na ten moment to za wcześnie i lepiej nie wprowadzać kolejnej warstwy bez potrzeby.
+
+Potem pojawił się mocny problem: jak reprezentować tickowalne itemy na poziomie character. Tu zacząłeś szukać uproszczenia przez delegate zamiast kolejnych wrapperów. Ustaliliśmy, że po stronie inventory IInventoryCombatTickableItem musi zostać interfejsem, bo chcesz, żeby IInventoryPlacedEntryPoint mógł go rozszerzać. Ale po stronie character można było już rozważyć delegate. Doszliśmy do działającego modelu, w którym inventory zwraca IInventoryCombatTickableItem, a CharacterInventory mapuje to na listę delegate’ów typu CharacterCombatTickableItemAction. Ważne było wyjaśnienie, że to mapowanie nie wykonuje ticka od razu, tylko tworzy delegaty, które dopiero później zostaną wywołane.
+
+Na koniec wyszedł jeszcze problem z tryGetItemById(...) i wrapperami entry pointów. Okazało się, że jeśli CharacterInventory.tryGetItemById(...) zawsze zwraca new CharacterEquippedItem(...), to gubisz informację, że dany item był entry pointem. Z jednej strony zasugerowaliśmy centralny mapper, który rozpoznaje IInventoryPlacedEntryPoint i w takim przypadku tworzy CharacterEquippedEntryPointItem, ale sam zauważyłeś, że wygląda to średnio. To doprowadziło do sensownego wniosku, że w tym konkretnym przypadku warto dodać wyspecjalizowaną metodę tryGetEntryPointById(...) zamiast iść przez ogólne tryGetItemById(...) plus rzutowanie. Ponieważ InventoryRegistryIndexes już trzyma osobny indeks entry pointów, to jest naturalne i czystsze API.
+
+Najkrótsza esencja całej tej części rozmowy wygląda więc tak: odchodzisz od async flow opartego o taski w stronę żywego, tickowanego runtime state; entry point jako item ma decydować, czy chce wystartować flow, ale robi to przez CombatCommand, a nie tworząc flow samemu; potrzebujesz ogólnego, lekkiego API do odpytywania żywego stanu i liczników walki oraz osobnego command side, najlepiej spiętych w ICombatCapabilities; commandy przenoszą tylko lekkie dane, np. characterId i itemId; eventy opisują fakty i są podstawą do statystyk i triggerów; a warstwowanie kontraktów między Character, Inventory i Item ma sens, ale trzeba pilnować, żeby koszt wrapperów i adapterów nie zjadł korzyści. Jeśli chcesz, następnym krokiem mogę Ci z tego zrobić jeszcze krótszy dokument architektoniczny w punktach: „co zostaje”, „co zmieniamy teraz”, „co odkładamy na później”.

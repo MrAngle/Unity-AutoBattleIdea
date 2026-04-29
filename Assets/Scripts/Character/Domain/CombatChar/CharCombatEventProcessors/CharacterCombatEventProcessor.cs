@@ -12,7 +12,7 @@ namespace MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors {
                 NullGuard.NotNullOrThrow(damageIncomingCombatEventProcessor);
         }
 
-        public void process(CombatCharacter combatCharacter, CombatEvent combatEvent) {
+        internal void process(CombatCharacter combatCharacter, CombatEvent combatEvent) {
             NullGuard.NotNullOrThrow(combatCharacter);
             NullGuard.NotNullOrThrow(combatEvent);
 

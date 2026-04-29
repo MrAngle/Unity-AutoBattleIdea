@@ -6,7 +6,9 @@
     "MageFactory.CombatContext.Api",
     "MageFactory.Shared",
     "MageFactory.Flow.Contract",
-    "MageFactory.CombatEvents"
+    "MageFactory.CombatEvents",
+    "MageFactory.CombatStateContext",
+    "MageFactory.CombatContextRuntime"
   ],
   "autoReferenced": true
 }

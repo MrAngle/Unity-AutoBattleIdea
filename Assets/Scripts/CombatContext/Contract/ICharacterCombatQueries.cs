@@ -1,7 +1,7 @@
 ﻿using MageFactory.CombatContext.Contract.Command;
 
 namespace MageFactory.CombatContext.Contract {
-    public interface ICombatQueries {
+    public interface ICharacterCombatQueries {
         IReadOnlyCombatCharacterData getCharacterInfo();
 
         bool canPlaceItem(EquipItemQuery equipItemQuery);

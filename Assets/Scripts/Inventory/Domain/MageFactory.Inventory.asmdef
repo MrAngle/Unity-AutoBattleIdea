@@ -10,7 +10,8 @@
     "MageFactory.Semantics",
     "Zenject",
     "MageFactory.Inventory.Api",
-    "MageFactory.ActionEffect"
+    "MageFactory.ActionEffect",
+    "MageFactory.CombatContextRuntime"
   ],
   "autoReferenced": true,
   "allowUnsafeCode": false
