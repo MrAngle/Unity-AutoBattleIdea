@@ -6,24 +6,32 @@ This Unity project is `MrAngleGame`.
 
 Before making architectural or gameplay-logic decisions, read and account for:
 
-- `Assets/AI_Instructions.txt`
-- `Assets/Scripts/AI_Discussions_summary.txt`
-- `Assets/Scripts/DiscussionHistory.txt`
+- `Assets/AI_Context/AI_Instructions.txt`
+- `Assets/AI_Context/AI_Discussions_summary.txt`
+- `Assets/AI_Context/AI_DiscussionHistory.txt`
 - `Assets/Scripts/TODO.md`
 
-`Assets/Scripts/AI_Discussions_summary.txt` is a chronological history of design decisions and architecture discussions.
-`Assets/Scripts/DiscussionHistory.txt` is a running, lightweight log of current conversations, assumptions, open questions, and preliminary decisions.
+`Assets/AI_Context/AI_Discussions_summary.txt` is a chronological history of design decisions and architecture discussions.
+`Assets/AI_Context/AI_DiscussionHistory.txt` is a running, lightweight log of current conversations, assumptions, open questions, and preliminary decisions.
 `Assets/Scripts/TODO.md` tracks known architectural follow-ups that should not be treated as final architecture.
+AI communication and project-context files live under `Assets/AI_Context/`, including `AI_Instructions.txt`, `AI_Csharp`, `AI_DiscussionHistory.txt`, and `AI_Discussions_summary.txt`.
 
 Important interpretation rule:
 
 - Treat lower/later entries in `AI_Discussions_summary.txt` as newer and more authoritative.
 - If two notes conflict, prefer the later note.
 - Do not treat older rejected ideas as current architecture unless a later note revives them.
-- Treat `DiscussionHistory.txt` as raw working context; distill durable decisions into `AI_Discussions_summary.txt` when they guide implementation.
+- Treat `AI_DiscussionHistory.txt` as raw working context; distill durable decisions into `AI_Discussions_summary.txt` when they guide implementation.
 - Treat `TODO.md` as an active list of known technical/design debt; account for relevant items before changing nearby code.
 - When in doubt, summarize the apparent latest decision and ask only if the ambiguity blocks the task.
 - When changing an existing mechanism, record what the previous mechanism did and how the new mechanism differs, so project history preserves the evolution of decisions.
+- New entries in `AI_DiscussionHistory.txt` must start with the `AI` prefix, for example `AI YYYY-MM-DD - Topic`.
+- After the user commits or pushes a change, treat the next recorded discussion as context for the next commit. Start a new simple section in `AI_DiscussionHistory.txt` so the history clearly separates what belonged to the previous commit from what is being discussed for the next one.
+- Use an explicit commit separator in both AI history files whenever the user says a commit or push happened, or when recording the first discussion after such a boundary:
+  `AI COMMIT BOUNDARY YYYY-MM-DD - <short context>`
+- In `AI_DiscussionHistory.txt`, put raw next-commit conversation notes below that separator.
+- In `AI_Discussions_summary.txt`, put only durable decisions below that separator; do not copy raw discussion unless it became architectural guidance.
+- If the user provides a commit hash or branch name, include it in the separator. If not, use the date and a short human-readable label.
 
 ## Architecture Direction
 

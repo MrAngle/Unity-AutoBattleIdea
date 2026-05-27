@@ -1,0 +1,74 @@
+#!/bin/sh
+
+# Runs before git push and leaves an AI context boundary for the next commit.
+# The appended boundary is intentionally left unstaged.
+
+HISTORY_FILE="Assets/AI_Context/AI_DiscussionHistory.txt"
+SUMMARY_FILE="Assets/AI_Context/AI_Discussions_summary.txt"
+STAMP_FILE=".git/ai-context-last-pre-push-boundary"
+
+push_ref=""
+push_sha=""
+
+while read local_ref local_sha remote_ref remote_sha
+do
+  if [ -n "$local_sha" ] && [ "$local_sha" != "0000000000000000000000000000000000000000" ]; then
+    push_ref="$local_ref"
+    push_sha="$local_sha"
+    break
+  fi
+done
+
+if [ -z "$push_sha" ]; then
+  push_sha=$(git rev-parse HEAD 2>/dev/null)
+fi
+
+if [ -z "$push_sha" ]; then
+  echo "AI context boundary hook: could not resolve pushed commit; skipping." >&2
+  exit 0
+fi
+
+if [ -f "$STAMP_FILE" ] && [ "$(cat "$STAMP_FILE")" = "$push_sha" ]; then
+  exit 0
+fi
+
+date_label=$(date +%Y-%m-%d)
+short_sha=$(git rev-parse --short "$push_sha" 2>/dev/null)
+
+if [ -z "$short_sha" ]; then
+  short_sha=$(printf "%s" "$push_sha" | cut -c 1-12)
+fi
+
+branch_label=$(printf "%s" "$push_ref" | sed 's#^refs/heads/##')
+
+if [ -n "$branch_label" ]; then
+  context_label="after push ${short_sha} (${branch_label})"
+else
+  context_label="after push ${short_sha}"
+fi
+
+boundary="AI COMMIT BOUNDARY ${date_label} - ${context_label}"
+
+append_boundary() {
+  file_path="$1"
+  note="$2"
+
+  if [ ! -f "$file_path" ]; then
+    echo "AI context boundary hook: missing $file_path; skipping it." >&2
+    return
+  fi
+
+  {
+    echo ""
+    echo "$boundary"
+    echo ""
+    echo "$note"
+  } >> "$file_path"
+}
+
+append_boundary "$HISTORY_FILE" "Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears."
+append_boundary "$SUMMARY_FILE" "Durable AI/project decisions recorded below this boundary belong to the next commit context after the latest push."
+
+printf "%s" "$push_sha" > "$STAMP_FILE"
+
+exit 0

@@ -1,4 +1,14 @@
-2026-05-26 - Combat runtime context and ticked flow
+AI COMMIT BOUNDARY 2026-05-27 - Next commit context after latest push
+
+Everything below this boundary belongs to the next set of changes after the user's latest push, unless a later boundary appears.
+
+AI 2026-05-27 - AI context organization after latest push
+
+User pushed the previous change and asked that future work separate discussion history by commit. From now on, after the user commits or pushes, the next recorded discussion in this file should start a new simple section for the next commit context.
+
+AI communication/context files were consolidated under `Assets/AI_Context/`: `AI_Instructions.txt`, `AI_Csharp`, `AI_DiscussionHistory.txt`, and `AI_Discussions_summary.txt`. `DiscussionHistory.txt` was renamed to `AI_DiscussionHistory.txt` so the file itself carries the AI prefix. `Assets/Scripts/TO-DO.md` remains in `Assets/Scripts` because it is an architectural follow-up list, not purely an AI communication file.
+
+AI 2026-05-26 - Combat runtime context and ticked flow
 
 User wants CombatContext to carry live combat-wide runtime information, not only static data. This includes participating characters, available actions, active flow counts, created flow counters, and similar state used by item conditions.
 
@@ -45,7 +55,7 @@ Important consequence:
 
 - The old castTime-based item delay is not yet represented in the new ticked model. Duration-to-CombatTicks mapping and per-flow/per-character tick work budgeting still need a deliberate design step.
 
-2026-05-26 - Combat tick performance smoke test
+AI 2026-05-26 - Combat tick performance smoke test
 
 User wants a very early regression guard for the hot combat tick path. This should not pretend to be a reliable benchmark yet, because proper performance tests need warmup, stable runners, controlled logging, GC awareness, and eventually Unity profiling/performance-test tooling.
 
