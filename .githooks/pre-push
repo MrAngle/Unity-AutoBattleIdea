@@ -34,17 +34,22 @@ fi
 
 date_label=$(date +%Y-%m-%d)
 short_sha=$(git rev-parse --short "$push_sha" 2>/dev/null)
+commit_subject=$(git log -1 --format=%s "$push_sha" 2>/dev/null)
 
 if [ -z "$short_sha" ]; then
   short_sha=$(printf "%s" "$push_sha" | cut -c 1-12)
 fi
 
+if [ -z "$commit_subject" ]; then
+  commit_subject="unknown commit message"
+fi
+
 branch_label=$(printf "%s" "$push_ref" | sed 's#^refs/heads/##')
 
 if [ -n "$branch_label" ]; then
-  context_label="after push ${short_sha} (${branch_label})"
+  context_label="after push ${short_sha} (${branch_label}) - ${commit_subject}"
 else
-  context_label="after push ${short_sha}"
+  context_label="after push ${short_sha} - ${commit_subject}"
 fi
 
 boundary="AI COMMIT BOUNDARY ${date_label} - ${context_label}"

@@ -387,3 +387,7 @@ Doprecyzowanie testu wydajnościowego: test nie powinien pozwalać, żeby flow k
 AI COMMIT BOUNDARY 2026-05-27 - Next commit context after latest push
 
 Trwała zasada organizacji historii: po informacji od użytkownika, że commit lub push już nastąpił, kolejne wpisy w `AI_DiscussionHistory.txt` i trwałe doprecyzowania w `AI_Discussions_summary.txt` powinny zaczynać się od jawnego separatora `AI COMMIT BOUNDARY YYYY-MM-DD - <short context>`. Separator oznacza, że poniższe ustalenia należą do kolejnego commita lub kolejnej paczki zmian, a nie do poprzednio wypchniętej pracy.
+
+AI COMMIT BOUNDARY 2026-05-27 - after push 125e8d6 (master)
+
+Durable AI/project decisions recorded below this boundary belong to the next commit context after the latest push.

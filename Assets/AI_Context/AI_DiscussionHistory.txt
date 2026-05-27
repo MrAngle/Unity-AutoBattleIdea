@@ -64,3 +64,7 @@ Immediate direction: add a simple NUnit performance smoke test using Stopwatch. 
 Implementation detail: use isolated entry points on a checkerboard pattern across multiple characters. This keeps the scenario focused on "many tickable items + many active flows" instead of accidentally measuring a huge connected flow graph caused by grid adjacency.
 
 Correction after first run: the initial isolated-entry-point version was too noisy because each flow could finish quickly and enter consumeFlow/damage processing, producing a lot of Debug.Log output and causing Rider's test output truncation. The smoke test should instead create the initial flows manually, use entry points with a long trigger interval so no new flows are created during measurement, set maxStepsPerSlice to 1, and give every flow a short no-op item chain so measured ticks process active flows without finishing them.
+
+AI COMMIT BOUNDARY 2026-05-27 - after push 125e8d6 (master)
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
