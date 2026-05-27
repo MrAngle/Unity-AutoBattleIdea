@@ -32,6 +32,9 @@ Important interpretation rule:
 - In `AI_DiscussionHistory.txt`, put raw next-commit conversation notes below that separator.
 - In `AI_Discussions_summary.txt`, put only durable decisions below that separator; do not copy raw discussion unless it became architectural guidance.
 - If the user provides a commit hash or branch name, include it in the separator. If not, use the date and a short human-readable label.
+- Treat commit separators as context checkpoints for reconstructing when and why decisions were made. They are not gameplay or architecture rules by themselves.
+- Use separators to compare decisions over time: when notes conflict, prefer later sections and later entries unless a newer note explicitly revives an older decision.
+- If `AI_DiscussionHistory.txt` or `AI_Discussions_summary.txt` become long enough that reading them substantially increases token usage or may negatively affect AI performance, clearly inform the user that it is time to do something about the history before continuing with large-context work. Suggest possible options such as summarizing, archiving, or compacting older history, but do not perform those changes automatically unless the user explicitly asks for them.
 
 ## Architecture Direction
 

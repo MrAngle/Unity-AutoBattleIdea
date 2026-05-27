@@ -68,3 +68,7 @@ Correction after first run: the initial isolated-entry-point version was too noi
 AI COMMIT BOUNDARY 2026-05-27 - after push 125e8d6 (master)
 
 Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI COMMIT BOUNDARY 2026-05-27 - after push 64685f0 (master) - Record boundary updates for durable AI/project decisions; enhance pre-push script to include commit subject context.
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
