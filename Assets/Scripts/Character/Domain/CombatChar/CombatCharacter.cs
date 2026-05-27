@@ -21,6 +21,9 @@ namespace MageFactory.Character.Domain.CombatChar {
         private readonly CharacterAggregate characterAggregate;
         private readonly IFlowFactory flowFactory;
         private readonly CharacterCombatEventProcessor characterCombatEventProcessor;
+        private readonly List<IFlowProcessor> activeFlows = new();
+        private readonly CombatTickPlan combatTickPlan = new();
+        private int createdFlowCount;
 
         internal CombatCharacter(CharacterAggregate characterAggregate,
                                  Team team,
@@ -42,11 +45,12 @@ namespace MageFactory.Character.Domain.CombatChar {
         }
 
         public void combatTick(CombatTicks combatTicks, ICombatCapabilities combatCapabilities) {
-            IReadOnlyCollection<CharacterCombatTickableItemAction> characterCombatTickableItemActions =
-                characterAggregate.getInventoryAggregate().getTickableItems();
-            foreach (CharacterCombatTickableItemAction tickableItemAction in characterCombatTickableItemActions) {
-                tickableItemAction?.Invoke(combatTicks, combatCharacterData.getCharacterId(), combatCapabilities);
-            }
+            combatTickPlan.executeCharacterTick(
+                activeFlows,
+                characterAggregate.getInventoryAggregate().getTickableItems(),
+                combatTicks,
+                combatCharacterData.getCharacterId(),
+                combatCapabilities);
         }
 
         public IReadOnlyCombatCharacterData getCharacterInfo() {
@@ -108,11 +112,20 @@ namespace MageFactory.Character.Domain.CombatChar {
                 this
             );
 
-            flow.start();
+            activeFlows.Add(flow);
+            createdFlowCount++;
         }
 
         public void consumeCombatEvent(CombatEvent combatEvent) {
             characterCombatEventProcessor.process(this, combatEvent);
+        }
+
+        public int getActiveFlowCount() {
+            return activeFlows.Count;
+        }
+
+        public int getCreatedFlowsInCurrentBattleCount() {
+            return createdFlowCount;
         }
     }
 }

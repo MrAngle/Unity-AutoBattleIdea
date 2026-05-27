@@ -70,9 +70,7 @@ namespace MageFactory.Inventory.Domain {
         }
 
         internal IReadOnlyCollection<IInventoryCombatTickableItem> getTickableItems() {
-            return items
-                .OfType<IInventoryCombatTickableItem>()
-                .ToHashSet();
+            return indexes.getTickableItems();
         }
 
         public IEnumerable<IGridItemPlaced> getPlacedSnapshot() {

@@ -21,5 +21,13 @@ namespace MageFactory.Character.Domain.CharacterCapability {
         public ICombatCharacterInventory getInventoryAggregate() {
             return new CombatCharacterInventory(combatCharacter.getInventoryAggregate());
         }
+
+        public int getActiveFlowCount() {
+            return combatCharacter.getActiveFlowCount();
+        }
+
+        public int getCreatedFlowsInCurrentBattleCount() {
+            return combatCharacter.getCreatedFlowsInCurrentBattleCount();
+        }
     }
 }

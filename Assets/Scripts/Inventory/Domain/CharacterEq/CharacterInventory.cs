@@ -12,6 +12,11 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
     internal class CharacterInventory : ICharacterInventory {
         private InventoryAggregate inventoryAggregate;
 
+        private readonly Dictionary<IInventoryCombatTickableItem, CharacterCombatTickableItemAction>
+            tickableItemActionCache = new();
+
+        private readonly List<CharacterCombatTickableItemAction> tickableItemActions = new();
+
         public CharacterInventory(InventoryAggregate inventoryAggregate) {
             this.inventoryAggregate = NullGuard.NotNullOrThrow(inventoryAggregate);
         }
@@ -92,11 +97,20 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
         }
 
         public IReadOnlyCollection<CharacterCombatTickableItemAction> getTickableItems() {
-            return inventoryAggregate.getTickableItems()
-                .Select(inventoryTickableItem =>
-                    (CharacterCombatTickableItemAction)((combatTicks, characterId, combatCapabilities) =>
-                        inventoryTickableItem.tick(combatTicks, characterId, combatCapabilities)))
-                .ToHashSet();
+            tickableItemActions.Clear();
+
+            foreach (IInventoryCombatTickableItem inventoryTickableItem in inventoryAggregate.getTickableItems()) {
+                if (!tickableItemActionCache.TryGetValue(inventoryTickableItem,
+                        out CharacterCombatTickableItemAction tickableItemAction)) {
+                    tickableItemAction = (combatTicks, characterId, combatCapabilities) =>
+                        inventoryTickableItem.tick(combatTicks, characterId, combatCapabilities);
+                    tickableItemActionCache[inventoryTickableItem] = tickableItemAction;
+                }
+
+                tickableItemActions.Add(tickableItemAction);
+            }
+
+            return tickableItemActions;
         }
 
         private static IReadOnlyCollection<ICharacterEquippedEntryPoint> mapToEquippedEntryPoints(

@@ -1,4 +1,3 @@
-﻿using MageFactory.CombatContext.Domain.CombatCapabilities.MageFactory.CombatContext.Domain;
 using MageFactory.CombatContextRuntime;
 using MageFactory.Shared.Utility;
 

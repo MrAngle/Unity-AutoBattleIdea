@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MageFactory.CombatContext.Api;
@@ -6,7 +6,6 @@ using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.CombatContext.Domain.CombatCapabilities;
-using MageFactory.CombatContext.Domain.CombatCapabilities.MageFactory.CombatContext.Domain;
 using MageFactory.CombatContextRuntime;
 using MageFactory.CombatEvents;
 using MageFactory.Flow.Contract;
@@ -15,6 +14,7 @@ using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using UnityEngine;
+using CombatCapabilitiesContainer = MageFactory.CombatContext.Domain.CombatCapabilities.CombatCapabilities;
 using Random = System.Random;
 
 namespace MageFactory.CombatContext.Domain {
@@ -41,7 +41,7 @@ namespace MageFactory.CombatContext.Domain {
             CombatCommandBus combatCommandBus = new CombatCommandBus(this);
             CombatQueries combatQueries = new CombatQueries(characters);
 
-            combatCapabilities = new CombatCapabilities.CombatCapabilities(combatCommandBus, combatQueries);
+            combatCapabilities = new CombatCapabilitiesContainer(combatCommandBus, combatQueries);
         }
 
         internal static CombatContext create(ICombatCharacterFactory paramCharacterFactory,

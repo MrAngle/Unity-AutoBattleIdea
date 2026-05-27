@@ -16,7 +16,8 @@
     "MageFactory.InjectConfiguration",
     "Zenject",
     "MageFactory.Flow.Configuration",
-    "MageFactory.Flow.Domain"
+    "MageFactory.Flow.Domain",
+    "MageFactory.CombatContextRuntime"
   ],
   "includePlatforms": [
     "Editor"

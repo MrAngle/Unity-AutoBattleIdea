@@ -7,5 +7,9 @@ namespace MageFactory.CombatContext.Contract {
         bool canPlaceItem(EquipItemQuery equipItemQuery);
 
         ICombatCharacterInventory getInventoryAggregate();
+
+        int getActiveFlowCount();
+
+        int getCreatedFlowsInCurrentBattleCount();
     }
 }

@@ -11,11 +11,13 @@ namespace MageFactory.Inventory.Domain {
         private readonly Dictionary<Vector2Int, IInventoryPlacedItem> cellToItemIndex = new();
         private readonly Dictionary<Id<ItemId>, IInventoryPlacedItem> itemIdToItemIndex = new();
         private readonly HashSet<IInventoryPlacedEntryPoint> entryPointsIndex = new();
+        private readonly HashSet<IInventoryCombatTickableItem> tickableItemsIndex = new();
 
         internal void clear() {
             cellToItemIndex.Clear();
             itemIdToItemIndex.Clear();
             entryPointsIndex.Clear();
+            tickableItemsIndex.Clear();
         }
 
         internal void addItem(IInventoryPlacedItem item) {
@@ -31,6 +33,10 @@ namespace MageFactory.Inventory.Domain {
 
             if (item is IInventoryPlacedEntryPoint entryPoint) {
                 entryPointsIndex.Add(entryPoint);
+            }
+
+            if (item is IInventoryCombatTickableItem tickableItem) {
+                tickableItemsIndex.Add(tickableItem);
             }
         }
 
@@ -50,6 +56,10 @@ namespace MageFactory.Inventory.Domain {
 
             if (item is IInventoryPlacedEntryPoint entryPoint) {
                 entryPointsIndex.Remove(entryPoint);
+            }
+
+            if (item is IInventoryCombatTickableItem tickableItem) {
+                tickableItemsIndex.Remove(tickableItem);
             }
         }
 
@@ -77,6 +87,10 @@ namespace MageFactory.Inventory.Domain {
 
             if (item is IInventoryPlacedEntryPoint entryPoint) {
                 entryPointsIndex.Add(entryPoint);
+            }
+
+            if (item is IInventoryCombatTickableItem tickableItem) {
+                tickableItemsIndex.Add(tickableItem);
             }
         }
 
@@ -108,6 +122,10 @@ namespace MageFactory.Inventory.Domain {
 
         internal IReadOnlyCollection<IInventoryPlacedEntryPoint> getEntryPoints() {
             return entryPointsIndex;
+        }
+
+        internal IReadOnlyCollection<IInventoryCombatTickableItem> getTickableItems() {
+            return tickableItemsIndex;
         }
 
         internal IReadOnlyDictionary<Vector2Int, IInventoryPlacedItem> getCellToItem() {

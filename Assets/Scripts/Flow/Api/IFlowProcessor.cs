@@ -1,5 +1,8 @@
-﻿namespace MageFactory.Flow.Api {
+using MageFactory.Shared.Model;
+
+namespace MageFactory.Flow.Api {
     public interface IFlowProcessor {
-        public void start();
+        void tick(CombatTicks combatTicks);
+        bool isFinished();
     }
 }

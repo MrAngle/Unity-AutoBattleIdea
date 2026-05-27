@@ -9,7 +9,6 @@ using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Domain.Service;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Configuration;
-using MageFactory.Flow.Domain;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api.Event;
 using MageFactory.Inventory.Domain.Service;
@@ -82,15 +81,9 @@ namespace MageFactory.InjectConfiguration {
             Container.Bind<FlowProcessorSettings>()
                 .FromMethod(_ => new FlowProcessorSettings(maxStepsPerSlice: 256))
                 .AsSingle();
-
-            Container.Bind<IFlowStepScheduler>()
-                .To<TaskYieldFlowStepScheduler>()
-                .AsSingle();
         }
 
         private void installActionExecutor() {
-            // Produkcyjny executor (czas/castTime).
-            // W testach możesz go nadpisać: Container.Rebind<IActionExecutor>().To<InstantActionExecutor>().AsSingle();
             Container.Bind<IActionExecutor>()
                 .To<ActionExecutorService>()
                 .AsSingle();

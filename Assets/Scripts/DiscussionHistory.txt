@@ -1,0 +1,56 @@
+2026-05-26 - Combat runtime context and ticked flow
+
+User wants CombatContext to carry live combat-wide runtime information, not only static data. This includes participating characters, available actions, active flow counts, created flow counters, and similar state used by item conditions.
+
+Performance assumption: combat tick may run about 10 times per second, and possibly more often later. The target scale can reach roughly 1,000-2,000 active items and flows. Anything in tick must be treated as hot-path code. Avoid per-tick allocations, LINQ materialization, reflection, broad collection rebuilds, and hidden O(n*m) behavior. Prefer indexes, reusable buffers, explicit phase plans, cheap query endpoints, and bounded work budgets.
+
+Important decision: ICombatQueries must remain a lightweight query surface. It should return simple values such as int, float, bool, string, enums, or cheap primitive-like values. It must not expose complex runtime objects, collections, wrappers, DTO graphs, or mutable domain internals.
+
+Current concrete need: item conditions should be able to ask whether there are more than 3 active flows and decide not to create a new flow. This first needs live active flow tracking and query endpoints.
+
+Direction for implementation: stop treating FlowProcessor as fire-and-forget async. Flow should become ticked runtime state, similar in spirit to InventoryPlacedEntryPoint ticking. Active flows should be stored by combat runtime/characters, ticked during combat ticks, and removed only after completion.
+
+Implementation detail refined: combat tick should process phases from stable snapshots. Active flows are copied as references into a reusable buffer, ticked from that buffer, and then the active flow list is compacted. This avoids newly added flows affecting the current flow phase while also avoiding per-tick list allocation. For now, flow phase runs before item/entry-point phase, so item conditions see state after already-active flows were processed and before newly created flows are processed on a later tick.
+
+Follow-up refinement: snapshot buffers should not live as vague fields like flowTickBuffer on CombatCharacter. Tick orchestration should be explicit as a small tick plan/action chain: first include participants for the tick, then execute named phases in order. CombatCharacter can own active runtime state, but the order and snapshot mechanics belong to CombatTickPlan.
+
+Architectural concern: the order of combat tick phases should not be defined ad hoc inside CombatCharacter. CombatCharacter can expose or own character-local runtime state, but the global order of phases is a combat runtime rule. The next refactor should move phase ordering to a combat-level orchestrator/runner or a reusable tick pipeline, while Character supplies participants/state.
+
+Immediate code refinement: CombatCharacter may own a CombatTickPlan-like helper, but CombatCharacter should not spell out the phase order through a chain. It should pass active flows, tickable items, character id, combat ticks, and capabilities into the plan/runner. The plan/runner owns the phase order.
+
+IDE/performance refinement: methods that execute tick phases should not look like cheap builder calls. CombatTickPlan should separate preparation of snapshots from execution of prepared phases. Expensive phase methods should be named as execution methods, not fluent "include/build" methods.
+
+Open point for later: decide how Duration seconds map to CombatTicks. For the first implementation step, avoid locking in a final time conversion unless needed.
+
+Previous flow behavior before today's refactor:
+
+- FlowProcessor exposed start() and internally launched startAsync() as fire-and-forget work.
+- stepLoopAsync processed nodes asynchronously until there were no more nodes.
+- For every current node, FlowProcessor prepared ExecuteActionCommand and delegated execution to IActionExecutor.
+- ActionExecutorService created PreparedAction, read IActionDescription.getCastTime(), waited with TimeModule.ContinueIn(duration), and only then executed the item effects.
+- The visible delay between items came mostly from each item's Duration/castTime through ActionExecutorService. Router logic only chose the next item; it did not own the delay.
+- FlowProcessorSettings.maxStepsPerSlice and IFlowStepScheduler were an additional async/yield safeguard, not the main item-to-item delay.
+
+What changed today:
+
+- FlowProcessor no longer exposes start() and no longer owns async fire-and-forget execution.
+- IFlowProcessor now exposes tick(CombatTicks) and isFinished().
+- FlowProcessor applies node effects during tick and advances through routed nodes in the ticked runtime model.
+- Active flows are stored on CombatCharacter for this first implementation step, counted through simple query endpoints, and removed after completion.
+- CombatCharacter now reports active and created flow counts through ICharacterCombatQueries, and combat-wide ICombatQueries aggregates those counts.
+- IFlowStepScheduler was removed because the current direction is ticked runtime rather than async/yielded flow processing.
+- CombatTickPlan was introduced as an explicit phase plan. CombatCharacter passes participants/context to it, while the plan owns the local phase order for now.
+
+Important consequence:
+
+- The old castTime-based item delay is not yet represented in the new ticked model. Duration-to-CombatTicks mapping and per-flow/per-character tick work budgeting still need a deliberate design step.
+
+2026-05-26 - Combat tick performance smoke test
+
+User wants a very early regression guard for the hot combat tick path. This should not pretend to be a reliable benchmark yet, because proper performance tests need warmup, stable runners, controlled logging, GC awareness, and eventually Unity profiling/performance-test tooling.
+
+Immediate direction: add a simple NUnit performance smoke test using Stopwatch. It should run a real BattleSession with about 1,000 tickable entry point items and about 1,000 active flows, warm the scenario up first, then assert a small preliminary per-tick budget. The test is intended to catch accidental catastrophic regressions, not to define final production performance.
+
+Implementation detail: use isolated entry points on a checkerboard pattern across multiple characters. This keeps the scenario focused on "many tickable items + many active flows" instead of accidentally measuring a huge connected flow graph caused by grid adjacency.
+
+Correction after first run: the initial isolated-entry-point version was too noisy because each flow could finish quickly and enter consumeFlow/damage processing, producing a lot of Debug.Log output and causing Rider's test output truncation. The smoke test should instead create the initial flows manually, use entry points with a long trigger interval so no new flows are created during measurement, set maxStepsPerSlice to 1, and give every flow a short no-op item chain so measured ticks process active flows without finishing them.

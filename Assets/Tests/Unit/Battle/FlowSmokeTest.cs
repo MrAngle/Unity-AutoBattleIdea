@@ -1,4 +1,6 @@
-﻿using MageFactory.ActionEffect;
+using System.Linq;
+using MageFactory.ActionEffect;
+using MageFactory.BattleManager;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Item.Catalog.Bases;
@@ -9,6 +11,43 @@ using UnityEngine;
 
 namespace MageFactory.Tests.Unit.Battle {
     public sealed class DeterministicFlowScenarioTest {
+        [Test]
+        public void should_expose_active_and_created_flow_counts() {
+            // given
+            IItemDefinition entry1 = new EntryPointGem();
+            IItemDefinition entry2 = new EntryPointGem();
+            IItemDefinition entry3 = new EntryPointGem();
+            IItemDefinition entry4 = new EntryPointGem();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry1, new Vector2Int(0, 0)),
+                new(entry2, new Vector2Int(1, 0)),
+                new(entry3, new Vector2Int(2, 0)),
+                new(entry4, new Vector2Int(3, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            var session = BattleSessionTestFixtures.basic(combatContext);
+            var attackerId = combatContext.getAllCharacters()
+                .First(character => character.query().getCharacterInfo().getTeam() == Team.TeamA)
+                .query()
+                .getCharacterInfo()
+                .getCharacterId();
+
+            // when
+            session.tickOnce();
+
+            // then
+            Assert.AreEqual(4, combatContext.getCombatCapabilities().query().getActiveFlowCount());
+            Assert.AreEqual(4,
+                combatContext.getCombatCapabilities().query().getActiveFlowCountForCharacter(attackerId));
+            Assert.AreEqual(4, combatContext.getCombatCapabilities().query().getCreatedFlowCount());
+            Assert.AreEqual(4,
+                combatContext.getCombatCapabilities().query().getCreatedFlowCountForCharacter(attackerId));
+        }
+
         [Test]
         public void should_move_item_by_hammer_and_not_deal_damage_by_shield() {
             // given
@@ -25,14 +64,13 @@ namespace MageFactory.Tests.Unit.Battle {
             };
 
             ICombatContext combatContext = BattleScenarioTestHarness.create()
-                .withInstantActionExecutorInstance()
                 .create1V1WithEnormousHp(itemCommands);
 
             var session = BattleSessionTestFixtures.basic(combatContext);
             var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             // when
-            session.tickOnce();
+            session.tickMany(new ManualBattleLoop(), 2);
 
             // then
             IItemDefinition[] expectedDamageSources = {
@@ -61,14 +99,13 @@ namespace MageFactory.Tests.Unit.Battle {
             };
 
             ICombatContext combatContext = BattleScenarioTestHarness.create()
-                .withInstantActionExecutorInstance()
                 .create1V1WithEnormousHp(attackerItems);
 
             var session = BattleSessionTestFixtures.basic(combatContext);
             var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             // when
-            session.tickOnce();
+            session.tickMany(new ManualBattleLoop(), 2);
 
             // then
             IItemDefinition[] expectedDamageSources = {
@@ -93,14 +130,13 @@ namespace MageFactory.Tests.Unit.Battle {
             };
 
             ICombatContext combatContext = BattleScenarioTestHarness.create()
-                .withInstantActionExecutorInstance()
                 .create1V1WithEnormousHp(attackerItems);
 
             var session = BattleSessionTestFixtures.basic(combatContext);
             var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             // when
-            session.tickOnce();
+            session.tickMany(new ManualBattleLoop(), 2);
 
             // then
             IItemDefinition[] expectedDamageSources = {
@@ -127,14 +163,13 @@ namespace MageFactory.Tests.Unit.Battle {
             };
 
             ICombatContext combatContext = BattleScenarioTestHarness.create()
-                .withInstantActionExecutorInstance()
                 .create1V1WithEnormousHp(attackerItems);
 
             var session = BattleSessionTestFixtures.basic(combatContext);
             var hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             // when
-            session.tickOnce();
+            session.tickMany(new ManualBattleLoop(), 2);
 
             // then
             IItemDefinition[] expectedDamageSources = {
