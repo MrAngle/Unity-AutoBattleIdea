@@ -15,8 +15,8 @@ namespace MageFactory.Item.Catalog.Bases {
         }
 
         private class ShieldActionDescription : IActionDescription {
-            public Duration getCastTime() {
-                return new Duration(0.25f);
+            public ItemCastTime getCastTime() {
+                return ItemCastTime.ofTicks(3);
             }
 
             public IOperations getEffectsDescriptor() {

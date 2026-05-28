@@ -1,5 +1,3 @@
-﻿using MageFactory.ActionExecutor.Api;
-using MageFactory.ActionExecutor.Domain;
 using MageFactory.Character.Api.Event;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Domain.Service;
@@ -19,7 +17,7 @@ using Zenject;
 
 namespace MageFactory.InjectConfiguration {
     /// <summary>
-    /// Domenowa kompozycja: Flow + CombatContext + Character + Inventory + Item + EventHuby + ActionExecutor.
+    /// Domenowa kompozycja: Flow + CombatContext + Character + Inventory + Item + EventHuby.
     /// Bez UI/Unity-view bindingów (prefaby, FromComponentInHierarchy, MonoBehaviour itp.).
     ///
     /// Cel: możliwe uruchomienie w EditMode testach na czystym DiContainer.
@@ -34,7 +32,6 @@ namespace MageFactory.InjectConfiguration {
             installEventHubs();
             installItemsAndInventory();
             installFlow();
-            installActionExecutor();
             installCombatAndCharacters();
         }
 
@@ -90,13 +87,8 @@ namespace MageFactory.InjectConfiguration {
 
             Container.Bind<FlowProcessorSettings>()
                 .FromMethod(_ => new FlowProcessorSettings(
-                    maxStepsPerSlice: FlowMaxStepsPerTickSafetyLimit));
-        }
-
-        private void installActionExecutor() {
-            Container.Bind<IActionExecutor>()
-                .To<ActionExecutorService>()
-                .AsSingle();
+                    maxStepsPerSlice: FlowMaxStepsPerTickSafetyLimit,
+                    castTimeMode: FlowCastTimeMode.UseItemCastTime));
         }
 
         private void installCombatAndCharacters() {

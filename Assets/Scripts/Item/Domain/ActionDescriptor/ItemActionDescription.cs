@@ -4,16 +4,15 @@ using MageFactory.Shared.Utility;
 
 namespace MageFactory.Item.Domain.ActionDescriptor {
     internal sealed class ItemActionDescription : IActionDescription {
-        private readonly Duration castTime;
+        private readonly ItemCastTime castTime;
         private readonly IOperations operations;
 
-        internal ItemActionDescription(Duration castTime, IOperations operations) {
-            this.castTime = castTime;
-            this.operations = operations;
-            NullGuard.NotNullCheckOrThrow(this.castTime, this.operations);
+        internal ItemActionDescription(ItemCastTime castTime, IOperations operations) {
+            this.castTime = NullGuard.NotNullOrThrow(castTime);
+            this.operations = NullGuard.NotNullOrThrow(operations);
         }
 
-        public Duration getCastTime() {
+        public ItemCastTime getCastTime() {
             return castTime;
         }
 

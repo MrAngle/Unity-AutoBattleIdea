@@ -38,16 +38,6 @@ namespace MageFactory.Item.Domain {
             return itemArchetype.getActionDescription();
         }
 
-        //
-        // private Duration prepareActionTiming() {
-        //     return new Duration(itemArchetype.getCastTime());
-        // }
-        //
-        // private static IOperations prepareEffectsDescriptor() {
-        //     return new ItemOperationsDescription(
-        //         new AddPower(new DamageToDeal(5))
-        //     );
-        // }
         public void updateItemPosition(IInventoryPosition paramInventoryPosition) {
             inventoryPosition = paramInventoryPosition;
         }

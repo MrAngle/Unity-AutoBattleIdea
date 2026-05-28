@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
-using MageFactory.ActionExecutor.Api.Dto;
+using MageFactory.ActionEffect;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Configuration;
 using MageFactory.Flow.Contract;
+using MageFactory.Flow.Domain.ActionCapability;
 using MageFactory.Flow.Domain.FlowCapability;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.FlowRouting;
@@ -16,7 +18,8 @@ namespace MageFactory.Flow.Domain {
         private readonly List<Id<ItemId>> visitedNodeIds = new();
         private readonly FlowProcessorSettings settings;
 
-        private IFlowItem currentNode;
+        private IFlowItem currentItem;
+        private readonly CurrentFlowItemCast currentItemCast = new();
         private bool finished;
 
         private FlowProcessor(
@@ -24,9 +27,10 @@ namespace MageFactory.Flow.Domain {
             IFlowItem startNode,
             FlowProcessorSettings settings
         ) {
-            currentNode = NullGuard.NotNullOrThrow(startNode);
+            currentItem = NullGuard.NotNullOrThrow(startNode);
             this.flowProcessingCapabilities = NullGuard.NotNullOrThrow(flowProcessingCapabilities);
             this.settings = NullGuard.NotNullOrThrow(settings);
+            currentItemCast.startCasting(currentItem, settings.getCastTimeMode());
         }
 
         internal static IFlowProcessor create(
@@ -39,8 +43,8 @@ namespace MageFactory.Flow.Domain {
             ActionContextFactory actionContextFactory,
             FlowProcessorSettings settings
         ) {
-            var context = new FlowContext(flowKind, startNode, flowConsumer, flowOwner, flowRouter);
-            var flowProcessingCapabilities =
+            FlowContext context = new FlowContext(flowKind, startNode, flowConsumer, flowOwner, flowRouter);
+            FlowProcessingCapabilities flowProcessingCapabilities =
                 new FlowProcessingCapabilities(context, actionContextFactory, flowCapabilities);
 
             return new FlowProcessor(
@@ -55,42 +59,82 @@ namespace MageFactory.Flow.Domain {
                 return;
             }
 
-            var stepsProcessed = 0;
+            if (combatTicks.isNegative()) {
+                throw new ArgumentOutOfRangeException(
+                    nameof(combatTicks),
+                    combatTicks,
+                    "Combat ticks cannot be negative.");
+            }
 
-            while (currentNode != null && stepsProcessed < settings.getMaxStepsPerSlice()) {
-                process();
-                stepsProcessed++;
+            if (combatTicks.isZero()) {
+                return;
+            }
 
-                if (!goNext()) {
-                    break;
+            advanceFlowDuring(combatTicks);
+        }
+
+        private void advanceFlowDuring(CombatTicks combatTicks) {
+            CombatTicks availableTicks = combatTicks;
+            int processedItemsThisTick = 0;
+
+            while (canProcessMoreItems(processedItemsThisTick)) {
+                if (!tryFinishCurrentItemCast(ref availableTicks)) {
+                    return;
+                }
+
+                executeCurrentItemEffects();
+                processedItemsThisTick++;
+
+                if (!tryMoveToNextItem()) {
+                    return;
+                }
+
+                if (mustWaitForMoreTicks(availableTicks)) {
+                    return;
                 }
             }
         }
 
-        private void process() {
-            ExecuteActionCommand executeActionCommand =
-                flowProcessingCapabilities.query().prepareExecuteActionCommand(currentNode);
+        private bool canProcessMoreItems(int processedItemsThisTick) {
+            return currentItem != null && processedItemsThisTick < settings.getMaxStepsPerSlice();
+        }
 
-            var effects = executeActionCommand.itemActionDescription
+        private bool tryFinishCurrentItemCast(ref CombatTicks availableTicks) {
+            return currentItemCast.tryFinishCasting(ref availableTicks);
+        }
+
+        private bool mustWaitForMoreTicks(CombatTicks availableTicks) {
+            return availableTicks <= CombatTicks.ZERO && currentItemCast.isCasting();
+        }
+
+        private void executeCurrentItemEffects() {
+            IActionDescription actionDescription =
+                flowProcessingCapabilities.query().prepareActionDescription(currentItem);
+
+            ActionCapabilities actionCapabilities =
+                flowProcessingCapabilities.query().prepareActionCapabilities(currentItem);
+
+            IReadOnlyList<IOperation> effects = actionDescription
                 .getEffectsDescriptor()
                 .getEffects();
 
-            for (var i = 0; i < effects.Count; i++) {
-                effects[i].apply(executeActionCommand.actionCapabilities);
+            for (int i = 0; i < effects.Count; i++) {
+                effects[i].apply(actionCapabilities);
             }
 
-            visitedNodeIds.Add(currentNode.getId());
+            visitedNodeIds.Add(currentItem.getId());
         }
 
-        private bool goNext() {
+        private bool tryMoveToNextItem() {
             if (flowProcessingCapabilities.query()
-                .tryFindNextNode(currentNode, visitedNodeIds, out IFlowItem nextNode)) {
-                currentNode = nextNode;
+                .tryFindNextNode(currentItem, visitedNodeIds, out IFlowItem nextItem)) {
+                currentItem = nextItem;
+                currentItemCast.startCasting(currentItem, settings.getCastTimeMode());
                 return true;
             }
 
             finishFlow();
-            currentNode = null;
+            currentItem = null;
             finished = true;
             return false;
         }

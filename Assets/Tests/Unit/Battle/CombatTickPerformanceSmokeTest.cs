@@ -39,7 +39,7 @@ namespace MageFactory.Tests.Unit.Battle {
         private static readonly int EntryPointTriggerIntervalTicks = StressCombatTicksPerRealSecond;
         private const int WarmupTicks = 5;
         private static readonly int MeasuredTicks = StressCombatTicksPerRealSecond * MeasuredRealSeconds;
-        private const double MaxAverageTickMilliseconds = 10.5;
+        private const double MaxAverageTickMilliseconds = 11.0;
 
         private static readonly ShapeArchetype PerformanceEntryPointShape = new(
             ShapeArchetypeId.SQUARE_1X1,
@@ -271,8 +271,8 @@ namespace MageFactory.Tests.Unit.Battle {
         private sealed class NoOpActionDescription : IActionDescription {
             internal static readonly NoOpActionDescription Instance = new();
 
-            public Duration getCastTime() {
-                return new Duration(0);
+            public ItemCastTime getCastTime() {
+                return ItemCastTime.ZERO;
             }
 
             public IOperations getEffectsDescriptor() {

@@ -2,7 +2,7 @@
 
 namespace MageFactory.ActionEffect {
     public interface IActionDescription {
-        public Duration getCastTime();
+        public ItemCastTime getCastTime();
         public IOperations getEffectsDescriptor();
     }
 }

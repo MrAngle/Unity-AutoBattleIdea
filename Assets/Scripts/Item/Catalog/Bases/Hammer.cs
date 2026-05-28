@@ -15,8 +15,8 @@ namespace MageFactory.Item.Catalog.Bases {
         }
 
         private class RustySwordActionDescription : IActionDescription {
-            public Duration getCastTime() {
-                return new Duration(0.15f);
+            public ItemCastTime getCastTime() {
+                return ItemCastTime.ofTicks(2);
             }
 
             public IOperations getEffectsDescriptor() {

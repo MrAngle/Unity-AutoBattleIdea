@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using MageFactory.ActionExecutor.Api.Dto;
+using System.Collections.Generic;
+using MageFactory.ActionEffect;
 using MageFactory.Flow.Contract;
 using MageFactory.Flow.Domain.ActionCapability;
 using MageFactory.Flow.Domain.Service;
@@ -12,8 +12,11 @@ namespace MageFactory.Flow.Domain.FlowCapability {
         private readonly ActionContextFactory actionContextFactory;
         private readonly IFlowCapabilities flowCapabilities;
 
-        public FlowProcessingQueries(FlowContext flowContext, ActionContextFactory actionContextFactory,
-                                     IFlowCapabilities flowCapabilities) {
+        public FlowProcessingQueries(
+            FlowContext flowContext,
+            ActionContextFactory actionContextFactory,
+            IFlowCapabilities flowCapabilities
+        ) {
             this.flowContext = NullGuard.NotNullOrThrow(flowContext);
             this.actionContextFactory = NullGuard.NotNullOrThrow(actionContextFactory);
             this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
@@ -24,12 +27,11 @@ namespace MageFactory.Flow.Domain.FlowCapability {
             return nextNode != null;
         }
 
-        internal ExecuteActionCommand prepareExecuteActionCommand(IFlowItem actionItemInvoker) {
-            var actionSpecification = actionItemInvoker.prepareItemActionDescription();
-            return new ExecuteActionCommand(actionSpecification, prepareActionCapabilities(actionItemInvoker));
+        internal IActionDescription prepareActionDescription(IFlowItem actionItemInvoker) {
+            return actionItemInvoker.prepareItemActionDescription();
         }
 
-        private ActionCapabilities prepareActionCapabilities(IFlowItem actionItemInvoker) {
+        internal ActionCapabilities prepareActionCapabilities(IFlowItem actionItemInvoker) {
             // maybe it may be optimized by caching/memoization
             ActionContext actionContext = actionContextFactory.create(flowContext, actionItemInvoker);
 

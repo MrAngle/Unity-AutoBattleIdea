@@ -9,8 +9,6 @@
     "MageFactory.Item.Domain",
     "MageFactory.Flow.Api",
     "MageFactory.Flow.Domain",
-    "MageFactory.ActionExecutor.Api",
-    "MageFactory.ActionExecutor.Domain",
     "MageFactory.Character.Domain",
     "MageFactory.Character.Contract",
     "MageFactory.CombatContext.Contract",

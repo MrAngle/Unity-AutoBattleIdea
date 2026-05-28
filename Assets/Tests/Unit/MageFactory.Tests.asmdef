@@ -7,7 +7,6 @@
     "MageFactory.BattleManager",
     "MageFactory.Inventory.Contract",
     "MageFactory.ActionEffect",
-    "MageFactory.ActionExecutor.Api",
     "MageFactory.Item.Catalog",
     "MageFactory.CombatContext.Api",
     "MageFactory.UI.Context.Combat",

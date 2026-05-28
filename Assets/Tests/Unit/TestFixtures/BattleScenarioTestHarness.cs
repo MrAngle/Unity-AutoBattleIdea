@@ -37,7 +37,17 @@ namespace MageFactory.Tests.Unit.TestFixtures {
 
         public BattleScenarioTestHarness withFlowSettings(int maxStepsPerSlice) {
             container.Rebind<FlowProcessorSettings>()
-                .FromInstance(new FlowProcessorSettings(maxStepsPerSlice));
+                .FromInstance(new FlowProcessorSettings(maxStepsPerSlice, FlowCastTimeMode.UseItemCastTime));
+            return this;
+        }
+
+        public BattleScenarioTestHarness withInstantFlowItemCastTime() {
+            FlowProcessorSettings currentSettings = container.Resolve<FlowProcessorSettings>();
+
+            container.Rebind<FlowProcessorSettings>()
+                .FromInstance(new FlowProcessorSettings(
+                    currentSettings.getMaxStepsPerSlice(),
+                    FlowCastTimeMode.Instant));
             return this;
         }
 

@@ -1,9 +1,0 @@
-﻿{
-  "name": "MageFactory.ActionExecutor.Api",
-  "rootNamespace": "MageFactory",
-  "references": [
-    "MageFactory.ActionEffect",
-    "MageFactory.Shared"
-  ],
-  "autoReferenced": true
-}
