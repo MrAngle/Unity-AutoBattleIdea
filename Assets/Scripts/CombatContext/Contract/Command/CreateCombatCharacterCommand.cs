@@ -6,5 +6,6 @@ namespace MageFactory.CombatContext.Contract.Command {
         string name,
         int maxHp,
         Team team,
+        GridDimensions inventoryGridDimensions,
         IReadOnlyList<EquipItemCommand> itemsToEquip);
 }

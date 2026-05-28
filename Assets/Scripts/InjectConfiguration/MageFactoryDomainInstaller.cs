@@ -11,8 +11,10 @@ using MageFactory.Flow.Api;
 using MageFactory.Flow.Configuration;
 using MageFactory.Flow.Domain.Service;
 using MageFactory.Inventory.Api.Event;
+using MageFactory.Inventory.Contract;
 using MageFactory.Inventory.Domain.Service;
 using MageFactory.Item.Domain.Service;
+using MageFactory.Shared.Model;
 using Zenject;
 
 namespace MageFactory.InjectConfiguration {
@@ -23,6 +25,10 @@ namespace MageFactory.InjectConfiguration {
     /// Cel: możliwe uruchomienie w EditMode testach na czystym DiContainer.
     /// </summary>
     public sealed class MageFactoryDomainInstaller : Installer<MageFactoryDomainInstaller> {
+        private const int FlowMaxStepsPerTickSafetyLimit = 5_000;
+        private const int MaxInventoryGridWidth = 100;
+        private const int MaxInventoryGridHeight = 50;
+
         public override void InstallBindings() {
             installSignals();
             installEventHubs();
@@ -62,6 +68,10 @@ namespace MageFactory.InjectConfiguration {
             // Item factory (tworzenie entrypointów i normalnych itemów do inventory)
             Container.BindInterfacesTo<ItemFactoryService>().AsSingle();
 
+            Container.Bind<InventoryGridConfiguration>()
+                .FromInstance(new InventoryGridConfiguration(
+                    new GridDimensions(MaxInventoryGridWidth, MaxInventoryGridHeight)));
+
             // Inventory factory per-character
             Container.Bind<ICharacterInventoryFactory>()
                 .To<CharacterInventoryFactory>()
@@ -79,8 +89,8 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle();
 
             Container.Bind<FlowProcessorSettings>()
-                .FromMethod(_ => new FlowProcessorSettings(maxStepsPerSlice: 256))
-                .AsSingle();
+                .FromMethod(_ => new FlowProcessorSettings(
+                    maxStepsPerSlice: FlowMaxStepsPerTickSafetyLimit));
         }
 
         private void installActionExecutor() {

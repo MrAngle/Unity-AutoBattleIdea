@@ -11,25 +11,26 @@ using Zenject;
 
 namespace MageFactory.BattleManager {
     public class BattleUIManager : MonoBehaviour {
+        private static readonly GridDimensions DefaultInventoryGridDimensions = new GridDimensions(17, 8);
+
         private BattleRuntime battleRuntime; // move to BattleManager
         private Coroutine battleLoop;
 
         private ICombatContextFactory combatContextFactory;
         private CombatContextPresentationFactory combatContextPresentationFactory;
+        private BattleSessionSettings battleSessionSettings;
         private ICombatContext combatContext;
-
-        private float turnInterval = 4f;
 
         private BattleSession battleSession;
 
         private void Start() {
             createSlots(new CreateCombatCharacterCommand[] {
-                new("Warrior", 120, Team.TeamA, new[] {
+                new("Warrior", 120, Team.TeamA, DefaultInventoryGridDimensions, new[] {
                     new EquipItemCommand(
                         new EntryPointGem(), new Vector2Int(0, 0))
                 }),
-                new("Mage", 1220, Team.TeamB, Array.Empty<EquipItemCommand>()),
-                new("Archer", 1300, Team.TeamB, Array.Empty<EquipItemCommand>())
+                new("Mage", 1220, Team.TeamB, DefaultInventoryGridDimensions, Array.Empty<EquipItemCommand>()),
+                new("Archer", 1300, Team.TeamB, DefaultInventoryGridDimensions, Array.Empty<EquipItemCommand>())
             });
 
             startBattleLoop();
@@ -38,15 +39,17 @@ namespace MageFactory.BattleManager {
         [Inject]
         public void construct(BattleRuntime injectBattleRuntime,
                               ICombatContextFactory injectCombatContextFactory,
-                              CombatContextPresentationFactory injectCombatContextPresentationFactory) {
+                              CombatContextPresentationFactory injectCombatContextPresentationFactory,
+                              BattleSessionSettings injectBattleSessionSettings) {
             battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
             combatContextFactory = NullGuard.NotNullOrThrow(injectCombatContextFactory);
             combatContextPresentationFactory = NullGuard.NotNullOrThrow(injectCombatContextPresentationFactory);
+            battleSessionSettings = NullGuard.NotNullOrThrow(injectBattleSessionSettings);
         }
 
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
             combatContext = combatContextFactory.create(charactersToCreate);
-            battleSession = new BattleSession(battleRuntime, combatContext);
+            battleSession = new BattleSession(battleRuntime, combatContext, battleSessionSettings);
 
             combatContextPresentationFactory.createCombatContextPresentation(combatContext);
         }
@@ -56,7 +59,7 @@ namespace MageFactory.BattleManager {
         }
 
         private IEnumerator executeLoop() {
-            var wait = new WaitForSeconds(turnInterval);
+            WaitForSeconds wait = new WaitForSeconds(battleSession.getSettings().getRealSecondsPerCombatTick());
 
             while (true) {
                 battleSession.tickOnce();

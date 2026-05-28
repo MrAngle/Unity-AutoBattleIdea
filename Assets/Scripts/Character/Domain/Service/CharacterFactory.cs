@@ -21,11 +21,12 @@ namespace MageFactory.Character.Domain.Service {
         }
 
         internal CharacterAggregate createCharacter(CreateCombatCharacterCommand command) {
-            var characterInventory = characterInventoryFactory.createCharacterInventory();
-            var character =
+            ICharacterInventory characterInventory =
+                characterInventoryFactory.createCharacterInventory(command.inventoryGridDimensions);
+            CharacterAggregate character =
                 CharacterAggregate.createFrom(command, characterInventory, characterEventPublisher);
 
-            foreach (var itemToEquip in command.itemsToEquip) {
+            foreach (EquipItemCommand itemToEquip in command.itemsToEquip) {
                 character.equipItemOrThrow(itemToEquip);
             }
 

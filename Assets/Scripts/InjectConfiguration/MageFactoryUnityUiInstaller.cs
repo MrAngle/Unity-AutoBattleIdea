@@ -52,6 +52,9 @@ namespace MageFactory.InjectConfiguration {
                 .AsSingle()
                 .NonLazy();
 
+            Container.Bind<BattleSessionSettings>()
+                .FromInstance(BattleSessionSettings.createDefault());
+
             Container.Bind<InventoryPanelPresentation>()
                 .AsSingle()
                 .NonLazy();

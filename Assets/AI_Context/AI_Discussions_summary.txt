@@ -397,3 +397,33 @@ Durable AI/project decisions recorded below this boundary belong to the next com
 AI COMMIT BOUNDARY 2026-05-27 - after push 64685f0 (master) - Record boundary updates for durable AI/project decisions; enhance pre-push script to include commit subject context.
 
 Durable AI/project decisions recorded below this boundary belong to the next commit context after the latest push.
+
+AI COMMIT BOUNDARY 2026-05-27 - after push ef4027f (master) - Clarify commit boundary usage and guidelines; update documentation to reflect durable decisions and introduce token usage mitigation strategy.
+
+Durable AI/project decisions recorded below this boundary belong to the next commit context after the latest push.
+
+Combat tick performance smoke refinement: the stress smoke should use exactly 12 combat characters, 5,000 equipped entry point items across them, and 5,000 manually created initial active flows. The measured section should represent 10 real-time seconds at 100 ticks per real-time second, so 1,000 measured ticks, with an intentionally ambitious first budget around 10 ms average per tick. This is a catastrophic regression guard, not a final production benchmark.
+
+The smoke scenario may allow entry points to create new flows during measurement to better resemble a busy fight, but it must remain deterministic about setup and counters: assert exact character count, exact item count, exact initial active/created flow counts, and expected created flow count after known trigger waves.
+
+Inventory size is no longer hardcoded inside `InventoryAggregate.create`. Global DI config now provides only `InventoryGridConfiguration`, which defines the maximum allowed grid size. The actual inventory size belongs to each character creation command through `GridDimensions`, so normal characters can explicitly use 17x8 while stress-test characters can use 100x50.
+
+`BattleRuntime.tick` should not allocate a LINQ `ToList()` of combat characters every tick. It now iterates the stable `IReadOnlyCollection<ICombatCharacterFacade>` directly. If character membership later becomes mutable during tick, use an explicit reusable participant snapshot rather than per-tick LINQ materialization.
+
+GUI performance validation should be handled separately with PlayMode/scene-level profiling. The domain smoke test should remain focused on combat runtime tick cost so failures are attributable to flow/item/combat logic.
+
+Stress smoke warmup correction: warmup should run before manually creating the initial 5,000 active flows. In the dense-grid scenario, warmup after flow creation lets a few random-routed flows finish before measurement, breaking the deterministic "starts with 5,000 active flows" assertion.
+
+`FlowProcessorSettings.maxStepsPerSlice` should fail fast on invalid values instead of silently clamping non-positive values to `1`. The setting remains a DI/test configuration value object; validation belongs at construction time, while flow tick should be able to assume a valid positive budget.
+
+The old `FlowProcessorSettings` constructor default of `64` was removed as a magic number from the value object. In the ticked model, this value is no longer the main pacing mechanism; future pacing should come from ticks plus item cast time/cooldown/duration. The setting is now an explicit DI/test configuration and should be interpreted as a per-flow, per-tick safety/work cap against excessive graph walking in one tick.
+
+Code style preference reinforced: for domain/config objects, prefer Java-like private fields with explicit getters over C# auto-properties. The flow step safety cap default is now 5,000, intentionally high enough to behave as an extreme guard rather than normal combo pacing.
+
+Durable C# code-shape/style preferences should be recorded in `Assets/AI_Context/AI_Csharp` and followed for future C# changes. This now includes explicit typing preference and Java-like private fields plus explicit getters for new domain/config/value objects, while still respecting established local patterns where appropriate.
+
+Inventory grid sizing semantics: global DI config should represent the maximum supported inventory grid size, not the actual grid size for every character. The actual inventory dimensions belong to character creation data via `CreateCombatCharacterCommand` and `GridDimensions`; `CharacterInventoryFactory` validates those dimensions against `InventoryGridConfiguration`.
+
+Combat tick-rate semantics: a tick is the smallest game time unit. Do not model this as a separate "game second" concept for now. The default GUI/runtime execution speed is 10 combat ticks per real-time second, and speed-up means executing more ticks per real-time second, e.g. x10 speed = 100 ticks per real-time second. Mechanics should be expressed in ticks; runtime/GUI speed controls how quickly those ticks are consumed in real time.
+
+The default 10 combat ticks per real-time second setting belongs to battle/session runtime configuration. It is represented by `BattleSessionSettings`, not by `CombatTicks` itself. `CombatTicks` remains a pure smallest-unit value; session/UI code decides how quickly ticks are executed in real time.

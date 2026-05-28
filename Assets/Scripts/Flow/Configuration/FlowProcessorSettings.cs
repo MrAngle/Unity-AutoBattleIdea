@@ -1,10 +1,21 @@
-﻿namespace MageFactory.Flow.Configuration {
-    public sealed class FlowProcessorSettings {
-        public int maxStepsPerSlice { get; }
+using System;
 
-        public FlowProcessorSettings(int maxStepsPerSlice = 64) {
-            // verify
-            this.maxStepsPerSlice = maxStepsPerSlice < 1 ? 1 : maxStepsPerSlice;
+namespace MageFactory.Flow.Configuration {
+    public sealed class FlowProcessorSettings {
+        private readonly int maxStepsPerSlice;
+
+        public FlowProcessorSettings(int maxStepsPerSlice) {
+            if (maxStepsPerSlice < 1) {
+                throw new ArgumentOutOfRangeException(
+                    nameof(maxStepsPerSlice),
+                    "Flow processor must be allowed to process at least one step per tick.");
+            }
+
+            this.maxStepsPerSlice = maxStepsPerSlice;
+        }
+
+        public int getMaxStepsPerSlice() {
+            return maxStepsPerSlice;
         }
     }
 }

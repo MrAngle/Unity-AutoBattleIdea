@@ -37,7 +37,7 @@ namespace MageFactory.Flow.Domain {
             IFlowOwner flowOwner,
             IFlowCapabilities flowCapabilities,
             ActionContextFactory actionContextFactory,
-            FlowProcessorSettings settings = null
+            FlowProcessorSettings settings
         ) {
             var context = new FlowContext(flowKind, startNode, flowConsumer, flowOwner, flowRouter);
             var flowProcessingCapabilities =
@@ -46,7 +46,7 @@ namespace MageFactory.Flow.Domain {
             return new FlowProcessor(
                 flowProcessingCapabilities,
                 startNode,
-                settings ?? new FlowProcessorSettings()
+                NullGuard.NotNullOrThrow(settings)
             );
         }
 
@@ -57,7 +57,7 @@ namespace MageFactory.Flow.Domain {
 
             var stepsProcessed = 0;
 
-            while (currentNode != null && stepsProcessed < settings.maxStepsPerSlice) {
+            while (currentNode != null && stepsProcessed < settings.getMaxStepsPerSlice()) {
                 process();
                 stepsProcessed++;
 

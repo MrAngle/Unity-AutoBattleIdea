@@ -1,5 +1,7 @@
-﻿namespace MageFactory.Character.Contract {
+using MageFactory.Shared.Model;
+
+namespace MageFactory.Character.Contract {
     public interface ICharacterInventoryFactory {
-        ICharacterInventory createCharacterInventory();
+        ICharacterInventory createCharacterInventory(GridDimensions gridDimensions);
     }
 }

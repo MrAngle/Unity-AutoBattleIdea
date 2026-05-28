@@ -22,4 +22,11 @@ Dostarczaj:
 
 Dodawaj wskazówki jak działa C# w porównaniu do Java
 
+Ustalenia o stylu i kształcie kodu C# dopisuj do tego pliku i uwzględniaj przy kolejnych zmianach. Jeśli w rozmowie pojawia się trwała preferencja kodowania, np. nazewnictwo, sposób enkapsulacji, unikanie konkretnego idiomu C#, albo preferowany odpowiednik stylu Java, zapisz ją tutaj zamiast zostawiać tylko w historii rozmowy.
+
+Preferencje stylu kodu:
+- Preferuj jawne typy zamiast `var`, chyba że typ jest oczywisty i lokalny kod staje się czytelniejszy.
+- W domain/config/value objectach preferuj styl bliższy Java: prywatne pola i jawne gettery, np. `private readonly int maxStepsPerSlice;` oraz `getMaxStepsPerSlice()`, zamiast publicznych auto-properties typu `public int maxStepsPerSlice { get; }`.
+- Nie traktuj tej preferencji jako zakazu idiomatycznego C# w każdej sytuacji. W kodzie Unity, DTO, prostych prezentacyjnych modelach lub istniejących lokalnych wzorcach dopasuj się do otaczającego kodu, ale przy nowych domenowych klasach domyślnie wybieraj prywatne pola + gettery.
+
 Zawsze: pokaż rozwiązanie, wskaż antywzorce, podaj lepszą alternatywę i koszty (wydajność/utrzymanie). Możesz używać porównań do GameMaker tam, gdzie to pomaga.

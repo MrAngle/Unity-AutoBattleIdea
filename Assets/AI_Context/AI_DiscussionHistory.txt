@@ -72,3 +72,51 @@ Everything below this boundary belongs to the next set of changes after the late
 AI COMMIT BOUNDARY 2026-05-27 - after push 64685f0 (master) - Record boundary updates for durable AI/project decisions; enhance pre-push script to include commit subject context.
 
 Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI COMMIT BOUNDARY 2026-05-27 - after push ef4027f (master) - Clarify commit boundary usage and guidelines; update documentation to reflect durable decisions and introduce token usage mitigation strategy.
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-05-27 - Combat tick stress smoke test refinement
+
+User clarified that the performance smoke should stress a more complex fight, not only isolate already-active flow ticking. New target for this smoke scenario: exactly 12 combat characters, exactly 5,000 equipped entry point items across those characters, exactly 5,000 initially active flow commands, and a measured run representing 10 real-time seconds at 100 combat ticks per real-time second. The first threshold should be intentionally ambitious, around 10 ms average per tick, as a catastrophic regression guard rather than a final benchmark.
+
+The test is allowed to let entry points create new flows during measurement because that better reflects a busy fight. To keep the setup deterministic, the test should still assert the exact character count, exact placed item count, exact initial active/created flow counts, and the expected created flow count after the measured trigger waves.
+
+Previous inventory sizing mechanism: `InventoryAggregate.create` always created a fixed 17x8 inventory. This made the stress test misleading, because the constants in the test looked like scenario scale even though 1,000+ items required silently adding many characters. First replacement made inventory dimensions globally configurable through DI, but that still implied every character had the same inventory size.
+
+Current mechanism: global inventory config now describes only the maximum allowed grid size through `InventoryGridConfiguration`. The actual inventory size is a character characteristic carried by `CreateCombatCharacterCommand` as a `GridDimensions` value. This keeps the current 17x8 character inventories explicit while allowing stress-test characters to use 100x50 and leaving room for future character-specific/GUI-determined inventory layouts.
+
+Previous battle tick iteration mechanism: `BattleRuntime.tick` copied all combat characters with `ToList()` every tick before iterating. New mechanism: it iterates the current `IReadOnlyCollection<ICombatCharacterFacade>` directly, avoiding that per-tick list allocation. This assumes character membership is stable during the tick; if combat can later add/remove characters mid-tick, the combat runtime should introduce an explicit reusable participant snapshot rather than LINQ materialization.
+
+GUI performance testing is a separate concern. A later PlayMode or scene-level test can include rendered inventory/UI, but this domain smoke should stay focused on combat runtime cost so failures point to tick/flow/item logic rather than prefabs, layout, rendering, or editor UI overhead.
+
+Correction after first stress test run: active flow count dropped from 5,000 to 4,986 before measurement because the warmup ticked already-created dense-grid flows. With single-cell entry points packed next to each other, `GridAdjacencyRouter` performs random neighbor walking and some flows can hit a local dead end quickly. The test now warms up the session before manually creating the initial 5,000 flows, so the measured setup starts deterministically with exactly 5,000 active flows while still allowing flow completion and new flow creation during measurement.
+
+AI 2026-05-27 - Flow processor settings validation
+
+Previous mechanism: `FlowProcessorSettings` silently clamped `maxStepsPerSlice < 1` to `1` and had a placeholder `// verify` comment. The likely intent was to protect flow ticking from a zero/negative per-tick work budget, because `FlowProcessor.tick` only advances while `stepsProcessed < maxStepsPerSlice`.
+
+New mechanism: keep `maxStepsPerSlice` as explicit flow configuration, supplied by DI defaults or test overrides, but make invalid values fail fast with `ArgumentOutOfRangeException`. This avoids hiding bad installer/test configuration and keeps the setting object as a small validated value object rather than moving the guard into hot-path flow code.
+
+Follow-up interpretation: the old default value `64` on `FlowProcessorSettings` was a magic number and likely came from the previous async/yielded flow loop. In the ticked runtime model, pacing should eventually come from combat ticks plus item cast time/cooldown/duration, not from "process up to N nodes immediately." `maxStepsPerSlice` remains only as a per-flow, per-tick safety/work cap that prevents one connected flow from walking an unbounded number of nodes in a single tick. The default value should therefore live in composition/game configuration, not inside the settings constructor. `FlowProcessorSettings` now requires an explicit positive value, and `FlowProcessor` no longer creates hidden fallback settings.
+
+User prefers Java-like code shape for domain/configuration values: private fields plus explicit getters instead of C# auto-properties such as `public int value { get; }`. `FlowProcessorSettings` now stores `maxStepsPerSlice` in a private readonly field and exposes `getMaxStepsPerSlice()`. The default safety cap was raised to 5,000 so it acts as an extreme loop/graph-walk guard rather than a likely gameplay limiter for combos.
+
+AI 2026-05-27 - C# style guidance location
+
+User clarified that durable C# code-shape/style decisions should be recorded in `Assets/AI_Context/AI_Csharp` and followed when writing future code. Added guidance there to record future C# style decisions, prefer explicit typing, and prefer Java-like private fields plus explicit getters for domain/config/value objects while still respecting existing local code patterns.
+
+AI 2026-05-27 - Inventory grid max versus character inventory size
+
+User clarified that the DI-bound inventory grid value should not be the actual size of every character inventory. The global concept needed now is the maximum supported inventory grid size, partly constrained by GUI/layout capability. The actual inventory dimensions are a characteristic of the character being created.
+
+Implementation direction: use shared `GridDimensions` as a small value object, bind `InventoryGridConfiguration` in DI with max allowed dimensions, and pass each character's actual `GridDimensions` through `CreateCombatCharacterCommand`. `CharacterInventoryFactory` validates the requested character grid against the max before creating `InventoryAggregate`.
+
+AI 2026-05-27 - Combat tick rate and speed multiplier interpretation
+
+User clarified tick-rate semantics: a combat tick is the smallest game time unit, not a domain concept of "one game second." The default GUI/runtime execution speed should be treated as 10 combat ticks per real-time second. Faster game speed means executing more ticks per real-time second, e.g. x10 speed means 100 ticks per real-time second.
+
+Avoid describing mechanics as "1 game second = 10 ticks" for now. Prefer saying that a rule lasts or triggers after N ticks, while GUI/runtime speed decides how many ticks are executed per real-time second. The performance smoke test now names this explicitly with `DefaultCombatTicksPerRealSecond = 10`, `StressSpeedMultiplier = 10`, and `StressCombatTicksPerRealSecond = 100`.
+
+Follow-up implementation: the default runtime speed now lives in `BattleSessionSettings`, owned by the battle/session layer rather than the domain tick model or only a test constant. Default is 10 combat ticks per real-time second. `BattleUIManager` uses `BattleSessionSettings.getRealSecondsPerCombatTick()` for its coroutine wait, and the performance smoke test reads the default from `BattleSessionSettings`.

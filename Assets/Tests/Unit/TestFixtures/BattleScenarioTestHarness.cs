@@ -5,6 +5,7 @@ using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Flow.Configuration;
 using MageFactory.InjectConfiguration;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using Zenject;
 
@@ -13,20 +14,21 @@ namespace MageFactory.Tests.Unit.TestFixtures {
         private readonly DiContainer container;
 
         private readonly int enormousHp = 1_000_000;
+        private readonly GridDimensions defaultInventoryGridDimensions = new GridDimensions(17, 8);
 
         private BattleScenarioTestHarness(DiContainer container) {
             this.container = container;
         }
 
         public static BattleScenarioTestHarness create() {
-            var container = new DiContainer();
+            DiContainer container = new DiContainer();
 
             MageFactoryDomainInstaller.Install(container);
 
             container.DeclareSignal<ItemRemovedDtoEvent>();
             container.DeclareSignal<ItemPowerChangedDtoEvent>();
 
-            var signalBus = container.Resolve<SignalBus>();
+            SignalBus signalBus = container.Resolve<SignalBus>();
             signalBus.Subscribe<ItemPowerChangedDtoEvent>(_ => { });
             signalBus.Subscribe<ItemRemovedDtoEvent>(_ => { });
 
@@ -35,13 +37,18 @@ namespace MageFactory.Tests.Unit.TestFixtures {
 
         public BattleScenarioTestHarness withFlowSettings(int maxStepsPerSlice) {
             container.Rebind<FlowProcessorSettings>()
-                .FromInstance(new FlowProcessorSettings(maxStepsPerSlice))
-                .AsSingle();
+                .FromInstance(new FlowProcessorSettings(maxStepsPerSlice));
+            return this;
+        }
+
+        public BattleScenarioTestHarness withMaxInventoryGridDimensions(int width, int height) {
+            container.Rebind<InventoryGridConfiguration>()
+                .FromInstance(new InventoryGridConfiguration(new GridDimensions(width, height)));
             return this;
         }
 
         public ICombatContext createContext(params CreateCombatCharacterCommand[] commands) {
-            var factory = container.Resolve<ICombatContextFactory>();
+            ICombatContextFactory factory = container.Resolve<ICombatContextFactory>();
             return factory.create(commands);
         }
 
@@ -53,8 +60,18 @@ namespace MageFactory.Tests.Unit.TestFixtures {
             defenderItems ??= Array.Empty<EquipItemCommand>();
 
             return createContext(
-                new CreateCombatCharacterCommand(attackerName, enormousHp, Team.TeamA, attackerItems),
-                new CreateCombatCharacterCommand(defenderName, enormousHp, Team.TeamB, defenderItems)
+                new CreateCombatCharacterCommand(
+                    attackerName,
+                    enormousHp,
+                    Team.TeamA,
+                    defaultInventoryGridDimensions,
+                    attackerItems),
+                new CreateCombatCharacterCommand(
+                    defenderName,
+                    enormousHp,
+                    Team.TeamB,
+                    defaultInventoryGridDimensions,
+                    defenderItems)
             );
         }
     }

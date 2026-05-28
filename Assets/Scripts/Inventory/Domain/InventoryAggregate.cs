@@ -31,9 +31,11 @@ namespace MageFactory.Inventory.Domain {
         }
 
         internal static InventoryAggregate create(IItemFactory itemFactory,
-                                                  IInventoryEventPublisher inventoryEventPublisher) {
-            InventoryRegistry registry = InventoryRegistry.createNew(17, 8);
-            var aggregate = new InventoryAggregate(registry, itemFactory, inventoryEventPublisher);
+                                                  IInventoryEventPublisher inventoryEventPublisher,
+                                                  GridDimensions gridDimensions) {
+            GridDimensions dimensions = NullGuard.NotNullOrThrow(gridDimensions);
+            InventoryRegistry registry = InventoryRegistry.createNew(dimensions.getWidth(), dimensions.getHeight());
+            InventoryAggregate aggregate = new InventoryAggregate(registry, itemFactory, inventoryEventPublisher);
 
             return aggregate;
         }
