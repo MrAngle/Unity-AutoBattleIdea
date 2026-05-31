@@ -1,4 +1,4 @@
-﻿using MageFactory.Flow.Contract;
+using MageFactory.Flow.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
@@ -11,15 +11,22 @@ namespace MageFactory.Flow.Domain.FlowCapability {
         }
 
         internal void consumeFlow() {
-            // it may return some results etc
             IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
 
             ConsumeFlowCommand offensiveFlowCommand =
                 new(flowContext.getFlowKind(),
                     flowContext.getFlowOwner(),
                     DamageToDeal.fromPowerAmount(flowContext
-                        .getAttackPower())); // flow should decide what to do with damage
+                        .getAttackPower()));
             flowConsumer.consumeFlow(offensiveFlowCommand);
+        }
+
+        internal ItemFlowProcessingSlot startProcessingFlowItem(IFlowItem item) {
+            return flowContext.getFlowOwner().startProcessingFlowItem(item);
+        }
+
+        internal void finishProcessingFlowItem(ItemFlowProcessingSlot processingSlot) {
+            flowContext.getFlowOwner().finishProcessingFlowItem(processingSlot);
         }
     }
 }

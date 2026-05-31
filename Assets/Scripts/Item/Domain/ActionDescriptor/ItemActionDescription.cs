@@ -7,7 +7,9 @@ namespace MageFactory.Item.Domain.ActionDescriptor {
         private readonly ItemCastTime castTime;
         private readonly IOperations operations;
 
-        internal ItemActionDescription(ItemCastTime castTime, IOperations operations) {
+        internal ItemActionDescription(
+            ItemCastTime castTime,
+            IOperations operations) {
             this.castTime = NullGuard.NotNullOrThrow(castTime);
             this.operations = NullGuard.NotNullOrThrow(operations);
         }

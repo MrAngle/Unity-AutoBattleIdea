@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MageFactory.Character.Contract;
 using MageFactory.Inventory.Contract;
@@ -14,6 +15,8 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
         private readonly Dictionary<IInventoryCombatTickableItem, CharacterCombatTickableItemAction>
             tickableItemActionCache = new();
+
+        private readonly Dictionary<Id<ItemId>, ICharacterEquippedItem> equippedItemByItemId = new();
 
         private readonly List<CharacterCombatTickableItemAction> tickableItemActions = new();
 
@@ -31,7 +34,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
         public bool tryGetItemAtCell(Vector2Int cell, out ICharacterEquippedItem item) {
             if (inventoryAggregate.tryGetItemAtCell(cell, out IInventoryPlacedItem inventoryPlacedItem)) {
-                item = new CharacterEquippedItem(inventoryPlacedItem);
+                item = getOrCreateCharacterEquippedItem(inventoryPlacedItem);
                 return true;
             }
 
@@ -47,7 +50,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
                 return false;
             }
 
-            item = mapToCharacterEquippedItem(inventoryPlacedItem);
+            item = getOrCreateCharacterEquippedItem(inventoryPlacedItem);
             return true;
         }
 
@@ -56,7 +59,14 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
             if (inventoryAggregate.tryGetEntryPointById(itemId,
                     out IInventoryPlacedEntryPoint inventoryPlacedEntryPoint)) {
-                entryPoint = new CharacterEquippedEntryPointItem(inventoryPlacedEntryPoint);
+                ICharacterEquippedItem equippedItem = getOrCreateCharacterEquippedItem(inventoryPlacedEntryPoint);
+                entryPoint = equippedItem as ICharacterEquippedEntryPoint;
+
+                if (entryPoint == null) {
+                    throw new InvalidOperationException(
+                        $"Item '{itemId}' is registered as entry point but cached as regular equipped item.");
+                }
+
                 return true;
             }
 
@@ -65,7 +75,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
         }
 
         public ICharacterEquippedItem place(PlaceItemCommand placeItemCommand) {
-            return new CharacterEquippedItem(inventoryAggregate.place(placeItemCommand));
+            return getOrCreateCharacterEquippedItem(inventoryAggregate.place(placeItemCommand));
         }
 
         public bool canPlace(PlaceItemQuery placeItemCommand) {
@@ -113,25 +123,35 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
             return tickableItemActions;
         }
 
-        private static IReadOnlyCollection<ICharacterEquippedEntryPoint> mapToEquippedEntryPoints(
+        private IReadOnlyCollection<ICharacterEquippedEntryPoint> mapToEquippedEntryPoints(
             IEnumerable<IInventoryPlacedEntryPoint> source) {
             return source
-                .Select(ep => (ICharacterEquippedEntryPoint)new CharacterEquippedEntryPointItem(ep))
+                .Select(ep => (ICharacterEquippedEntryPoint)getOrCreateCharacterEquippedItem(ep))
                 .ToHashSet();
         }
 
-        private static IEnumerable<ICharacterEquippedItem> mapToEquippedItems(
+        private IEnumerable<ICharacterEquippedItem> mapToEquippedItems(
             IEnumerable<IInventoryPlacedItem> placedItems) {
-            return placedItems.Select(pi => (ICharacterEquippedItem)new CharacterEquippedItem(pi));
+            return placedItems.Select(getOrCreateCharacterEquippedItem);
         }
 
-        private static ICharacterEquippedItem mapToCharacterEquippedItem(IInventoryPlacedItem inventoryPlacedItem) {
-            return inventoryPlacedItem switch {
+        private ICharacterEquippedItem getOrCreateCharacterEquippedItem(IInventoryPlacedItem inventoryPlacedItem) {
+            IInventoryPlacedItem placedItem = NullGuard.NotNullOrThrow(inventoryPlacedItem);
+            Id<ItemId> itemId = placedItem.getId();
+
+            if (equippedItemByItemId.TryGetValue(itemId, out ICharacterEquippedItem equippedItem)) {
+                return equippedItem;
+            }
+
+            ICharacterEquippedItem newEquippedItem = placedItem switch {
                 IInventoryPlacedEntryPoint inventoryPlacedEntryPoint =>
                     new CharacterEquippedEntryPointItem(inventoryPlacedEntryPoint),
 
-                _ => new CharacterEquippedItem(inventoryPlacedItem)
+                _ => new CharacterEquippedItem(placedItem)
             };
+
+            equippedItemByItemId[itemId] = newEquippedItem;
+            return newEquippedItem;
         }
     }
 }

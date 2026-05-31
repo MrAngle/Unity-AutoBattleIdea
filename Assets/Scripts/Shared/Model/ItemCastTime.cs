@@ -1,4 +1,5 @@
 using System;
+using MageFactory.Shared.Utility;
 
 namespace MageFactory.Shared.Model {
     public sealed class ItemCastTime : IEquatable<ItemCastTime> {
@@ -27,6 +28,12 @@ namespace MageFactory.Shared.Model {
 
         public CombatTicks getTicks() {
             return ticks;
+        }
+
+        public CombatTicks getCastTicksFor(ItemFlowProcessingSlot processingSlot) {
+            ItemFlowProcessingSlot slot = NullGuard.NotNullOrThrow(processingSlot);
+            int castTicksForSlot = checked(ticks.getValue() * slot.getCellCount());
+            return CombatTicks.of(castTicksForSlot);
         }
 
         public bool isInstant() {

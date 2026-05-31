@@ -51,8 +51,18 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
         }
 
+        public readonly struct UiPrintItemCastProgressCommand {
+            public readonly IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem;
+
+            public UiPrintItemCastProgressCommand(
+                IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem) {
+                this.progressByItem = NullGuard.NotNullOrThrow(progressByItem);
+            }
+        }
+
         public void printInventoryItems(UiPrintInventoryItemsCommand changeInventoryItemsCommand);
         public void printNewItem(NewItemPrintCommand command);
+        public void printItemCastProgress(UiPrintItemCastProgressCommand command);
 
         public void moveItemToPosition(MoveItemToPositionCommand command,
                                        ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo);
@@ -116,6 +126,19 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         public void printNewItem(ICombatInventoryItemsPanel.NewItemPrintCommand command) {
             PlacedItemView view = inventoryItemViewFactory.create(command.shapeArchetype, command.origin);
             itemIdToItemView[command.placedItemId] = view;
+        }
+
+        public void printItemCastProgress(ICombatInventoryItemsPanel.UiPrintItemCastProgressCommand command) {
+            foreach (KeyValuePair<Id<ItemId>, PlacedItemView> itemView in itemIdToItemView) {
+                if (command.progressByItem.TryGetValue(
+                        itemView.Key,
+                        out IReadOnlyList<ItemCastProgressViewState> progressRatios)) {
+                    itemView.Value.setCastProgressBars(progressRatios);
+                }
+                else {
+                    itemView.Value.hideCastProgressBars();
+                }
+            }
         }
 
         public void moveItemToPosition(ICombatInventoryItemsPanel.MoveItemToPositionCommand command,

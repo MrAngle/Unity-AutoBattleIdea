@@ -63,6 +63,7 @@ namespace MageFactory.BattleManager {
 
             while (true) {
                 battleSession.tickOnce();
+                combatContextPresentationFactory.refreshCastProgress();
                 yield return wait;
             }
         }

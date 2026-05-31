@@ -8,18 +8,24 @@ using MageFactory.Shared.Utility;
 namespace MageFactory.Flow.Domain {
     internal sealed class CurrentFlowItemCast {
         private CombatTicks ticksUntilCastCompletes;
+        private CombatTicks requiredCastTicks;
 
-        internal void startCasting(IFlowItem item, FlowCastTimeMode castTimeMode) {
+        internal void startCasting(
+            IFlowItem item,
+            FlowCastTimeMode castTimeMode,
+            ItemFlowProcessingSlot processingSlot) {
             IFlowItem castItem = NullGuard.NotNullOrThrow(item);
+            ItemFlowProcessingSlot slot = NullGuard.NotNullOrThrow(processingSlot);
 
             if (castTimeMode == FlowCastTimeMode.Instant) {
                 startCastingFor(CombatTicks.ZERO);
                 return;
             }
 
-            IActionDescription actionDescription = castItem.prepareItemActionDescription();
-            ItemCastTime castTime = NullGuard.NotNullOrThrow(actionDescription).getCastTime();
-            startCastingFor(castTime.getTicks());
+            IActionDescription actionDescription = NullGuard.NotNullOrThrow(
+                castItem.prepareItemActionDescription());
+            ItemCastTime castTime = NullGuard.NotNullOrThrow(actionDescription.getCastTime());
+            startCastingFor(castTime.getCastTicksFor(slot));
         }
 
         private void startCastingFor(CombatTicks ticksUntilCastCompletes) {
@@ -31,6 +37,7 @@ namespace MageFactory.Flow.Domain {
             }
 
             this.ticksUntilCastCompletes = ticksUntilCastCompletes;
+            requiredCastTicks = ticksUntilCastCompletes;
         }
 
         internal bool tryFinishCasting(ref CombatTicks availableTicks) {
@@ -53,6 +60,20 @@ namespace MageFactory.Flow.Domain {
 
         internal bool isCasting() {
             return ticksUntilCastCompletes > CombatTicks.ZERO;
+        }
+
+        internal bool hasMeasurableCastTime() {
+            return requiredCastTicks > CombatTicks.ZERO;
+        }
+
+        internal CombatTicks getRemainingCastTicks() {
+            return ticksUntilCastCompletes > CombatTicks.ZERO
+                ? ticksUntilCastCompletes
+                : CombatTicks.ZERO;
+        }
+
+        internal CombatTicks getRequiredCastTicks() {
+            return requiredCastTicks;
         }
 
         private bool isReadyToExecute() {

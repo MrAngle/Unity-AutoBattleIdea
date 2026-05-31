@@ -69,24 +69,32 @@ namespace MageFactory.UI.Context.Combat {
             this.inventoryEventRegistry.subscribe((IItemPositionChangedEventListener)this);
         }
 
-        public static void create(ICombatContextEventRegistry combatContextEventRegistry,
-                                  IUiCombatContextEventRegistry uiCombatContextEventRegistry,
-                                  IInventoryEventRegistry inventoryEventRegistry,
-                                  ICharacterEventRegistry characterEventRegistry,
-                                  InventoryPanelPresentation inventoryPanelPresentation,
-                                  ItemDragService itemDragService,
-                                  Dictionary<Id<CharacterId>, CharacterPrefabAggregate> characterPrefabs,
-                                  ICombatContext combatContext) {
-            CombatContextPresentationOrchestrator combatContextPresentationOrchestrator =
-                new CombatContextPresentationOrchestrator(
-                    combatContextEventRegistry,
-                    uiCombatContextEventRegistry,
-                    inventoryEventRegistry,
-                    characterEventRegistry,
-                    inventoryPanelPresentation,
-                    itemDragService,
-                    characterPrefabs,
-                    combatContext);
+        internal static CombatContextPresentationOrchestrator create(
+            ICombatContextEventRegistry combatContextEventRegistry,
+            IUiCombatContextEventRegistry uiCombatContextEventRegistry,
+            IInventoryEventRegistry inventoryEventRegistry,
+            ICharacterEventRegistry characterEventRegistry,
+            InventoryPanelPresentation inventoryPanelPresentation,
+            ItemDragService itemDragService,
+            Dictionary<Id<CharacterId>, CharacterPrefabAggregate> characterPrefabs,
+            ICombatContext combatContext) {
+            return new CombatContextPresentationOrchestrator(
+                combatContextEventRegistry,
+                uiCombatContextEventRegistry,
+                inventoryEventRegistry,
+                characterEventRegistry,
+                inventoryPanelPresentation,
+                itemDragService,
+                characterPrefabs,
+                combatContext);
+        }
+
+        internal void refreshCastProgress() {
+            if (selectedCombatCharacter == null) {
+                return;
+            }
+
+            inventoryPanelPresentation.printItemCastProgress(selectedCombatCharacter.query());
         }
 
         public void Dispose() {
@@ -121,6 +129,7 @@ namespace MageFactory.UI.Context.Combat {
 
             inventoryPanelPresentation.printInventory(selectedCombatCharacter.query()
                 .getInventoryAggregate());
+            refreshCastProgress();
 
             itemDragService.setCharacterContext(selectedCombatCharacter);
         }

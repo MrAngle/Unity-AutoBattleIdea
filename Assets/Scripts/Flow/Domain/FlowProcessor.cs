@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MageFactory.ActionEffect;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Configuration;
 using MageFactory.Flow.Contract;
@@ -15,11 +16,12 @@ using MageFactory.Shared.Utility;
 namespace MageFactory.Flow.Domain {
     internal class FlowProcessor : IFlowProcessor {
         private readonly FlowProcessingCapabilities flowProcessingCapabilities;
-        private readonly List<Id<ItemId>> visitedNodeIds = new();
+        private readonly HashSet<Id<ItemId>> visitedNodeIds = new();
         private readonly FlowProcessorSettings settings;
 
         private IFlowItem currentItem;
         private readonly CurrentFlowItemCast currentItemCast = new();
+        private ItemFlowProcessingSlot currentItemProcessingSlot;
         private bool finished;
 
         private FlowProcessor(
@@ -30,7 +32,9 @@ namespace MageFactory.Flow.Domain {
             currentItem = NullGuard.NotNullOrThrow(startNode);
             this.flowProcessingCapabilities = NullGuard.NotNullOrThrow(flowProcessingCapabilities);
             this.settings = NullGuard.NotNullOrThrow(settings);
-            currentItemCast.startCasting(currentItem, settings.getCastTimeMode());
+            currentItemProcessingSlot =
+                this.flowProcessingCapabilities.command().startProcessingFlowItem(currentItem);
+            currentItemCast.startCasting(currentItem, settings.getCastTimeMode(), currentItemProcessingSlot);
         }
 
         internal static IFlowProcessor create(
@@ -128,8 +132,11 @@ namespace MageFactory.Flow.Domain {
         private bool tryMoveToNextItem() {
             if (flowProcessingCapabilities.query()
                 .tryFindNextNode(currentItem, visitedNodeIds, out IFlowItem nextItem)) {
+                flowProcessingCapabilities.command().finishProcessingFlowItem(currentItemProcessingSlot);
                 currentItem = nextItem;
-                currentItemCast.startCasting(currentItem, settings.getCastTimeMode());
+                currentItemProcessingSlot =
+                    flowProcessingCapabilities.command().startProcessingFlowItem(currentItem);
+                currentItemCast.startCasting(currentItem, settings.getCastTimeMode(), currentItemProcessingSlot);
                 return true;
             }
 
@@ -141,10 +148,24 @@ namespace MageFactory.Flow.Domain {
 
         private void finishFlow() {
             flowProcessingCapabilities.command().consumeFlow();
+            flowProcessingCapabilities.command().finishProcessingFlowItem(currentItemProcessingSlot);
         }
 
         public bool isFinished() {
             return finished;
+        }
+
+        public void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector) {
+            NullGuard.NotNullOrThrow(collector);
+
+            if (finished || currentItem == null || !currentItemCast.hasMeasurableCastTime()) {
+                return;
+            }
+
+            collector.addActiveFlowCastState(new ActiveFlowCastState(
+                currentItemProcessingSlot,
+                currentItemCast.getRemainingCastTicks(),
+                currentItemCast.getRequiredCastTicks()));
         }
     }
 }

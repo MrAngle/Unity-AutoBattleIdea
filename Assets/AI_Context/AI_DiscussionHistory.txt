@@ -217,3 +217,110 @@ User asked whether more tests should cover flow/tick behavior because determinis
 Testing principle reinforced: deterministic tick behavior should be tested through real project contracts and stable scenarios. Prefer verifying externally visible combat results and flow counts rather than private helper state.
 
 Unity EditMode tests after these additions: 445/445 passed. Performance smoke reported 10.217 ms/tick average over 1,000 measured ticks.
+
+AI COMMIT BOUNDARY 2026-05-28 - after push 8b3d534 (master) - Remove `ActionExecutor` and related classes; introduce `CurrentFlowItemCast`, `ItemCastTime`, and `FlowCastTimeMode` to improve flow and casting logic; clean up obsolete files and metadata.
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-05-28 - Item cast progress UI and future item flow capacity
+
+User wants item cast progress to be visible directly on the item UI, e.g. progress/loading bars rendered on top of the item while a flow is casting through it. This should be treated as a presentation concern layered onto the item view, not as a reason to move runtime cast ownership out of flow.
+
+Future design note: each item should eventually have a maximum number of concurrently processed flows. Example: `RustySword` may be usable by 3 flows at the same time; if another flow reaches that item while 3 flows are already being processed there, the flow should ignore/skip that item according to the eventual flow rule. The UI design for cast progress should keep this future capacity in mind, because one item may need to show multiple concurrent cast progress bars or lanes.
+
+Immediate focus: do not implement the full item-capacity mechanic yet. First explore and implement a safe visual element for showing item cast/loading progress, preferably additively on `PlacedItemView` and without risky manual prefab/scene edits.
+
+Implementation step: added a code-driven `ItemCastProgressBarsView` and exposed `PlacedItemView.setCastProgressBars(...)` / `hideCastProgressBars()`. The view supports multiple simultaneous progress bars by accepting a list of progress ratios and creating/hiding bar views as needed. This is only the visual layer; it is not yet connected to flow runtime cast-progress data.
+
+Follow-up implementation step: connected the visual layer to real flow cast progress for the currently selected character. Active flows can now collect their current item cast progress as lightweight `(ItemId, progressRatio)` data through a collector interface. After each battle UI tick, presentation refreshes the selected inventory item views and passes each item its list of active cast progress bars. This is intentionally a presentation refresh after tick, not a per-flow UI event emitted from inside the hot tick loop.
+
+Visual correction after user feedback: the first visible implementation used separate bar-like UI, which did not match the intended item presentation. User clarified that cast loading information must live inside the fields occupied by the item, because items have different shapes and can be adjacent. The view was changed to a per-cell overlay: every occupied tile can show inactive/remaining grey coverage and active colored coverage, so cast progress stays within the item shape. Multiple parallel casts are represented as lanes inside each occupied tile.
+
+AI 2026-05-28 - Item flow processing capacity domain implementation
+
+User asked to add domain logic for defining how many flows an item can process in parallel. Added `ItemFlowProcessingCapacity` as a validated value object and exposed it through `IActionDescription` next to item cast time. Example catalog values: `EntryPointGem` capacity 1, `RustySword` capacity 6, `Shield` capacity 3, and `Hammer` capacity 2.
+
+Flow processing now checks item capacity before entering the next routed item. If the candidate item is already at capacity, that item id is added to the ignored/visited list for this flow route attempt and the flow asks routing for another candidate. If no processable next item exists, the flow finishes. Entry point flow creation also checks the entry point capacity before creating a new flow.
+
+Performance correction: the first implementation counted active flows processing an item by scanning active flows, which pushed the stress smoke to about 33 ms/tick. Replaced that with a live per-character dictionary of active flow counts by processed item id. `FlowProcessor` increments/decrements this count when it starts, moves between items, or finishes. This keeps capacity checks cheap and keeps same-tick capacity decisions live.
+
+Testing note: added deterministic tests for catalog capacity values and for skipping a shared item whose capacity is full. The combat tick performance smoke now includes item-processing capacity bookkeeping and its catastrophic-regression threshold was adjusted deliberately to 12 ms/tick. Unity EditMode tests passed 447/447, with the smoke reporting about 11.363 ms/tick.
+
+AI 2026-05-28 - CombatPlacedItemRuntimeState and processable flow router
+
+User refined the capacity ownership direction: a placed item should be able to answer whether it can accept another flow, instead of keeping this as an unexplained loose count on the character or flow processor.
+
+Previous mechanism in the current working change: `CombatCharacter` tracked active flow counts per processed item id directly, and `FlowProcessor`/flow queries participated in deciding whether a routed candidate could be processed. This worked but left capacity knowledge spread between character state, flow processing, and routing retries.
+
+New mechanism: introduced `CombatPlacedItemRuntimeState` as the per-placed-item runtime state owned by `CombatCharacter`. It stores the item id, validates and caches the item's `ItemFlowProcessingCapacity`, tracks active flow count, answers `canAcceptFlow()`, and guards start/finish transitions. `FlowProcessor` only announces when it starts or finishes processing a concrete item; it no longer exposes `isProcessingItem` for character-side counting.
+
+Routing refinement: kept existing `GridAdjacencyRouter`, but added `ProcessableGridAdjacencyRouter` for flow routing that ignores adjacent items which cannot currently accept another flow. Entry point flow creation now builds this router with the character's item-processability query. This matches the near-term desired behavior: if an adjacent item is full, the current router simply does not consider it.
+
+Future routing note: entry points may eventually define or create flows with a characteristic `IFlowRouter`. Different routers can intentionally have different semantics; for example, one router may ignore full items, while another may stop/break the flow when it reaches an unprocessable item.
+
+Performance refinement: the new router first made the performance smoke hover above the 12 ms/tick guard because route decisions checked multiple candidates and long flow paths used a linear visited-list lookup. Instead of raising the threshold, `FlowProcessor` now tracks visited node ids as a `HashSet`, and `ProcessableGridAdjacencyRouter` reuses local routing buffers. Unity EditMode tests passed 447/447; performance smoke reported about 9.684 ms/tick over 1,000 measured ticks.
+
+AI 2026-05-30 - Shape rows define flow slots and cast cost
+
+User decided to stop pursuing cooldown for normal items for now. Normal item processing should be based on cast time only. Entry points may still need their own trigger-time/countdown presentation, but that is separate from item cast progress: trigger time creates a flow, cast time processes an existing flow through an item.
+
+Future TODO direction recorded: active cells and cell components should eventually exist. Base shape defines potential cells, active cells define what a specific item instance can currently use, and cell-level components/overlays may modify row cast time, effect strength, damage type, or other row/slot behavior. For now all shape cells are treated as active.
+
+Implemented step: item flow-processing capacity is now derived from shape rows instead of an explicit `ItemFlowProcessingCapacity` action-description stat. Each local row of the item shape is one processing slot. `CombatPlacedItemRuntimeState` assigns the first free processing slot from top to bottom and returns an `ItemFlowProcessingSlot` reservation to the flow. When the flow leaves or finishes, it releases that concrete slot.
+
+Cast-time meaning changed: `ItemCastTime` now means cost per one cell. The actual cast duration for a processing slot is `itemCastTime * slotCellCount`. A wide row therefore casts longer but can later carry more active cells/components as higher potential.
+
+UI refinement: cast progress now carries the local row of the processing slot. `PlacedItemView` binds each tile to its local row and row order, so the progress mask fills only the row used by that flow and spans that row's width instead of treating the whole item as one flat sequence.
+
+Cleanup: removed `ItemFlowProcessingCapacity` from `IActionDescription` because the capacity source is now shape rows. Unity EditMode tests passed 448/448; performance smoke reported about 3.042 ms/tick with 5,000 long-casting active flows and 5,000 tickable entry items.
+
+AI 2026-05-31 - Cast-state naming and UI/domain boundary cleanup
+
+User pointed out that `ItemCastProgress` looked like a visual/UI concept leaking into combat/domain contracts, and that names such as `getActiveFlowCountProcessingItem`, `IItemCastProgressCollector`, `calculateShapeSlotCastTicks`, and `totalCastTicks` were too technical or unclear for public/domain APIs.
+
+Refinement: combat/domain contracts now expose `ActiveFlowCastState` through `IActiveFlowCastStateCollector`. This state is domain data: processing slot, required cast ticks, and remaining cast ticks. It does not expose UI progress ratio. `CharacterCombatQueries` now collects active flow cast states instead of item cast progress, keeping the query side domain-oriented.
+
+Presentation now owns visual progress conversion. `InventoryPanelPresentation` converts `ActiveFlowCastState` into `ItemCastProgressViewState` by calculating progress ratio from required/remaining ticks. UI classes continue to use progress language because it is presentation-specific there.
+
+Naming cleanup: `getActiveFlowCountProcessingItem` was renamed to `getActiveFlowCountOnItem`, which more directly means "how many active flows are currently on this item." `CurrentFlowItemCast.totalCastTicks` was renamed to required cast ticks, and slot cast-duration calculation moved to `ItemCastTime.getCastTicksFor(ItemFlowProcessingSlot)`, matching the domain rule that item cast time is per cell and slot width multiplies it.
+
+Unity EditMode tests passed 448/448 after the refactor; performance smoke reported about 2.996 ms/tick.
+
+AI 2026-05-31 - Split combat tick performance smoke into two canaries
+
+User clarified that the very fast long-cast smoke result looked suspicious and that performance smoke tests should act as practical anomaly controls for expensive tick actions, not as perfect benchmarks.
+
+Refinement: split the combat tick smoke coverage into two separate tests. The steady-casting smoke keeps 5,000 long-casting active flows alive and intentionally avoids cast completion, routing, flow resolution, and new flow creation during the measured section. This explains the lower average tick cost and keeps it focused on active-flow countdown overhead.
+
+Added a separate routing/resolution smoke that uses isolated `entry -> processor` item pairs. Pairs are separated by empty columns and rows so grid adjacency routing does not accidentally route into neighboring test pairs. The measured loop exercises flow creation, cast completion, routing, processing slot reservation/release, flow consumption, and repeated recreation.
+
+The current routing smoke uses 800 isolated pairs, 200 measured ticks, and an entry trigger interval of 2 ticks. The verified run created exactly 80,000 flows and ended with 800 active flows, confirming that the test performs repeated route/resolve/recreate work rather than measuring an empty or accidentally simplified scenario.
+
+Unity EditMode tests passed 449/449. Smoke output from the verified run: steady-casting 5,000 active flows averaged about 2.851 ms/tick over 1,000 measured ticks; routing/resolution averaged about 12.908 ms/tick over 200 measured ticks.
+
+AI 2026-05-31 - Avoid lazy item runtime-state creation in combat tick
+
+User agreed that lazy creation of `CombatPlacedItemRuntimeState` during `canProcessFlowItem(...)` / routing is risky because combat tick is a hot path. Lazy initialization can be useful in less critical areas, but runtime state needed by flow/tick should be prepared before data enters the tick path.
+
+Refinement: `CombatCharacter` now initializes placed-item runtime state when the combat character is created, after the character inventory has been equipped. Items equipped later through `equipItemOrThrow(...)` also immediately get runtime state. `canProcessFlowItem(...)` and `startProcessingFlowItem(...)` now only read already-prepared state and fail fast if state is missing, treating that as an invariant violation rather than doing hidden allocation/work in the tick.
+
+Additional hot-path cleanup: `CombatCharacter` keeps cached `IFlowItem` wrappers by item id, and `CharacterInventory` caches equipped-item wrappers by item id. This avoids repeatedly building wrapper objects during routing / item lookup paths.
+
+Added deterministic coverage for item equip after combat context creation: an item equipped through the combat command side can immediately participate in flow processing because its runtime state is prepared at equip time.
+
+Unity EditMode tests passed 450/450 after this change. Smoke output from the verified run: steady-casting averaged about 2.858 ms/tick over 1,000 measured ticks; routing/resolution averaged about 12.975 ms/tick over 200 measured ticks.
+
+AI 2026-05-31 - Additional deterministic coverage for row-slot flow processing
+
+User asked to add sensible tests for the main domain assumptions established during the cast-time / shape-row / runtime-state conversation.
+
+Added deterministic tests that verify:
+
+- an entry point cannot create a second flow while its own processing slot is busy,
+- processable routing ignores a full adjacent item and routes into the remaining available neighbor,
+- active flow cast state exposed through character queries remains domain data and reports the current processing row, row cell count, required cast ticks, and remaining cast ticks,
+- after a flow finishes, the processing slot is released and a later flow can use the same item again.
+
+These tests intentionally verify externally visible combat/query results through real battle context and real command/query contracts, rather than testing private helper internals or adding more noisy performance smoke cases.
+
+Unity EditMode tests passed 454/454 after these additions. Smoke output from the verified run: steady-casting averaged about 2.83 ms/tick over 1,000 measured ticks; routing/resolution averaged about 12.63 ms/tick over 200 measured ticks.

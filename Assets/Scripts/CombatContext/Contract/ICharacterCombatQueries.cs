@@ -1,4 +1,5 @@
-﻿using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Shared.Id;
 
 namespace MageFactory.CombatContext.Contract {
     public interface ICharacterCombatQueries {
@@ -11,5 +12,9 @@ namespace MageFactory.CombatContext.Contract {
         int getActiveFlowCount();
 
         int getCreatedFlowsInCurrentBattleCount();
+
+        int getActiveFlowCountOnItem(Id<ItemId> itemId);
+
+        void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector);
     }
 }

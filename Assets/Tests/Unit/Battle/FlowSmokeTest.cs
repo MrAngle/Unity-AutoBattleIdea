@@ -24,6 +24,14 @@ namespace MageFactory.Tests.Unit.Battle {
         private const int CarryTestNextItemCastTicks = 7;
         private const int CarryTestEntryDamage = 2;
         private const int CarryTestNextItemDamage = 5;
+        private const int CapacityTestEntryCastTicks = 1;
+        private const int CapacityTestSharedItemCastTicks = 100;
+        private const int CapacityTestEntryDamage = 1;
+        private const int CapacityTestSharedItemDamage = 50;
+        private const int ShapeCastEntryCastTicks = 1;
+        private const int ShapeCastWideItemBaseCastTicks = 4;
+        private const int ShapeCastEntryDamage = 2;
+        private const int ShapeCastWideItemDamage = 9;
 
         [Test]
         public void should_expose_active_and_created_flow_counts() {
@@ -60,6 +68,250 @@ namespace MageFactory.Tests.Unit.Battle {
             Assert.AreEqual(4, combatContext.getCombatCapabilities().query().getCreatedFlowCount());
             Assert.AreEqual(4,
                 combatContext.getCombatCapabilities().query().getCreatedFlowCountForCharacter(attackerId));
+        }
+
+        [Test]
+        public void should_use_shape_rows_as_flow_processing_capacity() {
+            // given
+            IItemDefinition entry1 = new CapacityTestEntryPointDefinition();
+            IItemDefinition entry2 = new CapacityTestEntryPointDefinition();
+            IItemDefinition entry3 = new CapacityTestEntryPointDefinition();
+            IItemDefinition sharedItem = new CapacityTestBattleItemDefinition(ShapeCatalog.Square2x2);
+
+            EquipItemCommand[] attackerItems = {
+                new(entry1, new Vector2Int(5, 4)),
+                new(sharedItem, new Vector2Int(5, 5)),
+                new(entry2, new Vector2Int(7, 5)),
+                new(entry3, new Vector2Int(5, 7))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced firstEntryPoint = getPlacedItemAt(attacker, new Vector2Int(5, 4));
+            IGridItemPlaced secondEntryPoint = getPlacedItemAt(attacker, new Vector2Int(7, 5));
+            IGridItemPlaced thirdEntryPoint = getPlacedItemAt(attacker, new Vector2Int(5, 7));
+            IGridItemPlaced sharedPlacedItem = getPlacedItemAt(attacker, new Vector2Int(5, 5));
+
+            createFlow(combatContext, attacker, firstEntryPoint);
+            createFlow(combatContext, attacker, secondEntryPoint);
+            createFlow(combatContext, attacker, thirdEntryPoint);
+
+            // when
+            attacker.command().combatTick(
+                CombatTicks.of(CapacityTestEntryCastTicks),
+                combatContext.getCombatCapabilities());
+
+            // then
+            Assert.AreEqual(2, attacker.query().getActiveFlowCount());
+            Assert.AreEqual(2, attacker.query().getActiveFlowCountOnItem(sharedPlacedItem.getId()));
+        }
+
+        [Test]
+        public void should_not_create_second_flow_when_entry_point_processing_slot_is_busy() {
+            // given
+            IItemDefinition entry = new CapacityTestEntryPointDefinition();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry, new Vector2Int(0, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced entryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 0));
+
+            // when
+            createFlow(combatContext, attacker, entryPoint);
+            createFlow(combatContext, attacker, entryPoint);
+
+            // then
+            Assert.AreEqual(1, attacker.query().getActiveFlowCount());
+            Assert.AreEqual(1, attacker.query().getCreatedFlowsInCurrentBattleCount());
+            Assert.AreEqual(1, attacker.query().getActiveFlowCountOnItem(entryPoint.getId()));
+        }
+
+        [Test]
+        public void should_route_to_available_neighbor_when_another_neighbor_is_full() {
+            // given
+            IItemDefinition firstEntry = new CapacityTestEntryPointDefinition();
+            IItemDefinition secondEntry = new CapacityTestEntryPointDefinition();
+            IItemDefinition fullItem = new CapacityTestBattleItemDefinition();
+            IItemDefinition availableItem = new CapacityTestBattleItemDefinition();
+
+            EquipItemCommand[] attackerItems = {
+                new(firstEntry, new Vector2Int(0, 1)),
+                new(fullItem, new Vector2Int(1, 1)),
+                new(secondEntry, new Vector2Int(1, 0)),
+                new(availableItem, new Vector2Int(2, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced firstEntryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 1));
+            IGridItemPlaced secondEntryPoint = getPlacedItemAt(attacker, new Vector2Int(1, 0));
+            IGridItemPlaced fullPlacedItem = getPlacedItemAt(attacker, new Vector2Int(1, 1));
+            IGridItemPlaced availablePlacedItem = getPlacedItemAt(attacker, new Vector2Int(2, 0));
+
+            createFlow(combatContext, attacker, firstEntryPoint);
+            attacker.command().combatTick(
+                CombatTicks.of(CapacityTestEntryCastTicks),
+                combatContext.getCombatCapabilities());
+
+            // when
+            createFlow(combatContext, attacker, secondEntryPoint);
+            attacker.command().combatTick(
+                CombatTicks.of(CapacityTestEntryCastTicks),
+                combatContext.getCombatCapabilities());
+
+            // then
+            Assert.AreEqual(2, attacker.query().getActiveFlowCount());
+            Assert.AreEqual(1, attacker.query().getActiveFlowCountOnItem(fullPlacedItem.getId()));
+            Assert.AreEqual(1, attacker.query().getActiveFlowCountOnItem(availablePlacedItem.getId()));
+        }
+
+        [Test]
+        public void should_multiply_item_cast_time_by_processing_row_cell_count() {
+            // given
+            IItemDefinition entry = new ShapeCastEntryPointDefinition();
+            IItemDefinition wideItem = new ShapeCastWideBattleItemDefinition();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry, new Vector2Int(0, 0)),
+                new(wideItem, new Vector2Int(1, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced entryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 0));
+            long hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+
+            createFlow(combatContext, attacker, entryPoint);
+
+            // when
+            attacker.command().combatTick(
+                CombatTicks.of(ShapeCastEntryCastTicks + ShapeCastWideItemBaseCastTicks * 2 - 1),
+                combatContext.getCombatCapabilities());
+
+            // then
+            Assert.AreEqual(
+                hpBefore,
+                TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(1, attacker.query().getActiveFlowCount());
+
+            // when
+            attacker.command().combatTick(
+                CombatTicks.ONE,
+                combatContext.getCombatCapabilities());
+
+            // then
+            Assert.AreEqual(
+                hpBefore - ShapeCastEntryDamage - ShapeCastWideItemDamage,
+                TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(0, attacker.query().getActiveFlowCount());
+        }
+
+        [Test]
+        public void should_expose_domain_cast_state_for_current_processing_row() {
+            // given
+            IItemDefinition entry = new ShapeCastEntryPointDefinition();
+            IItemDefinition wideItem = new ShapeCastWideBattleItemDefinition();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry, new Vector2Int(0, 0)),
+                new(wideItem, new Vector2Int(1, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced entryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 0));
+            IGridItemPlaced widePlacedItem = getPlacedItemAt(attacker, new Vector2Int(1, 0));
+
+            createFlow(combatContext, attacker, entryPoint);
+
+            // when
+            attacker.command().combatTick(
+                CombatTicks.of(ShapeCastEntryCastTicks + 1),
+                combatContext.getCombatCapabilities());
+
+            // then
+            var collector = new TestActiveFlowCastStateCollector();
+            attacker.query().collectActiveFlowCastStates(collector);
+
+            ActiveFlowCastState castState = collector.getSingleState();
+            Assert.AreEqual(widePlacedItem.getId(), castState.getItemId());
+            Assert.AreEqual(0, castState.getProcessingSlot().getLocalRow());
+            Assert.AreEqual(2, castState.getProcessingSlot().getCellCount());
+            Assert.AreEqual(
+                CombatTicks.of(ShapeCastWideItemBaseCastTicks * 2),
+                castState.getRequiredCastTicks());
+            Assert.AreEqual(
+                CombatTicks.of(ShapeCastWideItemBaseCastTicks * 2 - 1),
+                castState.getRemainingCastTicks());
+        }
+
+        [Test]
+        public void should_prepare_flow_processing_state_for_item_equipped_after_combat_context_creation() {
+            // given
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(new EquipItemCommand[] { });
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IItemDefinition entry = new CarryTicksEntryPointDefinition();
+            IItemDefinition nextItem = new CarryTicksBattleItemDefinition();
+
+            ICombatCharacterEquippedItem equippedEntry = attacker.command()
+                .equipItemOrThrow(new EquipItemCommand(entry, new Vector2Int(0, 0)));
+            attacker.command()
+                .equipItemOrThrow(new EquipItemCommand(nextItem, new Vector2Int(1, 0)));
+
+            long hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+            createFlow(combatContext, attacker, equippedEntry);
+
+            // when
+            attacker.command().combatTick(
+                CombatTicks.of(CarryTestEntryCastTicks + CarryTestNextItemCastTicks),
+                combatContext.getCombatCapabilities());
+
+            // then
+            long expectedHp = hpBefore - CarryTestEntryDamage - CarryTestNextItemDamage;
+            Assert.AreEqual(expectedHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(0, attacker.query().getActiveFlowCount());
+        }
+
+        [Test]
+        public void should_release_processing_slot_after_flow_finishes_so_next_flow_can_use_item() {
+            // given
+            ICombatContext combatContext = createCarryTicksCombatContext();
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced entryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 0));
+            IGridItemPlaced nextItem = getPlacedItemAt(attacker, new Vector2Int(1, 0));
+            long hpBefore = TestHelpers.getTeamHp(combatContext, Team.TeamB);
+
+            // when
+            createFlow(combatContext, attacker, entryPoint);
+            attacker.command().combatTick(
+                CombatTicks.of(CarryTestEntryCastTicks + CarryTestNextItemCastTicks),
+                combatContext.getCombatCapabilities());
+
+            createFlow(combatContext, attacker, entryPoint);
+            attacker.command().combatTick(
+                CombatTicks.of(CarryTestEntryCastTicks + CarryTestNextItemCastTicks),
+                combatContext.getCombatCapabilities());
+
+            // then
+            long singleFlowDamage = CarryTestEntryDamage + CarryTestNextItemDamage;
+            Assert.AreEqual(hpBefore - singleFlowDamage * 2, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(0, attacker.query().getActiveFlowCount());
+            Assert.AreEqual(0, attacker.query().getActiveFlowCountOnItem(nextItem.getId()));
         }
 
         [Test]
@@ -166,6 +418,49 @@ namespace MageFactory.Tests.Unit.Battle {
         }
 
         [Test]
+        public void should_skip_item_when_flow_processing_capacity_is_full() {
+            // given
+            IItemDefinition entry1 = new CapacityTestEntryPointDefinition();
+            IItemDefinition entry2 = new CapacityTestEntryPointDefinition();
+            IItemDefinition sharedItem = new CapacityTestBattleItemDefinition();
+
+            EquipItemCommand[] attackerItems = {
+                new(entry1, new Vector2Int(0, 0)),
+                new(sharedItem, new Vector2Int(0, 1)),
+                new(entry2, new Vector2Int(0, 2))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced firstEntryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 0));
+            IGridItemPlaced secondEntryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 2));
+            IGridItemPlaced sharedPlacedItem = getPlacedItemAt(attacker, new Vector2Int(0, 1));
+
+            combatContext.getCombatCapabilities()
+                .command()
+                .dispatch(new CreateFlowCombatCommand(
+                    attacker.query().getCharacterInfo().getCharacterId(),
+                    firstEntryPoint.getId()));
+
+            combatContext.getCombatCapabilities()
+                .command()
+                .dispatch(new CreateFlowCombatCommand(
+                    attacker.query().getCharacterInfo().getCharacterId(),
+                    secondEntryPoint.getId()));
+
+            // when
+            attacker.command().combatTick(
+                CombatTicks.of(CapacityTestEntryCastTicks),
+                combatContext.getCombatCapabilities());
+
+            // then
+            Assert.AreEqual(1, attacker.query().getActiveFlowCount());
+            Assert.AreEqual(1, attacker.query().getActiveFlowCountOnItem(sharedPlacedItem.getId()));
+        }
+
+        [Test]
         public void should_move_item_by_hammer_and_not_deal_damage_by_shield() {
             // given
             IItemDefinition entry = new EntryPointGem();
@@ -245,7 +540,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             EquipItemCommand[] attackerItems = {
                 new(entry1, new Vector2Int(0, 0)),
-                new(entry2, new Vector2Int(1, 0))
+                new(entry2, new Vector2Int(3, 0))
             };
 
             ICombatContext combatContext = BattleScenarioTestHarness.create()
@@ -263,7 +558,7 @@ namespace MageFactory.Tests.Unit.Battle {
                 entry1, entry2
             };
 
-            var expectedHp = hpBefore - (TestHelpers.getDamage(expectedDamageSources) * 2);
+            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
             var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             Assert.AreEqual(expectedHp, hpAfter);
@@ -315,6 +610,17 @@ namespace MageFactory.Tests.Unit.Battle {
                 .First(item => item.getOrigin() == origin);
         }
 
+        private static void createFlow(
+            ICombatContext combatContext,
+            ICombatCharacterFacade attacker,
+            IGridItemPlaced entryPointItem) {
+            combatContext.getCombatCapabilities()
+                .command()
+                .dispatch(new CreateFlowCombatCommand(
+                    attacker.query().getCharacterInfo().getCharacterId(),
+                    entryPointItem.getId()));
+        }
+
         private static ICombatContext createCarryTicksCombatContext() {
             IItemDefinition entry = new CarryTicksEntryPointDefinition();
             IItemDefinition nextItem = new CarryTicksBattleItemDefinition();
@@ -332,11 +638,7 @@ namespace MageFactory.Tests.Unit.Battle {
             ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
             IGridItemPlaced entryPointItem = getPlacedItemAt(attacker, new Vector2Int(0, 0));
 
-            combatContext.getCombatCapabilities()
-                .command()
-                .dispatch(new CreateFlowCombatCommand(
-                    attacker.query().getCharacterInfo().getCharacterId(),
-                    entryPointItem.getId()));
+            createFlow(combatContext, attacker, entryPointItem);
 
             return attacker;
         }
@@ -391,6 +693,80 @@ namespace MageFactory.Tests.Unit.Battle {
             }
         }
 
+        private sealed class CapacityTestEntryPointDefinition : IEntryPointDefinition {
+            public ShapeArchetype getShape() {
+                return ShapeCatalog.Square1x1;
+            }
+
+            public IActionDescription getActionDescription() {
+                return new CarryTicksActionDescription(
+                    ItemCastTime.ofTicks(CapacityTestEntryCastTicks),
+                    CapacityTestEntryDamage);
+            }
+
+            public FlowKind getFlowKind() {
+                return FlowKind.Damage;
+            }
+
+            public CombatTicks getTriggerIntervalTicks() {
+                return CombatTicks.of(10_000);
+            }
+        }
+
+        private sealed class CapacityTestBattleItemDefinition : IItemDefinition {
+            private readonly ShapeArchetype shape;
+
+            internal CapacityTestBattleItemDefinition() {
+                shape = ShapeCatalog.Square1x1;
+            }
+
+            internal CapacityTestBattleItemDefinition(ShapeArchetype shape) {
+                this.shape = shape;
+            }
+
+            public ShapeArchetype getShape() {
+                return shape;
+            }
+
+            public IActionDescription getActionDescription() {
+                return new CarryTicksActionDescription(
+                    ItemCastTime.ofTicks(CapacityTestSharedItemCastTicks),
+                    CapacityTestSharedItemDamage);
+            }
+        }
+
+        private sealed class ShapeCastEntryPointDefinition : IEntryPointDefinition {
+            public ShapeArchetype getShape() {
+                return ShapeCatalog.Square1x1;
+            }
+
+            public IActionDescription getActionDescription() {
+                return new CarryTicksActionDescription(
+                    ItemCastTime.ofTicks(ShapeCastEntryCastTicks),
+                    ShapeCastEntryDamage);
+            }
+
+            public FlowKind getFlowKind() {
+                return FlowKind.Damage;
+            }
+
+            public CombatTicks getTriggerIntervalTicks() {
+                return CombatTicks.of(10_000);
+            }
+        }
+
+        private sealed class ShapeCastWideBattleItemDefinition : IItemDefinition {
+            public ShapeArchetype getShape() {
+                return ShapeCatalog.Square2x2;
+            }
+
+            public IActionDescription getActionDescription() {
+                return new CarryTicksActionDescription(
+                    ItemCastTime.ofTicks(ShapeCastWideItemBaseCastTicks),
+                    ShapeCastWideItemDamage);
+            }
+        }
+
         private sealed class CarryTicksOperations : IOperations {
             private readonly IOperation[] effects;
 
@@ -402,6 +778,19 @@ namespace MageFactory.Tests.Unit.Battle {
 
             public IReadOnlyList<IOperation> getEffects() {
                 return effects;
+            }
+        }
+
+        private sealed class TestActiveFlowCastStateCollector : IActiveFlowCastStateCollector {
+            private readonly List<ActiveFlowCastState> states = new();
+
+            public void addActiveFlowCastState(ActiveFlowCastState castState) {
+                states.Add(castState);
+            }
+
+            internal ActiveFlowCastState getSingleState() {
+                Assert.AreEqual(1, states.Count);
+                return states[0];
             }
         }
     }

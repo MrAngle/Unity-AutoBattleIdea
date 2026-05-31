@@ -22,7 +22,10 @@ namespace MageFactory.Flow.Domain.FlowCapability {
             this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
         }
 
-        internal bool tryFindNextNode(IFlowItem sourceNode, List<Id<ItemId>> nodeIdsToIgnore, out IFlowItem nextNode) {
+        internal bool tryFindNextNode(
+            IFlowItem sourceNode,
+            IReadOnlyCollection<Id<ItemId>> nodeIdsToIgnore,
+            out IFlowItem nextNode) {
             nextNode = flowContext.getFlowRouter().decideNext(sourceNode, nodeIdsToIgnore);
             return nextNode != null;
         }

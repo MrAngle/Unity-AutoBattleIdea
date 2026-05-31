@@ -1,6 +1,7 @@
-﻿using MageFactory.Character.Domain.CombatChar;
+using MageFactory.Character.Domain.CombatChar;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.Shared.Id;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
     internal class CharacterCombatQueries : ICharacterCombatQueries {
@@ -28,6 +29,14 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
         public int getCreatedFlowsInCurrentBattleCount() {
             return combatCharacter.getCreatedFlowsInCurrentBattleCount();
+        }
+
+        public int getActiveFlowCountOnItem(Id<ItemId> itemId) {
+            return combatCharacter.getActiveFlowCountOnItem(itemId);
+        }
+
+        public void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector) {
+            combatCharacter.collectActiveFlowCastStates(collector);
         }
     }
 }

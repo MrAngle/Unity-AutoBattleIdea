@@ -2,6 +2,7 @@
 using System.Linq;
 using DG.Tweening;
 using MageFactory.Shared.Model.Shape;
+using MageFactory.Shared.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,8 +18,11 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         private Vector2 cellSize;
         private Vector2Int[] shapeOffsets;
         private Tween moveTween;
+        private ItemCastProgressBarsView castProgressBarsView;
 
         public void build(ShapeArchetype data, Vector2 targetCellSize) {
+            NullGuard.NotNullOrThrow(data);
+
             clear();
             cellSize = targetCellSize;
             shapeOffsets = data.Shape.Cells.ToArray();
@@ -33,6 +37,10 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                 go.transform.SetParent(transform, false);
 
                 var tile = go.GetComponent<ItemCellTileView>();
+                tile.bindShapeCell(
+                    offset,
+                    countCellsBeforeInRow(offset),
+                    countCellsInRow(offset.y));
                 tile.setupVisual(cellColor);
                 tile.setSize(cellSize);
 
@@ -48,6 +56,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
 
             resizeToFit();
+            createCastProgressBarsView();
         }
 
         public void setOriginInGrid(
@@ -80,6 +89,18 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
         }
 
+        public void setCastProgressBars(IReadOnlyList<ItemCastProgressViewState> progressRatios) {
+            NullGuard.NotNullOrThrow(progressRatios);
+            ensureCastProgressBarsView();
+            castProgressBarsView.setProgressBars(progressRatios);
+        }
+
+        public void hideCastProgressBars() {
+            if (castProgressBarsView != null) {
+                castProgressBarsView.hideAll();
+            }
+        }
+
         private Vector2 calculateAnchoredPosition(
             Vector2Int origin,
             Vector2 paramCellSize,
@@ -98,6 +119,44 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
 
             itemCellTileViews.Clear();
+            castProgressBarsView = null;
+        }
+
+        private void ensureCastProgressBarsView() {
+            if (castProgressBarsView == null) {
+                createCastProgressBarsView();
+            }
+        }
+
+        private int countCellsInRow(int localRow) {
+            int count = 0;
+
+            for (int i = 0; i < shapeOffsets.Length; i++) {
+                if (shapeOffsets[i].y == localRow) {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private int countCellsBeforeInRow(Vector2Int localCell) {
+            int count = 0;
+
+            for (int i = 0; i < shapeOffsets.Length; i++) {
+                Vector2Int otherCell = shapeOffsets[i];
+
+                if (otherCell.y == localCell.y && otherCell.x < localCell.x) {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private void createCastProgressBarsView() {
+            castProgressBarsView = ItemCastProgressBarsView.create(transform);
+            castProgressBarsView.bindTiles(itemCellTileViews);
         }
 
         private void resizeToFit() {

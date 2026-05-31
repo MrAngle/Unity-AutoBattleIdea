@@ -29,6 +29,7 @@ namespace MageFactory.UI.Context.Combat {
 
         private readonly CharacterPrefabAggregate characterPrefabAggregate;
         private readonly Transform parentTransformCharacterPrefabAggregate;
+        private CombatContextPresentationOrchestrator currentPresentationOrchestrator;
 
 
         [Inject]
@@ -70,7 +71,7 @@ namespace MageFactory.UI.Context.Combat {
                 characterPrefabs[combatCharacter.query().getCharacterInfo().getCharacterId()] = prefab;
             }
 
-            CombatContextPresentationOrchestrator.create(combatContextEventRegistry,
+            currentPresentationOrchestrator = CombatContextPresentationOrchestrator.create(combatContextEventRegistry,
                 uiCombatContextEventRegistry,
                 inventoryEventRegistry,
                 characterEventRegistry,
@@ -78,6 +79,10 @@ namespace MageFactory.UI.Context.Combat {
                 itemDragService,
                 characterPrefabs,
                 combatContext);
+        }
+
+        public void refreshCastProgress() {
+            currentPresentationOrchestrator?.refreshCastProgress();
         }
     }
 }
