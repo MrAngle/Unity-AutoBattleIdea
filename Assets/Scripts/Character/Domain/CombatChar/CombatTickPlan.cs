@@ -60,6 +60,7 @@ namespace MageFactory.Character.Domain.CombatChar {
                 if (!activeFlow.isFinished()) {
                     activeFlows[nextActiveIndex] = activeFlow;
                     nextActiveIndex++;
+                    continue;
                 }
             }
 

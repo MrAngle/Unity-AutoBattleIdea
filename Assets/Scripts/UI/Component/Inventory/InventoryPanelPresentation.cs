@@ -56,11 +56,12 @@ namespace MageFactory.UI.Component.Inventory {
             NullGuard.NotNullOrThrow(characterCombatQueries);
 
             itemCastProgressPrintBuffer.clear();
-            characterCombatQueries.collectActiveFlowCastStates(itemCastProgressPrintBuffer);
+            characterCombatQueries.collectActiveFlowStates(itemCastProgressPrintBuffer);
 
             combatInventoryItemsPanel.printItemCastProgress(
                 new ICombatInventoryItemsPanel.UiPrintItemCastProgressCommand(
-                    itemCastProgressPrintBuffer.getProgressByItem()));
+                    itemCastProgressPrintBuffer.getProgressByItem(),
+                    itemCastProgressPrintBuffer.getFlowPaths()));
         }
 
         public void moveItemToPosition(ICombatInventoryItemsPanel.MoveItemToPositionCommand command) {
@@ -69,10 +70,12 @@ namespace MageFactory.UI.Component.Inventory {
             combatInventoryItemsPanel.moveItemToPosition(command, inventoryGridInfo);
         }
 
-        private sealed class ItemCastProgressPrintBuffer : IActiveFlowCastStateCollector {
+        private sealed class ItemCastProgressPrintBuffer : IActiveFlowStateCollector {
             private readonly Dictionary<Id<ItemId>, List<ItemCastProgressViewState>> mutableProgressByItem = new();
             private readonly Dictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem = new();
             private readonly List<Id<ItemId>> itemIdsWithProgress = new();
+            private readonly List<FlowPathViewState> flowPaths = new();
+            private readonly FlowVisualIndexAllocator visualIndexAllocator = new();
 
             internal void clear() {
                 for (int i = 0; i < itemIdsWithProgress.Count; i++) {
@@ -82,11 +85,15 @@ namespace MageFactory.UI.Component.Inventory {
 
                 itemIdsWithProgress.Clear();
                 progressByItem.Clear();
+                flowPaths.Clear();
+                visualIndexAllocator.beginRefresh();
             }
 
-            public void addActiveFlowCastState(ActiveFlowCastState castState) {
+            public void addActiveFlowState(ActiveFlowState flowState) {
+                ActiveFlowCastState castState = flowState.getCastState();
                 Id<ItemId> itemId = castState.getItemId();
                 NullGuard.ValidIdOrThrow(itemId);
+                int flowVisualIndex = visualIndexAllocator.getVisualIndex(flowState.getFlowId());
 
                 if (!mutableProgressByItem.TryGetValue(
                         itemId,
@@ -101,12 +108,25 @@ namespace MageFactory.UI.Component.Inventory {
                 }
 
                 itemProgressBars.Add(new ItemCastProgressViewState(
+                    flowState.getFlowId(),
                     castState.getProcessingSlot().getLocalRow(),
+                    calculateProgressRatio(castState),
+                    flowVisualIndex));
+
+                flowPaths.Add(new FlowPathViewState(
+                    flowState.getFlowId(),
+                    flowVisualIndex,
+                    flowState.getProcessingPath(),
                     calculateProgressRatio(castState)));
             }
 
             internal IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> getProgressByItem() {
+                visualIndexAllocator.endRefresh();
                 return progressByItem;
+            }
+
+            internal IReadOnlyList<FlowPathViewState> getFlowPaths() {
+                return flowPaths;
             }
 
             private static float calculateProgressRatio(ActiveFlowCastState castState) {
@@ -119,6 +139,70 @@ namespace MageFactory.UI.Component.Inventory {
                 int remainingTicks = Math.Max(0, castState.getRemainingCastTicks().getValue());
                 int completedTicks = Math.Max(0, requiredTicks - remainingTicks);
                 return (float)completedTicks / requiredTicks;
+            }
+        }
+
+        private sealed class FlowVisualIndexAllocator {
+            private const int AvailableVisualIndexes = 8;
+
+            private readonly Dictionary<Id<ActiveFlowId>, int> visualIndexByFlowId = new();
+            private readonly HashSet<Id<ActiveFlowId>> seenFlowIds = new();
+            private readonly int[] activeUsageByIndex = new int[AvailableVisualIndexes];
+            private readonly List<Id<ActiveFlowId>> flowIdsToRelease = new();
+
+            internal void beginRefresh() {
+                seenFlowIds.Clear();
+            }
+
+            internal int getVisualIndex(Id<ActiveFlowId> flowId) {
+                Id<ActiveFlowId> validFlowId = NullGuard.ValidIdOrThrow(flowId);
+                seenFlowIds.Add(validFlowId);
+
+                if (visualIndexByFlowId.TryGetValue(validFlowId, out int existingVisualIndex)) {
+                    return existingVisualIndex;
+                }
+
+                int visualIndex = reserveVisualIndex();
+                visualIndexByFlowId[validFlowId] = visualIndex;
+                return visualIndex;
+            }
+
+            internal void endRefresh() {
+                flowIdsToRelease.Clear();
+
+                foreach (Id<ActiveFlowId> flowId in visualIndexByFlowId.Keys) {
+                    if (!seenFlowIds.Contains(flowId)) {
+                        flowIdsToRelease.Add(flowId);
+                    }
+                }
+
+                for (int i = 0; i < flowIdsToRelease.Count; i++) {
+                    Id<ActiveFlowId> flowId = flowIdsToRelease[i];
+                    int visualIndex = visualIndexByFlowId[flowId];
+
+                    visualIndexByFlowId.Remove(flowId);
+                    activeUsageByIndex[visualIndex]--;
+                }
+            }
+
+            private int reserveVisualIndex() {
+                int leastUsedIndex = 0;
+                int leastUsedCount = activeUsageByIndex[0];
+
+                for (int i = 0; i < activeUsageByIndex.Length; i++) {
+                    if (activeUsageByIndex[i] == 0) {
+                        activeUsageByIndex[i]++;
+                        return i;
+                    }
+
+                    if (activeUsageByIndex[i] < leastUsedCount) {
+                        leastUsedCount = activeUsageByIndex[i];
+                        leastUsedIndex = i;
+                    }
+                }
+
+                activeUsageByIndex[leastUsedIndex]++;
+                return leastUsedIndex;
             }
         }
     }

@@ -35,8 +35,8 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return combatCharacter.getActiveFlowCountOnItem(itemId);
         }
 
-        public void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector) {
-            combatCharacter.collectActiveFlowCastStates(collector);
+        public void collectActiveFlowStates(IActiveFlowStateCollector collector) {
+            combatCharacter.collectActiveFlowStates(collector);
         }
     }
 }

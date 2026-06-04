@@ -10,6 +10,7 @@
     "MageFactory.Item.Catalog",
     "MageFactory.CombatContext.Api",
     "MageFactory.UI.Context.Combat",
+    "MageFactory.UI.Component",
     "MageFactory.Flow.Contract",
     "MageFactory.Character.Api",
     "MageFactory.InjectConfiguration",

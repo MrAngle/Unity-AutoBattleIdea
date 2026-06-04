@@ -61,3 +61,71 @@ Future UI direction:
 
 - Show a simple countdown/charge indicator directly on entry point items for the next flow trigger.
 - Keep this separate from item cast progress: trigger time creates a flow, cast time processes an existing flow through an item.
+
+## Runtime-Created UI View Templates
+
+Current state:
+
+- Some UI views, especially flow/progress presentation pieces, create child objects directly in code with `new GameObject(...)`, component type lists, and string child names.
+- This is acceptable for early code-driven UI prototyping, but it is brittle as a long-term pattern because styling, hierarchy, and required components are spread through view code.
+
+Preferred future direction:
+
+- Replace repeated manual child construction with prefab/template-backed views or a small typed UI view factory/builder.
+- Prefer instantiating named view components such as progress lane, flow line, fill, comet, and track templates over relying on ad hoc string-named children.
+- Keep pooling/reuse behavior for frequently updated UI elements; do not create/destroy these objects in combat/UI refresh hot paths.
+- Keep this refactor presentation-only. Domain/combat runtime must not depend on prefab/template details.
+
+## Focused Flow Path Visualization
+
+Current direction:
+
+- The inventory can render full active flow paths as presentation-only overlays.
+- `ActiveFlowState` exposes stable domain `ActiveFlowId` and ordered processing slots, which is a good base for focused inspection later.
+- Showing every active flow at once can become visually noisy when many entry points and long paths are active.
+- Domain must not expose visual palette indexes, colors, opacity, dash phase, marker symbols, or highlight state.
+
+Future UI direction:
+
+- Add an item/entry-point focus selection mode for flow visualization.
+- When an entry point is selected, show only active flow paths started by that entry point.
+- When a processing item is selected, consider showing only active flows currently on or passing through that item.
+- When a concrete flow is selected, show only that flow and highlight every item participating in its path.
+- Use centralized UI visual states: normal, dimmed, focused, related, and stale-related.
+- Prefer opacity plus mild desaturation/darkening for dimming; reserve strong outline/glow for the selected object.
+- Consider recency fade for item focus: direct/current flow relations are strongest, older relations fade toward the dimmed baseline over a configured tick window.
+- Keep this as a presentation/filtering concern unless gameplay rules need explicit flow ownership queries.
+- Entry-point filtering likely needs stable start-entry-point data in `ActiveFlowState` and a clear UI selection model before implementation.
+
+## Flow Path Accessibility Patterns
+
+Current direction:
+
+- Flow paths use a stable color from a visual-index pool.
+- Shared cast rows can switch from solid lines to dashed segments so overlapping flows are distinguishable.
+- Color alone should not be the final readability mechanism.
+
+Future UI direction:
+
+- Add non-color visual identity per flow, such as dash pattern, small repeated glyphs, or simple geometric markers.
+- Prefer a small, consistent symbol set that remains readable at inventory-cell scale.
+- Avoid decorative symbols that make dense flow paths harder to scan.
+- This should build on stable domain `ActiveFlowId`; presentation may map that id to a temporary visual index, color, dash phase, and marker pattern for the lifetime of the visible flow.
+
+## Flow Focus Option 3 And Details Panel
+
+Current direction:
+
+- Option 2 focus filtering is the near-term UX: clicking the same item, entry point, or flow toggles focus off; clicking another selectable object moves focus.
+- `stale-related` is reserved in the visual state model, but tick-based recency fading is not implemented yet.
+- The domain may expose stable gameplay facts such as flow id, flow kind, ordered processing path, current processing slot, owner/source data, and contribution values when they become real gameplay data.
+- The domain must not expose display-only facts such as palette index, color, opacity, glow, dash style, marker glyph, or focus state.
+
+Future UI direction:
+
+- Option 3 should add a proper recent-context model for selected items: direct/current flow relations stay strongest, older incoming/outgoing relations fade toward the dimmed baseline over a configured tick window.
+- The details panel should be driven by a presentation/read model for the currently selected item, entry point, or flow.
+- Flow details should include `ActiveFlowId`, flow kind, full ordered path, current cast row, current item, owner/source entry point when available, age or created tick, and item/cast-row contribution values once tracked.
+- Item details should include active/current flows, incoming and outgoing recent flow relations, current cast rows, recent received-flow ticks, and contribution breakdowns once tracked.
+- Entry point details should include active flows started by it, trigger timing, recent created flows, and throughput-style summary data.
+- Clicking a flow line should eventually open/select the concrete flow details while keeping the focused overlay limited to that flow.

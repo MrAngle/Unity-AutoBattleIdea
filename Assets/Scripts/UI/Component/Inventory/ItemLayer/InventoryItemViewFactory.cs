@@ -28,8 +28,8 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             Vector2 cell = gridLayoutGroup.cellSize;
             Vector2 spacing = gridLayoutGroup.spacing;
 
-            createdPlacedItemView.build(data, cell);
-            createdPlacedItemView.setOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            createdPlacedItemView.build(data, cell, spacing);
+            createdPlacedItemView.setOriginInGrid(origin, cell, Vector2.zero, spacing);
 
             return createdPlacedItemView;
         }

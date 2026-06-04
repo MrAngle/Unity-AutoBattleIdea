@@ -46,8 +46,10 @@ namespace MageFactory.Character.Domain {
         }
 
         public DamageTaken takeDamage(ResolvedDamage resolvedDamage) {
+            long hpBeforeDamage = characterData.getCurrentHp();
             DamageTaken damageTaken = characterData.takeDamage(resolvedDamage);
-            if (characterData.getCurrentHp() <= 0) {
+
+            if (hpBeforeDamage > 0 && characterData.getCurrentHp() <= 0) {
                 characterEventPublisher.publish(new CharacterDeathDtoEvent(characterData.getCharacterId()));
             }
 

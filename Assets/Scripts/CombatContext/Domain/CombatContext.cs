@@ -20,6 +20,7 @@ using Random = System.Random;
 namespace MageFactory.CombatContext.Domain {
     internal class CombatContext : ICombatContext, IFlowConsumer {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacterFacade> characters = new();
+        private readonly List<ICombatCharacterFacade> enemyCandidates = new();
 
         private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
@@ -144,17 +145,32 @@ namespace MageFactory.CombatContext.Domain {
             }
 
             Team sourceTeam = sourceCharacter.query().getCharacterInfo().getTeam();
-            var enemies = characters.Values
-                .Where(c => !Equals(c.query().getCharacterInfo().getCharacterId(), sourceId))
-                .Where(c => c.query().getCharacterInfo().getTeam() != sourceTeam)
-                // todo: filter out dead characters
-                .ToList();
+            enemyCandidates.Clear();
 
-            if (enemies.Count == 0)
+            foreach (ICombatCharacterFacade character in characters.Values) {
+                IReadOnlyCombatCharacterData characterInfo = character.query().getCharacterInfo();
+
+                if (Equals(characterInfo.getCharacterId(), sourceId)) {
+                    continue;
+                }
+
+                if (characterInfo.getTeam() == sourceTeam) {
+                    continue;
+                }
+
+                if (characterInfo.getCurrentHp() <= 0) {
+                    continue;
+                }
+
+                enemyCandidates.Add(character);
+            }
+
+            if (enemyCandidates.Count == 0) {
                 return false;
+            }
 
-            int index = random.Next(enemies.Count);
-            enemy = enemies[index];
+            int index = random.Next(enemyCandidates.Count);
+            enemy = enemyCandidates[index];
             Debug.Log(
                 $"[CombatContext] Picked enemy: {enemy.query().getCharacterInfo().getCharacterName()}({enemy.query().getCharacterInfo().getTeam()})");
             return true;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MageFactory.Character.Api.Event;
 using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
@@ -48,6 +49,12 @@ namespace MageFactory.Tests.Unit.TestFixtures {
                 .FromInstance(new FlowProcessorSettings(
                     currentSettings.getMaxStepsPerSlice(),
                     FlowCastTimeMode.Instant));
+            return this;
+        }
+
+        public BattleScenarioTestHarness withCharacterDeathListener(ICharacterDeathEventListener listener) {
+            container.Resolve<ICharacterEventRegistry>()
+                .subscribe(listener);
             return this;
         }
 

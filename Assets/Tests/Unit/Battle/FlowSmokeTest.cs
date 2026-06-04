@@ -3,12 +3,15 @@ using System.Linq;
 using MageFactory.ActionEffect;
 using MageFactory.ActionEffect.PredefinedOperations;
 using MageFactory.BattleManager;
+using MageFactory.Character.Api.Event;
+using MageFactory.Character.Api.Event.Dto;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.CombatContextRuntime;
 using MageFactory.Item.Catalog.Bases;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Tests.Unit.TestFixtures;
@@ -32,6 +35,7 @@ namespace MageFactory.Tests.Unit.Battle {
         private const int ShapeCastWideItemBaseCastTicks = 4;
         private const int ShapeCastEntryDamage = 2;
         private const int ShapeCastWideItemDamage = 9;
+        private const int DeathRegressionDefenderHp = 1;
 
         [Test]
         public void should_expose_active_and_created_flow_counts() {
@@ -131,6 +135,42 @@ namespace MageFactory.Tests.Unit.Battle {
             Assert.AreEqual(1, attacker.query().getActiveFlowCount());
             Assert.AreEqual(1, attacker.query().getCreatedFlowsInCurrentBattleCount());
             Assert.AreEqual(1, attacker.query().getActiveFlowCountOnItem(entryPoint.getId()));
+        }
+
+        [Test]
+        public void should_assign_unique_domain_flow_ids_to_active_flows() {
+            // given
+            EquipItemCommand[] attackerItems = new EquipItemCommand[9];
+            for (int i = 0; i < attackerItems.Length; i++) {
+                attackerItems[i] = new EquipItemCommand(
+                    new CapacityTestEntryPointDefinition(),
+                    new Vector2Int(i * 2, 0));
+            }
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .create1V1WithEnormousHp(attackerItems);
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+
+            foreach (EquipItemCommand attackerItem in attackerItems) {
+                IGridItemPlaced entryPoint = getPlacedItemAt(attacker, attackerItem.origin);
+                createFlow(combatContext, attacker, entryPoint);
+            }
+
+            // when
+            var collector = new TestActiveFlowStateCollector();
+            attacker.query().collectActiveFlowStates(collector);
+
+            // then
+            IReadOnlyList<ActiveFlowState> flowStates = collector.getStates();
+            Assert.AreEqual(9, flowStates.Count);
+
+            var flowIds = new HashSet<Id<ActiveFlowId>>();
+            for (int i = 0; i < flowStates.Count; i++) {
+                flowIds.Add(flowStates[i].getFlowId());
+            }
+
+            Assert.AreEqual(flowStates.Count, flowIds.Count);
         }
 
         [Test]
@@ -243,11 +283,20 @@ namespace MageFactory.Tests.Unit.Battle {
                 combatContext.getCombatCapabilities());
 
             // then
-            var collector = new TestActiveFlowCastStateCollector();
-            attacker.query().collectActiveFlowCastStates(collector);
+            var collector = new TestActiveFlowStateCollector();
+            attacker.query().collectActiveFlowStates(collector);
 
-            ActiveFlowCastState castState = collector.getSingleState();
+            ActiveFlowState flowState = collector.getSingleState();
+            ActiveFlowCastState castState = flowState.getCastState();
+            Assert.Greater(flowState.getFlowId().Value, 0);
             Assert.AreEqual(widePlacedItem.getId(), castState.getItemId());
+            Assert.AreEqual(2, flowState.getProcessingPath().Count);
+            Assert.AreEqual(entryPoint.getId(), flowState.getProcessingPath()[0].getItemId());
+            Assert.AreEqual(widePlacedItem.getId(), flowState.getProcessingPath()[1].getItemId());
+            Assert.AreEqual(0, flowState.getProcessingPath()[0].getLocalRow());
+            Assert.AreEqual(0, flowState.getProcessingPath()[1].getLocalRow());
+            Assert.IsTrue(flowState.tryGetPreviousProcessingSlot(out var previousProcessingSlot));
+            Assert.AreEqual(entryPoint.getId(), previousProcessingSlot.getItemId());
             Assert.AreEqual(0, castState.getProcessingSlot().getLocalRow());
             Assert.AreEqual(2, castState.getProcessingSlot().getCellCount());
             Assert.AreEqual(
@@ -312,6 +361,58 @@ namespace MageFactory.Tests.Unit.Battle {
             Assert.AreEqual(hpBefore - singleFlowDamage * 2, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, attacker.query().getActiveFlowCount());
             Assert.AreEqual(0, attacker.query().getActiveFlowCountOnItem(nextItem.getId()));
+        }
+
+        [Test]
+        public void should_continue_and_finish_active_flow_when_last_enemy_is_already_dead() {
+            // given
+            IItemDefinition killingEntry = new DeathRegressionEntryPointDefinition(1, 1);
+            IItemDefinition delayedEntry = new DeathRegressionEntryPointDefinition(5, 1);
+            var deathListener = new CountingDeathEventListener();
+
+            EquipItemCommand[] attackerItems = {
+                new(killingEntry, new Vector2Int(0, 0)),
+                new(delayedEntry, new Vector2Int(2, 0))
+            };
+
+            ICombatContext combatContext = BattleScenarioTestHarness.create()
+                .withCharacterDeathListener(deathListener)
+                .createContext(
+                    new CreateCombatCharacterCommand(
+                        "Attacker",
+                        1_000_000,
+                        Team.TeamA,
+                        new GridDimensions(17, 8),
+                        attackerItems),
+                    new CreateCombatCharacterCommand(
+                        "Defender",
+                        DeathRegressionDefenderHp,
+                        Team.TeamB,
+                        new GridDimensions(17, 8),
+                        new EquipItemCommand[] { }));
+
+            ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
+            IGridItemPlaced killingEntryPoint = getPlacedItemAt(attacker, new Vector2Int(0, 0));
+            IGridItemPlaced delayedEntryPoint = getPlacedItemAt(attacker, new Vector2Int(2, 0));
+
+            createFlow(combatContext, attacker, killingEntryPoint);
+            createFlow(combatContext, attacker, delayedEntryPoint);
+
+            attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+
+            Assert.AreEqual(0, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(1, deathListener.getDeathEventCount());
+            Assert.AreEqual(1, attacker.query().getActiveFlowCount());
+
+            // when
+            Assert.DoesNotThrow(() => attacker.command().combatTick(
+                CombatTicks.of(4),
+                combatContext.getCombatCapabilities()));
+
+            // then
+            Assert.AreEqual(0, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(1, deathListener.getDeathEventCount());
+            Assert.AreEqual(0, attacker.query().getActiveFlowCount());
         }
 
         [Test]
@@ -767,6 +868,34 @@ namespace MageFactory.Tests.Unit.Battle {
             }
         }
 
+        private sealed class DeathRegressionEntryPointDefinition : IEntryPointDefinition {
+            private readonly int castTicks;
+            private readonly int damage;
+
+            internal DeathRegressionEntryPointDefinition(int castTicks, int damage) {
+                this.castTicks = castTicks;
+                this.damage = damage;
+            }
+
+            public ShapeArchetype getShape() {
+                return ShapeCatalog.Square1x1;
+            }
+
+            public IActionDescription getActionDescription() {
+                return new CarryTicksActionDescription(
+                    ItemCastTime.ofTicks(castTicks),
+                    damage);
+            }
+
+            public FlowKind getFlowKind() {
+                return FlowKind.Damage;
+            }
+
+            public CombatTicks getTriggerIntervalTicks() {
+                return CombatTicks.of(10_000);
+            }
+        }
+
         private sealed class CarryTicksOperations : IOperations {
             private readonly IOperation[] effects;
 
@@ -781,16 +910,32 @@ namespace MageFactory.Tests.Unit.Battle {
             }
         }
 
-        private sealed class TestActiveFlowCastStateCollector : IActiveFlowCastStateCollector {
-            private readonly List<ActiveFlowCastState> states = new();
+        private sealed class TestActiveFlowStateCollector : IActiveFlowStateCollector {
+            private readonly List<ActiveFlowState> states = new();
 
-            public void addActiveFlowCastState(ActiveFlowCastState castState) {
-                states.Add(castState);
+            public void addActiveFlowState(ActiveFlowState flowState) {
+                states.Add(flowState);
             }
 
-            internal ActiveFlowCastState getSingleState() {
+            internal ActiveFlowState getSingleState() {
                 Assert.AreEqual(1, states.Count);
                 return states[0];
+            }
+
+            internal IReadOnlyList<ActiveFlowState> getStates() {
+                return states;
+            }
+        }
+
+        private sealed class CountingDeathEventListener : ICharacterDeathEventListener {
+            private int deathEventCount;
+
+            public void onEvent(in CharacterDeathDtoEvent ev) {
+                deathEventCount++;
+            }
+
+            internal int getDeathEventCount() {
+                return deathEventCount;
             }
         }
     }

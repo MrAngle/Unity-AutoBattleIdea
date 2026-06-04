@@ -117,14 +117,14 @@ namespace MageFactory.Character.Domain.CombatChar {
                 tryGetItemAtCell,
                 canProcessFlowItem);
 
-            var flow = flowFactory.create(
+            IFlowProcessor flow = flowFactory.create(new FlowCreationCommand(
+                new Id<ActiveFlowId>(IdGenerator.Next()),
                 entryPoint.getFlowKind(),
                 entryPointFlowItem,
                 router,
                 flowConsumer,
                 new FlowCapabilities(this),
-                this
-            );
+                this));
 
             activeFlows.Add(flow);
             createdFlowCount++;
@@ -170,11 +170,11 @@ namespace MageFactory.Character.Domain.CombatChar {
             runtimeState.finishProcessingFlow(slot);
         }
 
-        public void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector) {
+        public void collectActiveFlowStates(IActiveFlowStateCollector collector) {
             NullGuard.NotNullOrThrow(collector);
 
             for (int i = 0; i < activeFlows.Count; i++) {
-                activeFlows[i].collectActiveFlowCastStates(collector);
+                activeFlows[i].collectActiveFlowStates(collector);
             }
         }
 

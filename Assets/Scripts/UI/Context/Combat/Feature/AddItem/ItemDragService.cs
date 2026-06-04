@@ -39,7 +39,8 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
         internal void beginDrag(IItemDefinition itemDefinition, PointerEventData eventData) {
             inventoryPlaceableItem = itemDefinition;
             var cellSize = inventoryGridLayout.Get().cellSize;
-            ghostPlacedItem.build(inventoryPlaceableItem.getShape(), cellSize);
+            var spacing = inventoryGridLayout.Get().spacing;
+            ghostPlacedItem.build(inventoryPlaceableItem.getShape(), cellSize, spacing);
             ghostPlacedItem.setColor(new Color(1f, 1f, 1f, 0.6f));
             ghostPlacedItem.gameObject.SetActive(true);
 
@@ -69,7 +70,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             ghostPlacedItem.setColor(can ? new Color(0.5f, 1f, 0.5f, 0.7f) : new Color(1f, 0.5f, 0.5f, 0.7f));
 
             // 4) ustaw „ducha” na snapniętej pozycji
-            ghostPlacedItem.setOriginInGrid(origin, cell, Vector2.zero, spacing.x);
+            ghostPlacedItem.setOriginInGrid(origin, cell, Vector2.zero, spacing);
         }
 
         internal void endDrag(PointerEventData pointerEventData) {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
@@ -57,7 +58,60 @@ namespace MageFactory.CombatContext.Contract {
         }
     }
 
-    public interface IActiveFlowCastStateCollector {
-        void addActiveFlowCastState(ActiveFlowCastState castState);
+    public readonly struct ActiveFlowState {
+        private readonly Id<ActiveFlowId> flowId;
+        private readonly FlowKind flowKind;
+        private readonly IReadOnlyList<ItemFlowProcessingSlot> processingPath;
+        private readonly ActiveFlowCastState castState;
+
+        public ActiveFlowState(
+            Id<ActiveFlowId> flowId,
+            FlowKind flowKind,
+            IReadOnlyList<ItemFlowProcessingSlot> processingPath,
+            ActiveFlowCastState castState) {
+            this.flowId = NullGuard.ValidIdOrThrow(flowId);
+            this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
+            this.processingPath = NullGuard.NotNullOrThrow(processingPath);
+
+            if (this.processingPath.Count == 0) {
+                throw new ArgumentException("Active flow path cannot be empty.", nameof(processingPath));
+            }
+
+            for (int i = 0; i < this.processingPath.Count; i++) {
+                NullGuard.NotNullOrThrow(this.processingPath[i]);
+            }
+
+            this.castState = castState;
+        }
+
+        public Id<ActiveFlowId> getFlowId() {
+            return flowId;
+        }
+
+        public FlowKind getFlowKind() {
+            return flowKind;
+        }
+
+        public IReadOnlyList<ItemFlowProcessingSlot> getProcessingPath() {
+            return processingPath;
+        }
+
+        public ActiveFlowCastState getCastState() {
+            return castState;
+        }
+
+        public bool tryGetPreviousProcessingSlot(out ItemFlowProcessingSlot previousProcessingSlot) {
+            if (processingPath.Count < 2) {
+                previousProcessingSlot = null;
+                return false;
+            }
+
+            previousProcessingSlot = processingPath[processingPath.Count - 2];
+            return true;
+        }
+    }
+
+    public interface IActiveFlowStateCollector {
+        void addActiveFlowState(ActiveFlowState flowState);
     }
 }

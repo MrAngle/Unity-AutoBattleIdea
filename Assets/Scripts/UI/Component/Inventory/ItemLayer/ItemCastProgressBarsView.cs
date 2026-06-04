@@ -5,9 +5,9 @@ using UnityEngine;
 namespace MageFactory.UI.Component.Inventory.ItemLayer {
     public sealed class ItemCastProgressBarsView : MonoBehaviour {
         [Header("Visual")] [SerializeField] private Color trackColor = new(0.08f, 0.08f, 0.08f, 0.5f);
-        [SerializeField] private Color fillColor = new(0.37f, 0.72f, 1f, 0.72f);
 
         private readonly List<ItemCellTileView> tileViews = new();
+        private bool hasVisibleProgress;
 
         public static ItemCastProgressBarsView create(Transform parent) {
             NullGuard.NotNullOrThrow(parent);
@@ -25,7 +25,9 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             rectTransform.offsetMin = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
 
-            return go.GetComponent<ItemCastProgressBarsView>();
+            var view = go.GetComponent<ItemCastProgressBarsView>();
+            view.enabled = false;
+            return view;
         }
 
         public void bindTiles(IReadOnlyList<ItemCellTileView> tiles) {
@@ -47,18 +49,33 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                 return;
             }
 
+            hasVisibleProgress = true;
+            enabled = true;
             int tilesCount = tileViews.Count;
             for (int i = 0; i < tilesCount; i++) {
                 tileViews[i].setCastProgressLanes(
                     progressRatios,
-                    trackColor,
-                    fillColor);
+                    trackColor);
             }
         }
 
         public void hideAll() {
+            hasVisibleProgress = false;
+            enabled = false;
+
             for (int i = 0; i < tileViews.Count; i++) {
                 tileViews[i].hideCastProgressLanes();
+            }
+        }
+
+        private void Update() {
+            if (!hasVisibleProgress) {
+                return;
+            }
+
+            float deltaTime = Time.unscaledDeltaTime;
+            for (int i = 0; i < tileViews.Count; i++) {
+                tileViews[i].smoothCastProgressLanes(deltaTime);
             }
         }
     }

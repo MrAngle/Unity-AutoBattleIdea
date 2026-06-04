@@ -17,7 +17,10 @@ namespace MageFactory.Flow.Domain {
     internal class FlowProcessor : IFlowProcessor {
         private readonly FlowProcessingCapabilities flowProcessingCapabilities;
         private readonly HashSet<Id<ItemId>> visitedNodeIds = new();
+        private readonly List<ItemFlowProcessingSlot> processingPath = new();
         private readonly FlowProcessorSettings settings;
+        private readonly Id<ActiveFlowId> flowId;
+        private readonly FlowKind flowKind;
 
         private IFlowItem currentItem;
         private readonly CurrentFlowItemCast currentItemCast = new();
@@ -27,17 +30,23 @@ namespace MageFactory.Flow.Domain {
         private FlowProcessor(
             FlowProcessingCapabilities flowProcessingCapabilities,
             IFlowItem startNode,
-            FlowProcessorSettings settings
+            FlowProcessorSettings settings,
+            FlowKind flowKind,
+            Id<ActiveFlowId> flowId
         ) {
             currentItem = NullGuard.NotNullOrThrow(startNode);
             this.flowProcessingCapabilities = NullGuard.NotNullOrThrow(flowProcessingCapabilities);
             this.settings = NullGuard.NotNullOrThrow(settings);
+            this.flowId = NullGuard.ValidIdOrThrow(flowId);
+            this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
             currentItemProcessingSlot =
                 this.flowProcessingCapabilities.command().startProcessingFlowItem(currentItem);
+            processingPath.Add(currentItemProcessingSlot);
             currentItemCast.startCasting(currentItem, settings.getCastTimeMode(), currentItemProcessingSlot);
         }
 
         internal static IFlowProcessor create(
+            Id<ActiveFlowId> flowId,
             FlowKind flowKind,
             IFlowItem startNode,
             IFlowRouter flowRouter,
@@ -54,7 +63,9 @@ namespace MageFactory.Flow.Domain {
             return new FlowProcessor(
                 flowProcessingCapabilities,
                 startNode,
-                NullGuard.NotNullOrThrow(settings)
+                NullGuard.NotNullOrThrow(settings),
+                flowKind,
+                flowId
             );
         }
 
@@ -136,6 +147,7 @@ namespace MageFactory.Flow.Domain {
                 currentItem = nextItem;
                 currentItemProcessingSlot =
                     flowProcessingCapabilities.command().startProcessingFlowItem(currentItem);
+                processingPath.Add(currentItemProcessingSlot);
                 currentItemCast.startCasting(currentItem, settings.getCastTimeMode(), currentItemProcessingSlot);
                 return true;
             }
@@ -155,17 +167,27 @@ namespace MageFactory.Flow.Domain {
             return finished;
         }
 
-        public void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector) {
+        public Id<ActiveFlowId> getFlowId() {
+            return flowId;
+        }
+
+        public void collectActiveFlowStates(IActiveFlowStateCollector collector) {
             NullGuard.NotNullOrThrow(collector);
 
             if (finished || currentItem == null || !currentItemCast.hasMeasurableCastTime()) {
                 return;
             }
 
-            collector.addActiveFlowCastState(new ActiveFlowCastState(
+            ActiveFlowCastState activeFlowCastState = new ActiveFlowCastState(
                 currentItemProcessingSlot,
                 currentItemCast.getRemainingCastTicks(),
-                currentItemCast.getRequiredCastTicks()));
+                currentItemCast.getRequiredCastTicks());
+
+            collector.addActiveFlowState(new ActiveFlowState(
+                flowId,
+                flowKind,
+                processingPath,
+                activeFlowCastState));
         }
     }
 }

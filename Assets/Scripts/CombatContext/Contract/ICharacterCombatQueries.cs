@@ -15,6 +15,6 @@ namespace MageFactory.CombatContext.Contract {
 
         int getActiveFlowCountOnItem(Id<ItemId> itemId);
 
-        void collectActiveFlowCastStates(IActiveFlowCastStateCollector collector);
+        void collectActiveFlowStates(IActiveFlowStateCollector collector);
     }
 }

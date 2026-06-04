@@ -324,3 +324,66 @@ Added deterministic tests that verify:
 These tests intentionally verify externally visible combat/query results through real battle context and real command/query contracts, rather than testing private helper internals or adding more noisy performance smoke cases.
 
 Unity EditMode tests passed 454/454 after these additions. Smoke output from the verified run: steady-casting averaged about 2.83 ms/tick over 1,000 measured ticks; routing/resolution averaged about 12.63 ms/tick over 200 measured ticks.
+
+AI COMMIT BOUNDARY 2026-05-31 - after push 2b60c27 (master) - Introduce classes for flow processing, flow routing, item cast states, and UI progress bars; add unit tests for flow capacity and routing.
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-05-31 - Flow path visualization on inventory
+
+User wanted active flows to be readable directly on the inventory without opening details: where a flow came from, which item it is currently processing, and which casting slot/row it occupies. User also clarified that the existing item mask/progress visualization should remain the base instead of being replaced.
+
+Previous mechanism: active flow cast UI exposed the current item row and progress ratio to presentation. `PlacedItemView` rendered per-cell row progress lanes inside the occupied item cells, but all lanes shared one color and there was no visual connection from the previous item to the current item.
+
+First implementation mistake: `ActiveFlowCastState` carried optional previous item id and UI assigned visual indexes per refresh. User correctly pointed out that this mixed route/flow identity into cast state and caused colors to change when a flow moved between items.
+
+Refined mechanism: `ActiveFlowCastState` again only describes the current cast. `ActiveFlowState` now describes the active flow projection: flow kind, stable flow visual index, ordered item path, and current cast state. `FlowProcessor` owns the item path and receives the stable visual index when the flow is created. Presentation maps that stable flow visual index to a UI palette, colors existing row/cell progress lanes by flow, and renders pooled UI connection lines from the previous path item to the current processing row. The overlay is presentation-only, refreshed through the existing selected-character UI update path, and is now drawn in front of item views/cast masks.
+
+Testing note: updated deterministic flow coverage to verify that active flow state after routing exposes the ordered item path and previous item through the flow projection. Unity EditMode tests passed 454/454 after the refinement.
+
+Further UI refinement after user feedback: the flow path should be complete and row-based, not only the latest item-to-item jump. `ActiveFlowState` now exposes an ordered processing path made of `ItemFlowProcessingSlot` values, so every path entry identifies the item and row slot used by the flow. UI presentation creates separate `FlowPathViewState` data for the overlay, while `ItemCastProgressViewState` remains focused on row progress/color for item masks. The overlay draws a thicker line through each processed row, connects the end of one row to the start of the next row, and caps visible path segments to avoid overwhelming the UI when many long flows are active. Batchmode tests were blocked by an already open Unity project instance during this refinement, but the active editor log showed a successful script rebuild with no C# compile errors.
+
+Additional visual polish: item cell placement now uses the same `GridLayoutGroup.spacing` as the inventory grid for both internal item cell offsets and item origin positioning. The previous item UI used a separate serialized spacing value inside `PlacedItemView`, so the first occupied cell could align while later cells drifted away from the grid. Flow path rows now reserve up to five visible lanes per item row; overlapping flow paths on the same row are offset around the center line instead of drawing exactly on top of each other.
+
+User feedback on full-line overlay: the row-lane approach represented the requested data but looked too visually noisy. Replaced solid/offset lanes with dashed path segments. Different flows use the same path geometry but get a dash phase derived from stable `flowVisualIndex`, so overlapping flows can interleave colored dashes instead of stacking thick continuous lines. Focused flow visualization by selected entry point/item was recorded as TODO because it needs a clear UI selection/focus model and likely stable start-entry-point data on `ActiveFlowState`.
+
+Flow color allocation refinement: user clarified that flow colors must come from a pool, not from a monotonically increasing counter modulo palette size. Added active flow visual index pooling on `CombatCharacter`: new flows reserve the first free visual index, finished flows release their index during active-flow compaction, and duplicate colors appear only after all available visual indexes are already in active use. Added deterministic coverage for unique visual indexes until the pool is exhausted.
+
+Dashed-line refinement: user clarified that dashed paths should appear only when more than one active flow uses the same cast row. The overlay now counts active flow usage per `item + localRow`; normal row segments render as solid lines, while shared row segments render as dashed lines with per-flow dash phase. Connectors between rows remain solid for now. Non-color flow markers such as repeated glyphs/geometric symbols were recorded as a future accessibility TODO.
+
+AI 2026-06-01 - Flow completion after last enemy death
+
+User noticed a likely crash when an enemy dies while the attacker still has active flows in progress. Desired behavior: active flows may keep processing after the last enemy is dead; when they finish and there is no living target, their outgoing damage should be ignored instead of crashing or repeatedly trying to destroy the dead character presentation.
+
+Previous mechanism: `CombatContext.tryGetRandomEnemyOf(...)` selected enemies by team only and had a TODO to filter out dead characters. A character with HP 0 stayed registered in the combat context, so later offensive flow completion could still target it. `CharacterAggregate.takeDamage(...)` also published `CharacterDeathDtoEvent` whenever current HP was `<= 0`, even if the character was already dead before the damage call.
+
+New mechanism: random enemy selection now treats only characters with `currentHp > 0` as valid targets. If no living enemy exists, offensive flow consumption simply does not dispatch damage. `CharacterDeathDtoEvent` is published only on the transition from HP above zero to HP zero. This preserves the current runtime model where dead characters remain registered for now, while preventing repeated death events and allowing active flows to finish safely after the last target dies.
+
+Regression coverage: added a deterministic EditMode test with two manually created attacker flows. The first flow kills a 1 HP defender; the second flow remains active and finishes after the defender is already dead. The test verifies that HP remains at zero, the death event count stays at one, no exception is thrown, and the delayed flow is compacted normally.
+
+AI 2026-06-01 - Flow identity must stay domain, visual identity must stay presentation
+
+User rejected the previous `flowVisualIndex` direction because it put presentation concerns into flow/domain creation. This is now a hard architectural rule: domain/runtime models must not store display palette slots, colors, opacity states, dash phases, marker glyphs, highlight modes, or other view-specific characteristics. If UI needs stable visual treatment for a domain object, domain may expose a neutral identity such as `ActiveFlowId`, and presentation maps that identity to visual state locally.
+
+Previous mechanism: `CombatCharacter` owned an `ActiveFlowVisualIndexPool`, passed `flowVisualIndex` into `IFlowFactory.create(...)`, `FlowProcessor` stored it, and `ActiveFlowState` exposed it. This made the domain responsible for color-pool lifecycle and made tests assert visual slot allocation.
+
+New mechanism: active flow runtime receives a domain `ActiveFlowId`. `IFlowFactory.create(...)` now accepts a `FlowCreationCommand` object to avoid a growing parameter list. `FlowProcessor` and `ActiveFlowState` expose `ActiveFlowId`, flow kind, processing path, and current cast state only. `InventoryPanelPresentation` maps `ActiveFlowId` to a temporary UI visual index/color/dash phase with a local presentation allocator. Tests now assert domain flow ids, not color indexes.
+
+Flow focus UX direction:
+- Default inventory mode should avoid showing every possible path when it becomes noisy.
+- Selecting an entry point should show only active flows started by that entry point, strongly outline the selected entry point, keep participating items at normal visual weight, and dim unrelated items.
+- Selecting a normal item should show local flow context: incoming and outgoing flow paths around that item. Direct neighbors / currently connected items should be most prominent; farther path context may fade out with distance or recentness.
+- Selecting a concrete flow should isolate that one flow, highlight all items in its path, and eventually show per-item/per-row contribution to flow power.
+- Dimming, highlighting, outlining, and fading rules should be centralized in UI presentation styling, not scattered per component. Prefer a small fixed set of visual states such as normal, dimmed, focused, related, and stale-related.
+
+UX styling preference: use opacity plus mild desaturation/darkening for dimmed items, not grayscale alone. Opacity communicates focus while preserving item identity; desaturation helps when colors are busy. Use strong outline/glow only for the selected object, and use softer outline or normal brightness for related objects. Avoid expensive post-processing; prefer pooled UI Images/CanvasGroups/material tinting and cheap alpha transitions.
+
+AI 2026-06-01 - Focused inventory readability and smooth progress
+
+User liked the focused flow direction but observed that dimmed items became hard to see against the grid and that showing all flow lines by default hurt inventory readability.
+
+Previous mechanism: item tiles only enabled outline for the focused state, so dimmed items could visually collapse into the grid. The flow path overlay rendered active flow paths even without an explicit item/entry/flow selection. Cast progress masks jumped at combat tick cadence, making the UI look like it was running at low FPS.
+
+New mechanism: item visual states keep an always-on tile outline, with normal/related/dimmed states using softer outlines and focused state using a much stronger outline/glow. Flow path overlay is hidden in the normal unfocused inventory view and appears only after the player selects an item/entry point or an already visible flow line. Cast progress remains derived from deterministic combat ticks, but UI lanes interpolate toward the latest progress target between ticks for smoother presentation.
+
+Review refinement: smooth cast-progress interpolation must not mean every item runs a permanent `Update()`. `ItemCastProgressBarsView` disables itself while no progress lanes are visible and enables itself only while active cast progress is displayed. Lane layout should be based on the currently visible lane count, not the maximum pooled lane count, so rows recover full-height lanes after overlapping flows disappear.

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Component.Inventory.GridLayer;
@@ -53,10 +54,13 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
         public readonly struct UiPrintItemCastProgressCommand {
             public readonly IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem;
+            public readonly IReadOnlyList<FlowPathViewState> flowPaths;
 
             public UiPrintItemCastProgressCommand(
-                IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem) {
+                IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem,
+                IReadOnlyList<FlowPathViewState> flowPaths) {
                 this.progressByItem = NullGuard.NotNullOrThrow(progressByItem);
+                this.flowPaths = NullGuard.NotNullOrThrow(flowPaths);
             }
         }
 
@@ -74,6 +78,20 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
         private readonly SignalBus _signalBus;
         private readonly Dictionary<Id<ItemId>, PlacedItemView> itemIdToItemView = new();
+        private readonly List<FlowPathViewState> latestFlowPaths = new();
+        private readonly List<FlowPathViewState> visibleFlowPaths = new();
+        private readonly Dictionary<Id<ItemId>, List<ItemCastProgressViewState>> focusedProgressByItem = new();
+
+        private readonly Dictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> focusedProgressReadModel =
+            new();
+
+        private readonly HashSet<Id<ActiveFlowId>> visibleFlowIds = new();
+        private readonly HashSet<Id<ItemId>> relatedItemIds = new();
+        private readonly List<Id<ItemId>> focusedProgressItemIds = new();
+        private FlowConnectionOverlayView flowConnectionOverlayView;
+        private InventoryFocusKind focusKind = InventoryFocusKind.None;
+        private Id<ItemId> focusedItemId;
+        private Id<ActiveFlowId> focusedFlowId;
 
         [Inject]
         internal InventoryItemsViewPresenter(
@@ -99,8 +117,13 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             foreach (var placedItem in changeInventoryItemsCommand.characterEquippedItems) {
                 if (itemIdToItemView.ContainsKey(placedItem.getId())) continue;
                 PlacedItemView view = inventoryItemViewFactory.create(placedItem.getShape(), placedItem.getOrigin());
-                itemIdToItemView[placedItem.getId()] = view;
+                Id<ItemId> placedItemId = placedItem.getId();
+                view.setClickHandler(() => handleItemClicked(placedItemId));
+                itemIdToItemView[placedItemId] = view;
+                ensureFlowConnectionOverlayView(view.transform.parent);
             }
+
+            renderFocusState();
         }
 
         private void clear() {
@@ -109,12 +132,22 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                     Object.Destroy(view.gameObject);
 
             itemIdToItemView.Clear();
+            latestFlowPaths.Clear();
+            clearFocus();
+
+            if (flowConnectionOverlayView != null) {
+                Object.Destroy(flowConnectionOverlayView.gameObject);
+                flowConnectionOverlayView = null;
+            }
         }
 
         private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent) {
             if (itemIdToItemView.TryGetValue(itemRemovedEvent.PlacedItemId, out var itemView)) {
                 Object.Destroy(itemView.gameObject);
                 itemIdToItemView.Remove(itemRemovedEvent.PlacedItemId);
+                if (focusKind == InventoryFocusKind.Item && focusedItemId == itemRemovedEvent.PlacedItemId) {
+                    clearFocus();
+                }
             }
         }
 
@@ -125,12 +158,21 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
         public void printNewItem(ICombatInventoryItemsPanel.NewItemPrintCommand command) {
             PlacedItemView view = inventoryItemViewFactory.create(command.shapeArchetype, command.origin);
+            view.setClickHandler(() => handleItemClicked(command.placedItemId));
             itemIdToItemView[command.placedItemId] = view;
+            ensureFlowConnectionOverlayView(view.transform.parent);
+            renderFocusState();
         }
 
         public void printItemCastProgress(ICombatInventoryItemsPanel.UiPrintItemCastProgressCommand command) {
+            latestFlowPaths.Clear();
+            latestFlowPaths.AddRange(command.flowPaths);
+
+            IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem =
+                getProgressByItemForCurrentFocus(command.progressByItem);
+
             foreach (KeyValuePair<Id<ItemId>, PlacedItemView> itemView in itemIdToItemView) {
-                if (command.progressByItem.TryGetValue(
+                if (progressByItem.TryGetValue(
                         itemView.Key,
                         out IReadOnlyList<ItemCastProgressViewState> progressRatios)) {
                     itemView.Value.setCastProgressBars(progressRatios);
@@ -139,6 +181,265 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                     itemView.Value.hideCastProgressBars();
                 }
             }
+
+            renderFocusState();
+        }
+
+        private void renderFocusState() {
+            if (focusKind == InventoryFocusKind.None) {
+                if (flowConnectionOverlayView != null) {
+                    flowConnectionOverlayView.hideAll();
+                }
+
+                applyItemVisualStates(latestFlowPaths);
+                return;
+            }
+
+            IReadOnlyList<FlowPathViewState> flowPathsToRender = getVisibleFlowPathsForCurrentFocus();
+
+            if (flowPathsToRender.Count == 0 || itemIdToItemView.Count == 0) {
+                if (flowConnectionOverlayView != null) {
+                    flowConnectionOverlayView.hideAll();
+                }
+            }
+            else {
+                ensureFlowConnectionOverlayView(getItemsLayerTransform());
+                flowConnectionOverlayView.printConnections(flowPathsToRender, itemIdToItemView, handleFlowClicked);
+            }
+
+            applyItemVisualStates(flowPathsToRender);
+        }
+
+        private IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>>
+            getProgressByItemForCurrentFocus(
+                IReadOnlyDictionary<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> progressByItem) {
+            if (focusKind == InventoryFocusKind.None) {
+                return progressByItem;
+            }
+
+            IReadOnlyList<FlowPathViewState> flowPathsToRender = getVisibleFlowPathsForCurrentFocus();
+            if (focusKind == InventoryFocusKind.None) {
+                return progressByItem;
+            }
+
+            rebuildVisibleFlowIds(flowPathsToRender);
+            clearFocusedProgressBuffers();
+
+            foreach (KeyValuePair<Id<ItemId>, IReadOnlyList<ItemCastProgressViewState>> itemProgress in
+                     progressByItem) {
+                List<ItemCastProgressViewState> filteredProgress = null;
+
+                for (int i = 0; i < itemProgress.Value.Count; i++) {
+                    ItemCastProgressViewState progress = itemProgress.Value[i];
+
+                    if (!visibleFlowIds.Contains(progress.getFlowId())) {
+                        continue;
+                    }
+
+                    if (filteredProgress == null) {
+                        filteredProgress = new List<ItemCastProgressViewState>();
+                        focusedProgressByItem[itemProgress.Key] = filteredProgress;
+                        focusedProgressReadModel[itemProgress.Key] = filteredProgress;
+                        focusedProgressItemIds.Add(itemProgress.Key);
+                    }
+
+                    filteredProgress.Add(progress);
+                }
+            }
+
+            return focusedProgressReadModel;
+        }
+
+        private void clearFocusedProgressBuffers() {
+            for (int i = 0; i < focusedProgressItemIds.Count; i++) {
+                Id<ItemId> itemId = focusedProgressItemIds[i];
+                focusedProgressByItem[itemId].Clear();
+            }
+
+            focusedProgressItemIds.Clear();
+            focusedProgressReadModel.Clear();
+        }
+
+        private IReadOnlyList<FlowPathViewState> getVisibleFlowPathsForCurrentFocus() {
+            visibleFlowPaths.Clear();
+
+            switch (focusKind) {
+                case InventoryFocusKind.Item:
+                    appendItemFocusedFlowPaths();
+                    return visibleFlowPaths;
+                case InventoryFocusKind.Flow:
+                    appendSingleFocusedFlowPath();
+                    return visibleFlowPaths;
+                default:
+                    return latestFlowPaths;
+            }
+        }
+
+        private void appendItemFocusedFlowPaths() {
+            bool entryPointFocus = hasFlowStartedBy(focusedItemId);
+
+            for (int i = 0; i < latestFlowPaths.Count; i++) {
+                FlowPathViewState flowPath = latestFlowPaths[i];
+
+                if (entryPointFocus) {
+                    if (isFlowStartedBy(flowPath, focusedItemId)) {
+                        visibleFlowPaths.Add(flowPath);
+                    }
+
+                    continue;
+                }
+
+                if (tryCreateLocalItemContextPath(flowPath, focusedItemId, out FlowPathViewState localPath)) {
+                    visibleFlowPaths.Add(localPath);
+                }
+            }
+        }
+
+        private void appendSingleFocusedFlowPath() {
+            for (int i = 0; i < latestFlowPaths.Count; i++) {
+                FlowPathViewState flowPath = latestFlowPaths[i];
+
+                if (flowPath.getFlowId() == focusedFlowId) {
+                    visibleFlowPaths.Add(flowPath);
+                    return;
+                }
+            }
+
+            clearFocus();
+        }
+
+        private bool hasFlowStartedBy(Id<ItemId> itemId) {
+            for (int i = 0; i < latestFlowPaths.Count; i++) {
+                if (isFlowStartedBy(latestFlowPaths[i], itemId)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool isFlowStartedBy(FlowPathViewState flowPath, Id<ItemId> itemId) {
+            IReadOnlyList<ItemFlowProcessingSlot> processingPath = flowPath.getProcessingPath();
+            return processingPath.Count > 0 && processingPath[0].getItemId() == itemId;
+        }
+
+        private static bool tryCreateLocalItemContextPath(
+            FlowPathViewState flowPath,
+            Id<ItemId> itemId,
+            out FlowPathViewState localPath) {
+            IReadOnlyList<ItemFlowProcessingSlot> processingPath = flowPath.getProcessingPath();
+            int itemPathIndex = findItemPathIndex(processingPath, itemId);
+
+            if (itemPathIndex < 0) {
+                localPath = default;
+                return false;
+            }
+
+            int firstIndex = Mathf.Max(0, itemPathIndex - 1);
+            int lastIndex = Mathf.Min(processingPath.Count - 1, itemPathIndex + 1);
+            var localProcessingPath = new List<ItemFlowProcessingSlot>();
+
+            for (int i = firstIndex; i <= lastIndex; i++) {
+                localProcessingPath.Add(processingPath[i]);
+            }
+
+            localPath = new FlowPathViewState(
+                flowPath.getFlowId(),
+                flowPath.getFlowVisualIndex(),
+                localProcessingPath,
+                flowPath.getCurrentProgressRatio());
+            return true;
+        }
+
+        private static int findItemPathIndex(IReadOnlyList<ItemFlowProcessingSlot> processingPath, Id<ItemId> itemId) {
+            for (int i = 0; i < processingPath.Count; i++) {
+                if (processingPath[i].getItemId() == itemId) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private void applyItemVisualStates(IReadOnlyList<FlowPathViewState> flowPathsToRender) {
+            if (focusKind == InventoryFocusKind.None) {
+                foreach (KeyValuePair<Id<ItemId>, PlacedItemView> itemView in itemIdToItemView) {
+                    itemView.Value.setVisualState(InventoryItemVisualState.Normal);
+                }
+
+                return;
+            }
+
+            rebuildRelatedItemIds(flowPathsToRender);
+
+            foreach (KeyValuePair<Id<ItemId>, PlacedItemView> itemView in itemIdToItemView) {
+                InventoryItemVisualState visualState = resolveVisualStateFor(itemView.Key);
+                itemView.Value.setVisualState(visualState);
+            }
+        }
+
+        private InventoryItemVisualState resolveVisualStateFor(Id<ItemId> itemId) {
+            if (focusKind == InventoryFocusKind.Item && focusedItemId == itemId) {
+                return InventoryItemVisualState.Focused;
+            }
+
+            if (relatedItemIds.Contains(itemId)) {
+                return InventoryItemVisualState.Related;
+            }
+
+            return InventoryItemVisualState.Dimmed;
+        }
+
+        private void rebuildRelatedItemIds(IReadOnlyList<FlowPathViewState> flowPathsToRender) {
+            relatedItemIds.Clear();
+
+            for (int i = 0; i < flowPathsToRender.Count; i++) {
+                IReadOnlyList<ItemFlowProcessingSlot> processingPath = flowPathsToRender[i].getProcessingPath();
+
+                for (int pathIndex = 0; pathIndex < processingPath.Count; pathIndex++) {
+                    relatedItemIds.Add(processingPath[pathIndex].getItemId());
+                }
+            }
+        }
+
+        private void rebuildVisibleFlowIds(IReadOnlyList<FlowPathViewState> flowPathsToRender) {
+            visibleFlowIds.Clear();
+
+            for (int i = 0; i < flowPathsToRender.Count; i++) {
+                visibleFlowIds.Add(flowPathsToRender[i].getFlowId());
+            }
+        }
+
+        private void handleItemClicked(Id<ItemId> itemId) {
+            if (focusKind == InventoryFocusKind.Item && focusedItemId == itemId) {
+                clearFocus();
+            }
+            else {
+                focusKind = InventoryFocusKind.Item;
+                focusedItemId = itemId;
+                focusedFlowId = default;
+            }
+
+            renderFocusState();
+        }
+
+        private void handleFlowClicked(Id<ActiveFlowId> flowId) {
+            if (focusKind == InventoryFocusKind.Flow && focusedFlowId == flowId) {
+                clearFocus();
+            }
+            else {
+                focusKind = InventoryFocusKind.Flow;
+                focusedFlowId = flowId;
+                focusedItemId = default;
+            }
+
+            renderFocusState();
+        }
+
+        private void clearFocus() {
+            focusKind = InventoryFocusKind.None;
+            focusedItemId = default;
+            focusedFlowId = default;
         }
 
         public void moveItemToPosition(ICombatInventoryItemsPanel.MoveItemToPositionCommand command,
@@ -158,6 +459,30 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             float y = -origin.y * (inventoryGridInfo.CellSize.y + inventoryGridInfo.Spacing.y);
 
             return inventoryGridInfo.GridOrigin + new Vector2(x, y);
+        }
+
+        private void ensureFlowConnectionOverlayView(Transform parent) {
+            if (flowConnectionOverlayView != null || parent == null) {
+                return;
+            }
+
+            flowConnectionOverlayView = FlowConnectionOverlayView.create(parent);
+        }
+
+        private Transform getItemsLayerTransform() {
+            foreach (KeyValuePair<Id<ItemId>, PlacedItemView> itemView in itemIdToItemView) {
+                if (itemView.Value != null) {
+                    return itemView.Value.transform.parent;
+                }
+            }
+
+            return null;
+        }
+
+        private enum InventoryFocusKind {
+            None,
+            Item,
+            Flow
         }
     }
 }

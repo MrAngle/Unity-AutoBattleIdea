@@ -1,9 +1,6 @@
 using System.Runtime.CompilerServices;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Configuration;
-using MageFactory.Flow.Contract;
-using MageFactory.FlowRouting;
-using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 using Zenject;
 
@@ -21,14 +18,17 @@ namespace MageFactory.Flow.Domain.Service {
             settings = NullGuard.NotNullOrThrow(injectSettings);
         }
 
-        public IFlowProcessor create(FlowKind flowKind,
-                                     IFlowItem startNode,
-                                     IFlowRouter router,
-                                     IFlowConsumer flowConsumer,
-                                     IFlowCapabilities flowCapabilities,
-                                     IFlowOwner flowOwner) {
-            return FlowProcessor.create(flowKind, startNode, router, flowConsumer, flowOwner,
-                flowCapabilities,
+        public IFlowProcessor create(FlowCreationCommand command) {
+            FlowCreationCommand flowCreationCommand = NullGuard.NotNullOrThrow(command);
+
+            return FlowProcessor.create(
+                flowCreationCommand.getFlowId(),
+                flowCreationCommand.getFlowKind(),
+                flowCreationCommand.getStartNode(),
+                flowCreationCommand.getRouter(),
+                flowCreationCommand.getFlowConsumer(),
+                flowCreationCommand.getFlowOwner(),
+                flowCreationCommand.getFlowCapabilities(),
                 actionContextFactory,
                 settings);
         }
