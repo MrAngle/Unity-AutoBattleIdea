@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
+using MageFactory.CombatEvents;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -38,6 +39,14 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
         public FlowKind getFlowKind() {
             return inventoryPlacedEntryPoint.getFlowKind();
+        }
+
+        public EntryPointTriggerKind getTriggerKind() {
+            return inventoryPlacedEntryPoint.getTriggerKind();
+        }
+
+        public ICombatHook getCombatHook() {
+            return inventoryPlacedEntryPoint.getCombatHook();
         }
     }
 }

@@ -1,3 +1,4 @@
+using MageFactory.CombatEvents;
 using MageFactory.Shared.Id;
 
 namespace MageFactory.CombatContextRuntime {
@@ -16,5 +17,6 @@ namespace MageFactory.CombatContextRuntime {
         int getActiveFlowCountForCharacter(Id<CharacterId> characterId);
         int getCreatedFlowCount();
         int getCreatedFlowCountForCharacter(Id<CharacterId> characterId);
+        int getCombatEventCount(CombatEventType combatEventType);
     }
 }

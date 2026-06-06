@@ -9,7 +9,8 @@
     "MageFactory.Semantics",
     "Zenject",
     "MageFactory.CombatStateContext",
-    "MageFactory.CombatContextRuntime"
+    "MageFactory.CombatContextRuntime",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true
 }

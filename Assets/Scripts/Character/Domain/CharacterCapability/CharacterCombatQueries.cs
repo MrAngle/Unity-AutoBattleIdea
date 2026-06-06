@@ -1,6 +1,7 @@
 using MageFactory.Character.Domain.CombatChar;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatEvents;
 using MageFactory.Shared.Id;
 
 namespace MageFactory.Character.Domain.CharacterCapability {
@@ -33,6 +34,10 @@ namespace MageFactory.Character.Domain.CharacterCapability {
 
         public int getActiveFlowCountOnItem(Id<ItemId> itemId) {
             return combatCharacter.getActiveFlowCountOnItem(itemId);
+        }
+
+        public int getCombatEventCount(CombatEventType combatEventType) {
+            return combatCharacter.getCombatEventCount(combatEventType);
         }
 
         public void collectActiveFlowStates(IActiveFlowStateCollector collector) {

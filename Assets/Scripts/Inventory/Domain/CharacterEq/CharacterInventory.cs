@@ -83,7 +83,7 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
         }
 
         public IReadOnlyCollection<ICharacterEquippedEntryPoint> getEntryPoints() {
-            IReadOnlyCollection<IInventoryPlacedEntryPoint> aggregateSet = inventoryAggregate.getEntryPointsToTick();
+            IReadOnlyCollection<IInventoryPlacedEntryPoint> aggregateSet = inventoryAggregate.getEntryPoints();
             return mapToEquippedEntryPoints(aggregateSet);
         }
 

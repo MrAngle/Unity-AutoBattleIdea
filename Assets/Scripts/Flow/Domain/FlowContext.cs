@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
 using MageFactory.Shared.Contract;
+using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
@@ -13,6 +14,7 @@ namespace MageFactory.Flow.Domain {
         private readonly IFlowConsumer flowConsumer;
         private readonly IFlowOwner flowOwner;
         private readonly IFlowRouter router;
+        private readonly Id<CharacterId> sourceCharacterId;
 
         private readonly Dictionary<DamageRole, FlowEffectBucket> flowEffectBucketsByDamageRole = new();
 
@@ -22,15 +24,20 @@ namespace MageFactory.Flow.Domain {
                              IFlowItem startEntryPoint,
                              IFlowConsumer flowConsumer,
                              IFlowOwner flowOwner,
-                             IFlowRouter router) {
+                             IFlowRouter router,
+                             PowerAmount initialAttackPower,
+                             Id<CharacterId> sourceCharacterId) {
             this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
             this.startEntryPoint = NullGuard.NotNullOrThrow(startEntryPoint);
             this.flowConsumer = NullGuard.NotNullOrThrow(flowConsumer);
             this.flowOwner = NullGuard.NotNullOrThrow(flowOwner);
             this.router = NullGuard.NotNullOrThrow(router);
+            this.sourceCharacterId = sourceCharacterId;
 
             NullGuard.NotNullCheckOrThrow(this.startEntryPoint, this.flowConsumer, this.flowOwner,
                 this.router, flowEffectBucketsByDamageRole);
+
+            changeDamagePower(DamageRole.ATTACK, NullGuard.NotNullOrThrow(initialAttackPower));
         }
 
         internal IFlowConsumer getFlowConsumer() {
@@ -47,6 +54,10 @@ namespace MageFactory.Flow.Domain {
 
         internal FlowKind getFlowKind() {
             return flowKind;
+        }
+
+        internal Id<CharacterId> getSourceCharacterId() {
+            return sourceCharacterId;
         }
 
         internal PowerAmount getAttackPower() {

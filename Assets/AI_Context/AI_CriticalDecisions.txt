@@ -1,0 +1,426 @@
+# AI Critical Decisions
+
+This file is the primary compact source of durable project decisions, critical design constraints, and current gameplay/architecture direction.
+
+Read this before architectural or gameplay-logic decisions. Use archived discussion files only when deeper historical context is needed.
+
+## Context Priority
+
+Primary context files:
+
+- `Assets/AI_Context/AI_Instructions.txt`
+- `Assets/AI_Context/AI_CriticalDecisions.txt`
+- `Assets/AI_Context/AI_DiscussionHistory.txt`
+- `Assets/Scripts/TODO.md`
+
+Archived discussion support:
+
+- `Assets/AI_Context/AI_ArchivedDiscussionHistory_2026-06-05.txt`
+- `Assets/AI_Context/AI_ArchivedDiscussionsSummary_2026-06-05.txt`
+
+Archived files are not mandatory for every task. Use them when reconstructing why a decision was made, when a new idea conflicts with a past direction, or when preparing/refreshing critical decisions.
+
+## Critical Collaboration Rule
+
+The AI must actively challenge gameplay, balance, and architecture ideas. Do not merely agree.
+
+For every major proposed mechanic or architecture shift, check for:
+
+- logical holes
+- easy bypasses and exploits
+- dominant strategies
+- burst synchronization abuse
+- defensive-trigger baiting
+- late-game saturation
+- early-game uselessness
+- hidden order-of-operations surprises
+- "blocks everything or blocks nothing" behavior
+- loss of player-facing readability
+- hot-path performance regressions
+- architectural drift away from the current modular-monolith direction
+
+If a proposal conflicts with these critical decisions or with an archived/past rejection, call it out clearly. This is one of the main values of AI collaboration in this project.
+
+## Solo-Indie Balance Rule
+
+The game must favor systems that are understandable, predictable, balanceable, and testable without a large QA team.
+
+Prefer mechanics that:
+
+- degrade gracefully instead of snapping between total protection and instant death
+- can be steered through clear parameters
+- are easy to simulate deterministically
+- expose cause/effect to the player
+- avoid mandatory hidden caps/defaults such as "cap all resistances"
+
+Future balance work should use deterministic simulations/tests for survivability, burst handling, sustained damage, trigger consumption, guard consumption, and dominant-strategy detection.
+
+## Game Vision
+
+The game is a 2D single-player autobattler / build-optimization game inspired by Backpack Battles and ARPG itemization such as Path of Exile.
+
+The core gameplay is arranging and configuring items in an inventory/grid/gear system so the player optimizes attack, defense, resource flow, and interactions.
+
+The player should feel overloaded by build possibilities, not by hidden rules.
+
+Critical readability goal:
+
+- The player should not need a wiki to understand mechanics.
+- Complexity should come from many visible ways to influence the system.
+- Rules should be readable, consistent, and inspectable.
+- Player agency and clear cause/effect are extremely important.
+
+Important game-feel goal:
+
+- The player should feel they are constructing the logic of the game's attack and defense mechanisms.
+- Attack/defense should be sandbox-like and configurable through build choices.
+- There should not be one immutable attack system or one immutable defense system.
+
+## Architecture Direction
+
+Prefer the existing modular-monolith style:
+
+- domain logic split by feature modules such as `Flow`, `CombatContext`, `Character`, `Inventory`, `Item`, and related contracts
+- public contracts and APIs at module boundaries
+- internal domain implementations where practical
+- dependency composition through Zenject installers
+- UI separated from domain/gameplay logic
+
+Public APIs should describe domain/gameplay stages, not technical implementation details.
+
+Avoid new architectural layers unless they remove real complexity, reduce meaningful duplication, or clearly match an established local pattern.
+
+## Object Invariants And Guards
+
+Use `NullGuard` helpers when constructing domain/gameplay objects.
+
+Required constructor parameters should fail fast instead of being silently normalized. Do not hide invalid input with fallbacks such as `value ?? string.Empty` unless the fallback is itself the explicitly documented domain value.
+
+When a parameter is optional, make that optionality explicit in the object invariant. Example: `CombatHook.None` may have no observed combat event type, but concrete hooks must declare and validate the observed `CombatEventType`.
+
+## Commands, Events, Hooks
+
+Current meaning:
+
+- `CombatCommand` is an intent/request.
+- `CombatEvent` is a synchronous domain fact.
+- `CombatHook` is a reaction/hook point to facts.
+- `CombatHook` is not a second kind of `CombatEvent`. It is a separate game-mechanic reaction identity, often visible to the player.
+
+Terms such as `OnAttack` and `OnIncomingAttackDamage` are game-mechanic hook points, not C# events, async work, threads, or technical pub/sub.
+
+Concrete event/fact classes should avoid `On...` names. `On...` remains suitable for hook/player-facing trigger language.
+
+Implemented terminology guard:
+
+- domain facts implement `ICombatEvent`
+- hook definitions implement `ICombatHook`
+- event-triggered entry points must declare a concrete `CombatHook`
+- combat-tick entry points should use `CombatHook.none()`
+- `CombatHook.onIncomingAttackDamage()` observes `CombatEventType.INCOMING_ATTACK_DAMAGE`
+- `IncomingAttackDamageCombatEvent` remains the fact name; `OnIncomingAttackDamage` remains the hook/player-facing phrase
+
+Avoid exploding into separate processor interfaces per event type. A generic staged reaction workflow is preferred where needed:
+
+`start(item, combatEvent) -> match() -> validateProcessability() -> prepareExecution() -> react()`
+
+Important distinction:
+
+- `match()` means "does this item react to this event type/domain situation?"
+- `validateProcessability()` means "can it react right now?" including cooldown/resources/capacity.
+
+Do not mix match logic with cooldown/resource/processability checks.
+
+## Combat Runtime And Tick
+
+Combat tick is a hot path.
+
+Performance assumptions:
+
+- combat tick may run around 10 times per second and potentially more later
+- target scale can reach roughly 1,000-2,000 active items and flows
+- some smoke tests use 5,000 active flows/items as catastrophic regression guards
+
+Hot-path rules:
+
+- avoid per-tick allocations
+- avoid LINQ materialization in tick phases
+- avoid reflection
+- avoid broad collection rebuilding
+- avoid hidden O(n*m) scans
+- prefer stable indexes, reusable buffers, explicit phases, cheap primitive queries, and bounded work budgets
+
+`ICombatQueries` should remain lightweight and return simple values such as `int`, `float`, `bool`, `string`, enums, or cheap primitive/value objects. Do not expose mutable runtime objects, heavy DTO graphs, or complex collections from query surfaces.
+
+## Flow Runtime
+
+The project moved away from fire-and-forget async flow processing.
+
+Current direction:
+
+- active flow lifecycle is owned by combat runtime/characters, not by entry points
+- flows are ticked runtime state
+- active flows are stored, ticked, and removed after completion
+- combat/character runtime should use stable snapshots/reusable buffers for tick phases
+
+Open architectural caution:
+
+- global combat tick phase order should not be buried ad hoc inside `CombatCharacter`
+- character can own local runtime state, but combat-level tick order is a combat runtime rule
+
+## Time And Cast Semantics
+
+`CombatTicks` is the canonical gameplay time unit for now.
+
+Do not introduce final seconds-to-ticks semantics unless needed deliberately.
+
+Item cast time:
+
+- `ItemCastTime` is a domain value object
+- item cast duration is based on ticks
+- base item cast time means cost to process one cell
+- actual cast duration for a flow's assigned row is `ItemCastTime * slotCellCount`
+
+Normal item processing currently uses cast time, not cooldown/recovery.
+
+Entry point trigger timing is a separate concept and may later need its own UI countdown/charge presentation.
+
+## Inventory, Items, Shape, And Processing Slots
+
+Inventory/item shape is gameplay-relevant.
+
+Current model:
+
+- every occupied shape cell is treated as active
+- each local shape row is one flow processing slot
+- `CombatPlacedItemRuntimeState` tracks per-item flow capacity/current active flow count
+- processing capacity should not be counted by scanning all active flows in the tick hot path
+
+Future direction:
+
+- item instances may distinguish base shape cells from active/unlocked cells
+- low-rarity items may have only some active cells
+- cell-level components/overlays may modify row cast time, effects, damage type, or slot behavior
+
+Do not add full per-cell/component logic until the base row-slot model is stable.
+
+## Flow Visualization And UI Boundary
+
+Domain/runtime must not own presentation visual identity.
+
+Domain may expose neutral identity/state:
+
+- `ActiveFlowId`
+- flow kind
+- ordered processing path
+- current processing slot
+- cast state
+- future gameplay/statistics data
+
+UI/presentation maps these to colors, opacity, dash phase, marker glyphs, highlight state, focus state, and palettes.
+
+Current UI direction:
+
+- default inventory flow rendering should be conservative
+- flow path lines are hidden in the unfocused default inventory view
+- flow path visualization appears after focusing/selecting an item, entry point, or visible flow
+- item visual states should be centralized: normal, dimmed, focused, related, stale-related
+- dimming should use opacity/desaturation/darkening; strong outline/glow reserved for selected/focused objects
+
+Entry point UI color convention:
+
+- `FlowKind.Damage` / offensive entry points use warm orange
+- `FlowKind.Defense` / defensive entry points use green/turquoise
+- this is UI-only
+
+## Game Events And Modifiers
+
+Future passive modifiers may apply at:
+
+- whole-game layer
+- character layer
+- inventory/module layer
+- later item/cell/component layers
+
+Event-aware modifiers are central to the planned game. Examples:
+
+- on attack
+- on incoming attack damage
+- every N incoming damage events
+- conditional reactions based on combat counters
+
+Combat/character runtime should record live gameplay event counters because mechanics may read them during combat.
+
+Performance rule:
+
+- do not scan all items/modifiers for every frequent event
+- prepare indexes of reaction candidates by hook/event kind and owner scope
+- use cheap counter increments, reusable buffers, and primitive query APIs
+
+Inventory/module-level event counters remain future work unless a concrete mechanic needs them.
+
+## Defensive Incoming Damage Foundation
+
+Current implemented direction:
+
+- incoming attack damage can trigger an event-triggered defensive entry point if available/free
+- the created flow is `FlowKind.Defense`
+- in defensive flow, `DamageRole.ATTACK` means incoming damage being processed before final HP application
+- defensive flow uses the same general flow/item mechanics as offensive flow
+- `IncomingAttackDamageCombatEvent` is the concrete combat fact
+- `OnIncomingAttackDamage` is the future hook/player-facing phrase
+
+Anti-loop rule:
+
+- once incoming damage has been processed by defensive flow, resulting final damage is applied directly
+- it must not be registered again as fresh incoming attack damage
+- it must not trigger another defensive flow through the same damage
+
+Open direction:
+
+- decide whether `ResolvedDamage` is final naming
+- define which `DamageRole` values are legal in each `FlowKind`
+- counter/spike damage from defensive flow must use a distinct role such as `SPIKE_DAMAGE`, not normal incoming attack damage
+- current event-triggered defensive entry point selection uses a round-robin cursor among registered defensive event entry points; this is a current implementation detail and optimization, not yet confirmed as the final player-facing gameplay rule
+- revisit whether defensive event entry points should use round-robin, strict inventory/priority order, explicit priority, conditional matching, or another readable selection model
+
+## Defense Design: Guard, Barrier, And Readability
+
+This area is active design exploration, not final architecture.
+
+Rejected/risky directions:
+
+- pure flat damage reduction is difficult to balance across early/late game
+- pure percent reduction risks late-game "100% mitigation/default cap" behavior
+- static resistance percentages risk recreating ARPG "cap all resists" meta
+- naive "all damage in one tick becomes one packet" does not solve synchronization across multi-second windows
+- turning all damage into delayed pressure/DoT may not fit an autobattler where player decisions are prebuilt, not manual real-time reactions
+
+Promising direction:
+
+- defensive flow may generate one defense/guard portion rather than immediately reducing incoming damage
+- guard portions can have strength/rating, conditions, tags, priority, durability/strain, expiry, and storage limits
+- rapid small attacks may become guard-breaking / guard-draining tools
+- heavy guards may answer large hits but ignore/avoid being consumed by small hits
+- typed wards may answer specific damage types
+- healing entry points are a future idea, not yet specified
+- event entry points reacting to direct damage intake remain possible but must avoid recursion, baiting, and unclear timing
+
+Critical risk:
+
+- direct numeric/flat barrier portions may still collapse into binary outcomes: full protection or instant death
+- the defense model should fail gracefully
+
+## Guard Power Readability
+
+Candidate player-facing names:
+
+- Guard Power
+- Guard Strength
+- Shield Strength
+- Ward Strength
+- Protection
+- Stability
+- Polish candidates: `Siła Gardy`, `Siła Osłony`, `Moc Osłony`, `Stabilność`
+
+Current favorite direction:
+
+- guard/defensive ability can be a single main value if UI translates it into practical examples
+- tooltip should show concrete behavior, not just a raw rating
+
+Example:
+
+```text
+Guard Power: 120
+Against 60 damage: blocks ~55
+Against 120 damage: blocks ~95
+Against 240 damage: blocks ~130
+```
+
+This lets players understand behavior without memorizing a formula.
+
+Critical abstract-stat readability rule:
+
+- one abstract stat can be manageable if the opposing side remains concrete
+- two abstract opposing stats quickly destroy readability
+
+Therefore:
+
+- abstract-ish `Guard Power` may work when shown against concrete incoming damage values
+- avoid abstract `Guard Power` opposed to abstract `Offensive Power`
+- attack flow should produce concrete damage-like values whenever possible
+
+If attack output becomes a generic abstract offensive rating, guard tooltips lose context and the game risks becoming opaque ARPG-style offensive/defensive stat soup.
+
+## Static Gear Segment
+
+This area is active design exploration, not final architecture.
+
+User is considering a separate static gear/loadout segment outside the flow grid.
+
+Possible naming:
+
+- static gear
+- loadout
+- modules
+- core equipment
+- relics
+- frame
+
+Purpose should not be "hidden resistance caps".
+
+Better direction:
+
+- define baseline economy and constraints
+- max HP
+- max barrier/guard storage
+- guard generation/recharge
+- max prepared guard portions
+- overload efficiency
+- attack/resource generation
+- typed guard bonuses
+- guard durability/strain modifiers
+
+Avoid making static gear replace the interesting flow/item logic.
+
+## Testing Direction
+
+Prefer deterministic EditMode tests for domain/gameplay logic.
+
+Important coverage areas:
+
+- flow lifecycle and active-flow counts
+- tick phase behavior
+- cast progress and row-slot processing
+- item capacity reservation/release
+- routing around full items
+- event-triggered defensive entry points
+- anti-recursive defensive damage
+- game-event counters
+- busy defensive entry point fallback
+- performance smoke/canary tests for active flow and routing/resolution hot paths
+
+Future balance simulations should cover:
+
+- burst vs heavy guard
+- rapid small hits vs guard fatigue
+- sustained medium hits
+- typed damage and typed wards
+- trigger baiting
+- guard storage limits
+- healing entry points when designed
+- late-game scaling saturation
+- early-game weakness
+- dominant-strategy risks
+
+## Context Maintenance
+
+`AI_CriticalDecisions.txt` is the primary durable decisions file.
+
+`AI_DiscussionHistory.txt` is now a compact rolling log for new/current raw discussion after the 2026-06-05 compaction.
+
+The old `AI_Discussions_summary.txt` file was removed from primary context. Durable decisions should go into `AI_CriticalDecisions.txt`, not a separate summary file.
+
+Archived discussion files preserve the old long-form history/summary and should be used as support when needed.
+
+If the current context files again become long enough that reading them substantially increases token usage or hurts AI performance, clearly tell the user and suggest summarizing, archiving, or compacting before continuing large-context work.

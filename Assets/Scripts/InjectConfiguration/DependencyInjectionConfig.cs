@@ -1,4 +1,5 @@
-﻿using MageFactory.UI.Component;
+﻿using MageFactory.CombatContextRuntime;
+using MageFactory.UI.Component;
 using MageFactory.UI.Component.Inventory.GridLayer;
 using MageFactory.UI.Component.Inventory.ItemLayer;
 using UnityEngine;
@@ -25,9 +26,13 @@ namespace MageFactory.InjectConfiguration {
 
         [SerializeField] private Transform battleSlotParent;
 
+        [Header("Combat Runtime")] [SerializeField]
+        private CombatRuntimeProfile combatRuntimeProfile = CombatRuntimeProfile.Developer;
+
         public override void InstallBindings() {
             // DOMAIN (bez UI)
             MageFactoryDomainInstaller.Install(Container);
+            installCombatRuntimeSettings();
 
             // UI signals (DeclareSignal<T>())
             MageFactoryUiSignalsInstaller.Install(Container);
@@ -45,6 +50,11 @@ namespace MageFactory.InjectConfiguration {
             };
 
             MageFactoryUnityUiInstaller.Install(Container, uiSettings);
+        }
+
+        private void installCombatRuntimeSettings() {
+            Container.Rebind<CombatRuntimeSettings>()
+                .FromInstance(new CombatRuntimeSettings(combatRuntimeProfile));
         }
     }
 }

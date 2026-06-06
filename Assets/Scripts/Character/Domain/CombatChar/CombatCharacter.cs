@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
 using MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors;
 using MageFactory.Character.Domain.FlowCapability;
@@ -23,10 +24,13 @@ namespace MageFactory.Character.Domain.CombatChar {
         private readonly IFlowFactory flowFactory;
         private readonly CharacterCombatEventProcessor characterCombatEventProcessor;
         private readonly List<IFlowProcessor> activeFlows = new();
+        private readonly List<Id<ItemId>> eventTriggeredDefensiveEntryPointIds = new();
+        private readonly Dictionary<CombatEventType, int> combatEventCountsByType = new();
         private readonly Dictionary<Id<ItemId>, CombatPlacedItemRuntimeState> runtimeStateByItemId = new();
         private readonly Dictionary<Id<ItemId>, IFlowItem> flowItemByItemId = new();
         private readonly CombatTickPlan combatTickPlan = new();
         private int createdFlowCount;
+        private int nextEventTriggeredDefensiveEntryPointIndex;
 
         internal CombatCharacter(CharacterAggregate characterAggregate,
                                  Team team,
@@ -74,6 +78,10 @@ namespace MageFactory.Character.Domain.CombatChar {
             return characterAggregate.takeDamage(resolvedDamage);
         }
 
+        public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {
+            return takeDamage(resolvedDamage);
+        }
+
         public bool tryMoveItem(ICharacterEquippedItem characterEquippedItem) {
             return characterAggregate.tryMoveItem(characterEquippedItem);
         }
@@ -98,6 +106,80 @@ namespace MageFactory.Character.Domain.CombatChar {
         internal void createFlow(Id<ItemId> entryPointItemId,
                                  IFlowConsumer flowConsumer,
                                  ICombatCapabilities combatCapabilities) {
+            tryCreateFlow(
+                entryPointItemId,
+                flowConsumer,
+                combatCapabilities,
+                PowerAmount.noPower(),
+                default);
+        }
+
+        internal bool tryCreateDefensiveFlowFor(IncomingAttackDamageCombatEvent combatEvent,
+                                                IFlowConsumer flowConsumer,
+                                                ICombatCapabilities combatCapabilities) {
+            NullGuard.NotNullOrThrow(combatEvent);
+
+            int entryPointCount = eventTriggeredDefensiveEntryPointIds.Count;
+            if (entryPointCount == 0) {
+                return false;
+            }
+
+            clampDefensiveEntryPointCursor(entryPointCount);
+            int roundRobinStartIndex = nextEventTriggeredDefensiveEntryPointIndex;
+            for (int offset = 0; offset < entryPointCount; offset++) {
+                int entryPointIndex = getRoundRobinDefensiveEntryPointIndex(
+                    roundRobinStartIndex,
+                    offset,
+                    entryPointCount);
+
+                if (tryCreateDefensiveFlowFromEntryPointAtIndex(
+                        entryPointIndex,
+                        flowConsumer,
+                        combatCapabilities,
+                        combatEvent)) {
+                    advanceDefensiveEntryPointCursorAfter(entryPointIndex, entryPointCount);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void clampDefensiveEntryPointCursor(int entryPointCount) {
+            if (nextEventTriggeredDefensiveEntryPointIndex >= entryPointCount) {
+                nextEventTriggeredDefensiveEntryPointIndex = 0;
+            }
+        }
+
+        private static int getRoundRobinDefensiveEntryPointIndex(
+            int startIndex,
+            int offset,
+            int entryPointCount) {
+            return (startIndex + offset) % entryPointCount;
+        }
+
+        private bool tryCreateDefensiveFlowFromEntryPointAtIndex(
+            int entryPointIndex,
+            IFlowConsumer flowConsumer,
+            ICombatCapabilities combatCapabilities,
+            IncomingAttackDamageCombatEvent combatEvent) {
+            return tryCreateFlow(
+                eventTriggeredDefensiveEntryPointIds[entryPointIndex],
+                flowConsumer,
+                combatCapabilities,
+                combatEvent.getRawDamageToReceive(),
+                combatEvent.getSourceCharacterId());
+        }
+
+        private void advanceDefensiveEntryPointCursorAfter(int usedEntryPointIndex, int entryPointCount) {
+            nextEventTriggeredDefensiveEntryPointIndex = (usedEntryPointIndex + 1) % entryPointCount;
+        }
+
+        private bool tryCreateFlow(Id<ItemId> entryPointItemId,
+                                   IFlowConsumer flowConsumer,
+                                   ICombatCapabilities combatCapabilities,
+                                   PowerAmount initialAttackPower,
+                                   Id<CharacterId> sourceCharacterId) {
             NullGuard.ValidIdOrThrow(entryPointItemId);
             NullGuard.NotNullOrThrow(flowConsumer);
             NullGuard.NotNullOrThrow(combatCapabilities);
@@ -110,7 +192,7 @@ namespace MageFactory.Character.Domain.CombatChar {
 
             IFlowItem entryPointFlowItem = getFlowItemOrThrow(entryPointItemId);
             if (!canProcessFlowItem(entryPointFlowItem)) {
-                return;
+                return false;
             }
 
             IFlowRouter router = ProcessableGridAdjacencyRouter.create(
@@ -124,14 +206,20 @@ namespace MageFactory.Character.Domain.CombatChar {
                 router,
                 flowConsumer,
                 new FlowCapabilities(this),
-                this));
+                this,
+                NullGuard.NotNullOrThrow(initialAttackPower),
+                sourceCharacterId));
 
             activeFlows.Add(flow);
             createdFlowCount++;
+            return true;
         }
 
-        public void consumeCombatEvent(CombatEvent combatEvent) {
-            characterCombatEventProcessor.process(this, combatEvent);
+        public void consumeCombatEvent(CombatEvent combatEvent,
+                                       IFlowConsumer flowConsumer,
+                                       ICombatCapabilities combatCapabilities) {
+            recordCombatEvent(combatEvent);
+            characterCombatEventProcessor.process(this, combatEvent, flowConsumer, combatCapabilities);
         }
 
         public int getActiveFlowCount() {
@@ -140,6 +228,14 @@ namespace MageFactory.Character.Domain.CombatChar {
 
         public int getCreatedFlowsInCurrentBattleCount() {
             return createdFlowCount;
+        }
+
+        public int getCombatEventCount(CombatEventType combatEventType) {
+            NullGuard.enumDefinedOrThrow(combatEventType);
+
+            return combatEventCountsByType.TryGetValue(combatEventType, out int count)
+                ? count
+                : 0;
         }
 
         public int getActiveFlowCountOnItem(Id<ItemId> itemId) {
@@ -204,6 +300,21 @@ namespace MageFactory.Character.Domain.CombatChar {
             IFlowItem flowItem = new CombatCharacterEquippedItem(equippedItem);
             flowItemByItemId[itemId] = flowItem;
             runtimeStateByItemId[itemId] = new CombatPlacedItemRuntimeState(flowItem);
+
+            if (equippedItem is ICharacterEquippedEntryPoint entryPoint
+                && entryPoint.getFlowKind() == FlowKind.Defense
+                && entryPoint.getTriggerKind() == EntryPointTriggerKind.CombatEvent
+                && entryPoint.getCombatHook().observes(CombatEventType.INCOMING_ATTACK_DAMAGE)) {
+                eventTriggeredDefensiveEntryPointIds.Add(itemId);
+            }
+        }
+
+        private void recordCombatEvent(CombatEvent combatEvent) {
+            CombatEvent eventToRecord = NullGuard.NotNullOrThrow(combatEvent);
+            CombatEventType eventType = eventToRecord.getType();
+
+            combatEventCountsByType.TryGetValue(eventType, out int currentCount);
+            combatEventCountsByType[eventType] = currentCount + 1;
         }
 
         private IFlowItem getFlowItemOrThrow(Id<ItemId> itemId) {

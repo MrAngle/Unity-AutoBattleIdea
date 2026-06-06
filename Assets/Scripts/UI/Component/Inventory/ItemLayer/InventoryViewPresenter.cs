@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
+using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -29,14 +30,20 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             public readonly Id<ItemId> placedItemId;
             public readonly ShapeArchetype shapeArchetype;
             public readonly Vector2Int origin;
+            public readonly bool isEntryPoint;
+            public readonly FlowKind entryPointFlowKind;
 
             public NewItemPrintCommand(
                 Id<ItemId> placedItemId,
                 ShapeArchetype shapeArchetype,
-                Vector2Int origin) {
+                Vector2Int origin,
+                bool isEntryPoint,
+                FlowKind entryPointFlowKind) {
                 this.placedItemId = placedItemId;
                 this.shapeArchetype = shapeArchetype;
                 this.origin = origin;
+                this.isEntryPoint = isEntryPoint;
+                this.entryPointFlowKind = entryPointFlowKind;
             }
         }
 
@@ -117,6 +124,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             foreach (var placedItem in changeInventoryItemsCommand.characterEquippedItems) {
                 if (itemIdToItemView.ContainsKey(placedItem.getId())) continue;
                 PlacedItemView view = inventoryItemViewFactory.create(placedItem.getShape(), placedItem.getOrigin());
+                applyEntryPointColor(view, placedItem);
                 Id<ItemId> placedItemId = placedItem.getId();
                 view.setClickHandler(() => handleItemClicked(placedItemId));
                 itemIdToItemView[placedItemId] = view;
@@ -158,10 +166,31 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
         public void printNewItem(ICombatInventoryItemsPanel.NewItemPrintCommand command) {
             PlacedItemView view = inventoryItemViewFactory.create(command.shapeArchetype, command.origin);
+            applyEntryPointColor(view, command);
             view.setClickHandler(() => handleItemClicked(command.placedItemId));
             itemIdToItemView[command.placedItemId] = view;
             ensureFlowConnectionOverlayView(view.transform.parent);
             renderFocusState();
+        }
+
+        private static void applyEntryPointColor(PlacedItemView view, IGridItemPlaced placedItem) {
+            if (placedItem is IInventoryPlacedEntryPoint entryPoint) {
+                view.setColor(getEntryPointColor(entryPoint.getFlowKind()));
+            }
+        }
+
+        private static void applyEntryPointColor(
+            PlacedItemView view,
+            ICombatInventoryItemsPanel.NewItemPrintCommand command) {
+            if (command.isEntryPoint) {
+                view.setColor(getEntryPointColor(command.entryPointFlowKind));
+            }
+        }
+
+        private static Color getEntryPointColor(FlowKind flowKind) {
+            return flowKind == FlowKind.Defense
+                ? new Color(0.28f, 0.82f, 0.62f, 0.9f)
+                : new Color(1f, 0.48f, 0.28f, 0.9f);
         }
 
         public void printItemCastProgress(ICombatInventoryItemsPanel.UiPrintItemCastProgressCommand command) {

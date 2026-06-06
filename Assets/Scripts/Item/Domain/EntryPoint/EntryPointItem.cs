@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using MageFactory.ActionEffect;
+using MageFactory.CombatEvents;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -43,6 +44,14 @@ namespace MageFactory.Item.Domain.EntryPoint {
 
         public CombatTicks getTriggerInterval() {
             return entryPointArchetype.getTriggerInterval();
+        }
+
+        public EntryPointTriggerKind getTriggerKind() {
+            return entryPointArchetype.getTriggerKind();
+        }
+
+        public ICombatHook getCombatHook() {
+            return entryPointArchetype.getCombatHook();
         }
 
         public ShapeArchetype getShape() {

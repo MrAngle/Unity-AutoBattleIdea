@@ -7,6 +7,7 @@ using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.CombatContextRuntime;
+using MageFactory.CombatEvents;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
@@ -69,6 +70,7 @@ namespace MageFactory.Tests.Unit.Battle {
                 Random.InitState(12_345);
 
                 ICombatContext combatContext = BattleScenarioTestHarness.create()
+                    .withProductionCombatRuntimeProfile()
                     .withFlowSettings(maxStepsPerSlice: 1)
                     .withMaxInventoryGridDimensions(StressInventoryWidth, StressInventoryHeight)
                     .createContext(createCombatCommands(TargetCharacterCount, TargetItemCount));
@@ -157,6 +159,7 @@ namespace MageFactory.Tests.Unit.Battle {
                 Random.InitState(12_345);
 
                 ICombatContext combatContext = BattleScenarioTestHarness.create()
+                    .withProductionCombatRuntimeProfile()
                     .withFlowSettings(maxStepsPerSlice: 1)
                     .withMaxInventoryGridDimensions(StressInventoryWidth, StressInventoryHeight)
                     .createContext(createRoutingCombatCommands(TargetCharacterCount, RoutingPairCount));
@@ -393,6 +396,14 @@ namespace MageFactory.Tests.Unit.Battle {
                 return FlowKind.Damage;
             }
 
+            public EntryPointTriggerKind getTriggerKind() {
+                return EntryPointTriggerKind.CombatTick;
+            }
+
+            public ICombatHook getCombatHook() {
+                return CombatHook.none();
+            }
+
             public CombatTicks getTriggerIntervalTicks() {
                 return CombatTicks.of(EntryPointTriggerIntervalTicks);
             }
@@ -409,6 +420,14 @@ namespace MageFactory.Tests.Unit.Battle {
 
             public FlowKind getFlowKind() {
                 return FlowKind.Damage;
+            }
+
+            public EntryPointTriggerKind getTriggerKind() {
+                return EntryPointTriggerKind.CombatTick;
+            }
+
+            public ICombatHook getCombatHook() {
+                return CombatHook.none();
             }
 
             public CombatTicks getTriggerIntervalTicks() {

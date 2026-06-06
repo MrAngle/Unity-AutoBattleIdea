@@ -5,6 +5,7 @@ using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContext.Domain.Service;
+using MageFactory.CombatContextRuntime;
 using MageFactory.Flow.Api;
 using MageFactory.Flow.Configuration;
 using MageFactory.Flow.Domain.Service;
@@ -89,6 +90,9 @@ namespace MageFactory.InjectConfiguration {
                 .FromMethod(_ => new FlowProcessorSettings(
                     maxStepsPerSlice: FlowMaxStepsPerTickSafetyLimit,
                     castTimeMode: FlowCastTimeMode.UseItemCastTime));
+
+            Container.Bind<CombatRuntimeSettings>()
+                .FromInstance(CombatRuntimeSettings.developer());
         }
 
         private void installCombatAndCharacters() {

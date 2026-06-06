@@ -4,7 +4,8 @@
   "references": [
     "MageFactory.ActionEffect",
     "MageFactory.Shared",
-    "MageFactory.CombatContextRuntime"
+    "MageFactory.CombatContextRuntime",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true
 }

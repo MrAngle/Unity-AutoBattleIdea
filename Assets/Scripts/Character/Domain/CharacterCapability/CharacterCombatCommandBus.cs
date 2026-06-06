@@ -32,8 +32,14 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             combatCharacter.cleanup();
         }
 
-        public void consumeCombatEvent(CombatEvent combatEvent) {
-            combatCharacter.consumeCombatEvent(combatEvent);
+        public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {
+            return combatCharacter.applyResolvedDamage(resolvedDamage);
+        }
+
+        public void consumeCombatEvent(CombatEvent combatEvent,
+                                       IFlowConsumer flowConsumer,
+                                       ICombatCapabilities combatCapabilities) {
+            combatCharacter.consumeCombatEvent(combatEvent, flowConsumer, combatCapabilities);
         }
     }
 }

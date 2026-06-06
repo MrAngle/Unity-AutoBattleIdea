@@ -2,7 +2,8 @@
   "name": "MageFactory.CombatContextRuntime",
   "rootNamespace": "MageFactory",
   "references": [
-    "MageFactory.Shared"
+    "MageFactory.Shared",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true
 }

@@ -136,7 +136,7 @@ namespace MageFactory.UI.Context.Combat {
 
         public void onEvent(in NewItemPlacedDtoEvent ev) {
             ICombatInventoryItemsPanel.NewItemPrintCommand itemPrintCommand =
-                new(ev.placedItemId, ev.shapeArchetype, ev.origin);
+                new(ev.placedItemId, ev.shapeArchetype, ev.origin, ev.isEntryPoint, ev.entryPointFlowKind);
             inventoryPanelPresentation.printNewItem(itemPrintCommand);
         }
 

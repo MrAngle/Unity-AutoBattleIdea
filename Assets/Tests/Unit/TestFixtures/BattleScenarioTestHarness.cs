@@ -4,6 +4,7 @@ using MageFactory.Character.Api.Event;
 using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatContextRuntime;
 using MageFactory.Flow.Configuration;
 using MageFactory.InjectConfiguration;
 using MageFactory.Inventory.Contract;
@@ -49,6 +50,12 @@ namespace MageFactory.Tests.Unit.TestFixtures {
                 .FromInstance(new FlowProcessorSettings(
                     currentSettings.getMaxStepsPerSlice(),
                     FlowCastTimeMode.Instant));
+            return this;
+        }
+
+        public BattleScenarioTestHarness withProductionCombatRuntimeProfile() {
+            container.Rebind<CombatRuntimeSettings>()
+                .FromInstance(CombatRuntimeSettings.production());
             return this;
         }
 

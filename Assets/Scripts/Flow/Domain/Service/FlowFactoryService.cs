@@ -29,6 +29,8 @@ namespace MageFactory.Flow.Domain.Service {
                 flowCreationCommand.getFlowConsumer(),
                 flowCreationCommand.getFlowOwner(),
                 flowCreationCommand.getFlowCapabilities(),
+                flowCreationCommand.getInitialAttackPower(),
+                flowCreationCommand.getSourceCharacterId(),
                 actionContextFactory,
                 settings);
         }

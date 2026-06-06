@@ -53,10 +53,19 @@ namespace MageFactory.Flow.Domain {
             IFlowConsumer flowConsumer,
             IFlowOwner flowOwner,
             IFlowCapabilities flowCapabilities,
+            PowerAmount initialAttackPower,
+            Id<CharacterId> sourceCharacterId,
             ActionContextFactory actionContextFactory,
             FlowProcessorSettings settings
         ) {
-            FlowContext context = new FlowContext(flowKind, startNode, flowConsumer, flowOwner, flowRouter);
+            FlowContext context = new FlowContext(
+                flowKind,
+                startNode,
+                flowConsumer,
+                flowOwner,
+                flowRouter,
+                initialAttackPower,
+                sourceCharacterId);
             FlowProcessingCapabilities flowProcessingCapabilities =
                 new FlowProcessingCapabilities(context, actionContextFactory, flowCapabilities);
 

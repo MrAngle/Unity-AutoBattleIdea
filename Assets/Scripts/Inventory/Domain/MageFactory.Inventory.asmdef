@@ -11,7 +11,8 @@
     "Zenject",
     "MageFactory.Inventory.Api",
     "MageFactory.ActionEffect",
-    "MageFactory.CombatContextRuntime"
+    "MageFactory.CombatContextRuntime",
+    "MageFactory.CombatEvents"
   ],
   "autoReferenced": true,
   "allowUnsafeCode": false

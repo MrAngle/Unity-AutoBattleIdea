@@ -1,5 +1,6 @@
-﻿using System.Threading;
+using System.Threading;
 using MageFactory.ActionEffect;
+using MageFactory.CombatEvents;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -33,6 +34,14 @@ namespace MageFactory.Item.Domain.EntryPoint {
 
         public FlowKind getFlowKind() {
             return entryPointDefinition.getFlowKind();
+        }
+
+        public EntryPointTriggerKind getTriggerKind() {
+            return entryPointDefinition.getTriggerKind();
+        }
+
+        public ICombatHook getCombatHook() {
+            return entryPointDefinition.getCombatHook();
         }
 
         public CombatTicks getTriggerInterval() {

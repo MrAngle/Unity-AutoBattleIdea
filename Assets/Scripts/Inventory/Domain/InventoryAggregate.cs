@@ -62,7 +62,7 @@ namespace MageFactory.Inventory.Domain {
             return inventoryRegistry.tryGetItem(itemId, out itemToReturn);
         }
 
-        public IReadOnlyCollection<IInventoryPlacedEntryPoint> getEntryPointsToTick() {
+        public IReadOnlyCollection<IInventoryPlacedEntryPoint> getEntryPoints() {
             return inventoryRegistry.getEntryPoints();
         }
 
@@ -80,9 +80,16 @@ namespace MageFactory.Inventory.Domain {
                         placeItemCommand.itemDefinition.getShape().Shape));
 
             inventoryRegistry.placeItem(inventoryPlacedItem);
+            bool isEntryPoint = inventoryPlacedItem is IInventoryPlacedEntryPoint;
+            FlowKind entryPointFlowKind = isEntryPoint
+                ? ((IInventoryPlacedEntryPoint)inventoryPlacedItem).getFlowKind()
+                : default;
+
             inventoryEventHub.publish(new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(),
                 inventoryPlacedItem.getShape(),
-                placeItemCommand.origin));
+                placeItemCommand.origin,
+                isEntryPoint,
+                entryPointFlowKind));
             return inventoryPlacedItem;
         }
 

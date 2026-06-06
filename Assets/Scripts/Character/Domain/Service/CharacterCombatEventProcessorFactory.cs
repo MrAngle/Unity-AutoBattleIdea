@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors;
 using MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors.PredefinedEvents;
+using MageFactory.CombatContextRuntime;
 using MageFactory.Shared.Utility;
 using Zenject;
 
@@ -8,17 +9,16 @@ using Zenject;
 
 namespace MageFactory.Character.Domain.Service {
     internal class CharacterCombatEventProcessorFactory {
-        private readonly DamageIncomingCombatEventProcessor damageIncomingCombatEventProcessor;
+        private readonly IncomingAttackDamageCombatEventProcessor incomingAttackDamageCombatEventProcessor;
 
         [Inject]
-        internal CharacterCombatEventProcessorFactory(
-        ) {
-            this.damageIncomingCombatEventProcessor =
-                NullGuard.NotNullOrThrow(new DamageIncomingCombatEventProcessor());
+        internal CharacterCombatEventProcessorFactory(CombatRuntimeSettings combatRuntimeSettings) {
+            incomingAttackDamageCombatEventProcessor =
+                NullGuard.NotNullOrThrow(new IncomingAttackDamageCombatEventProcessor(combatRuntimeSettings));
         }
 
         internal CharacterCombatEventProcessor create() {
-            return new CharacterCombatEventProcessor(damageIncomingCombatEventProcessor);
+            return new CharacterCombatEventProcessor(incomingAttackDamageCombatEventProcessor);
         }
     }
 }

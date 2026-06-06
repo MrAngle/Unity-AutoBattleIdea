@@ -7,34 +7,49 @@ This Unity project is `MrAngleGame`.
 Before making architectural or gameplay-logic decisions, read and account for:
 
 - `Assets/AI_Context/AI_Instructions.txt`
-- `Assets/AI_Context/AI_Discussions_summary.txt`
+- `Assets/AI_Context/AI_CriticalDecisions.txt`
 - `Assets/AI_Context/AI_DiscussionHistory.txt`
 - `Assets/Scripts/TODO.md`
 
-`Assets/AI_Context/AI_Discussions_summary.txt` is a chronological history of design decisions and architecture discussions.
-`Assets/AI_Context/AI_DiscussionHistory.txt` is a running, lightweight log of current conversations, assumptions, open questions, and preliminary decisions.
+`Assets/AI_Context/AI_CriticalDecisions.txt` is the primary compact source of durable project decisions, critical gameplay constraints, architecture direction, and current design rules.
+`Assets/AI_Context/AI_DiscussionHistory.txt` is now a compact rolling log of current conversations, assumptions, open questions, and preliminary decisions after the 2026-06-05 context compaction.
 `Assets/Scripts/TODO.md` tracks known architectural follow-ups that should not be treated as final architecture.
-AI communication and project-context files live under `Assets/AI_Context/`, including `AI_Instructions.txt`, `AI_Csharp`, `AI_DiscussionHistory.txt`, and `AI_Discussions_summary.txt`.
+AI communication and project-context files live under `Assets/AI_Context/`, including `AI_Instructions.txt`, `AI_Csharp`, `AI_CriticalDecisions.txt`, and `AI_DiscussionHistory.txt`.
+
+Archived discussion support files:
+
+- `Assets/AI_Context/AI_ArchivedDiscussionHistory_2026-06-05.txt`
+- `Assets/AI_Context/AI_ArchivedDiscussionsSummary_2026-06-05.txt`
+
+Archived files are not mandatory for every task. Use them when reconstructing why a decision was made, when a new idea conflicts with a past direction, when preparing/refreshing `AI_CriticalDecisions.txt`, or when the current critical decisions are not enough to resolve an ambiguity.
 
 Important interpretation rule:
 
-- Treat lower/later entries in `AI_Discussions_summary.txt` as newer and more authoritative.
-- If two notes conflict, prefer the later note.
+- Treat `AI_CriticalDecisions.txt` as the most authoritative compact source for current durable decisions.
+- If `AI_CriticalDecisions.txt` and old archived discussion notes conflict, prefer `AI_CriticalDecisions.txt` unless a newer user message explicitly changes direction.
+- If two notes in the rolling history conflict, prefer the later note unless a newer critical decision says otherwise.
 - Do not treat older rejected ideas as current architecture unless a later note revives them.
-- Treat `AI_DiscussionHistory.txt` as raw working context; distill durable decisions into `AI_Discussions_summary.txt` when they guide implementation.
+- Treat `AI_DiscussionHistory.txt` as raw working context; distill durable decisions into `AI_CriticalDecisions.txt` when they guide implementation or future design.
 - Treat `TODO.md` as an active list of known technical/design debt; account for relevant items before changing nearby code.
 - When in doubt, summarize the apparent latest decision and ask only if the ambiguity blocks the task.
 - When changing an existing mechanism, record what the previous mechanism did and how the new mechanism differs, so project history preserves the evolution of decisions.
 - New entries in `AI_DiscussionHistory.txt` must start with the `AI` prefix, for example `AI YYYY-MM-DD - Topic`.
 - After the user commits or pushes a change, treat the next recorded discussion as context for the next commit. Start a new simple section in `AI_DiscussionHistory.txt` so the history clearly separates what belonged to the previous commit from what is being discussed for the next one.
-- Use an explicit commit separator in both AI history files whenever the user says a commit or push happened, or when recording the first discussion after such a boundary:
+- Use an explicit commit separator in `AI_DiscussionHistory.txt` whenever the user says a commit or push happened, or when recording the first discussion after such a boundary:
   `AI COMMIT BOUNDARY YYYY-MM-DD - <short context>`
 - In `AI_DiscussionHistory.txt`, put raw next-commit conversation notes below that separator.
-- In `AI_Discussions_summary.txt`, put only durable decisions below that separator; do not copy raw discussion unless it became architectural guidance.
+- In `AI_CriticalDecisions.txt`, keep only durable decisions and critical guidance. Do not copy raw discussion unless it became architectural/gameplay guidance.
 - If the user provides a commit hash or branch name, include it in the separator. If not, use the date and a short human-readable label.
 - Treat commit separators as context checkpoints for reconstructing when and why decisions were made. They are not gameplay or architecture rules by themselves.
-- Use separators to compare decisions over time: when notes conflict, prefer later sections and later entries unless a newer note explicitly revives an older decision.
-- If `AI_DiscussionHistory.txt` or `AI_Discussions_summary.txt` become long enough that reading them substantially increases token usage or may negatively affect AI performance, clearly inform the user that it is time to do something about the history before continuing with large-context work. Suggest possible options such as summarizing, archiving, or compacting older history, but do not perform those changes automatically unless the user explicitly asks for them.
+- Use separators and archive files to compare decisions over time when needed: when notes conflict, prefer newer/current critical decisions unless a newer note explicitly revives an older decision.
+- If `AI_CriticalDecisions.txt` or `AI_DiscussionHistory.txt` become long enough that reading them substantially increases token usage or may negatively affect AI performance, clearly inform the user that it is time to do something about the context before continuing with large-context work. Suggest possible options such as summarizing, archiving, or compacting older history, but do not perform those changes automatically unless the user explicitly asks for them.
+
+Critical design-review rule:
+
+- When the user proposes gameplay logic, architecture, balance rules, or item/flow systems, actively compare the idea against `AI_CriticalDecisions.txt`, `TODO.md`, and relevant archived context when needed.
+- If you see logical drift, a contradiction with important decisions, an easy exploit, a dominant strategy, a balance trap, loss of readability, hot-path performance risk, or architecture drift, call it out clearly and critically.
+- Discussion with AI should not be passive agreement. It should challenge proposed mechanics, identify possible bypasses, explain likely impact on the whole game, and preserve the value of ADR/history work.
+- This is especially important for combat/defense design: challenge burst synchronization abuse, defensive-trigger baiting, flat-value scaling traps, percent-resistance cap metas, abstract-stat readability loss, and "blocks everything or blocks nothing" outcomes.
 
 ## Architecture Direction
 
@@ -46,7 +61,7 @@ Prefer the existing modular-monolith style:
 - dependency composition through Zenject installers
 - UI separated from domain/gameplay logic
 
-Keep changes aligned with the current direction from `AI_Discussions_summary.txt`, especially around:
+Keep changes aligned with the current direction from `AI_CriticalDecisions.txt`, especially around:
 
 - deterministic combat/runtime state
 - `CombatCommand` as an intent/request

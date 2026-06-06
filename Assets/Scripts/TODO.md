@@ -62,6 +62,43 @@ Future UI direction:
 - Show a simple countdown/charge indicator directly on entry point items for the next flow trigger.
 - Keep this separate from item cast progress: trigger time creates a flow, cast time processes an existing flow through an item.
 
+## Defensive Receive-Damage Entry Point
+
+Current direction:
+
+- Incoming attack damage from another character can trigger an event-triggered defensive entry point if that entry point is available/free.
+- The defensive entry point creates a `FlowKind.Defense` flow whose initial `DamageRole.ATTACK` power is the incoming damage directed at the receiving character.
+- In defensive flow, `DamageRole.ATTACK` means incoming damage being processed before final HP application.
+- A defensive flow ends by applying final `ResolvedDamage` directly to the receiving character.
+- Damage already processed by a defensive flow is not registered again as fresh incoming attack damage and does not trigger another defensive flow.
+
+Open design/implementation work:
+
+- Keep refining player-facing names. Current code fact is `IncomingAttackDamageCombatEvent`; current hook/modifier phrase is implemented as `CombatHook.onIncomingAttackDamage()` / `OnIncomingAttackDamage`.
+- Decide whether `ResolvedDamage` is the final term for damage after defensive processing, or whether another name better fits the future damage pipeline.
+- Define which `DamageRole` values are legal/meaningful in each `FlowKind`.
+- Define counter/spike damage from defensive flow explicitly, likely through `SPIKE_DAMAGE` or a similarly unambiguous role, so defensive effects cannot recursively re-enter receive-damage processing.
+- Add future deterministic coverage when `SPIKE_DAMAGE` / counter-damage behavior becomes real.
+- Current implementation uses a round-robin cursor when choosing among event-triggered defensive entry points. This improves hot-path performance and avoids always scanning from index 0, but it is not yet confirmed as the final gameplay rule.
+- Decide whether defensive event entry points should resolve by round-robin, strict inventory/placement priority, explicit priority, conditions/tags, or another player-readable selection model.
+
+## Game Event Counters And Modifier Hooks
+
+Current direction:
+
+- Terms such as `OnAttack` and `OnIncomingAttackDamage` are game-mechanic hook points, not C# events and not async/multithreaded processing.
+- Event-aware passive modifiers are expected to become a central part of the game.
+- Modifiers may eventually apply at whole-game, character, inventory/module, and item/cell/component layers.
+- Combat/character runtime records live gameplay event counters for current combat facts such as `INCOMING_ATTACK_DAMAGE`, because mechanics like "every 7 received-damage events" need those counts during combat.
+
+Future architecture direction:
+
+- Prepare hook/reaction candidates through indexes by hook/event kind and owner scope instead of scanning all items/modifiers for every event.
+- Keep event counter queries cheap and primitive-like through `ICombatQueries` / scoped character queries.
+- Use reusable buffers and explicit synchronous phases for frequent event dispatch/reaction work.
+- Consider inventory/module-level event counters later, but do not add that layer until a concrete mechanic needs it.
+- Keep player-facing rules transparent: complexity should come from many visible modifier/build interactions, not hidden order-of-operations surprises.
+
 ## Runtime-Created UI View Templates
 
 Current state:

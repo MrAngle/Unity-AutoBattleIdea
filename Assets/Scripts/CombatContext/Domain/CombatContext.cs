@@ -9,7 +9,6 @@ using MageFactory.CombatContext.Domain.CombatCapabilities;
 using MageFactory.CombatContextRuntime;
 using MageFactory.CombatEvents;
 using MageFactory.Flow.Contract;
-using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
@@ -20,17 +19,21 @@ using Random = System.Random;
 namespace MageFactory.CombatContext.Domain {
     internal class CombatContext : ICombatContext, IFlowConsumer {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacterFacade> characters = new();
+        private readonly Dictionary<CombatEventType, int> combatEventCountsByType = new();
         private readonly List<ICombatCharacterFacade> enemyCandidates = new();
 
         private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
+        private readonly CombatRuntimeSettings combatRuntimeSettings;
         private readonly Random random = new();
         private ICombatCapabilities combatCapabilities;
 
         private CombatContext(ICombatCharacterFactory characterFactory,
-                              ICombatContextEventPublisher combatContextEventPublisher) {
+                              ICombatContextEventPublisher combatContextEventPublisher,
+                              CombatRuntimeSettings combatRuntimeSettings) {
             this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
             this.combatContextEventPublisher = NullGuard.NotNullOrThrow(combatContextEventPublisher);
+            this.combatRuntimeSettings = NullGuard.NotNullOrThrow(combatRuntimeSettings);
             NullGuard.NotNullOrThrow(characters);
         }
 
@@ -40,15 +43,19 @@ namespace MageFactory.CombatContext.Domain {
             }
 
             CombatCommandBus combatCommandBus = new CombatCommandBus(this);
-            CombatQueries combatQueries = new CombatQueries(characters);
+            CombatQueries combatQueries = new CombatQueries(characters, combatEventCountsByType);
 
             combatCapabilities = new CombatCapabilitiesContainer(combatCommandBus, combatQueries);
         }
 
         internal static CombatContext create(ICombatCharacterFactory paramCharacterFactory,
                                              ICombatContextEventPublisher combatContextEventPublisher,
+                                             CombatRuntimeSettings combatRuntimeSettings,
                                              IReadOnlyList<CreateCombatCharacterCommand> charactersToCreate) {
-            CombatContext combatContext = new CombatContext(paramCharacterFactory, combatContextEventPublisher);
+            CombatContext combatContext = new CombatContext(
+                paramCharacterFactory,
+                combatContextEventPublisher,
+                combatRuntimeSettings);
             combatContext.initializeCapabilities();
 
             foreach (CreateCombatCharacterCommand createCombatCharacterCommand in charactersToCreate) {
@@ -118,20 +125,26 @@ namespace MageFactory.CombatContext.Domain {
             }
         }
 
-        private DamageToDeal processDefensiveFlow(ICombatCharacterFacade combatCharacterFacade,
-                                                  ConsumeFlowCommand consumeFlowCommand) {
-            throw new NotImplementedException();
+        private void processDefensiveFlow(ICombatCharacterFacade combatCharacterFacade,
+                                          ConsumeFlowCommand consumeFlowCommand) {
+            ResolvedDamage resolvedDamage = ResolvedDamage.fromPowerAmount(consumeFlowCommand.attackPower);
+            DamageTaken damageTaken = combatCharacterFacade.command().applyResolvedDamage(resolvedDamage);
+
+            if (combatRuntimeSettings.shouldLogCombatHotPath()) {
+                Debug.Log(
+                    $"[CombatContext] Defensive flow resolved for character={combatCharacterFacade.query().getCharacterInfo().getCharacterId()}, " +
+                    $"resolvedDamage={resolvedDamage.getPower()}, damageTaken={damageTaken.getPower()}");
+            }
         }
 
         private void processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
             if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
                     out ICombatCharacterFacade enemy)) {
                 // TODO: targeting should be in flow
-                DamageIncomingCombatEvent damageIncomingCombatEvent = new DamageIncomingCombatEvent(
+                IncomingAttackDamageCombatEvent damageIncomingCombatEvent = new IncomingAttackDamageCombatEvent(
                     enemy.query().getCharacterInfo().getCharacterId(),
                     consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
-                    DamageRole.ATTACK,
-                    consumeFlowCommand.damageToDeal);
+                    DamageToDeal.fromPowerAmount(consumeFlowCommand.attackPower));
 
                 dispatchCombatEvent(damageIncomingCombatEvent);
             }
@@ -140,7 +153,10 @@ namespace MageFactory.CombatContext.Domain {
         public bool tryGetRandomEnemyOf(Id<CharacterId> sourceId, out ICombatCharacterFacade enemy) {
             enemy = null;
             if (!characters.TryGetValue(sourceId, out ICombatCharacterFacade sourceCharacter)) {
-                Debug.Log($"[CombatContext] sourceId {sourceId} not found");
+                if (combatRuntimeSettings.shouldLogCombatHotPath()) {
+                    Debug.Log($"[CombatContext] sourceId {sourceId} not found");
+                }
+
                 return false;
             }
 
@@ -171,8 +187,11 @@ namespace MageFactory.CombatContext.Domain {
 
             int index = random.Next(enemyCandidates.Count);
             enemy = enemyCandidates[index];
-            Debug.Log(
-                $"[CombatContext] Picked enemy: {enemy.query().getCharacterInfo().getCharacterName()}({enemy.query().getCharacterInfo().getTeam()})");
+            if (combatRuntimeSettings.shouldLogCombatHotPath()) {
+                Debug.Log(
+                    $"[CombatContext] Picked enemy: {enemy.query().getCharacterInfo().getCharacterName()}({enemy.query().getCharacterInfo().getTeam()})");
+            }
+
             return true;
         }
 
@@ -203,7 +222,17 @@ namespace MageFactory.CombatContext.Domain {
             // 1. apply global modifiers
             // 2. update global combat statistics
 
-            targetCharacter.command().consumeCombatEvent(combatEvent);
+            recordCombatEvent(combatEvent);
+
+            targetCharacter.command().consumeCombatEvent(combatEvent, this, combatCapabilities);
+        }
+
+        private void recordCombatEvent(CombatEvent combatEvent) {
+            CombatEvent eventToRecord = NullGuard.NotNullOrThrow(combatEvent);
+            CombatEventType eventType = eventToRecord.getType();
+
+            combatEventCountsByType.TryGetValue(eventType, out int currentCount);
+            combatEventCountsByType[eventType] = currentCount + 1;
         }
     }
 }

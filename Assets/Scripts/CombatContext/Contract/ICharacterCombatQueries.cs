@@ -1,4 +1,5 @@
 using MageFactory.CombatContext.Contract.Command;
+using MageFactory.CombatEvents;
 using MageFactory.Shared.Id;
 
 namespace MageFactory.CombatContext.Contract {
@@ -14,6 +15,8 @@ namespace MageFactory.CombatContext.Contract {
         int getCreatedFlowsInCurrentBattleCount();
 
         int getActiveFlowCountOnItem(Id<ItemId> itemId);
+
+        int getCombatEventCount(CombatEventType combatEventType);
 
         void collectActiveFlowStates(IActiveFlowStateCollector collector);
     }

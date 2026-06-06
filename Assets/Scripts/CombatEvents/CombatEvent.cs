@@ -3,7 +3,14 @@ using MageFactory.Shared.Utility;
 
 // 1 event = 1 charcter. Its very important to keep this in mind
 namespace MageFactory.CombatEvents {
-    public abstract class CombatEvent {
+    public interface ICombatEvent {
+        Id<CombatEventId> getEventId();
+        Id<CharacterId> getTargetCharacterId();
+        bool isTargetedAt(Id<CharacterId> characterId);
+        CombatEventType getType();
+    }
+
+    public abstract class CombatEvent : ICombatEvent {
         private readonly Id<CombatEventId> combatEventId;
         private readonly Id<CharacterId> targetCharacterId; // it may be generics, but for now it's ok
 
@@ -28,7 +35,7 @@ namespace MageFactory.CombatEvents {
     }
 
     public enum CombatEventType {
-        DAMAGE_INCOMING,
+        INCOMING_ATTACK_DAMAGE,
         DAMAGE_RESOLVED,
         HEALTH_LOST
     }

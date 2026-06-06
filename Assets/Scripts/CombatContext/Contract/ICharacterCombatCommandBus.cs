@@ -15,7 +15,11 @@ namespace MageFactory.CombatContext.Contract {
         void createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
                         ICombatCapabilities combatCapabilities);
 
+        DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage);
         void cleanup();
-        void consumeCombatEvent(CombatEvent combatEvent);
+
+        void consumeCombatEvent(CombatEvent combatEvent,
+                                IFlowConsumer flowConsumer,
+                                ICombatCapabilities combatCapabilities);
     }
 }

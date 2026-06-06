@@ -1,8 +1,14 @@
-﻿using MageFactory.Shared.Model;
+using MageFactory.ActionEffect;
+using MageFactory.CombatEvents;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.Inventory.Contract {
     public interface IEntryPointArchetype : IInventoryPlaceableItem {
         FlowKind getFlowKind();
+
+        EntryPointTriggerKind getTriggerKind();
+
+        ICombatHook getCombatHook();
 
         CombatTicks getTriggerInterval();
     }

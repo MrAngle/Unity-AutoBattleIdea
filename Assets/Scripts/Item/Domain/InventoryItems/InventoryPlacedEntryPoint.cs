@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.CombatContextRuntime;
+using MageFactory.CombatEvents;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.EntryPoint;
 using MageFactory.Shared.Id;
@@ -10,7 +11,7 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain.InventoryItems {
-    internal class InventoryPlacedEntryPoint : IInventoryPlacedEntryPoint {
+    internal class InventoryPlacedEntryPoint : IInventoryPlacedEntryPoint, IInventoryCombatTickableItem {
         private readonly EntryPointItem entryPointItem;
         private CombatTicks ticksUntilNextTrigger;
 
@@ -47,6 +48,14 @@ namespace MageFactory.Item.Domain.InventoryItems {
             return entryPointItem.getFlowKind();
         }
 
+        public EntryPointTriggerKind getTriggerKind() {
+            return entryPointItem.getTriggerKind();
+        }
+
+        public ICombatHook getCombatHook() {
+            return entryPointItem.getCombatHook();
+        }
+
         public void tick(
             CombatTicks combatTicks,
             Id<CharacterId> characterId,
@@ -66,6 +75,50 @@ namespace MageFactory.Item.Domain.InventoryItems {
             combatCapabilities.command().dispatch(createFlowCombatCommand);
 
             ticksUntilNextTrigger += entryPointItem.getTriggerInterval();
+        }
+    }
+
+    internal class InventoryPlacedEventEntryPoint : IInventoryPlacedEntryPoint {
+        private readonly EntryPointItem entryPointItem;
+
+        public InventoryPlacedEventEntryPoint(EntryPointItem entryPointItem) {
+            this.entryPointItem = NullGuard.NotNullOrThrow(entryPointItem);
+        }
+
+        public Id<ItemId> getId() {
+            return entryPointItem.getId();
+        }
+
+        public Vector2Int getOrigin() {
+            return entryPointItem.getOrigin();
+        }
+
+        public IReadOnlyCollection<Vector2Int> getOccupiedCells() {
+            return entryPointItem.getOccupiedCells();
+        }
+
+        public ShapeArchetype getShape() {
+            return entryPointItem.getShape();
+        }
+
+        public IActionDescription prepareItemActionDescription() {
+            return entryPointItem.prepareItemActionDescription();
+        }
+
+        public void updateItemPosition(IInventoryPosition inventoryPosition) {
+            entryPointItem.updateItemPosition(inventoryPosition);
+        }
+
+        public FlowKind getFlowKind() {
+            return entryPointItem.getFlowKind();
+        }
+
+        public EntryPointTriggerKind getTriggerKind() {
+            return entryPointItem.getTriggerKind();
+        }
+
+        public ICombatHook getCombatHook() {
+            return entryPointItem.getCombatHook();
         }
     }
 }

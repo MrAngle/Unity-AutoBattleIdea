@@ -9,6 +9,8 @@
     "Unity.TextMeshPro",
     "Zenject",
     "MageFactory.Character.Api",
+    "MageFactory.Inventory.Api",
+    "MageFactory.Inventory.Contract",
     "Plugin.DOTween"
   ],
   "autoReferenced": true

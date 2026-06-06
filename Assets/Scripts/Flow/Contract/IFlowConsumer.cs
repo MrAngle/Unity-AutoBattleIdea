@@ -1,15 +1,25 @@
-﻿using MageFactory.Shared.Model;
+﻿using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.Flow.Contract {
     public readonly struct ConsumeFlowCommand {
         public readonly FlowKind flowKind;
         public readonly IFlowOwner flowOwner;
-        public readonly DamageToDeal damageToDeal;
+        public readonly PowerAmount attackPower;
+        public readonly Id<CharacterId> sourceCharacterId;
 
-        public ConsumeFlowCommand(FlowKind flowKind, IFlowOwner flowOwner, DamageToDeal damageToDeal) {
+        public ConsumeFlowCommand(FlowKind flowKind,
+                                  IFlowOwner flowOwner,
+                                  PowerAmount attackPower,
+                                  Id<CharacterId> sourceCharacterId) {
             this.flowOwner = flowOwner;
-            this.damageToDeal = damageToDeal;
+            this.attackPower = attackPower;
             this.flowKind = flowKind;
+            this.sourceCharacterId = sourceCharacterId;
+        }
+
+        public bool hasSourceCharacterId() {
+            return sourceCharacterId.Value > 0;
         }
     }
 

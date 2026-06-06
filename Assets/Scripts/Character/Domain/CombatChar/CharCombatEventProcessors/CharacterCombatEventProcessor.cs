@@ -1,24 +1,34 @@
 ﻿using System;
 using MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors.PredefinedEvents;
+using MageFactory.CombatContextRuntime;
 using MageFactory.CombatEvents;
+using MageFactory.Flow.Contract;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors {
     internal class CharacterCombatEventProcessor {
-        private readonly DamageIncomingCombatEventProcessor damageIncomingCombatEventProcessor;
+        private readonly IncomingAttackDamageCombatEventProcessor incomingAttackDamageCombatEventProcessor;
 
-        internal CharacterCombatEventProcessor(DamageIncomingCombatEventProcessor damageIncomingCombatEventProcessor) {
-            this.damageIncomingCombatEventProcessor =
-                NullGuard.NotNullOrThrow(damageIncomingCombatEventProcessor);
+        internal CharacterCombatEventProcessor(
+            IncomingAttackDamageCombatEventProcessor incomingAttackDamageCombatEventProcessor) {
+            this.incomingAttackDamageCombatEventProcessor =
+                NullGuard.NotNullOrThrow(incomingAttackDamageCombatEventProcessor);
         }
 
-        internal void process(CombatCharacter combatCharacter, CombatEvent combatEvent) {
+        internal void process(CombatCharacter combatCharacter,
+                              CombatEvent combatEvent,
+                              IFlowConsumer flowConsumer,
+                              ICombatCapabilities combatCapabilities) {
             NullGuard.NotNullOrThrow(combatCharacter);
             NullGuard.NotNullOrThrow(combatEvent);
 
             switch (combatEvent) {
-                case DamageIncomingCombatEvent damageIncomingCombatEvent:
-                    damageIncomingCombatEventProcessor.process(combatCharacter, damageIncomingCombatEvent);
+                case IncomingAttackDamageCombatEvent incomingAttackDamageCombatEvent:
+                    incomingAttackDamageCombatEventProcessor.process(
+                        combatCharacter,
+                        incomingAttackDamageCombatEvent,
+                        flowConsumer,
+                        combatCapabilities);
                     return;
 
                 default:

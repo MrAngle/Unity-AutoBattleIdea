@@ -1,3 +1,4 @@
+using System;
 using MageFactory.Flow.Contract;
 using MageFactory.FlowRouting;
 using MageFactory.Shared.Id;
@@ -13,6 +14,8 @@ namespace MageFactory.Flow.Api {
         private readonly IFlowConsumer flowConsumer;
         private readonly IFlowCapabilities flowCapabilities;
         private readonly IFlowOwner flowOwner;
+        private readonly PowerAmount initialAttackPower;
+        private readonly Id<CharacterId> sourceCharacterId;
 
         public FlowCreationCommand(
             Id<ActiveFlowId> flowId,
@@ -21,7 +24,29 @@ namespace MageFactory.Flow.Api {
             IFlowRouter router,
             IFlowConsumer flowConsumer,
             IFlowCapabilities flowCapabilities,
-            IFlowOwner flowOwner) {
+            IFlowOwner flowOwner) :
+            this(
+                flowId,
+                flowKind,
+                startNode,
+                router,
+                flowConsumer,
+                flowCapabilities,
+                flowOwner,
+                PowerAmount.noPower(),
+                default) {
+        }
+
+        public FlowCreationCommand(
+            Id<ActiveFlowId> flowId,
+            FlowKind flowKind,
+            IFlowItem startNode,
+            IFlowRouter router,
+            IFlowConsumer flowConsumer,
+            IFlowCapabilities flowCapabilities,
+            IFlowOwner flowOwner,
+            PowerAmount initialAttackPower,
+            Id<CharacterId> sourceCharacterId) {
             this.flowId = NullGuard.ValidIdOrThrow(flowId);
             this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
             this.startNode = NullGuard.NotNullOrThrow(startNode);
@@ -29,6 +54,15 @@ namespace MageFactory.Flow.Api {
             this.flowConsumer = NullGuard.NotNullOrThrow(flowConsumer);
             this.flowCapabilities = NullGuard.NotNullOrThrow(flowCapabilities);
             this.flowOwner = NullGuard.NotNullOrThrow(flowOwner);
+            this.initialAttackPower = NullGuard.NotNullOrThrow(initialAttackPower);
+            this.sourceCharacterId = sourceCharacterId;
+
+            if (sourceCharacterId.Value < 0) {
+                throw new ArgumentOutOfRangeException(
+                    nameof(sourceCharacterId),
+                    sourceCharacterId,
+                    "Source character id cannot be negative.");
+            }
         }
 
         public Id<ActiveFlowId> getFlowId() {
@@ -57,6 +91,18 @@ namespace MageFactory.Flow.Api {
 
         public IFlowOwner getFlowOwner() {
             return flowOwner;
+        }
+
+        public PowerAmount getInitialAttackPower() {
+            return initialAttackPower;
+        }
+
+        public bool hasSourceCharacterId() {
+            return sourceCharacterId.Value > 0;
+        }
+
+        public Id<CharacterId> getSourceCharacterId() {
+            return sourceCharacterId;
         }
     }
 
