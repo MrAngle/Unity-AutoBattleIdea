@@ -12,7 +12,8 @@
     "MageFactory.UI.Context.Combat",
     "MageFactory.Flow.Contract",
     "MageFactory.Character.Api",
-    "MageFactory.CombatContextRuntime"
+    "MageFactory.CombatContextRuntime",
+    "Unity.TextMeshPro"
   ],
   "autoReferenced": true
 }

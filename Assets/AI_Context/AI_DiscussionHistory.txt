@@ -196,3 +196,23 @@ Implemented follow-up:
 Clarification:
 
 - flow/action-level `addGuardPower(PowerAmount)` still exists because it modifies accumulated flow output, not prepared guard runtime state on a character
+
+AI COMMIT BOUNDARY 2026-06-22 - after push 7d89be3 (master) - Add combat guard state, guard power flow, and flow output handling with unit tests
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-06-22 - Battle time control
+
+Implemented runtime battle speed control as a scheduling layer over `CombatTicks`, not as a mutation of combat-domain values.
+
+Current behavior:
+
+- `BattleTimeController` converts unscaled real elapsed time into ready combat ticks
+- supported speed range is 0.2x to 5x
+- pause produces no combat ticks and does not accumulate delayed ticks while paused
+- `BattleUIManager` now drives battle ticks from `Update()` with `Time.unscaledDeltaTime` instead of a fixed `WaitForSeconds` coroutine
+- battle UI creates a compact runtime time-control panel with speed up/down, pause/resume, a vertical speed slider, and a short status label
+
+Critical design point:
+
+- changing battle speed changes only when ticks are executed in real time; it must not change item cast ticks, trigger intervals, damage, guard power, or other deterministic combat logic

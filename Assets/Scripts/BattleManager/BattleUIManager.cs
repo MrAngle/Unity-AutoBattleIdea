@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+using System;
 using MageFactory.CombatContext.Api;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Item.Catalog.Bases;
@@ -14,11 +13,12 @@ namespace MageFactory.BattleManager {
         private static readonly GridDimensions DefaultInventoryGridDimensions = new GridDimensions(17, 8);
 
         private BattleRuntime battleRuntime; // move to BattleManager
-        private Coroutine battleLoop;
 
         private ICombatContextFactory combatContextFactory;
         private CombatContextPresentationFactory combatContextPresentationFactory;
         private BattleSessionSettings battleSessionSettings;
+        private BattleTimeController battleTimeController;
+        private Transform battleSlotParent;
         private ICombatContext combatContext;
 
         private BattleSession battleSession;
@@ -39,18 +39,39 @@ namespace MageFactory.BattleManager {
                 new("Archer", 1300, Team.TeamB, DefaultInventoryGridDimensions, Array.Empty<EquipItemCommand>())
             });
 
-            startBattleLoop();
+            createBattleTimeControls();
+        }
+
+        private void Update() {
+            if (battleSession == null || battleTimeController == null) {
+                return;
+            }
+
+            int ticksToRun = battleTimeController.consumeReadyCombatTicks(Time.unscaledDeltaTime);
+
+            if (ticksToRun <= 0) {
+                return;
+            }
+
+            for (int i = 0; i < ticksToRun; i++) {
+                battleSession.tickOnce();
+            }
+
+            combatContextPresentationFactory.refreshCastProgress();
         }
 
         [Inject]
         public void construct(BattleRuntime injectBattleRuntime,
                               ICombatContextFactory injectCombatContextFactory,
                               CombatContextPresentationFactory injectCombatContextPresentationFactory,
-                              BattleSessionSettings injectBattleSessionSettings) {
+                              BattleSessionSettings injectBattleSessionSettings,
+                              [Inject(Id = "BattleSlotParent")] Transform injectBattleSlotParent) {
             battleRuntime = NullGuard.NotNullOrThrow(injectBattleRuntime);
             combatContextFactory = NullGuard.NotNullOrThrow(injectCombatContextFactory);
             combatContextPresentationFactory = NullGuard.NotNullOrThrow(injectCombatContextPresentationFactory);
             battleSessionSettings = NullGuard.NotNullOrThrow(injectBattleSessionSettings);
+            battleSlotParent = NullGuard.NotNullOrThrow(injectBattleSlotParent);
+            battleTimeController = new BattleTimeController(battleSessionSettings);
         }
 
         private void createSlots(CreateCombatCharacterCommand[] charactersToCreate) {
@@ -60,17 +81,14 @@ namespace MageFactory.BattleManager {
             combatContextPresentationFactory.createCombatContextPresentation(combatContext);
         }
 
-        private void startBattleLoop() {
-            battleLoop = StartCoroutine(executeLoop());
-        }
+        private void createBattleTimeControls() {
+            if (battleSlotParent.parent is RectTransform canvasRoot) {
+                BattleTimeControlsView.create(canvasRoot, battleTimeController);
+                return;
+            }
 
-        private IEnumerator executeLoop() {
-            WaitForSeconds wait = new WaitForSeconds(battleSession.getSettings().getRealSecondsPerCombatTick());
-
-            while (true) {
-                battleSession.tickOnce();
-                combatContextPresentationFactory.refreshCastProgress();
-                yield return wait;
+            if (battleSlotParent is RectTransform battleSlotRectTransform) {
+                BattleTimeControlsView.create(battleSlotRectTransform, battleTimeController);
             }
         }
     }
