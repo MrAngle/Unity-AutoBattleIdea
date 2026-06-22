@@ -3,7 +3,9 @@ using MageFactory.ActionEffect;
 using MageFactory.Flow.Contract;
 using MageFactory.Flow.Domain.ActionCapability;
 using MageFactory.Flow.Domain.Service;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Utility;
 
 namespace MageFactory.Flow.Domain.FlowCapability {
@@ -40,6 +42,16 @@ namespace MageFactory.Flow.Domain.FlowCapability {
 
             ActionCapabilities actionCapabilities = new ActionCapabilities(actionContext, flowCapabilities);
             return actionCapabilities;
+        }
+
+        internal bool isOutputPort(IFlowItem item) {
+            return item is IFlowPortPlacedItem portPlacedItem
+                   && portPlacedItem.getFlowPortKind() == FlowPortKind.Output;
+        }
+
+        internal bool isInputPort(IFlowItem item) {
+            return item is IFlowPortPlacedItem portPlacedItem
+                   && portPlacedItem.getFlowPortKind() == FlowPortKind.Input;
         }
     }
 }

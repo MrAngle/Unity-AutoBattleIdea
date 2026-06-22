@@ -84,12 +84,24 @@ namespace MageFactory.Inventory.Domain {
             FlowKind entryPointFlowKind = isEntryPoint
                 ? ((IInventoryPlacedEntryPoint)inventoryPlacedItem).getFlowKind()
                 : default;
+            FlowPortKind flowPortKind = FlowPortKind.None;
+            string flowPortName = string.Empty;
+            string flowPortDescription = string.Empty;
+
+            if (inventoryPlacedItem is IFlowPortPlacedItem portPlacedItem) {
+                flowPortKind = portPlacedItem.getFlowPortKind();
+                flowPortName = portPlacedItem.getFlowPortName();
+                flowPortDescription = portPlacedItem.getFlowPortDescription();
+            }
 
             inventoryEventHub.publish(new NewItemPlacedDtoEvent(inventoryPlacedItem.getId(),
                 inventoryPlacedItem.getShape(),
                 placeItemCommand.origin,
                 isEntryPoint,
-                entryPointFlowKind));
+                entryPointFlowKind,
+                flowPortKind,
+                flowPortName,
+                flowPortDescription));
             return inventoryPlacedItem;
         }
 

@@ -11,6 +11,9 @@ namespace MageFactory.Character.Domain.Service {
         private readonly DomainEventChannel<CharacterDeathDtoEvent, ICharacterDeathEventListener>
             characterDeathChannel = new();
 
+        private readonly DomainEventChannel<CharacterGuardAbsorbedDamageDtoEvent, IGuardAbsorbedDamageEventListener>
+            guardAbsorbedDamageChannel = new();
+
         public void subscribe(IHpChangedEventListener eventListener) =>
             characterHpChangedChannel.subscribe(eventListener);
 
@@ -23,11 +26,20 @@ namespace MageFactory.Character.Domain.Service {
         public void unsubscribe(ICharacterDeathEventListener eventListener) =>
             characterDeathChannel.unsubscribe(eventListener);
 
+        public void subscribe(IGuardAbsorbedDamageEventListener eventListener) =>
+            guardAbsorbedDamageChannel.subscribe(eventListener);
+
+        public void unsubscribe(IGuardAbsorbedDamageEventListener eventListener) =>
+            guardAbsorbedDamageChannel.unsubscribe(eventListener);
+
         public void publish(in CharacterHpChangedDtoEvent ev) =>
             characterHpChangedChannel.publish(in ev);
 
         public void publish(in CharacterDeathDtoEvent ev) =>
             characterDeathChannel.publish(in ev);
+
+        public void publish(in CharacterGuardAbsorbedDamageDtoEvent ev) =>
+            guardAbsorbedDamageChannel.publish(in ev);
     }
 
     // old version to check how handle events by id

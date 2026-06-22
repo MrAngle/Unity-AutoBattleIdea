@@ -18,6 +18,12 @@ namespace MageFactory.CombatContext.Contract {
 
         int getCombatEventCount(CombatEventType combatEventType);
 
+        int getPreparedGuardCount();
+
+        long getTotalPreparedGuardPower();
+
         void collectActiveFlowStates(IActiveFlowStateCollector collector);
+
+        void collectPreparedGuardStates(IPreparedGuardStateCollector collector);
     }
 }

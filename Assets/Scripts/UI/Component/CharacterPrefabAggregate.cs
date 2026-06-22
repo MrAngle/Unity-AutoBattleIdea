@@ -39,8 +39,30 @@ namespace MageFactory.UI.Component {
             refreshUI();
         }
 
+        public void guardAbsorbedDamage(in CharacterGuardAbsorbedDamageDtoEvent ev) {
+            string text = ev.remainingDamage > 0
+                ? $"G -{ev.blockedDamage} / {ev.remainingDamage}"
+                : $"G -{ev.blockedDamage} / 0";
+            PopupManager.Instance.Show(
+                this,
+                text,
+                new Color(0.38f, 0.95f, 0.82f, 1f),
+                new Vector2(0f, 28f),
+                70f,
+                1.15f);
+            refreshUI();
+        }
+
         public void destroy(in CharacterDeathDtoEvent ev) {
             Destroy(gameObject);
+        }
+
+        public Vector3 getCenterWorldPosition() {
+            if (transform is RectTransform rectTransform) {
+                return rectTransform.TransformPoint(rectTransform.rect.center);
+            }
+
+            return transform.position;
         }
 
         private void OnDisable() {

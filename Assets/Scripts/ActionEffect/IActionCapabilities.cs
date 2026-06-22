@@ -10,6 +10,8 @@ namespace MageFactory.ActionEffect {
     public interface IActionCommandBus {
         void addPower(DamageRole damageRole, PowerAmount damageAmount);
 
+        void addGuardPower(PowerAmount guardPowerAmount);
+
         void pushRightAdjacentItemRight();
     }
 

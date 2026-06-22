@@ -40,8 +40,20 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return combatCharacter.getCombatEventCount(combatEventType);
         }
 
+        public int getPreparedGuardCount() {
+            return combatCharacter.getPreparedGuardCount();
+        }
+
+        public long getTotalPreparedGuardPower() {
+            return combatCharacter.getTotalPreparedGuardPower();
+        }
+
         public void collectActiveFlowStates(IActiveFlowStateCollector collector) {
             combatCharacter.collectActiveFlowStates(collector);
+        }
+
+        public void collectPreparedGuardStates(IPreparedGuardStateCollector collector) {
+            combatCharacter.collectPreparedGuardStates(collector);
         }
     }
 }

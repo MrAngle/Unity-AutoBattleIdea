@@ -90,3 +90,109 @@ AI 2026-06-05 - Constructor guard preference
 User clarified that domain/gameplay constructors should use existing `NullGuard` helpers and fail fast. Do not silently hide invalid inputs with fallbacks like `value ?? string.Empty`. Required parameters should be explicitly guarded; optional parameters should be intentional and encoded in object invariants.
 
 Applied this to `CombatHook`: hook type and player-facing name are required, `observedCombatEventType` is optional only for `CombatHookType.None`, and concrete hooks must provide a valid observed `CombatEventType`.
+
+AI COMMIT BOUNDARY 2026-06-06 - after push 721fc30 (master) - Defensive flow
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-06-06 - Guard power first implementation
+
+User asked for a guard/defense system where entry points can produce `GuardPower` as a flow result and where prepared guards are visible in inventory UI as compact shield-like buff icons.
+
+Implemented the first foundation:
+
+- `GuardPower` is a separate flow output, not a `DamageRole`
+- `AddGuardPower` lets entry points and normal items add guard power to a flow
+- consuming a flow creates one prepared guard portion on the flow owner before attack/damage handling
+- prepared guards live as `CombatCharacter` runtime state
+- incoming `ResolvedDamage` is reduced by prepared guards before HP is changed
+- each guard portion can react once per damage packet and is strained by the blocked amount
+- current formula is a soft rating-style mitigation: `blocked = damage * (1 - (damage / (damage + guardPower))^2)`, rounded down and clamped so positive damage never becomes perfect zero damage
+- current storage limit is 20 prepared guard portions; overflow merges into the weakest guard at 70% efficiency
+- catalog `DefenseEntryPointGem` and `Shield` now demonstrate guard generation instead of flat `ATTACK` reduction
+- inventory UI now renders compact prepared-guard icons near the top of inventory, with short labels such as `2.5k` and hover tooltips showing concrete block examples
+
+Critical caveats preserved:
+
+- this is a first generic guard foundation, not final defense balance
+- there are no guard tags, typed wards, expiry, priority, or heavy-guard minimum-trigger rules yet
+- the 20-portion cap and 70% overflow efficiency are provisional and need deterministic balance simulations against burst, rapid small hits, baiting, and late-game stacking
+- the UI icon uses a free/runtime glyph-style approach for now and can be replaced by a prefab/free icon asset later
+
+AI 2026-06-06 - Guard feedback, flow-end beams, and attack-scale guard values
+
+User reported that guards did not visibly look like they were being depleted, guard icons appeared on top of the inventory instead of above it, and guard values such as 70/50 were too high relative to current attack values.
+
+Previous mechanism:
+
+- prepared guards mechanically reduced incoming `ResolvedDamage`, strained by blocked damage, and disappeared when empty
+- UI only refreshed the final prepared-guard list, so a guard created and consumed during the same defensive flow could appear to "not work" or disappear without an explanatory visual
+- flow consumption did not expose the final processed item/slot, so UI could not draw a reliable end-of-flow beam
+
+Implemented follow-up:
+
+- flow consumption now carries the final `ItemFlowProcessingSlot`
+- combat-context DTO events announce guard creation and attack creation with the final flow slot
+- character DTO events announce guard absorption with incoming damage, blocked damage, remaining damage, destroyed guard count, and remaining guard power
+- UI keeps domain separation by translating DTO facts into beams/popups: final item to guard icon, final item to target character, and a `G -blocked / remaining` popup on guard absorption
+- prepared guard icons are positioned above the inventory area, not inside the inventory field
+- catalog `DefenseEntryPointGem` and `Shield` guard values were lowered to attack-scale values: 2 and 5
+
+Added tests:
+
+- guard creation event includes the final flow item slot
+- attack creation event includes the final flow item slot and concrete target
+- guard absorption event proves blocked/pass-through values and guard destruction
+- prepared guard overlay is positioned above the inventory layer
+
+Verified with Unity EditMode test run: 486/486 passing on 2026-06-06.
+
+AI 2026-06-07 - Port-aware outputs and readable guard queue
+
+User challenged the guard portion system because "add defense to the weakest guard" and similar behavior are hidden global rules. The desired direction is fewer broad rules and more behavior controlled by item/output characteristics. User also identified that item-by-item guard creation can create too many small guards and make the inventory unreadable.
+
+Design discussion outcome:
+
+- output items/ports can become the watched "in/out" points for flows
+- entry/input should mostly answer when/how a flow starts, not hard-code attack/defense semantics
+- output should be a commit point for accumulated flow power
+- ports should be visually marked and explain what they react to / what they do, but UI must not own gameplay rules
+- flow that does not reach an output should communicate that fact
+- guard readability and balance pull against each other: unlimited guard portions are unreadable, but hard caps can create balance traps
+
+Implemented prototype direction:
+
+- added item port metadata and example `PulseInputPort` / `BasicOutputPort`
+- kept old entry-point logic for compatibility
+- output ports commit accumulated attack/guard power without casting or executing their own effects
+- port-aware input flows that miss output are discarded and reported
+- legacy no-output flows still commit but report a no-output fact
+- UI shows `IN`/`OUT` badges, input/output/no-output signals, and output-origin beams
+- item add buttons now map to concrete item definitions instead of random item pools
+- guard storage is now max 30 portions
+- guard overflow replaces the oldest guard instead of merging into the weakest
+- incoming damage consumes guards left-to-right instead of choosing the strongest
+- replacement and absorption carry enough data for UI to show push/split feedback
+
+Critical caveats:
+
+- `PulseInputPort` is still an adapter over the existing `IEntryPointDefinition`/`FlowKind` system, so it is not the final neutral input architecture
+- future port-aware defensive inputs need a specific no-output rule, because the current defensive event processor stops direct damage as soon as a defensive flow is created
+- future work should let output/item characteristics define policies such as split guard into N portions, replace oldest/weakest, fill free slots only, or discard overflow
+- full EditMode verification was blocked in this session because Unity batchmode could not open the project while another Unity instance had it open
+
+AI 2026-06-22 - Guard command API cleanup and larger guard icons
+
+User pointed out that having both `void addGuardPower(GuardPower)` and `bool tryAddGuardPower(GuardPower, out PreparedGuardAddResult)` on the character command API duplicated responsibility and let callers ignore the important guard add result.
+
+Implemented follow-up:
+
+- removed the character-level fire-and-forget `addGuardPower(GuardPower)` command
+- kept `tryAddGuardPower(...)` as the single prepared-guard creation API because the result says whether a guard was created and whether another guard was replaced
+- updated guard setup tests to call `tryAddGuardPower(...)` and assert the result instead of ignoring it
+- slightly increased prepared guard icon dimensions and label sizes for readability
+- legacy no-output warnings are now developer-profile-only; port-aware no-output/discard facts still publish normally, but legacy warnings are suppressed in production-style performance tests to avoid hot-path event spam
+
+Clarification:
+
+- flow/action-level `addGuardPower(PowerAmount)` still exists because it modifies accumulated flow output, not prepared guard runtime state on a character

@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace MageFactory.UI.Component.Inventory.ItemLayer {
@@ -20,6 +23,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         private Vector2Int[] shapeOffsets;
         private Tween moveTween;
         private ItemCastProgressBarsView castProgressBarsView;
+        private FlowPortBadgeView flowPortBadgeView;
         private Action clickHandler;
 
         public void build(ShapeArchetype data, Vector2 targetCellSize) {
@@ -114,6 +118,22 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             for (int i = 0; i < itemCellTileViews.Count; i++) {
                 itemCellTileViews[i].setClickHandler(handleClicked);
             }
+        }
+
+        public void setFlowPortVisual(
+            FlowPortKind flowPortKind,
+            string flowPortName,
+            string flowPortDescription) {
+            if (flowPortKind == FlowPortKind.None) {
+                if (flowPortBadgeView != null) {
+                    flowPortBadgeView.hide();
+                }
+
+                return;
+            }
+
+            ensureFlowPortBadgeView();
+            flowPortBadgeView.bind(flowPortKind, flowPortName, flowPortDescription);
         }
 
         internal void setVisualState(InventoryItemVisualState state) {
@@ -214,6 +234,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
             itemCellTileViews.Clear();
             castProgressBarsView = null;
+            flowPortBadgeView = null;
         }
 
         private void handleClicked() {
@@ -257,6 +278,12 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             castProgressBarsView.bindTiles(itemCellTileViews);
         }
 
+        private void ensureFlowPortBadgeView() {
+            if (flowPortBadgeView == null) {
+                flowPortBadgeView = FlowPortBadgeView.create(transform);
+            }
+        }
+
         private void resizeToFit() {
             if (shapeOffsets == null || shapeOffsets.Length == 0) {
                 return;
@@ -287,6 +314,150 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
         private void OnDestroy() {
             killMoveTween();
+        }
+
+        private sealed class FlowPortBadgeView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+            private const float BadgeWidth = 38f;
+            private const float BadgeHeight = 18f;
+            private const float TooltipWidth = 250f;
+            private const float TooltipHeight = 86f;
+
+            private RectTransform rectTransform;
+            private Image background;
+            private TextMeshProUGUI label;
+            private GameObject tooltipRoot;
+            private TextMeshProUGUI tooltipText;
+            private string description;
+
+            internal static FlowPortBadgeView create(Transform parent) {
+                GameObject root = new GameObject(
+                    "FlowPortBadge",
+                    typeof(RectTransform),
+                    typeof(Image),
+                    typeof(FlowPortBadgeView));
+                root.transform.SetParent(parent, false);
+
+                FlowPortBadgeView view = root.GetComponent<FlowPortBadgeView>();
+                view.initialize();
+                return view;
+            }
+
+            internal void bind(
+                FlowPortKind flowPortKind,
+                string flowPortName,
+                string flowPortDescription) {
+                label.text = string.IsNullOrWhiteSpace(flowPortName)
+                    ? flowPortKind.ToString().ToUpperInvariant()
+                    : flowPortName;
+                description = string.IsNullOrWhiteSpace(flowPortDescription)
+                    ? "Flow port."
+                    : flowPortDescription;
+                background.color = getPortColor(flowPortKind);
+                gameObject.SetActive(true);
+            }
+
+            internal void hide() {
+                hideTooltip();
+                gameObject.SetActive(false);
+            }
+
+            public void OnPointerEnter(PointerEventData eventData) {
+                tooltipText.text = description;
+                tooltipRoot.SetActive(true);
+            }
+
+            public void OnPointerExit(PointerEventData eventData) {
+                hideTooltip();
+            }
+
+            private void initialize() {
+                rectTransform = (RectTransform)transform;
+                rectTransform.anchorMin = new Vector2(1f, 1f);
+                rectTransform.anchorMax = new Vector2(1f, 1f);
+                rectTransform.pivot = new Vector2(1f, 1f);
+                rectTransform.anchoredPosition = new Vector2(-4f, -4f);
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, BadgeWidth);
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, BadgeHeight);
+
+                background = GetComponent<Image>();
+                background.raycastTarget = true;
+
+                label = createText("Label", transform, 10f, FontStyles.Bold);
+                RectTransform labelRect = (RectTransform)label.transform;
+                labelRect.anchorMin = Vector2.zero;
+                labelRect.anchorMax = Vector2.one;
+                labelRect.offsetMin = Vector2.zero;
+                labelRect.offsetMax = Vector2.zero;
+
+                createTooltip();
+                hide();
+            }
+
+            private void createTooltip() {
+                tooltipRoot = new GameObject(
+                    "FlowPortTooltip",
+                    typeof(RectTransform),
+                    typeof(Image),
+                    typeof(CanvasGroup));
+                tooltipRoot.transform.SetParent(transform, false);
+
+                RectTransform tooltipRect = (RectTransform)tooltipRoot.transform;
+                tooltipRect.anchorMin = new Vector2(1f, 1f);
+                tooltipRect.anchorMax = new Vector2(1f, 1f);
+                tooltipRect.pivot = new Vector2(1f, 0f);
+                tooltipRect.anchoredPosition = new Vector2(0f, BadgeHeight + 6f);
+                tooltipRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, TooltipWidth);
+                tooltipRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, TooltipHeight);
+
+                Image tooltipBackground = tooltipRoot.GetComponent<Image>();
+                tooltipBackground.color = new Color(0.03f, 0.05f, 0.07f, 0.95f);
+                tooltipBackground.raycastTarget = false;
+
+                CanvasGroup canvasGroup = tooltipRoot.GetComponent<CanvasGroup>();
+                canvasGroup.blocksRaycasts = false;
+                canvasGroup.interactable = false;
+
+                tooltipText = createText("Text", tooltipRoot.transform, 11f, FontStyles.Normal);
+                RectTransform textRect = (RectTransform)tooltipText.transform;
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.offsetMin = new Vector2(8f, 8f);
+                textRect.offsetMax = new Vector2(-8f, -8f);
+                tooltipText.alignment = TextAlignmentOptions.TopLeft;
+                tooltipText.textWrappingMode = TextWrappingModes.Normal;
+                tooltipText.color = new Color(0.9f, 1f, 0.96f, 1f);
+                hideTooltip();
+            }
+
+            private void hideTooltip() {
+                if (tooltipRoot != null) {
+                    tooltipRoot.SetActive(false);
+                }
+            }
+
+            private static TextMeshProUGUI createText(
+                string name,
+                Transform parent,
+                float fontSize,
+                FontStyles fontStyle) {
+                GameObject textObject = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+                textObject.transform.SetParent(parent, false);
+
+                TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+                text.alignment = TextAlignmentOptions.Center;
+                text.fontSize = fontSize;
+                text.fontStyle = fontStyle;
+                text.color = Color.white;
+                text.raycastTarget = false;
+                text.textWrappingMode = TextWrappingModes.NoWrap;
+                return text;
+            }
+
+            private static Color getPortColor(FlowPortKind flowPortKind) {
+                return flowPortKind == FlowPortKind.Output
+                    ? new Color(0.46f, 0.72f, 1f, 0.95f)
+                    : new Color(0.42f, 1f, 0.78f, 0.95f);
+            }
         }
     }
 }

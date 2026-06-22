@@ -2,6 +2,7 @@
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
@@ -36,6 +37,18 @@ namespace MageFactory.Item.Domain {
 
         public IActionDescription prepareItemActionDescription() {
             return itemArchetype.getActionDescription();
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return itemArchetype.getFlowPortKind();
+        }
+
+        public string getFlowPortName() {
+            return itemArchetype.getFlowPortName();
+        }
+
+        public string getFlowPortDescription() {
+            return itemArchetype.getFlowPortDescription();
         }
 
         public void updateItemPosition(IInventoryPosition paramInventoryPosition) {

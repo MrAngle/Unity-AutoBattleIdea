@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using MageFactory.Character.Contract.Event;
+using MageFactory.CombatContext.Contract;
 using MageFactory.Inventory.Contract;
 using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
@@ -32,18 +33,37 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             public readonly Vector2Int origin;
             public readonly bool isEntryPoint;
             public readonly FlowKind entryPointFlowKind;
+            public readonly FlowPortKind flowPortKind;
+            public readonly string flowPortName;
+            public readonly string flowPortDescription;
 
             public NewItemPrintCommand(
                 Id<ItemId> placedItemId,
                 ShapeArchetype shapeArchetype,
                 Vector2Int origin,
                 bool isEntryPoint,
-                FlowKind entryPointFlowKind) {
+                FlowKind entryPointFlowKind)
+                : this(placedItemId, shapeArchetype, origin, isEntryPoint, entryPointFlowKind,
+                    FlowPortKind.None, string.Empty, string.Empty) {
+            }
+
+            public NewItemPrintCommand(
+                Id<ItemId> placedItemId,
+                ShapeArchetype shapeArchetype,
+                Vector2Int origin,
+                bool isEntryPoint,
+                FlowKind entryPointFlowKind,
+                FlowPortKind flowPortKind,
+                string flowPortName,
+                string flowPortDescription) {
                 this.placedItemId = placedItemId;
                 this.shapeArchetype = shapeArchetype;
                 this.origin = origin;
                 this.isEntryPoint = isEntryPoint;
                 this.entryPointFlowKind = entryPointFlowKind;
+                this.flowPortKind = flowPortKind;
+                this.flowPortName = flowPortName ?? string.Empty;
+                this.flowPortDescription = flowPortDescription ?? string.Empty;
             }
         }
 
@@ -71,9 +91,124 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
         }
 
+        public readonly struct UiPrintPreparedGuardsCommand {
+            public readonly IReadOnlyList<PreparedGuardState> guardStates;
+            public readonly ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo;
+
+            public UiPrintPreparedGuardsCommand(
+                IReadOnlyList<PreparedGuardState> guardStates,
+                ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
+                this.guardStates = NullGuard.NotNullOrThrow(guardStates);
+                this.inventoryGridInfo = inventoryGridInfo;
+            }
+        }
+
+        public readonly struct UiShowGuardCreatedBeamCommand {
+            public readonly Id<ItemId> sourceItemId;
+            public readonly int sourceLocalRow;
+            public readonly Id<GuardId> guardId;
+
+            public UiShowGuardCreatedBeamCommand(
+                Id<ItemId> sourceItemId,
+                int sourceLocalRow,
+                Id<GuardId> guardId) {
+                this.sourceItemId = sourceItemId;
+                this.sourceLocalRow = sourceLocalRow;
+                this.guardId = guardId;
+            }
+        }
+
+        public readonly struct UiShowAttackCreatedBeamCommand {
+            public readonly Id<ItemId> sourceItemId;
+            public readonly int sourceLocalRow;
+            public readonly Vector3 targetWorldPosition;
+
+            public UiShowAttackCreatedBeamCommand(
+                Id<ItemId> sourceItemId,
+                int sourceLocalRow,
+                Vector3 targetWorldPosition) {
+                this.sourceItemId = sourceItemId;
+                this.sourceLocalRow = sourceLocalRow;
+                this.targetWorldPosition = targetWorldPosition;
+            }
+        }
+
+        public readonly struct UiShowFlowInputStartedCommand {
+            public readonly Id<ItemId> inputItemId;
+
+            public UiShowFlowInputStartedCommand(Id<ItemId> inputItemId) {
+                this.inputItemId = inputItemId;
+            }
+        }
+
+        public readonly struct UiShowFlowOutputReachedCommand {
+            public readonly Id<ItemId> outputItemId;
+            public readonly int outputLocalRow;
+            public readonly long attackPower;
+            public readonly long guardPower;
+
+            public UiShowFlowOutputReachedCommand(
+                Id<ItemId> outputItemId,
+                int outputLocalRow,
+                long attackPower,
+                long guardPower) {
+                this.outputItemId = outputItemId;
+                this.outputLocalRow = outputLocalRow;
+                this.attackPower = attackPower;
+                this.guardPower = guardPower;
+            }
+        }
+
+        public readonly struct UiShowFlowNoOutputCommand {
+            public readonly Id<ItemId> finalItemId;
+            public readonly int finalLocalRow;
+            public readonly bool wasCommittedByLegacyRule;
+
+            public UiShowFlowNoOutputCommand(
+                Id<ItemId> finalItemId,
+                int finalLocalRow,
+                bool wasCommittedByLegacyRule) {
+                this.finalItemId = finalItemId;
+                this.finalLocalRow = finalLocalRow;
+                this.wasCommittedByLegacyRule = wasCommittedByLegacyRule;
+            }
+        }
+
+        public readonly struct UiShowGuardAbsorbedVisualCommand {
+            public readonly Id<GuardId> guardId;
+            public readonly long blockedDamage;
+
+            public UiShowGuardAbsorbedVisualCommand(
+                Id<GuardId> guardId,
+                long blockedDamage) {
+                this.guardId = guardId;
+                this.blockedDamage = blockedDamage;
+            }
+        }
+
+        public readonly struct UiShowGuardReplacedVisualCommand {
+            public readonly Id<GuardId> guardId;
+            public readonly long replacedGuardPower;
+
+            public UiShowGuardReplacedVisualCommand(
+                Id<GuardId> guardId,
+                long replacedGuardPower) {
+                this.guardId = guardId;
+                this.replacedGuardPower = replacedGuardPower;
+            }
+        }
+
         public void printInventoryItems(UiPrintInventoryItemsCommand changeInventoryItemsCommand);
         public void printNewItem(NewItemPrintCommand command);
         public void printItemCastProgress(UiPrintItemCastProgressCommand command);
+        public void printPreparedGuards(UiPrintPreparedGuardsCommand command);
+        public void showFlowInputStarted(UiShowFlowInputStartedCommand command);
+        public void showFlowOutputReached(UiShowFlowOutputReachedCommand command);
+        public void showFlowNoOutput(UiShowFlowNoOutputCommand command);
+        public void showGuardAbsorbedVisual(UiShowGuardAbsorbedVisualCommand command);
+        public void showGuardReplacedVisual(UiShowGuardReplacedVisualCommand command);
+        public void showGuardCreatedBeam(UiShowGuardCreatedBeamCommand command);
+        public void showAttackCreatedBeam(UiShowAttackCreatedBeamCommand command);
 
         public void moveItemToPosition(MoveItemToPositionCommand command,
                                        ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo);
@@ -96,6 +231,8 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         private readonly HashSet<Id<ItemId>> relatedItemIds = new();
         private readonly List<Id<ItemId>> focusedProgressItemIds = new();
         private FlowConnectionOverlayView flowConnectionOverlayView;
+        private PreparedGuardOverlayView preparedGuardOverlayView;
+        private InventoryActionBeamOverlayView actionBeamOverlayView;
         private InventoryFocusKind focusKind = InventoryFocusKind.None;
         private Id<ItemId> focusedItemId;
         private Id<ActiveFlowId> focusedFlowId;
@@ -125,6 +262,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                 if (itemIdToItemView.ContainsKey(placedItem.getId())) continue;
                 PlacedItemView view = inventoryItemViewFactory.create(placedItem.getShape(), placedItem.getOrigin());
                 applyEntryPointColor(view, placedItem);
+                applyFlowPortVisual(view, placedItem);
                 Id<ItemId> placedItemId = placedItem.getId();
                 view.setClickHandler(() => handleItemClicked(placedItemId));
                 itemIdToItemView[placedItemId] = view;
@@ -147,6 +285,16 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                 Object.Destroy(flowConnectionOverlayView.gameObject);
                 flowConnectionOverlayView = null;
             }
+
+            if (preparedGuardOverlayView != null) {
+                Object.Destroy(preparedGuardOverlayView.gameObject);
+                preparedGuardOverlayView = null;
+            }
+
+            if (actionBeamOverlayView != null) {
+                Object.Destroy(actionBeamOverlayView.gameObject);
+                actionBeamOverlayView = null;
+            }
         }
 
         private void OnItemRemoved(ItemRemovedDtoEvent itemRemovedEvent) {
@@ -167,6 +315,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         public void printNewItem(ICombatInventoryItemsPanel.NewItemPrintCommand command) {
             PlacedItemView view = inventoryItemViewFactory.create(command.shapeArchetype, command.origin);
             applyEntryPointColor(view, command);
+            applyFlowPortVisual(view, command);
             view.setClickHandler(() => handleItemClicked(command.placedItemId));
             itemIdToItemView[command.placedItemId] = view;
             ensureFlowConnectionOverlayView(view.transform.parent);
@@ -179,12 +328,30 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
         }
 
+        private static void applyFlowPortVisual(PlacedItemView view, IGridItemPlaced placedItem) {
+            if (placedItem is IFlowPortPlacedItem portPlacedItem) {
+                view.setFlowPortVisual(
+                    portPlacedItem.getFlowPortKind(),
+                    portPlacedItem.getFlowPortName(),
+                    portPlacedItem.getFlowPortDescription());
+            }
+        }
+
         private static void applyEntryPointColor(
             PlacedItemView view,
             ICombatInventoryItemsPanel.NewItemPrintCommand command) {
             if (command.isEntryPoint) {
                 view.setColor(getEntryPointColor(command.entryPointFlowKind));
             }
+        }
+
+        private static void applyFlowPortVisual(
+            PlacedItemView view,
+            ICombatInventoryItemsPanel.NewItemPrintCommand command) {
+            view.setFlowPortVisual(
+                command.flowPortKind,
+                command.flowPortName,
+                command.flowPortDescription);
         }
 
         private static Color getEntryPointColor(FlowKind flowKind) {
@@ -212,6 +379,125 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
 
             renderFocusState();
+        }
+
+        public void printPreparedGuards(ICombatInventoryItemsPanel.UiPrintPreparedGuardsCommand command) {
+            ensurePreparedGuardOverlayView(getItemsLayerTransform());
+
+            if (preparedGuardOverlayView == null) {
+                return;
+            }
+
+            preparedGuardOverlayView.printGuards(command.guardStates, command.inventoryGridInfo);
+        }
+
+        public void showFlowInputStarted(ICombatInventoryItemsPanel.UiShowFlowInputStartedCommand command) {
+            if (!itemIdToItemView.TryGetValue(command.inputItemId, out PlacedItemView itemView)) {
+                return;
+            }
+
+            PopupManager.Instance?.Show(
+                itemView,
+                "IN",
+                new Color(0.42f, 1f, 0.78f, 1f),
+                moveY: 38f,
+                duration: 0.55f);
+        }
+
+        public void showFlowOutputReached(ICombatInventoryItemsPanel.UiShowFlowOutputReachedCommand command) {
+            if (!tryGetSourceItemPoint(command.outputItemId, command.outputLocalRow, out Vector2 point)) {
+                return;
+            }
+
+            string label = command.guardPower > 0
+                ? $"OUT G{GuardPowerLabelFormatter.format(command.guardPower)}"
+                : $"OUT {GuardPowerLabelFormatter.format(command.attackPower)}";
+
+            if (itemIdToItemView.TryGetValue(command.outputItemId, out PlacedItemView itemView)) {
+                PopupManager.Instance?.Show(
+                    itemView,
+                    label,
+                    new Color(0.46f, 0.72f, 1f, 1f),
+                    moveY: 42f,
+                    duration: 0.65f);
+            }
+
+            ensureActionBeamOverlayView(getItemsLayerTransform());
+            actionBeamOverlayView?.showBeam(point, point + new Vector2(0f, 42f), new Color(0.46f, 0.72f, 1f, 1f));
+        }
+
+        public void showFlowNoOutput(ICombatInventoryItemsPanel.UiShowFlowNoOutputCommand command) {
+            if (!tryGetSourceItemPoint(command.finalItemId, command.finalLocalRow, out Vector2 point)) {
+                return;
+            }
+
+            string label = command.wasCommittedByLegacyRule
+                ? "NO OUT"
+                : "WASTED";
+
+            if (itemIdToItemView.TryGetValue(command.finalItemId, out PlacedItemView itemView)) {
+                PopupManager.Instance?.Show(
+                    itemView,
+                    label,
+                    command.wasCommittedByLegacyRule
+                        ? new Color(1f, 0.72f, 0.28f, 1f)
+                        : new Color(1f, 0.22f, 0.22f, 1f),
+                    moveY: 42f,
+                    duration: 0.75f);
+            }
+
+            ensureActionBeamOverlayView(getItemsLayerTransform());
+            actionBeamOverlayView?.showBeam(point, point + new Vector2(34f, 28f), new Color(1f, 0.28f, 0.22f, 1f));
+        }
+
+        public void showGuardAbsorbedVisual(ICombatInventoryItemsPanel.UiShowGuardAbsorbedVisualCommand command) {
+            ensurePreparedGuardOverlayView(getItemsLayerTransform());
+            preparedGuardOverlayView?.showGuardAbsorbedVisual(command.guardId, command.blockedDamage);
+        }
+
+        public void showGuardReplacedVisual(ICombatInventoryItemsPanel.UiShowGuardReplacedVisualCommand command) {
+            ensurePreparedGuardOverlayView(getItemsLayerTransform());
+            preparedGuardOverlayView?.showGuardReplacedVisual(command.guardId, command.replacedGuardPower);
+        }
+
+        public void showGuardCreatedBeam(ICombatInventoryItemsPanel.UiShowGuardCreatedBeamCommand command) {
+            if (!tryGetSourceItemPoint(command.sourceItemId, command.sourceLocalRow, out Vector2 start)) {
+                return;
+            }
+
+            ensurePreparedGuardOverlayView(getItemsLayerTransform());
+            if (preparedGuardOverlayView == null) {
+                return;
+            }
+
+            if (!preparedGuardOverlayView.tryGetGuardCenterInParent(command.guardId, out Vector2 end)) {
+                end = preparedGuardOverlayView.getOverlayCenterInParent();
+            }
+
+            ensureActionBeamOverlayView(getItemsLayerTransform());
+            actionBeamOverlayView?.showBeam(start, end, new Color(0.36f, 0.95f, 0.82f, 1f));
+        }
+
+        public void showAttackCreatedBeam(ICombatInventoryItemsPanel.UiShowAttackCreatedBeamCommand command) {
+            if (!tryGetSourceItemPoint(command.sourceItemId, command.sourceLocalRow, out Vector2 start)) {
+                return;
+            }
+
+            Transform itemsLayerTransform = getItemsLayerTransform();
+            RectTransform itemsLayerRectTransform = itemsLayerTransform as RectTransform;
+            if (itemsLayerRectTransform == null) {
+                return;
+            }
+
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, command.targetWorldPosition);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                itemsLayerRectTransform,
+                screenPoint,
+                null,
+                out Vector2 end);
+
+            ensureActionBeamOverlayView(itemsLayerTransform);
+            actionBeamOverlayView?.showBeam(start, end, new Color(1f, 0.46f, 0.23f, 1f));
         }
 
         private void renderFocusState() {
@@ -496,6 +782,39 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
 
             flowConnectionOverlayView = FlowConnectionOverlayView.create(parent);
+        }
+
+        private void ensurePreparedGuardOverlayView(Transform parent) {
+            if (preparedGuardOverlayView != null || parent == null) {
+                return;
+            }
+
+            preparedGuardOverlayView = PreparedGuardOverlayView.create(parent);
+        }
+
+        private void ensureActionBeamOverlayView(Transform parent) {
+            if (actionBeamOverlayView != null || parent == null) {
+                return;
+            }
+
+            actionBeamOverlayView = InventoryActionBeamOverlayView.create(parent);
+        }
+
+        private bool tryGetSourceItemPoint(
+            Id<ItemId> itemId,
+            int localRow,
+            out Vector2 point) {
+            if (itemIdToItemView.TryGetValue(itemId, out PlacedItemView itemView)) {
+                if (itemView.tryGetRowCenterInParent(localRow, out point)) {
+                    return true;
+                }
+
+                point = itemView.getCenterInParent();
+                return true;
+            }
+
+            point = default;
+            return false;
         }
 
         private Transform getItemsLayerTransform() {

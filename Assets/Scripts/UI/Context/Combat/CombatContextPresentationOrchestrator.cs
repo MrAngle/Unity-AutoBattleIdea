@@ -25,7 +25,13 @@ namespace MageFactory.UI.Context.Combat {
         IItemPlacedEventEventListener,
         IItemPositionChangedEventListener,
         IHpChangedEventListener,
-        ICharacterDeathEventListener {
+        ICharacterDeathEventListener,
+        IGuardAbsorbedDamageEventListener,
+        IFlowGuardCreatedEventListener,
+        IFlowInputStartedEventListener,
+        IFlowOutputReachedEventListener,
+        IFlowNoOutputEventListener,
+        IFlowAttackCreatedEventListener {
         private ICombatContext combatContext;
         private ICombatCharacterFacade selectedCombatCharacter;
         private readonly ICombatContextEventRegistry combatContextEventRegistry;
@@ -59,12 +65,24 @@ namespace MageFactory.UI.Context.Combat {
                 .subscribe((ICombatCharacterCreatedEventListener)this);
             this.combatContextEventRegistry
                 .subscribe((ICombatContextEventListener)this);
+            this.combatContextEventRegistry
+                .subscribe((IFlowGuardCreatedEventListener)this);
+            this.combatContextEventRegistry
+                .subscribe((IFlowInputStartedEventListener)this);
+            this.combatContextEventRegistry
+                .subscribe((IFlowOutputReachedEventListener)this);
+            this.combatContextEventRegistry
+                .subscribe((IFlowNoOutputEventListener)this);
+            this.combatContextEventRegistry
+                .subscribe((IFlowAttackCreatedEventListener)this);
             this.uiCombatContextEventRegistry
                 .subscribe(this);
             this.characterEventRegistry
                 .subscribe((IHpChangedEventListener)this);
             this.characterEventRegistry
                 .subscribe((ICharacterDeathEventListener)this);
+            this.characterEventRegistry
+                .subscribe((IGuardAbsorbedDamageEventListener)this);
             this.inventoryEventRegistry.subscribe((IItemPlacedEventEventListener)this);
             this.inventoryEventRegistry.subscribe((IItemPositionChangedEventListener)this);
         }
@@ -95,6 +113,7 @@ namespace MageFactory.UI.Context.Combat {
             }
 
             inventoryPanelPresentation.printItemCastProgress(selectedCombatCharacter.query());
+            inventoryPanelPresentation.printPreparedGuards(selectedCombatCharacter.query());
         }
 
         public void Dispose() {
@@ -102,6 +121,16 @@ namespace MageFactory.UI.Context.Combat {
                 .unsubscribe((ICombatCharacterCreatedEventListener)this);
             this.combatContextEventRegistry
                 .unsubscribe((ICombatContextEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IFlowGuardCreatedEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IFlowInputStartedEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IFlowOutputReachedEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IFlowNoOutputEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IFlowAttackCreatedEventListener)this);
             this.uiCombatContextEventRegistry
                 .unsubscribe((IUiCombatCharacterSelectedEventListener)this);
             this.inventoryEventRegistry.unsubscribe((IItemPlacedEventEventListener)this);
@@ -110,6 +139,8 @@ namespace MageFactory.UI.Context.Combat {
                 .unsubscribe((IHpChangedEventListener)this);
             this.characterEventRegistry
                 .unsubscribe((ICharacterDeathEventListener)this);
+            this.characterEventRegistry
+                .unsubscribe((IGuardAbsorbedDamageEventListener)this);
         }
 
         public void onEvent(in CombatContextCreatedDtoEvent ev) {
@@ -136,7 +167,8 @@ namespace MageFactory.UI.Context.Combat {
 
         public void onEvent(in NewItemPlacedDtoEvent ev) {
             ICombatInventoryItemsPanel.NewItemPrintCommand itemPrintCommand =
-                new(ev.placedItemId, ev.shapeArchetype, ev.origin, ev.isEntryPoint, ev.entryPointFlowKind);
+                new(ev.placedItemId, ev.shapeArchetype, ev.origin, ev.isEntryPoint, ev.entryPointFlowKind,
+                    ev.flowPortKind, ev.flowPortName, ev.flowPortDescription);
             inventoryPanelPresentation.printNewItem(itemPrintCommand);
         }
 
@@ -156,6 +188,94 @@ namespace MageFactory.UI.Context.Combat {
             if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
                 prefab.destroy(ev);
             }
+        }
+
+        public void onEvent(in CharacterGuardAbsorbedDamageDtoEvent ev) {
+            if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
+                prefab.guardAbsorbedDamage(ev);
+            }
+
+            if (isSelectedCharacter(ev.characterId)) {
+                if (ev.hasAffectedGuard) {
+                    inventoryPanelPresentation.showGuardAbsorbedVisual(
+                        ev.firstAffectedGuardId,
+                        ev.blockedDamage);
+                }
+
+                inventoryPanelPresentation.printPreparedGuards(selectedCombatCharacter.query());
+            }
+        }
+
+        public void onEvent(in FlowGuardCreatedDtoEvent ev) {
+            if (!isSelectedCharacter(ev.characterId)) {
+                return;
+            }
+
+            if (ev.replacedGuard) {
+                inventoryPanelPresentation.showGuardReplacedVisual(
+                    ev.replacedGuardId,
+                    ev.replacedGuardPower);
+            }
+
+            inventoryPanelPresentation.printPreparedGuards(selectedCombatCharacter.query());
+
+            if (!ev.hasSourceProcessingSlot()) {
+                return;
+            }
+
+            inventoryPanelPresentation.showGuardCreatedBeam(
+                ev.sourceProcessingSlot.getItemId(),
+                ev.sourceProcessingSlot.getLocalRow(),
+                ev.guardId);
+        }
+
+        public void onEvent(in FlowInputStartedDtoEvent ev) {
+            if (!isSelectedCharacter(ev.characterId)) {
+                return;
+            }
+
+            inventoryPanelPresentation.showFlowInputStarted(ev.inputItemId);
+        }
+
+        public void onEvent(in FlowOutputReachedDtoEvent ev) {
+            if (!isSelectedCharacter(ev.characterId) || !ev.hasOutputProcessingSlot()) {
+                return;
+            }
+
+            inventoryPanelPresentation.showFlowOutputReached(
+                ev.outputProcessingSlot.getItemId(),
+                ev.outputProcessingSlot.getLocalRow(),
+                ev.attackPower,
+                ev.guardPower);
+        }
+
+        public void onEvent(in FlowNoOutputDtoEvent ev) {
+            if (!isSelectedCharacter(ev.characterId) || !ev.hasFinalProcessingSlot()) {
+                return;
+            }
+
+            inventoryPanelPresentation.showFlowNoOutput(
+                ev.finalProcessingSlot.getItemId(),
+                ev.finalProcessingSlot.getLocalRow(),
+                ev.wasCommittedByLegacyRule);
+        }
+
+        public void onEvent(in FlowAttackCreatedDtoEvent ev) {
+            if (!isSelectedCharacter(ev.sourceCharacterId)
+                || !ev.hasSourceProcessingSlot()
+                || !characterPrefabs.TryGetValue(ev.targetCharacterId, out CharacterPrefabAggregate targetPrefab)) {
+                return;
+            }
+
+            inventoryPanelPresentation.showAttackCreatedBeam(
+                ev.sourceProcessingSlot.getItemId(),
+                ev.sourceProcessingSlot.getLocalRow(),
+                targetPrefab.getCenterWorldPosition());
+        }
+
+        private bool isSelectedCharacter(Id<CharacterId> characterId) {
+            return selectedCombatCharacter != null
+                   && selectedCombatCharacter.query().getCharacterInfo().getCharacterId() == characterId;
         }
     }
 }

@@ -5,6 +5,7 @@ using MageFactory.Shared.Id;
 using MageFactory.Shared.Utility;
 using MageFactory.UI.Component.Inventory.GridLayer;
 using MageFactory.UI.Component.Inventory.ItemLayer;
+using UnityEngine;
 using Zenject;
 
 namespace MageFactory.UI.Component.Inventory {
@@ -33,6 +34,7 @@ namespace MageFactory.UI.Component.Inventory {
         private readonly ICombatInventoryGridPanel combatInventoryGridPanel;
         private readonly ICombatInventoryItemsPanel combatInventoryItemsPanel;
         private readonly ItemCastProgressPrintBuffer itemCastProgressPrintBuffer = new();
+        private readonly PreparedGuardPrintBuffer preparedGuardPrintBuffer = new();
 
         [Inject]
         public InventoryPanelPresentation(ICombatInventoryGridPanel combatInventoryGridPanel,
@@ -62,6 +64,87 @@ namespace MageFactory.UI.Component.Inventory {
                 new ICombatInventoryItemsPanel.UiPrintItemCastProgressCommand(
                     itemCastProgressPrintBuffer.getProgressByItem(),
                     itemCastProgressPrintBuffer.getFlowPaths()));
+        }
+
+        public void printPreparedGuards(ICharacterCombatQueries characterCombatQueries) {
+            NullGuard.NotNullOrThrow(characterCombatQueries);
+
+            preparedGuardPrintBuffer.clear();
+            characterCombatQueries.collectPreparedGuardStates(preparedGuardPrintBuffer);
+
+            combatInventoryItemsPanel.printPreparedGuards(
+                new ICombatInventoryItemsPanel.UiPrintPreparedGuardsCommand(
+                    preparedGuardPrintBuffer.getGuardStates(),
+                    combatInventoryGridPanel.getInventoryGridInfo()));
+        }
+
+        public void showFlowInputStarted(Id<ItemId> inputItemId) {
+            combatInventoryItemsPanel.showFlowInputStarted(
+                new ICombatInventoryItemsPanel.UiShowFlowInputStartedCommand(inputItemId));
+        }
+
+        public void showFlowOutputReached(
+            Id<ItemId> outputItemId,
+            int outputLocalRow,
+            long attackPower,
+            long guardPower) {
+            combatInventoryItemsPanel.showFlowOutputReached(
+                new ICombatInventoryItemsPanel.UiShowFlowOutputReachedCommand(
+                    outputItemId,
+                    outputLocalRow,
+                    attackPower,
+                    guardPower));
+        }
+
+        public void showFlowNoOutput(
+            Id<ItemId> finalItemId,
+            int finalLocalRow,
+            bool wasCommittedByLegacyRule) {
+            combatInventoryItemsPanel.showFlowNoOutput(
+                new ICombatInventoryItemsPanel.UiShowFlowNoOutputCommand(
+                    finalItemId,
+                    finalLocalRow,
+                    wasCommittedByLegacyRule));
+        }
+
+        public void showGuardAbsorbedVisual(
+            Id<GuardId> guardId,
+            long blockedDamage) {
+            combatInventoryItemsPanel.showGuardAbsorbedVisual(
+                new ICombatInventoryItemsPanel.UiShowGuardAbsorbedVisualCommand(
+                    guardId,
+                    blockedDamage));
+        }
+
+        public void showGuardReplacedVisual(
+            Id<GuardId> guardId,
+            long replacedGuardPower) {
+            combatInventoryItemsPanel.showGuardReplacedVisual(
+                new ICombatInventoryItemsPanel.UiShowGuardReplacedVisualCommand(
+                    guardId,
+                    replacedGuardPower));
+        }
+
+        public void showGuardCreatedBeam(
+            Id<ItemId> sourceItemId,
+            int sourceLocalRow,
+            Id<GuardId> guardId) {
+            combatInventoryItemsPanel.showGuardCreatedBeam(
+                new ICombatInventoryItemsPanel.UiShowGuardCreatedBeamCommand(
+                    sourceItemId,
+                    sourceLocalRow,
+                    guardId));
+        }
+
+        public void showAttackCreatedBeam(
+            Id<ItemId> sourceItemId,
+            int sourceLocalRow,
+            Vector3 targetWorldPosition) {
+            combatInventoryItemsPanel.showAttackCreatedBeam(
+                new ICombatInventoryItemsPanel.UiShowAttackCreatedBeamCommand(
+                    sourceItemId,
+                    sourceLocalRow,
+                    targetWorldPosition));
         }
 
         public void moveItemToPosition(ICombatInventoryItemsPanel.MoveItemToPositionCommand command) {
@@ -139,6 +222,22 @@ namespace MageFactory.UI.Component.Inventory {
                 int remainingTicks = Math.Max(0, castState.getRemainingCastTicks().getValue());
                 int completedTicks = Math.Max(0, requiredTicks - remainingTicks);
                 return (float)completedTicks / requiredTicks;
+            }
+        }
+
+        private sealed class PreparedGuardPrintBuffer : IPreparedGuardStateCollector {
+            private readonly List<PreparedGuardState> guardStates = new();
+
+            internal void clear() {
+                guardStates.Clear();
+            }
+
+            public void addPreparedGuardState(PreparedGuardState guardState) {
+                guardStates.Add(guardState);
+            }
+
+            internal IReadOnlyList<PreparedGuardState> getGuardStates() {
+                return guardStates;
             }
         }
 

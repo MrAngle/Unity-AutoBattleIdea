@@ -29,6 +29,7 @@ namespace MageFactory.Character.Domain.CombatChar {
         private readonly Dictionary<Id<ItemId>, CombatPlacedItemRuntimeState> runtimeStateByItemId = new();
         private readonly Dictionary<Id<ItemId>, IFlowItem> flowItemByItemId = new();
         private readonly CombatTickPlan combatTickPlan = new();
+        private readonly CombatGuardState guardState = new();
         private int createdFlowCount;
         private int nextEventTriggeredDefensiveEntryPointIndex;
 
@@ -79,7 +80,19 @@ namespace MageFactory.Character.Domain.CombatChar {
         }
 
         public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {
-            return takeDamage(resolvedDamage);
+            if (guardState.getPreparedGuardCount() == 0) {
+                return takeDamage(resolvedDamage);
+            }
+
+            ResolvedDamage damageAfterGuard = guardState.applyTo(
+                resolvedDamage,
+                out GuardDamageApplicationResult guardDamageApplicationResult);
+            characterAggregate.publishGuardAbsorbedDamage(guardDamageApplicationResult);
+            return takeDamage(damageAfterGuard);
+        }
+
+        public bool tryAddGuardPower(GuardPower guardPower, out PreparedGuardAddResult guardAddResult) {
+            return guardState.tryAddGuard(guardPower, out guardAddResult);
         }
 
         public bool tryMoveItem(ICharacterEquippedItem characterEquippedItem) {
@@ -103,10 +116,10 @@ namespace MageFactory.Character.Domain.CombatChar {
             return false;
         }
 
-        internal void createFlow(Id<ItemId> entryPointItemId,
+        internal bool createFlow(Id<ItemId> entryPointItemId,
                                  IFlowConsumer flowConsumer,
                                  ICombatCapabilities combatCapabilities) {
-            tryCreateFlow(
+            return tryCreateFlow(
                 entryPointItemId,
                 flowConsumer,
                 combatCapabilities,
@@ -238,6 +251,14 @@ namespace MageFactory.Character.Domain.CombatChar {
                 : 0;
         }
 
+        public int getPreparedGuardCount() {
+            return guardState.getPreparedGuardCount();
+        }
+
+        public long getTotalPreparedGuardPower() {
+            return guardState.getTotalPreparedGuardPower();
+        }
+
         public int getActiveFlowCountOnItem(Id<ItemId> itemId) {
             NullGuard.ValidIdOrThrow(itemId);
 
@@ -272,6 +293,10 @@ namespace MageFactory.Character.Domain.CombatChar {
             for (int i = 0; i < activeFlows.Count; i++) {
                 activeFlows[i].collectActiveFlowStates(collector);
             }
+        }
+
+        public void collectPreparedGuardStates(IPreparedGuardStateCollector collector) {
+            guardState.collectPreparedGuardStates(collector);
         }
 
         private void initializeRuntimeStateForEquippedItems() {

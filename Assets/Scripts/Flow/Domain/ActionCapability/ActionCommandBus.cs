@@ -23,6 +23,10 @@ namespace MageFactory.Flow.Domain.ActionCapability {
                 .Fire(new ItemPowerChangedDtoEvent(actionItemInvoker.getId(), powerAmount.getPower()));
         }
 
+        public void addGuardPower(PowerAmount guardPowerAmount) {
+            actionContext.addGuardPower(guardPowerAmount);
+        }
+
         public void pushRightAdjacentItemRight() {
             flowCapabilities.command().tryMoveRightAdjacentItemToRight(actionContext.getActionItemInvoker());
         }

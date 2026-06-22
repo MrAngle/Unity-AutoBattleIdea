@@ -166,3 +166,20 @@ Future UI direction:
 - Item details should include active/current flows, incoming and outgoing recent flow relations, current cast rows, recent received-flow ticks, and contribution breakdowns once tracked.
 - Entry point details should include active flows started by it, trigger timing, recent created flows, and throughput-style summary data.
 - Clicking a flow line should eventually open/select the concrete flow details while keeping the focused overlay limited to that flow.
+
+## Flow Ports And Output Policy
+
+Current prototype:
+
+- `PulseInputPort` and `BasicOutputPort` prove the in/out path without removing old entry points.
+- Port-aware inputs currently adapt to the existing `IEntryPointDefinition` and `FlowKind` contract.
+- Output ports commit accumulated flow power and are not cast/effect processors.
+
+Open design/implementation work:
+
+- Decide the final domain shape for neutral input/output ports once entry points no longer need to carry attack/defense semantics directly.
+- Move guard overflow/splitting policies toward output/item characteristics instead of global guard rules.
+- Define output policies such as replace oldest, replace weakest, fill free slots only, split into N portions, or discard overflow.
+- Define the no-output policy for future port-aware defensive inputs. Current incoming-damage processing stops direct HP damage when a defensive flow is created, so a defensive port flow that later discards without output could accidentally erase damage unless the system explicitly fails open or models that as a visible mechanic.
+- Add a proper UI details/read-model for port descriptions instead of only compact badges/tooltips.
+- Add PlayMode/UI coverage for port badges, no-output feedback, output beams, guard replacement feedback, and guard absorption feedback.

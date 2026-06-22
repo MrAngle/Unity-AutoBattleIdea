@@ -4,6 +4,7 @@ using MageFactory.CombatContextRuntime;
 using MageFactory.CombatEvents;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.EntryPoint;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -11,7 +12,8 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain.InventoryItems {
-    internal class InventoryPlacedEntryPoint : IInventoryPlacedEntryPoint, IInventoryCombatTickableItem {
+    internal class InventoryPlacedEntryPoint : IInventoryPlacedEntryPoint, IInventoryCombatTickableItem,
+        IFlowPortPlacedItem {
         private readonly EntryPointItem entryPointItem;
         private CombatTicks ticksUntilNextTrigger;
 
@@ -38,6 +40,18 @@ namespace MageFactory.Item.Domain.InventoryItems {
 
         public IActionDescription prepareItemActionDescription() {
             return entryPointItem.prepareItemActionDescription();
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return entryPointItem.getFlowPortKind();
+        }
+
+        public string getFlowPortName() {
+            return entryPointItem.getFlowPortName();
+        }
+
+        public string getFlowPortDescription() {
+            return entryPointItem.getFlowPortDescription();
         }
 
         public void updateItemPosition(IInventoryPosition inventoryPosition) {
@@ -78,7 +92,7 @@ namespace MageFactory.Item.Domain.InventoryItems {
         }
     }
 
-    internal class InventoryPlacedEventEntryPoint : IInventoryPlacedEntryPoint {
+    internal class InventoryPlacedEventEntryPoint : IInventoryPlacedEntryPoint, IFlowPortPlacedItem {
         private readonly EntryPointItem entryPointItem;
 
         public InventoryPlacedEventEntryPoint(EntryPointItem entryPointItem) {
@@ -103,6 +117,18 @@ namespace MageFactory.Item.Domain.InventoryItems {
 
         public IActionDescription prepareItemActionDescription() {
             return entryPointItem.prepareItemActionDescription();
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return entryPointItem.getFlowPortKind();
+        }
+
+        public string getFlowPortName() {
+            return entryPointItem.getFlowPortName();
+        }
+
+        public string getFlowPortDescription() {
+            return entryPointItem.getFlowPortDescription();
         }
 
         public void updateItemPosition(IInventoryPosition inventoryPosition) {

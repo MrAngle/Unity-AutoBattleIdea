@@ -7,4 +7,8 @@ namespace MageFactory.Character.Api.Event {
 
     public interface ICharacterDeathEventListener : IDomainEventListener<CharacterDeathDtoEvent> {
     }
+
+    public interface IGuardAbsorbedDamageEventListener
+        : IDomainEventListener<CharacterGuardAbsorbedDamageDtoEvent> {
+    }
 }

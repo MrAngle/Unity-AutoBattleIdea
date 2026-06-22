@@ -2,6 +2,7 @@
 using MageFactory.Character.Api.Event;
 using MageFactory.Character.Api.Event.Dto;
 using MageFactory.Character.Contract;
+using MageFactory.Character.Domain.CombatChar;
 using MageFactory.Character.Domain.Service;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.Shared.Model;
@@ -54,6 +55,22 @@ namespace MageFactory.Character.Domain {
             }
 
             return damageTaken;
+        }
+
+        internal void publishGuardAbsorbedDamage(GuardDamageApplicationResult result) {
+            if (!result.hasBlockedDamage()) {
+                return;
+            }
+
+            characterEventPublisher.publish(new CharacterGuardAbsorbedDamageDtoEvent(
+                characterData.getCharacterId(),
+                result.getIncomingDamage(),
+                result.getBlockedDamage(),
+                result.getRemainingDamage(),
+                result.getDestroyedGuardCount(),
+                result.getRemainingGuardPower(),
+                result.hasFirstAffectedGuard(),
+                result.getFirstAffectedGuardId()));
         }
 
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {

@@ -3,6 +3,7 @@ using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
 using MageFactory.CombatEvents;
 using MageFactory.Inventory.Contract;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
 using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
@@ -10,7 +11,7 @@ using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Inventory.Domain.CharacterEq {
-    internal class CharacterEquippedEntryPointItem : ICharacterEquippedEntryPoint {
+    internal class CharacterEquippedEntryPointItem : ICharacterEquippedEntryPoint, IFlowPortPlacedItem {
         private readonly IInventoryPlacedEntryPoint inventoryPlacedEntryPoint;
 
         public CharacterEquippedEntryPointItem(IInventoryPlacedEntryPoint inventoryPlacedEntryPoint) {
@@ -35,6 +36,24 @@ namespace MageFactory.Inventory.Domain.CharacterEq {
 
         public IActionDescription prepareItemActionDescription() {
             return inventoryPlacedEntryPoint.prepareItemActionDescription();
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return inventoryPlacedEntryPoint is IFlowPortPlacedItem portPlacedItem
+                ? portPlacedItem.getFlowPortKind()
+                : FlowPortKind.None;
+        }
+
+        public string getFlowPortName() {
+            return inventoryPlacedEntryPoint is IFlowPortPlacedItem portPlacedItem
+                ? portPlacedItem.getFlowPortName()
+                : string.Empty;
+        }
+
+        public string getFlowPortDescription() {
+            return inventoryPlacedEntryPoint is IFlowPortPlacedItem portPlacedItem
+                ? portPlacedItem.getFlowPortDescription()
+                : string.Empty;
         }
 
         public FlowKind getFlowKind() {

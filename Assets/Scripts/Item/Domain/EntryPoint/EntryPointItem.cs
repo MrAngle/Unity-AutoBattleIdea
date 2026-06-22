@@ -70,6 +70,24 @@ namespace MageFactory.Item.Domain.EntryPoint {
             return entryPointArchetype.getItemDefinition().getActionDescription();
         }
 
+        public FlowPortKind getFlowPortKind() {
+            return entryPointArchetype.getItemDefinition() is IFlowPortDefinition portDefinition
+                ? portDefinition.getFlowPortKind()
+                : FlowPortKind.None;
+        }
+
+        public string getFlowPortName() {
+            return entryPointArchetype.getItemDefinition() is IFlowPortDefinition portDefinition
+                ? portDefinition.getFlowPortName()
+                : string.Empty;
+        }
+
+        public string getFlowPortDescription() {
+            return entryPointArchetype.getItemDefinition() is IFlowPortDefinition portDefinition
+                ? portDefinition.getFlowPortDescription()
+                : string.Empty;
+        }
+
         // think about this - item should never be able to move itselv
         public void updateItemPosition(IInventoryPosition paramInventoryPosition) {
             inventoryPosition = paramInventoryPosition;

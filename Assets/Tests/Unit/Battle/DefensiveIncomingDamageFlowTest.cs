@@ -21,8 +21,8 @@ namespace MageFactory.Tests.Unit.Battle {
         private const int IncomingAttackDamage = 10;
         private const int DefensiveEntryDamageReduction = -3;
         private const int DefensiveShieldDamageReduction = -5;
-        private const int DefenseEntryPointGemDamageReduction = -2;
-        private const int CatalogShieldDamageReduction = -5;
+        private const int DefenseEntryPointGemGuardPower = 2;
+        private const int CatalogShieldGuardPower = 5;
 
         [Test]
         public void should_not_tick_event_triggered_defensive_entry_point_without_incoming_attack_damage_event() {
@@ -248,12 +248,15 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
             defender.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
 
-            int expectedDamage =
-                IncomingAttackDamage +
-                DefenseEntryPointGemDamageReduction +
-                CatalogShieldDamageReduction;
+            int generatedGuardPower = DefenseEntryPointGemGuardPower + CatalogShieldGuardPower;
+            long expectedBlockedDamage = GuardMitigationCalculator.calculateBlockedDamage(
+                generatedGuardPower,
+                IncomingAttackDamage);
+            long expectedDamage = IncomingAttackDamage - expectedBlockedDamage;
 
             Assert.AreEqual(initialHp - expectedDamage, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(1, defender.query().getPreparedGuardCount());
+            Assert.AreEqual(generatedGuardPower - expectedBlockedDamage, defender.query().getTotalPreparedGuardPower());
             Assert.AreEqual(0, defender.query().getActiveFlowCount());
             Assert.AreEqual(1, combatContext.getCombatCapabilities().query()
                 .getCombatEventCount(CombatEventType.INCOMING_ATTACK_DAMAGE));

@@ -114,4 +114,74 @@ namespace MageFactory.CombatContext.Contract {
     public interface IActiveFlowStateCollector {
         void addActiveFlowState(ActiveFlowState flowState);
     }
+
+    public readonly struct PreparedGuardState {
+        private readonly Id<GuardId> guardId;
+        private readonly GuardPower guardPower;
+
+        public PreparedGuardState(Id<GuardId> guardId, GuardPower guardPower) {
+            this.guardId = NullGuard.ValidIdOrThrow(guardId);
+            this.guardPower = NullGuard.NotNullOrThrow(guardPower);
+
+            if (this.guardPower.getPower() <= 0) {
+                throw new ArgumentOutOfRangeException(
+                    nameof(guardPower),
+                    this.guardPower.getPower(),
+                    "Visible prepared guard must have positive power.");
+            }
+        }
+
+        public Id<GuardId> getGuardId() {
+            return guardId;
+        }
+
+        public GuardPower getGuardPower() {
+            return guardPower;
+        }
+    }
+
+    public interface IPreparedGuardStateCollector {
+        void addPreparedGuardState(PreparedGuardState guardState);
+    }
+
+    public readonly struct PreparedGuardAddResult {
+        private readonly bool guardAdded;
+        private readonly PreparedGuardState addedGuardState;
+        private readonly bool guardReplaced;
+        private readonly PreparedGuardState replacedGuardState;
+
+        public PreparedGuardAddResult(
+            PreparedGuardState addedGuardState,
+            bool guardReplaced,
+            PreparedGuardState replacedGuardState) {
+            this.guardAdded = true;
+            this.addedGuardState = addedGuardState;
+            this.guardReplaced = guardReplaced;
+            this.replacedGuardState = replacedGuardState;
+        }
+
+        public bool hasAddedGuard() {
+            return guardAdded;
+        }
+
+        public PreparedGuardState getAddedGuardState() {
+            if (!guardAdded) {
+                throw new InvalidOperationException("Guard add result has no added guard.");
+            }
+
+            return addedGuardState;
+        }
+
+        public bool hasReplacedGuard() {
+            return guardReplaced;
+        }
+
+        public PreparedGuardState getReplacedGuardState() {
+            if (!guardReplaced) {
+                throw new InvalidOperationException("Guard add result has no replaced guard.");
+            }
+
+            return replacedGuardState;
+        }
+    }
 }

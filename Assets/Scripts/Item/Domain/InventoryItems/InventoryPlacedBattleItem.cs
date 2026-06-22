@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 using UnityEngine;
 
 namespace MageFactory.Item.Domain.InventoryItems {
-    internal class InventoryPlacedBattleItem : IInventoryPlacedItem {
+    internal class InventoryPlacedBattleItem : IInventoryPlacedItem, IFlowPortPlacedItem {
         private readonly BattleItem battleItem;
 
         public InventoryPlacedBattleItem(BattleItem battleItem) {
@@ -32,6 +34,18 @@ namespace MageFactory.Item.Domain.InventoryItems {
 
         public IActionDescription prepareItemActionDescription() {
             return battleItem.prepareItemActionDescription();
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return battleItem.getFlowPortKind();
+        }
+
+        public string getFlowPortName() {
+            return battleItem.getFlowPortName();
+        }
+
+        public string getFlowPortDescription() {
+            return battleItem.getFlowPortDescription();
         }
 
         public void updateItemPosition(IInventoryPosition inventoryPosition) {

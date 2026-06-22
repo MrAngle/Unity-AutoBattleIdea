@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MageFactory.Character.Api.Event;
 using MageFactory.Character.Contract.Event;
 using MageFactory.CombatContext.Api;
+using MageFactory.CombatContext.Api.Event;
 using MageFactory.CombatContext.Contract.Command;
 using MageFactory.CombatContextRuntime;
 using MageFactory.Flow.Configuration;
@@ -61,6 +62,43 @@ namespace MageFactory.Tests.Unit.TestFixtures {
 
         public BattleScenarioTestHarness withCharacterDeathListener(ICharacterDeathEventListener listener) {
             container.Resolve<ICharacterEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withGuardAbsorbedDamageListener(
+            IGuardAbsorbedDamageEventListener listener) {
+            container.Resolve<ICharacterEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withFlowGuardCreatedListener(IFlowGuardCreatedEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withFlowInputStartedListener(IFlowInputStartedEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withFlowOutputReachedListener(IFlowOutputReachedEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withFlowNoOutputListener(IFlowNoOutputEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withFlowAttackCreatedListener(IFlowAttackCreatedEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
                 .subscribe(listener);
             return this;
         }

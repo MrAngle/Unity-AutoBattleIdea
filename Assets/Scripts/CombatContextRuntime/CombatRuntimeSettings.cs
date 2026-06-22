@@ -32,5 +32,9 @@ namespace MageFactory.CombatContextRuntime {
         public bool shouldLogCombatHotPath() {
             return profile == CombatRuntimeProfile.Developer;
         }
+
+        public bool shouldPublishLegacyFlowNoOutputWarnings() {
+            return profile == CombatRuntimeProfile.Developer;
+        }
     }
 }

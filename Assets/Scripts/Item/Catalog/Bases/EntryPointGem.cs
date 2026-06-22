@@ -76,7 +76,7 @@ namespace MageFactory.Item.Catalog.Bases {
 
             public IOperations getEffectsDescriptor() {
                 return new ItemOperationsDescription(
-                    new AddPower(DamageRole.ATTACK, new PowerAmount(-2))
+                    new AddGuardPower(new GuardPower(2))
                 );
             }
         }

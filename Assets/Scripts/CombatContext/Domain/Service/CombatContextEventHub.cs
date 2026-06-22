@@ -14,6 +14,21 @@ namespace MageFactory.CombatContext.Domain.Service {
             combatContextCreatedChannel
                 = new();
 
+        private readonly DomainEventChannel<FlowGuardCreatedDtoEvent, IFlowGuardCreatedEventListener>
+            flowGuardCreatedChannel = new();
+
+        private readonly DomainEventChannel<FlowInputStartedDtoEvent, IFlowInputStartedEventListener>
+            flowInputStartedChannel = new();
+
+        private readonly DomainEventChannel<FlowOutputReachedDtoEvent, IFlowOutputReachedEventListener>
+            flowOutputReachedChannel = new();
+
+        private readonly DomainEventChannel<FlowNoOutputDtoEvent, IFlowNoOutputEventListener>
+            flowNoOutputChannel = new();
+
+        private readonly DomainEventChannel<FlowAttackCreatedDtoEvent, IFlowAttackCreatedEventListener>
+            flowAttackCreatedChannel = new();
+
         public void subscribe(ICombatCharacterCreatedEventListener eventListener) {
             combatCharacterCreatedChannel.subscribe(eventListener);
         }
@@ -30,12 +45,72 @@ namespace MageFactory.CombatContext.Domain.Service {
             combatContextCreatedChannel.unsubscribe(eventListener);
         }
 
+        public void subscribe(IFlowGuardCreatedEventListener eventListener) {
+            flowGuardCreatedChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IFlowGuardCreatedEventListener eventListener) {
+            flowGuardCreatedChannel.unsubscribe(eventListener);
+        }
+
+        public void subscribe(IFlowInputStartedEventListener eventListener) {
+            flowInputStartedChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IFlowInputStartedEventListener eventListener) {
+            flowInputStartedChannel.unsubscribe(eventListener);
+        }
+
+        public void subscribe(IFlowOutputReachedEventListener eventListener) {
+            flowOutputReachedChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IFlowOutputReachedEventListener eventListener) {
+            flowOutputReachedChannel.unsubscribe(eventListener);
+        }
+
+        public void subscribe(IFlowNoOutputEventListener eventListener) {
+            flowNoOutputChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IFlowNoOutputEventListener eventListener) {
+            flowNoOutputChannel.unsubscribe(eventListener);
+        }
+
+        public void subscribe(IFlowAttackCreatedEventListener eventListener) {
+            flowAttackCreatedChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IFlowAttackCreatedEventListener eventListener) {
+            flowAttackCreatedChannel.unsubscribe(eventListener);
+        }
+
         public void publish(in CombatCharacterCreatedDtoEvent ev) {
             combatCharacterCreatedChannel.publish(in ev);
         }
 
         public void publish(in CombatContextCreatedDtoEvent ev) {
             combatContextCreatedChannel.publish(in ev);
+        }
+
+        public void publish(in FlowGuardCreatedDtoEvent ev) {
+            flowGuardCreatedChannel.publish(in ev);
+        }
+
+        public void publish(in FlowInputStartedDtoEvent ev) {
+            flowInputStartedChannel.publish(in ev);
+        }
+
+        public void publish(in FlowOutputReachedDtoEvent ev) {
+            flowOutputReachedChannel.publish(in ev);
+        }
+
+        public void publish(in FlowNoOutputDtoEvent ev) {
+            flowNoOutputChannel.publish(in ev);
+        }
+
+        public void publish(in FlowAttackCreatedDtoEvent ev) {
+            flowAttackCreatedChannel.publish(in ev);
         }
     }
 }

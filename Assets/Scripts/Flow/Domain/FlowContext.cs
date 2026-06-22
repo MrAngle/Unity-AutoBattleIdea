@@ -17,6 +17,7 @@ namespace MageFactory.Flow.Domain {
         private readonly Id<CharacterId> sourceCharacterId;
 
         private readonly Dictionary<DamageRole, FlowEffectBucket> flowEffectBucketsByDamageRole = new();
+        private PowerAmount guardPower = PowerAmount.noPower();
 
         private int stepIndex;
 
@@ -66,6 +67,26 @@ namespace MageFactory.Flow.Domain {
             }
 
             return PowerAmount.noPower();
+        }
+
+        internal GuardPower getGuardPower() {
+            return GuardPower.fromPowerAmount(guardPower);
+        }
+
+        internal void changeGuardPower(PowerAmount powerDelta) {
+            if (powerDelta == null) {
+                throw new ArgumentNullException(nameof(powerDelta));
+            }
+
+            if (powerDelta.getPower() == 0) {
+                return;
+            }
+
+            guardPower.change(powerDelta);
+
+            if (guardPower.getPower() < 0) {
+                guardPower = PowerAmount.noPower();
+            }
         }
 
         internal void changeDamagePower(DamageRole damageRole, PowerAmount powerDelta) {

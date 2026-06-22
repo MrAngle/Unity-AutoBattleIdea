@@ -23,13 +23,17 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             combatCharacter.combatTick(combatTicks, combatCapabilities);
         }
 
-        public void createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
+        public bool createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
                                ICombatCapabilities combatCapabilities) {
-            combatCharacter.createFlow(entryPointItemId, flowConsumer, combatCapabilities);
+            return combatCharacter.createFlow(entryPointItemId, flowConsumer, combatCapabilities);
         }
 
         public void cleanup() {
             combatCharacter.cleanup();
+        }
+
+        public bool tryAddGuardPower(GuardPower guardPower, out PreparedGuardAddResult guardAddResult) {
+            return combatCharacter.tryAddGuardPower(guardPower, out guardAddResult);
         }
 
         public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {

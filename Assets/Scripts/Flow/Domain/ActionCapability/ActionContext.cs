@@ -29,5 +29,9 @@ namespace MageFactory.Flow.Domain.ActionCapability {
         internal void addPower(DamageRole damageRole, PowerAmount damageAmount) {
             flowContext.changeDamagePower(damageRole, damageAmount);
         }
+
+        internal void addGuardPower(PowerAmount guardPowerAmount) {
+            flowContext.changeGuardPower(guardPowerAmount);
+        }
     }
 }

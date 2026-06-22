@@ -27,7 +27,13 @@ namespace MageFactory.BattleManager {
             createSlots(new CreateCombatCharacterCommand[] {
                 new("Warrior", 120, Team.TeamA, DefaultInventoryGridDimensions, new[] {
                     new EquipItemCommand(
-                        new EntryPointGem(), new Vector2Int(0, 0))
+                        new EntryPointGem(), new Vector2Int(0, 0)),
+                    new EquipItemCommand(
+                        new BasicOutputPort(), new Vector2Int(1, 0)),
+                    new EquipItemCommand(
+                        new PulseInputPort(), new Vector2Int(0, 1)),
+                    new EquipItemCommand(
+                        new BasicOutputPort(), new Vector2Int(1, 1))
                 }),
                 new("Mage", 1220, Team.TeamB, DefaultInventoryGridDimensions, Array.Empty<EquipItemCommand>()),
                 new("Archer", 1300, Team.TeamB, DefaultInventoryGridDimensions, Array.Empty<EquipItemCommand>())

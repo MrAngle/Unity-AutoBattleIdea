@@ -21,6 +21,7 @@ namespace MageFactory.Flow.Domain {
         private readonly FlowProcessorSettings settings;
         private readonly Id<ActiveFlowId> flowId;
         private readonly FlowKind flowKind;
+        private readonly bool requiresOutputPort;
 
         private IFlowItem currentItem;
         private readonly CurrentFlowItemCast currentItemCast = new();
@@ -39,6 +40,7 @@ namespace MageFactory.Flow.Domain {
             this.settings = NullGuard.NotNullOrThrow(settings);
             this.flowId = NullGuard.ValidIdOrThrow(flowId);
             this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
+            requiresOutputPort = this.flowProcessingCapabilities.query().isInputPort(currentItem);
             currentItemProcessingSlot =
                 this.flowProcessingCapabilities.command().startProcessingFlowItem(currentItem);
             processingPath.Add(currentItemProcessingSlot);
@@ -157,18 +159,37 @@ namespace MageFactory.Flow.Domain {
                 currentItemProcessingSlot =
                     flowProcessingCapabilities.command().startProcessingFlowItem(currentItem);
                 processingPath.Add(currentItemProcessingSlot);
+
+                if (flowProcessingCapabilities.query().isOutputPort(currentItem)) {
+                    finishFlowAtOutput();
+                    currentItem = null;
+                    finished = true;
+                    return false;
+                }
+
                 currentItemCast.startCasting(currentItem, settings.getCastTimeMode(), currentItemProcessingSlot);
                 return true;
             }
 
-            finishFlow();
+            finishFlowWithoutOutput();
             currentItem = null;
             finished = true;
             return false;
         }
 
-        private void finishFlow() {
-            flowProcessingCapabilities.command().consumeFlow();
+        private void finishFlowAtOutput() {
+            flowProcessingCapabilities.command().consumeFlow(currentItemProcessingSlot, true);
+            flowProcessingCapabilities.command().finishProcessingFlowItem(currentItemProcessingSlot);
+        }
+
+        private void finishFlowWithoutOutput() {
+            if (requiresOutputPort) {
+                flowProcessingCapabilities.command().discardFlow(currentItemProcessingSlot);
+                flowProcessingCapabilities.command().finishProcessingFlowItem(currentItemProcessingSlot);
+                return;
+            }
+
+            flowProcessingCapabilities.command().consumeFlow(currentItemProcessingSlot, false);
             flowProcessingCapabilities.command().finishProcessingFlowItem(currentItemProcessingSlot);
         }
 

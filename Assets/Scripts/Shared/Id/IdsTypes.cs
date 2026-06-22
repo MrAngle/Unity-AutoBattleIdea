@@ -24,6 +24,9 @@ namespace MageFactory.Shared.Id {
     public readonly struct ActiveFlowId {
     }
 
+    public readonly struct GuardId {
+    }
+
     public readonly struct ItemId {
     }
 }

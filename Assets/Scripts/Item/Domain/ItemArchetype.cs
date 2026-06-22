@@ -1,6 +1,7 @@
 ﻿using MageFactory.ActionEffect;
 using MageFactory.Inventory.Contract;
 using MageFactory.Item.Domain.InventoryItems;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using MageFactory.Shared.Utility;
 
@@ -22,6 +23,24 @@ namespace MageFactory.Item.Domain {
 
         public IItemDefinition getItemDefinition() {
             return itemDefinition;
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return itemDefinition is IFlowPortDefinition portDefinition
+                ? portDefinition.getFlowPortKind()
+                : FlowPortKind.None;
+        }
+
+        public string getFlowPortName() {
+            return itemDefinition is IFlowPortDefinition portDefinition
+                ? portDefinition.getFlowPortName()
+                : string.Empty;
+        }
+
+        public string getFlowPortDescription() {
+            return itemDefinition is IFlowPortDefinition portDefinition
+                ? portDefinition.getFlowPortDescription()
+                : string.Empty;
         }
 
         public IActionDescription getActionDescription() {

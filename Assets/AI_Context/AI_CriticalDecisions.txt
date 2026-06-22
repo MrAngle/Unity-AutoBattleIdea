@@ -311,6 +311,31 @@ Critical risk:
 - direct numeric/flat barrier portions may still collapse into binary outcomes: full protection or instant death
 - the defense model should fail gracefully
 
+Current implemented guard foundation after 2026-06-06:
+
+- flow output now has a separate `GuardPower` result alongside `attackPower`
+- `GuardPower` is not a `DamageRole`; it must stay separate because `DamageRole` describes damage-stream roles
+- `AddGuardPower` lets entry points and normal items add guard power to the current flow result
+- when a flow is consumed, positive `GuardPower` creates one prepared guard portion on the flow owner before flow-specific attack/damage handling
+- prepared guards are combat runtime state owned by `CombatCharacter`, not inventory state and not base HP data
+- incoming `ResolvedDamage` is reduced by prepared guards before HP is changed
+- each prepared guard portion can react at most once to one damage packet
+- using a guard strains it by the blocked damage amount; empty guards are removed
+- current generic guard formula is `blocked = damage * (1 - (damage / (damage + guardPower))^2)`, rounded down and clamped so positive incoming damage is never fully blocked
+- current readable storage limit is 30 prepared guard portions per character
+- when the 31st+ guard would be created, the oldest guard is replaced by the new guard; this is intentionally a readable queue rule, not a hidden weakest-merge rule
+- guard creation and attack creation publish neutral combat-context DTO events carrying the final flow processing slot so UI can draw a beam from the last processed item without domain depending on views
+- guard absorption publishes a neutral character DTO event with incoming damage, blocked damage, remaining damage, destroyed guard count, and remaining guard power
+- current catalog `DefenseEntryPointGem` and `Shield` demonstrate guard generation instead of flat `ATTACK` reduction, currently at attack-scale values of 2 and 5 guard power
+- character-level prepared guard creation exposes only the result-bearing `tryAddGuardPower(...)` command; avoid parallel fire-and-forget APIs when the result carries domain facts needed by UI or tests
+
+Open guard cautions:
+
+- the first implementation is generic and untyped: no guard tags, damage-type matching, expiry, priority, or minimum-trigger conditions yet
+- the 30-portion cap and oldest-replacement overflow are provisional balance parameters
+- heavy guards that should ignore small bait hits still need explicit conditions/tags later
+- future deterministic balance simulations must challenge burst, rapid-small-hit drain, guard overflow, baiting, and late-game guard stacking
+
 ## Guard Power Readability
 
 Candidate player-facing names:
@@ -332,9 +357,9 @@ Example:
 
 ```text
 Guard Power: 120
-Against 60 damage: blocks ~55
-Against 120 damage: blocks ~95
-Against 240 damage: blocks ~130
+Against 60 damage: blocks ~53
+Against 120 damage: blocks ~90
+Against 240 damage: blocks ~133
 ```
 
 This lets players understand behavior without memorizing a formula.
@@ -351,6 +376,53 @@ Therefore:
 - attack flow should produce concrete damage-like values whenever possible
 
 If attack output becomes a generic abstract offensive rating, guard tooltips lose context and the game risks becoming opaque ARPG-style offensive/defensive stat soup.
+
+Current implemented UI direction after 2026-06-06:
+
+- prepared guards are shown above the inventory area as compact shield-like guard icons
+- each icon shows a short 3-4 character-ish guard power label such as `999`, `2.5k`, or `1m`
+- the displayed guard list is limited by inventory width and up to two rows
+- hovering a guard shows concrete examples of how much damage it blocks against smaller/matching/larger incoming damage
+- guard creation, attack creation, and guard absorption are visualized in UI from domain DTO facts; the domain must not know about beams, popups, colors, glyphs, or inventory transforms
+- the current icon is a free/runtime UI glyph approach, not a paid asset dependency; it can be replaced later by a prefab or free icon asset
+
+## Flow Ports And Output Commit
+
+Current implemented direction after 2026-06-07:
+
+- ports are metadata/characteristics visible on items, not a new UI-only concept
+- current `IEntryPointDefinition` still exists and must not be removed yet
+- current port implementation is an adapter over the existing entry-point/flow-kind contracts; it is not the final fully neutral port architecture
+- a port should not be an item-processing/cast rules engine; cast/effect transformations remain item/action behavior
+- output ports are commit points for accumulated flow power
+- when a flow reaches an output port, the output port itself is not cast and does not execute its own item effects
+- attack and guard DTO facts should originate from the output/final processing slot so UI can draw beams from the watched output location
+- port-aware input flows that do not reach an output are discarded and reported as no-output/wasted facts
+- legacy entry-point flows that do not reach an output still commit for compatibility; legacy no-output warnings are published only in the developer runtime profile because emitting them for every legacy flow is too expensive in hot-path production stress scenarios
+- UI may show `IN`, `OUT`, no-output, and output-reached signals, but domain rules must remain in flow/combat modules
+
+Important caveat:
+
+- because the current entry-point contract still requires `FlowKind`, example input ports may temporarily expose a damage/defense flow kind even though the target design is for input ports to answer mostly "when/how triggered", while output/flow contents decide what is committed
+- future port-aware defensive inputs need an explicit no-output policy; a defensive flow that consumes an incoming-damage event and then discards without output must not accidentally erase the original damage unless that is an intentional, visible mechanic
+
+## Prepared Guard Portion Queue
+
+Current implemented direction after 2026-06-07:
+
+- previous mechanism: prepared guards had a 20-portion cap, overflow merged into the weakest guard at 70% efficiency, and incoming damage selected stronger guards first
+- new mechanism: prepared guards are a readable bounded queue with max 30 active portions
+- new guards are appended to the right/end of the queue
+- when all 30 slots are occupied, adding a new guard replaces the oldest guard
+- incoming damage consumes prepared guards from left to right
+- one damage packet may continue into later guards if earlier guards do not absorb all remaining damage
+- replacement and absorption should be reported as domain facts/presentation DTO data so UI can show a push/replacement and shield-splitting/blocked amount effect
+
+Design reason:
+
+- the old weakest-merge/strongest-first behavior was a hidden global rule that players would have to infer
+- a left-to-right bounded queue is easier to read, easier to visualize, and keeps the per-hit/per-add guard work bounded by 30
+- balance should move toward item/output properties deciding how guard portions are created/replaced/split, rather than more global guard-selection rules
 
 ## Static Gear Segment
 

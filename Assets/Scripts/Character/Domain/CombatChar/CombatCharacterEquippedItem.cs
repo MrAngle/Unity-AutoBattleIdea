@@ -2,12 +2,14 @@
 using MageFactory.ActionEffect;
 using MageFactory.Character.Contract;
 using MageFactory.CombatContext.Contract;
+using MageFactory.Shared.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 using MageFactory.Shared.Model.Shape;
 using UnityEngine;
 
 namespace MageFactory.Character.Domain.CombatChar {
-    internal class CombatCharacterEquippedItem : ICombatCharacterEquippedItem {
+    internal class CombatCharacterEquippedItem : ICombatCharacterEquippedItem, IFlowPortPlacedItem {
         private readonly ICharacterEquippedItem characterEquippedItem;
 
         public CombatCharacterEquippedItem(ICharacterEquippedItem characterEquippedItem) {
@@ -32,6 +34,24 @@ namespace MageFactory.Character.Domain.CombatChar {
 
         public IActionDescription prepareItemActionDescription() {
             return characterEquippedItem.prepareItemActionDescription();
+        }
+
+        public FlowPortKind getFlowPortKind() {
+            return characterEquippedItem is IFlowPortPlacedItem portPlacedItem
+                ? portPlacedItem.getFlowPortKind()
+                : FlowPortKind.None;
+        }
+
+        public string getFlowPortName() {
+            return characterEquippedItem is IFlowPortPlacedItem portPlacedItem
+                ? portPlacedItem.getFlowPortName()
+                : string.Empty;
+        }
+
+        public string getFlowPortDescription() {
+            return characterEquippedItem is IFlowPortPlacedItem portPlacedItem
+                ? portPlacedItem.getFlowPortDescription()
+                : string.Empty;
         }
     }
 }

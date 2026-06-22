@@ -106,11 +106,14 @@ namespace MageFactory.CombatContext.Domain {
                 return;
             }
 
-            ICombatCharacterFacade combatCombatCharacter =
-                characters[consumeFlowCommand.flowOwner.getFlowOwnerCharacterId()];
-            if (combatCombatCharacter == null) {
+            if (!characters.TryGetValue(
+                    consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
+                    out ICombatCharacterFacade combatCombatCharacter)) {
                 return;
             }
+
+            publishFlowCompletionFact(combatCombatCharacter, consumeFlowCommand);
+            processGuardOutput(combatCombatCharacter, consumeFlowCommand);
 
             switch (consumeFlowCommand.flowKind) {
                 case FlowKind.Damage:
@@ -123,6 +126,85 @@ namespace MageFactory.CombatContext.Domain {
                     throw new ArgumentOutOfRangeException(nameof(consumeFlowCommand.flowKind),
                         "Unsupported flow kind.");
             }
+        }
+
+        public void discardFlow(DiscardFlowCommand discardFlowCommand) {
+            if (discardFlowCommand.flowOwner?.getFlowOwnerCharacterId() == null) {
+                return;
+            }
+
+            if (!characters.TryGetValue(
+                    discardFlowCommand.flowOwner.getFlowOwnerCharacterId(),
+                    out ICombatCharacterFacade combatCombatCharacter)) {
+                return;
+            }
+
+            Id<CharacterId> characterId = combatCombatCharacter.query().getCharacterInfo().getCharacterId();
+            combatContextEventPublisher.publish(new FlowNoOutputDtoEvent(
+                characterId,
+                discardFlowCommand.attackPower.getPower(),
+                discardFlowCommand.guardPower.getPower(),
+                discardFlowCommand.finalProcessingSlot,
+                false));
+
+            if (combatRuntimeSettings.shouldLogCombatHotPath()) {
+                Debug.Log(
+                    $"[CombatContext] Port-aware flow discarded without output for character={characterId}, " +
+                    $"attackPower={discardFlowCommand.attackPower.getPower()}, guardPower={discardFlowCommand.guardPower.getPower()}");
+            }
+        }
+
+        private void publishFlowCompletionFact(
+            ICombatCharacterFacade combatCharacterFacade,
+            ConsumeFlowCommand consumeFlowCommand) {
+            Id<CharacterId> characterId = combatCharacterFacade.query().getCharacterInfo().getCharacterId();
+
+            if (consumeFlowCommand.reachedOutputPort) {
+                combatContextEventPublisher.publish(new FlowOutputReachedDtoEvent(
+                    characterId,
+                    consumeFlowCommand.attackPower.getPower(),
+                    consumeFlowCommand.guardPower.getPower(),
+                    consumeFlowCommand.finalProcessingSlot));
+                return;
+            }
+
+            if (!combatRuntimeSettings.shouldPublishLegacyFlowNoOutputWarnings()) {
+                return;
+            }
+
+            combatContextEventPublisher.publish(new FlowNoOutputDtoEvent(
+                characterId,
+                consumeFlowCommand.attackPower.getPower(),
+                consumeFlowCommand.guardPower.getPower(),
+                consumeFlowCommand.finalProcessingSlot,
+                true));
+        }
+
+        private void processGuardOutput(ICombatCharacterFacade combatCharacterFacade,
+                                        ConsumeFlowCommand consumeFlowCommand) {
+            if (!consumeFlowCommand.hasGuardPower()) {
+                return;
+            }
+
+            if (!combatCharacterFacade.command()
+                    .tryAddGuardPower(consumeFlowCommand.guardPower, out PreparedGuardAddResult guardAddResult)) {
+                return;
+            }
+
+            PreparedGuardState guardState = guardAddResult.getAddedGuardState();
+            bool replacedGuard = guardAddResult.hasReplacedGuard();
+            PreparedGuardState replacedGuardState = replacedGuard
+                ? guardAddResult.getReplacedGuardState()
+                : default;
+
+            combatContextEventPublisher.publish(new FlowGuardCreatedDtoEvent(
+                combatCharacterFacade.query().getCharacterInfo().getCharacterId(),
+                guardState.getGuardId(),
+                guardState.getGuardPower().getPower(),
+                consumeFlowCommand.finalProcessingSlot,
+                replacedGuard,
+                replacedGuard ? replacedGuardState.getGuardId() : default,
+                replacedGuard ? replacedGuardState.getGuardPower().getPower() : 0));
         }
 
         private void processDefensiveFlow(ICombatCharacterFacade combatCharacterFacade,
@@ -138,9 +220,19 @@ namespace MageFactory.CombatContext.Domain {
         }
 
         private void processOffensiveFlow(ConsumeFlowCommand consumeFlowCommand) {
+            if (!consumeFlowCommand.hasAttackPower()) {
+                return;
+            }
+
             if (tryGetRandomEnemyOf(consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
                     out ICombatCharacterFacade enemy)) {
                 // TODO: targeting should be in flow
+                combatContextEventPublisher.publish(new FlowAttackCreatedDtoEvent(
+                    consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
+                    enemy.query().getCharacterInfo().getCharacterId(),
+                    consumeFlowCommand.attackPower.getPower(),
+                    consumeFlowCommand.finalProcessingSlot));
+
                 IncomingAttackDamageCombatEvent damageIncomingCombatEvent = new IncomingAttackDamageCombatEvent(
                     enemy.query().getCharacterInfo().getCharacterId(),
                     consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
@@ -195,7 +287,7 @@ namespace MageFactory.CombatContext.Domain {
             return true;
         }
 
-        internal void createFlow(CreateFlowCombatCommand combatCommand) {
+        internal bool createFlow(CreateFlowCombatCommand combatCommand) {
             NullGuard.NotNullOrThrow(combatCommand);
 
             if (!characters.TryGetValue(combatCommand.characterId, out ICombatCharacterFacade characterFacade)) {
@@ -204,7 +296,14 @@ namespace MageFactory.CombatContext.Domain {
                 );
             }
 
-            characterFacade.command().createFlow(combatCommand.itemId, this, combatCapabilities);
+            bool created = characterFacade.command().createFlow(combatCommand.itemId, this, combatCapabilities);
+            if (created) {
+                combatContextEventPublisher.publish(new FlowInputStartedDtoEvent(
+                    combatCommand.characterId,
+                    combatCommand.itemId));
+            }
+
+            return created;
         }
 
         private void dispatchCombatEvent(CombatEvent combatEvent) {

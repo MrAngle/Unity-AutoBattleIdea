@@ -13,6 +13,12 @@ namespace MageFactory.ActionEffect {
         public IActionDescription getActionDescription();
     }
 
+    public interface IFlowPortDefinition : IItemDefinition {
+        FlowPortKind getFlowPortKind();
+        string getFlowPortName();
+        string getFlowPortDescription();
+    }
+
     public interface IEntryPointDefinition : IItemDefinition {
         FlowKind getFlowKind();
 

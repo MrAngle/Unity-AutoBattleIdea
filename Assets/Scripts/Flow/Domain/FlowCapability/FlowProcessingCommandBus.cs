@@ -10,15 +10,31 @@ namespace MageFactory.Flow.Domain.FlowCapability {
             this.flowContext = NullGuard.NotNullOrThrow(flowContext);
         }
 
-        internal void consumeFlow() {
+        internal void consumeFlow(ItemFlowProcessingSlot finalProcessingSlot, bool reachedOutputPort) {
             IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
 
             ConsumeFlowCommand offensiveFlowCommand =
                 new(flowContext.getFlowKind(),
                     flowContext.getFlowOwner(),
                     flowContext.getAttackPower(),
-                    flowContext.getSourceCharacterId());
+                    flowContext.getGuardPower(),
+                    flowContext.getSourceCharacterId(),
+                    finalProcessingSlot,
+                    reachedOutputPort);
             flowConsumer.consumeFlow(offensiveFlowCommand);
+        }
+
+        internal void discardFlow(ItemFlowProcessingSlot finalProcessingSlot) {
+            IFlowConsumer flowConsumer = flowContext.getFlowConsumer();
+
+            DiscardFlowCommand discardFlowCommand =
+                new(flowContext.getFlowKind(),
+                    flowContext.getFlowOwner(),
+                    flowContext.getAttackPower(),
+                    flowContext.getGuardPower(),
+                    flowContext.getSourceCharacterId(),
+                    finalProcessingSlot);
+            flowConsumer.discardFlow(discardFlowCommand);
         }
 
         internal ItemFlowProcessingSlot startProcessingFlowItem(IFlowItem item) {

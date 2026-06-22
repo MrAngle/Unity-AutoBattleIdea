@@ -12,9 +12,10 @@ namespace MageFactory.CombatContext.Contract {
 
         void combatTick(CombatTicks combatTicks, ICombatCapabilities combatCapabilities);
 
-        void createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
+        bool createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
                         ICombatCapabilities combatCapabilities);
 
+        bool tryAddGuardPower(GuardPower guardPower, out PreparedGuardAddResult guardAddResult);
         DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage);
         void cleanup();
 

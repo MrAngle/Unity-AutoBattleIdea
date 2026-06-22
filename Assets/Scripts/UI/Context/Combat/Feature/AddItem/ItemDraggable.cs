@@ -7,8 +7,8 @@ using Zenject;
 
 namespace MageFactory.UI.Context.Combat.Feature.AddItem {
     public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
-        [SerializeField] private ItemDragPoolKind dragPoolKind = ItemDragPoolKind.Offensive;
-        [SerializeField] private bool createDefensiveButtonClone = true;
+        [SerializeField] private ItemCatalogButtonKind itemKind = ItemCatalogButtonKind.RustySword;
+        [SerializeField] private bool createCatalogButtonClones = true;
 
         private ItemDragService service;
         private IItemDefinition inventoryPlaceableItem;
@@ -16,11 +16,12 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
         [Inject]
         public void construct(ItemDragService injectedService) {
             this.service = injectedService;
-            createDefensiveButtonIfNeeded(injectedService);
+            createCatalogButtonsIfNeeded(injectedService);
+            setButtonLabel(getButtonLabel(itemKind));
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
-            inventoryPlaceableItem = getRandomItemDefinition();
+            inventoryPlaceableItem = createItemDefinition(itemKind);
             if (inventoryPlaceableItem == null) return;
             service?.beginDrag(inventoryPlaceableItem, eventData);
         }
@@ -36,55 +37,37 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             inventoryPlaceableItem = null;
         }
 
-        private IItemDefinition getRandomItemDefinition() {
-            return dragPoolKind == ItemDragPoolKind.Defensive
-                ? getRandomDefensiveItemDefinition()
-                : getRandomOffensiveItemDefinition();
-        }
-
-        private static IItemDefinition getRandomOffensiveItemDefinition() {
-            int roll = Random.Range(0, 100);
-
-            if (roll < 10) {
-                return new Hammer();
-            }
-
-            if (roll < 40) {
-                return new EntryPointGem();
-            }
-
-            return new RustySword();
-        }
-
-        private static IItemDefinition getRandomDefensiveItemDefinition() {
-            return Random.Range(0, 2) == 0
-                ? new DefenseEntryPointGem()
-                : new Shield();
-        }
-
-        private void createDefensiveButtonIfNeeded(ItemDragService injectedService) {
-            if (!createDefensiveButtonClone || dragPoolKind != ItemDragPoolKind.Offensive || transform.parent == null) {
+        private void createCatalogButtonsIfNeeded(ItemDragService injectedService) {
+            if (!createCatalogButtonClones || transform.parent == null) {
                 return;
             }
 
-            if (transform.parent.Find("DefensiveItemButton") != null) {
+            if (transform.parent.Find("ItemButton_BasicOutputPort") != null) {
                 return;
             }
 
-            setButtonLabel("Offense");
+            ItemCatalogButtonKind[] itemKinds = getButtonKinds();
+            itemKind = itemKinds[0];
+            setButtonLabel(getButtonLabel(itemKind));
 
-            GameObject defensiveButton = Instantiate(gameObject, transform.parent);
-            defensiveButton.name = "DefensiveItemButton";
+            if (transform is RectTransform ownRect) {
+                ownRect.anchoredPosition = new Vector2(0f, 72f);
+            }
 
-            ItemDraggable defensiveDraggable = defensiveButton.GetComponent<ItemDraggable>();
-            defensiveDraggable.dragPoolKind = ItemDragPoolKind.Defensive;
-            defensiveDraggable.createDefensiveButtonClone = false;
-            defensiveDraggable.service = injectedService;
-            defensiveDraggable.setButtonLabel("Defense");
+            for (int i = 1; i < itemKinds.Length; i++) {
+                ItemCatalogButtonKind nextKind = itemKinds[i];
+                GameObject itemButton = Instantiate(gameObject, transform.parent);
+                itemButton.name = "ItemButton_" + nextKind;
 
-            if (transform is RectTransform offensiveRect && defensiveButton.transform is RectTransform defensiveRect) {
-                offensiveRect.anchoredPosition = new Vector2(0, 18);
-                defensiveRect.anchoredPosition = new Vector2(0, -18);
+                ItemDraggable draggable = itemButton.GetComponent<ItemDraggable>();
+                draggable.itemKind = nextKind;
+                draggable.createCatalogButtonClones = false;
+                draggable.service = injectedService;
+                draggable.setButtonLabel(getButtonLabel(nextKind));
+
+                if (itemButton.transform is RectTransform rectTransform) {
+                    rectTransform.anchoredPosition = new Vector2(0f, 72f - i * 28f);
+                }
             }
         }
 
@@ -97,9 +80,52 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             buttonText.text = label;
         }
 
-        private enum ItemDragPoolKind {
-            Offensive,
-            Defensive
+        private static ItemCatalogButtonKind[] getButtonKinds() {
+            return new[] {
+                ItemCatalogButtonKind.RustySword,
+                ItemCatalogButtonKind.Hammer,
+                ItemCatalogButtonKind.EntryPointGem,
+                ItemCatalogButtonKind.DefenseEntryPointGem,
+                ItemCatalogButtonKind.Shield,
+                ItemCatalogButtonKind.PulseInputPort,
+                ItemCatalogButtonKind.BasicOutputPort
+            };
+        }
+
+        private static IItemDefinition createItemDefinition(ItemCatalogButtonKind catalogButtonKind) {
+            return catalogButtonKind switch {
+                ItemCatalogButtonKind.RustySword => new RustySword(),
+                ItemCatalogButtonKind.Hammer => new Hammer(),
+                ItemCatalogButtonKind.EntryPointGem => new EntryPointGem(),
+                ItemCatalogButtonKind.DefenseEntryPointGem => new DefenseEntryPointGem(),
+                ItemCatalogButtonKind.Shield => new Shield(),
+                ItemCatalogButtonKind.PulseInputPort => new PulseInputPort(),
+                ItemCatalogButtonKind.BasicOutputPort => new BasicOutputPort(),
+                _ => new RustySword()
+            };
+        }
+
+        private static string getButtonLabel(ItemCatalogButtonKind catalogButtonKind) {
+            return catalogButtonKind switch {
+                ItemCatalogButtonKind.RustySword => "Sword",
+                ItemCatalogButtonKind.Hammer => "Hammer",
+                ItemCatalogButtonKind.EntryPointGem => "Entry",
+                ItemCatalogButtonKind.DefenseEntryPointGem => "Defense Entry",
+                ItemCatalogButtonKind.Shield => "Shield",
+                ItemCatalogButtonKind.PulseInputPort => "IN Port",
+                ItemCatalogButtonKind.BasicOutputPort => "OUT Port",
+                _ => "Item"
+            };
+        }
+
+        private enum ItemCatalogButtonKind {
+            RustySword,
+            Hammer,
+            EntryPointGem,
+            DefenseEntryPointGem,
+            Shield,
+            PulseInputPort,
+            BasicOutputPort
         }
     }
 }
