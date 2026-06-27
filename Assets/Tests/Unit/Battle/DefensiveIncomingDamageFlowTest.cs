@@ -85,8 +85,9 @@ namespace MageFactory.Tests.Unit.Battle {
                 IncomingAttackDamage +
                 DefensiveEntryDamageReduction +
                 DefensiveShieldDamageReduction;
+            long expectedDamageAfterStability = TestHelpers.getDamageAfterDefaultStability(expectedDamage);
 
-            Assert.AreEqual(initialHp - expectedDamage, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(initialHp - expectedDamageAfterStability, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, defender.query().getActiveFlowCount());
             Assert.AreEqual(1, combatContext.getCombatCapabilities().query()
                 .getCombatEventCount(CombatEventType.INCOMING_ATTACK_DAMAGE));
@@ -112,7 +113,9 @@ namespace MageFactory.Tests.Unit.Battle {
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
 
-            Assert.AreEqual(initialHp - IncomingAttackDamage, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(
+                initialHp - TestHelpers.getDamageAfterDefaultStability(IncomingAttackDamage),
+                TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, defender.query().getActiveFlowCount());
             Assert.AreEqual(0, defender.query().getCreatedFlowsInCurrentBattleCount());
             Assert.AreEqual(1, combatContext.getCombatCapabilities().query()
@@ -133,7 +136,9 @@ namespace MageFactory.Tests.Unit.Battle {
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
 
-            Assert.AreEqual(initialHp - IncomingAttackDamage, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(
+                initialHp - TestHelpers.getDamageAfterDefaultStability(IncomingAttackDamage),
+                TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(1, defender.query().getActiveFlowCount());
             Assert.AreEqual(1, defender.query().getCreatedFlowsInCurrentBattleCount());
             Assert.AreEqual(1, combatContext.getCombatCapabilities().query()
@@ -249,10 +254,11 @@ namespace MageFactory.Tests.Unit.Battle {
             defender.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
 
             int generatedGuardPower = DefenseEntryPointGemGuardPower + CatalogShieldGuardPower;
+            long damageAfterStability = TestHelpers.getDamageAfterDefaultStability(IncomingAttackDamage);
             long expectedBlockedDamage = GuardMitigationCalculator.calculateBlockedDamage(
                 generatedGuardPower,
-                IncomingAttackDamage);
-            long expectedDamage = IncomingAttackDamage - expectedBlockedDamage;
+                damageAfterStability);
+            long expectedDamage = damageAfterStability - expectedBlockedDamage;
 
             Assert.AreEqual(initialHp - expectedDamage, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(1, defender.query().getPreparedGuardCount());

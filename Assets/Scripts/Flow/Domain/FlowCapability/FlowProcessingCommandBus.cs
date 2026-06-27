@@ -18,6 +18,7 @@ namespace MageFactory.Flow.Domain.FlowCapability {
                     flowContext.getFlowOwner(),
                     flowContext.getAttackPower(),
                     flowContext.getGuardPower(),
+                    flowContext.getStabilityPower(),
                     flowContext.getSourceCharacterId(),
                     finalProcessingSlot,
                     reachedOutputPort);
@@ -32,6 +33,7 @@ namespace MageFactory.Flow.Domain.FlowCapability {
                     flowContext.getFlowOwner(),
                     flowContext.getAttackPower(),
                     flowContext.getGuardPower(),
+                    flowContext.getStabilityPower(),
                     flowContext.getSourceCharacterId(),
                     finalProcessingSlot);
             flowConsumer.discardFlow(discardFlowCommand);

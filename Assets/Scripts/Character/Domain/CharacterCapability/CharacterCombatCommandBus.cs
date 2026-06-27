@@ -36,6 +36,12 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return combatCharacter.tryAddGuardPower(guardPower, out guardAddResult);
         }
 
+        public bool tryAddStabilityPower(
+            StabilityPower stabilityPower,
+            out StabilityPowerAddResult stabilityAddResult) {
+            return combatCharacter.tryAddStabilityPower(stabilityPower, out stabilityAddResult);
+        }
+
         public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {
             return combatCharacter.applyResolvedDamage(resolvedDamage);
         }

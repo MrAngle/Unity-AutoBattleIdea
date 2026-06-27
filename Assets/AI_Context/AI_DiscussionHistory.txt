@@ -216,3 +216,110 @@ Current behavior:
 Critical design point:
 
 - changing battle speed changes only when ticks are executed in real time; it must not change item cast ticks, trigger intervals, damage, guard power, or other deterministic combat logic
+
+AI COMMIT BOUNDARY 2026-06-22 - after push b1e298a (master) - Implement runtime battle speed control with `BattleTimeController`, UI integration, and unit tests
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-06-22 - Defense layer order, base armor/resistance, and future barrier
+
+User is exploring a readable global armor/resistance-like defense value as an additional layer beside prepared guards.
+
+Current design intent:
+
+- every battle may start from a baseline defensive value around 1000
+- defensive flows may generate more of this value during combat
+- combat should pressure the player to maintain this value; no armor generation means incoming attacks become increasingly dangerous as the value is strained down
+- generating above the baseline should be meaningfully rewarded, but the percentage mitigation should have diminishing returns
+- investing only in this value should not be automatically best because attacks may pierce, ignore, drain, break, or otherwise counter the layer
+- guard remains useful as a generated/tactical layer and may protect or interact with this base defense, rather than replacing it
+
+UI/readability direction:
+
+- defense layers may be shown as ordered rows above the item grid
+- the highest row is processed first
+- near-term rows are the global armor/resistance-like value and prepared guards
+- default near-term order is armor/resistance first, then guard, but this is still design exploration
+- a later equipment-editing feature may allow changing the processing order of defense layers, such as armor before guard or guard before armor
+- row order should be visible and inspectable, not an invisible combat-pipeline rule
+
+Naming constraint:
+
+- user is also planning a future barrier layer as generated extra HP or a similar buffer
+- therefore the armor/resistance-like layer should not be named `Barrier`
+- `Armor` currently sounds too physical/narrow for this global defense concept, so better naming remains open
+
+AI 2026-06-22 - Implemented Stability defense layer
+
+Implemented the first version of the readable global armor/resistance-like layer under the name `Stability`.
+
+Previous incoming damage behavior:
+
+- resolved incoming damage was processed by prepared guards first, then remaining damage went to HP
+- there was no baseline global defensive value that every combat character started from
+
+Current implemented behavior:
+
+- every combat character starts each battle with baseline Stability 1000
+- incoming damage is processed in the visible order Stability -> prepared Guard -> HP
+- positive Stability uses diminishing mitigation: `damageAfter = incomingDamage * 1000 / (1000 + currentStability)`, with positive incoming damage clamped to at least 1 remaining damage
+- ordinary incoming attacks strain Stability by roughly one quarter of incoming damage and ordinary strain currently clamps at 0, so negative Stability remains future vulnerability/counterplay space
+- flow output can now carry Stability power, and combat publishes Stability-created and Stability-absorbed facts for UI/presentation
+- `StabilityCore` is the first simple catalog item that generates Stability; its output is intentionally below normal attack scale so maintaining/pushing Stability requires investment
+
+UI/readability implementation:
+
+- inventory combat layers now show Stability at the top, prepared Guard in the middle, and HP at the bottom
+- output/absorption visuals show Stability generation and Stability taking the first hit before Guard and HP feedback
+- HP was moved into the layer stack so the full defensive resolution order is visible near the item grid
+
+Testing/balance notes:
+
+- EditMode tests now include Stability baseline, Stability-before-HP damage processing, Stability flow output, and layer row order
+- existing damage and guard tests were updated to account for Stability-before-Guard
+- the defensive incoming damage performance smoke threshold was raised from 25ms to 30ms because the new Stability layer now runs in the incoming damage hot path; this remains a canary, not a final performance budget
+
+AI 2026-06-27 - Stability baseline reference and overcap decay
+
+User identified that absolute Stability values and direct damage-scaled strain can make late-game Stability swing too hard or turn anti-Stability stats into mandatory offense. The design shifted away from treating `1000 Stability = stronger percentage reduction` as an absolute global curve.
+
+Previous implemented Stability behavior:
+
+- default baseline Stability was 1000
+- mitigation used an absolute reference formula: `damageAfter = incomingDamage * 1000 / (1000 + currentStability)`
+- ordinary incoming attacks strained Stability by roughly one quarter of incoming damage
+- more absolute Stability always moved directly along the same global reduction curve
+
+New implemented Stability behavior:
+
+- default baseline Stability is now 100
+- mitigation is relative to the character's baseline: `damageAfter = incomingDamage * baselineStability / (baselineStability + currentStability)`
+- full baseline Stability gives about 50% reduction whether the baseline is 100 or a future late-game value such as 1000 or 2000
+- ordinary incoming attacks now strain Stability by roughly one third of incoming damage, clamped at 0 for ordinary strain
+- baseline Stability is now the size/reference of the Stability bar: higher baseline means the character maintains its standard reduction longer under strain, rather than starting with a higher percent cap
+- Stability can exceed baseline, but over-baseline Stability decays during combat ticks
+- over-baseline decay currently does not start until about 130% baseline; it becomes noticeable around 200% baseline and very fast around 300% baseline
+
+Design reason:
+
+- this preserves a readable single Stability value while scaling across early/late game
+- it avoids a mandatory offensive `Pressure` stat that permanently weakens all future hits
+- it rewards defensive generation above baseline but makes extreme overcap temporary, so pure Stability stacking should not become the obvious default
+
+AI 2026-06-27 - Slower steerable Stability overcap decay
+
+User pointed out that the first over-baseline Stability decay was far too fast for a baseline of 100, especially because losing a minimum of 1 Stability per tick near the threshold made the overcap feel harsh instead of gently temporary.
+
+Implemented follow-up:
+
+- over-baseline decay now starts at about 110% baseline instead of 130%
+- decay near the threshold is much slower because it accumulates fractional decay units before removing a full Stability point
+- the current curve is convex, effectively the opposite of logarithmic for gameplay purposes: it starts very slowly and accelerates as Stability moves farther above the decay threshold
+- current prototype tuning for baseline 100: around 130 Stability does not lose a full point after one tick, around 200 loses a few points per tick, and around 300 loses much faster
+- this curve should be treated as future character/balance space; later stats/items may tune the threshold, retention, or curve strength instead of making the global rule fixed forever
+
+Design reason:
+
+- small overcap should feel like a useful buffer, not immediately wasted
+- extreme overcap should still be temporary so pure Stability stacking does not become the obvious default
+- fractional decay avoids making low baseline values behave too harshly because of integer rounding

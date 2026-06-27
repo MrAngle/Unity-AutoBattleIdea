@@ -5,6 +5,7 @@ namespace MageFactory.Character.Api.Event {
         void publish(in CharacterHpChangedDtoEvent ev);
         void publish(in CharacterDeathDtoEvent ev);
         void publish(in CharacterGuardAbsorbedDamageDtoEvent ev);
+        void publish(in CharacterStabilityAbsorbedDamageDtoEvent ev);
     }
 
     public interface ICharacterEventRegistry {
@@ -16,5 +17,8 @@ namespace MageFactory.Character.Api.Event {
 
         void subscribe(IGuardAbsorbedDamageEventListener eventListener);
         void unsubscribe(IGuardAbsorbedDamageEventListener eventListener);
+
+        void subscribe(IStabilityAbsorbedDamageEventListener eventListener);
+        void unsubscribe(IStabilityAbsorbedDamageEventListener eventListener);
     }
 }

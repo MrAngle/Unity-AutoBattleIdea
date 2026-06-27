@@ -15,6 +15,7 @@ namespace MageFactory.CombatContext.Contract {
         bool createFlow(Id<ItemId> entryPointItemId, IFlowConsumer flowConsumer,
                         ICombatCapabilities combatCapabilities);
 
+        bool tryAddStabilityPower(StabilityPower stabilityPower, out StabilityPowerAddResult stabilityAddResult);
         bool tryAddGuardPower(GuardPower guardPower, out PreparedGuardAddResult guardAddResult);
         DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage);
         void cleanup();

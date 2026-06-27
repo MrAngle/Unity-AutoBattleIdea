@@ -12,6 +12,8 @@ namespace MageFactory.ActionEffect {
 
         void addGuardPower(PowerAmount guardPowerAmount);
 
+        void addStabilityPower(PowerAmount stabilityPowerAmount);
+
         void pushRightAdjacentItemRight();
     }
 

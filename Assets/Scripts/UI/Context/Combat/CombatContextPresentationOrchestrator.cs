@@ -28,6 +28,8 @@ namespace MageFactory.UI.Context.Combat {
         ICharacterDeathEventListener,
         IGuardAbsorbedDamageEventListener,
         IFlowGuardCreatedEventListener,
+        IFlowStabilityCreatedEventListener,
+        IStabilityAbsorbedDamageEventListener,
         IFlowInputStartedEventListener,
         IFlowOutputReachedEventListener,
         IFlowNoOutputEventListener,
@@ -68,6 +70,8 @@ namespace MageFactory.UI.Context.Combat {
             this.combatContextEventRegistry
                 .subscribe((IFlowGuardCreatedEventListener)this);
             this.combatContextEventRegistry
+                .subscribe((IFlowStabilityCreatedEventListener)this);
+            this.combatContextEventRegistry
                 .subscribe((IFlowInputStartedEventListener)this);
             this.combatContextEventRegistry
                 .subscribe((IFlowOutputReachedEventListener)this);
@@ -83,6 +87,8 @@ namespace MageFactory.UI.Context.Combat {
                 .subscribe((ICharacterDeathEventListener)this);
             this.characterEventRegistry
                 .subscribe((IGuardAbsorbedDamageEventListener)this);
+            this.characterEventRegistry
+                .subscribe((IStabilityAbsorbedDamageEventListener)this);
             this.inventoryEventRegistry.subscribe((IItemPlacedEventEventListener)this);
             this.inventoryEventRegistry.subscribe((IItemPositionChangedEventListener)this);
         }
@@ -113,6 +119,7 @@ namespace MageFactory.UI.Context.Combat {
             }
 
             inventoryPanelPresentation.printItemCastProgress(selectedCombatCharacter.query());
+            inventoryPanelPresentation.printDefenseLayers(selectedCombatCharacter.query());
             inventoryPanelPresentation.printPreparedGuards(selectedCombatCharacter.query());
         }
 
@@ -123,6 +130,8 @@ namespace MageFactory.UI.Context.Combat {
                 .unsubscribe((ICombatContextEventListener)this);
             this.combatContextEventRegistry
                 .unsubscribe((IFlowGuardCreatedEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IFlowStabilityCreatedEventListener)this);
             this.combatContextEventRegistry
                 .unsubscribe((IFlowInputStartedEventListener)this);
             this.combatContextEventRegistry
@@ -141,6 +150,8 @@ namespace MageFactory.UI.Context.Combat {
                 .unsubscribe((ICharacterDeathEventListener)this);
             this.characterEventRegistry
                 .unsubscribe((IGuardAbsorbedDamageEventListener)this);
+            this.characterEventRegistry
+                .unsubscribe((IStabilityAbsorbedDamageEventListener)this);
         }
 
         public void onEvent(in CombatContextCreatedDtoEvent ev) {
@@ -182,6 +193,11 @@ namespace MageFactory.UI.Context.Combat {
             if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
                 prefab.hpChange(ev);
             }
+
+            if (isSelectedCharacter(ev.characterId)) {
+                inventoryPanelPresentation.printDefenseLayers(selectedCombatCharacter.query());
+                inventoryPanelPresentation.showHpChangedVisual(ev.newHp - ev.previousHpValue);
+            }
         }
 
         public void onEvent(in CharacterDeathDtoEvent ev) {
@@ -203,6 +219,20 @@ namespace MageFactory.UI.Context.Combat {
                 }
 
                 inventoryPanelPresentation.printPreparedGuards(selectedCombatCharacter.query());
+            }
+        }
+
+        public void onEvent(in CharacterStabilityAbsorbedDamageDtoEvent ev) {
+            if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
+                prefab.stabilityAbsorbedDamage(ev);
+            }
+
+            if (isSelectedCharacter(ev.characterId)) {
+                inventoryPanelPresentation.printDefenseLayers(selectedCombatCharacter.query());
+                inventoryPanelPresentation.showStabilityAbsorbedVisual(
+                    ev.reducedDamage,
+                    ev.stabilityStrain,
+                    ev.remainingDamage);
             }
         }
 
@@ -229,6 +259,23 @@ namespace MageFactory.UI.Context.Combat {
                 ev.guardId);
         }
 
+        public void onEvent(in FlowStabilityCreatedDtoEvent ev) {
+            if (!isSelectedCharacter(ev.characterId)) {
+                return;
+            }
+
+            inventoryPanelPresentation.printDefenseLayers(selectedCombatCharacter.query());
+
+            if (!ev.hasSourceProcessingSlot()) {
+                return;
+            }
+
+            inventoryPanelPresentation.showStabilityGeneratedBeam(
+                ev.sourceProcessingSlot.getItemId(),
+                ev.sourceProcessingSlot.getLocalRow(),
+                ev.stabilityPower);
+        }
+
         public void onEvent(in FlowInputStartedDtoEvent ev) {
             if (!isSelectedCharacter(ev.characterId)) {
                 return;
@@ -246,7 +293,8 @@ namespace MageFactory.UI.Context.Combat {
                 ev.outputProcessingSlot.getItemId(),
                 ev.outputProcessingSlot.getLocalRow(),
                 ev.attackPower,
-                ev.guardPower);
+                ev.guardPower,
+                ev.stabilityPower);
         }
 
         public void onEvent(in FlowNoOutputDtoEvent ev) {

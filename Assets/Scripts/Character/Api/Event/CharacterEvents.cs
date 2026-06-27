@@ -11,4 +11,8 @@ namespace MageFactory.Character.Api.Event {
     public interface IGuardAbsorbedDamageEventListener
         : IDomainEventListener<CharacterGuardAbsorbedDamageDtoEvent> {
     }
+
+    public interface IStabilityAbsorbedDamageEventListener
+        : IDomainEventListener<CharacterStabilityAbsorbedDamageDtoEvent> {
+    }
 }

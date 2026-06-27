@@ -53,6 +53,20 @@ namespace MageFactory.UI.Component {
             refreshUI();
         }
 
+        public void stabilityAbsorbedDamage(in CharacterStabilityAbsorbedDamageDtoEvent ev) {
+            string text = ev.remainingDamage > 0
+                ? $"S -{ev.stabilityStrain} / {ev.remainingDamage}"
+                : $"S -{ev.stabilityStrain} / 0";
+            PopupManager.Instance.Show(
+                this,
+                text,
+                new Color(0.36f, 0.86f, 1f, 1f),
+                new Vector2(0f, 48f),
+                70f,
+                1.05f);
+            refreshUI();
+        }
+
         public void destroy(in CharacterDeathDtoEvent ev) {
             Destroy(gameObject);
         }

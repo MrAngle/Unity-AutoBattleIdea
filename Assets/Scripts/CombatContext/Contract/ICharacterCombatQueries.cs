@@ -22,6 +22,10 @@ namespace MageFactory.CombatContext.Contract {
 
         long getTotalPreparedGuardPower();
 
+        long getCurrentStability();
+
+        long getBaselineStability();
+
         void collectActiveFlowStates(IActiveFlowStateCollector collector);
 
         void collectPreparedGuardStates(IPreparedGuardStateCollector collector);

@@ -17,6 +17,9 @@ namespace MageFactory.CombatContext.Domain.Service {
         private readonly DomainEventChannel<FlowGuardCreatedDtoEvent, IFlowGuardCreatedEventListener>
             flowGuardCreatedChannel = new();
 
+        private readonly DomainEventChannel<FlowStabilityCreatedDtoEvent, IFlowStabilityCreatedEventListener>
+            flowStabilityCreatedChannel = new();
+
         private readonly DomainEventChannel<FlowInputStartedDtoEvent, IFlowInputStartedEventListener>
             flowInputStartedChannel = new();
 
@@ -51,6 +54,14 @@ namespace MageFactory.CombatContext.Domain.Service {
 
         public void unsubscribe(IFlowGuardCreatedEventListener eventListener) {
             flowGuardCreatedChannel.unsubscribe(eventListener);
+        }
+
+        public void subscribe(IFlowStabilityCreatedEventListener eventListener) {
+            flowStabilityCreatedChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IFlowStabilityCreatedEventListener eventListener) {
+            flowStabilityCreatedChannel.unsubscribe(eventListener);
         }
 
         public void subscribe(IFlowInputStartedEventListener eventListener) {
@@ -95,6 +106,10 @@ namespace MageFactory.CombatContext.Domain.Service {
 
         public void publish(in FlowGuardCreatedDtoEvent ev) {
             flowGuardCreatedChannel.publish(in ev);
+        }
+
+        public void publish(in FlowStabilityCreatedDtoEvent ev) {
+            flowStabilityCreatedChannel.publish(in ev);
         }
 
         public void publish(in FlowInputStartedDtoEvent ev) {

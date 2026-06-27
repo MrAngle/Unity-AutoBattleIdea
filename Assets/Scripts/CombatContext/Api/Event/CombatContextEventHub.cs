@@ -3,6 +3,7 @@
         void publish(in CombatCharacterCreatedDtoEvent ev);
         void publish(in CombatContextCreatedDtoEvent ev);
         void publish(in FlowGuardCreatedDtoEvent ev);
+        void publish(in FlowStabilityCreatedDtoEvent ev);
         void publish(in FlowInputStartedDtoEvent ev);
         void publish(in FlowOutputReachedDtoEvent ev);
         void publish(in FlowNoOutputDtoEvent ev);
@@ -18,6 +19,9 @@
 
         void subscribe(IFlowGuardCreatedEventListener eventListener);
         void unsubscribe(IFlowGuardCreatedEventListener eventListener);
+
+        void subscribe(IFlowStabilityCreatedEventListener eventListener);
+        void unsubscribe(IFlowStabilityCreatedEventListener eventListener);
 
         void subscribe(IFlowInputStartedEventListener eventListener);
         void unsubscribe(IFlowInputStartedEventListener eventListener);

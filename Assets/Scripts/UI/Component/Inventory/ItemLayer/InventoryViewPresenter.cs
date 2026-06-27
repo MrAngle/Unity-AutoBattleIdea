@@ -103,6 +103,65 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
         }
 
+        public readonly struct UiPrintDefenseLayersCommand {
+            public readonly long currentStability;
+            public readonly long baselineStability;
+            public readonly long currentHp;
+            public readonly long maxHp;
+            public readonly ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo;
+
+            public UiPrintDefenseLayersCommand(
+                long currentStability,
+                long baselineStability,
+                long currentHp,
+                long maxHp,
+                ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
+                this.currentStability = currentStability;
+                this.baselineStability = baselineStability;
+                this.currentHp = currentHp;
+                this.maxHp = maxHp;
+                this.inventoryGridInfo = inventoryGridInfo;
+            }
+        }
+
+        public readonly struct UiShowStabilityGeneratedBeamCommand {
+            public readonly Id<ItemId> sourceItemId;
+            public readonly int sourceLocalRow;
+            public readonly long stabilityPower;
+
+            public UiShowStabilityGeneratedBeamCommand(
+                Id<ItemId> sourceItemId,
+                int sourceLocalRow,
+                long stabilityPower) {
+                this.sourceItemId = sourceItemId;
+                this.sourceLocalRow = sourceLocalRow;
+                this.stabilityPower = stabilityPower;
+            }
+        }
+
+        public readonly struct UiShowStabilityAbsorbedVisualCommand {
+            public readonly long reducedDamage;
+            public readonly long stabilityStrain;
+            public readonly long remainingDamage;
+
+            public UiShowStabilityAbsorbedVisualCommand(
+                long reducedDamage,
+                long stabilityStrain,
+                long remainingDamage) {
+                this.reducedDamage = reducedDamage;
+                this.stabilityStrain = stabilityStrain;
+                this.remainingDamage = remainingDamage;
+            }
+        }
+
+        public readonly struct UiShowHpChangedVisualCommand {
+            public readonly long hpDelta;
+
+            public UiShowHpChangedVisualCommand(long hpDelta) {
+                this.hpDelta = hpDelta;
+            }
+        }
+
         public readonly struct UiShowGuardCreatedBeamCommand {
             public readonly Id<ItemId> sourceItemId;
             public readonly int sourceLocalRow;
@@ -146,16 +205,19 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             public readonly int outputLocalRow;
             public readonly long attackPower;
             public readonly long guardPower;
+            public readonly long stabilityPower;
 
             public UiShowFlowOutputReachedCommand(
                 Id<ItemId> outputItemId,
                 int outputLocalRow,
                 long attackPower,
-                long guardPower) {
+                long guardPower,
+                long stabilityPower) {
                 this.outputItemId = outputItemId;
                 this.outputLocalRow = outputLocalRow;
                 this.attackPower = attackPower;
                 this.guardPower = guardPower;
+                this.stabilityPower = stabilityPower;
             }
         }
 
@@ -201,10 +263,14 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         public void printInventoryItems(UiPrintInventoryItemsCommand changeInventoryItemsCommand);
         public void printNewItem(NewItemPrintCommand command);
         public void printItemCastProgress(UiPrintItemCastProgressCommand command);
+        public void printDefenseLayers(UiPrintDefenseLayersCommand command);
         public void printPreparedGuards(UiPrintPreparedGuardsCommand command);
         public void showFlowInputStarted(UiShowFlowInputStartedCommand command);
         public void showFlowOutputReached(UiShowFlowOutputReachedCommand command);
         public void showFlowNoOutput(UiShowFlowNoOutputCommand command);
+        public void showStabilityGeneratedBeam(UiShowStabilityGeneratedBeamCommand command);
+        public void showStabilityAbsorbedVisual(UiShowStabilityAbsorbedVisualCommand command);
+        public void showHpChangedVisual(UiShowHpChangedVisualCommand command);
         public void showGuardAbsorbedVisual(UiShowGuardAbsorbedVisualCommand command);
         public void showGuardReplacedVisual(UiShowGuardReplacedVisualCommand command);
         public void showGuardCreatedBeam(UiShowGuardCreatedBeamCommand command);
@@ -231,6 +297,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         private readonly HashSet<Id<ItemId>> relatedItemIds = new();
         private readonly List<Id<ItemId>> focusedProgressItemIds = new();
         private FlowConnectionOverlayView flowConnectionOverlayView;
+        private DefenseLayerOverlayView defenseLayerOverlayView;
         private PreparedGuardOverlayView preparedGuardOverlayView;
         private InventoryActionBeamOverlayView actionBeamOverlayView;
         private InventoryFocusKind focusKind = InventoryFocusKind.None;
@@ -284,6 +351,11 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             if (flowConnectionOverlayView != null) {
                 Object.Destroy(flowConnectionOverlayView.gameObject);
                 flowConnectionOverlayView = null;
+            }
+
+            if (defenseLayerOverlayView != null) {
+                Object.Destroy(defenseLayerOverlayView.gameObject);
+                defenseLayerOverlayView = null;
             }
 
             if (preparedGuardOverlayView != null) {
@@ -391,6 +463,21 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             preparedGuardOverlayView.printGuards(command.guardStates, command.inventoryGridInfo);
         }
 
+        public void printDefenseLayers(ICombatInventoryItemsPanel.UiPrintDefenseLayersCommand command) {
+            ensureDefenseLayerOverlayView(getItemsLayerTransform());
+
+            if (defenseLayerOverlayView == null) {
+                return;
+            }
+
+            defenseLayerOverlayView.printDefenseLayers(
+                command.currentStability,
+                command.baselineStability,
+                command.currentHp,
+                command.maxHp,
+                command.inventoryGridInfo);
+        }
+
         public void showFlowInputStarted(ICombatInventoryItemsPanel.UiShowFlowInputStartedCommand command) {
             if (!itemIdToItemView.TryGetValue(command.inputItemId, out PlacedItemView itemView)) {
                 return;
@@ -411,7 +498,14 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
             string label = command.guardPower > 0
                 ? $"OUT G{GuardPowerLabelFormatter.format(command.guardPower)}"
-                : $"OUT {GuardPowerLabelFormatter.format(command.attackPower)}";
+                : command.stabilityPower > 0
+                    ? $"OUT S{GuardPowerLabelFormatter.format(command.stabilityPower)}"
+                    : $"OUT {GuardPowerLabelFormatter.format(command.attackPower)}";
+
+            if (command.guardPower > 0 && command.stabilityPower > 0) {
+                label =
+                    $"OUT S{GuardPowerLabelFormatter.format(command.stabilityPower)} G{GuardPowerLabelFormatter.format(command.guardPower)}";
+            }
 
             if (itemIdToItemView.TryGetValue(command.outputItemId, out PlacedItemView itemView)) {
                 PopupManager.Instance?.Show(
@@ -424,6 +518,40 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
             ensureActionBeamOverlayView(getItemsLayerTransform());
             actionBeamOverlayView?.showBeam(point, point + new Vector2(0f, 42f), new Color(0.46f, 0.72f, 1f, 1f));
+        }
+
+        public void showStabilityGeneratedBeam(
+            ICombatInventoryItemsPanel.UiShowStabilityGeneratedBeamCommand command) {
+            if (!tryGetSourceItemPoint(command.sourceItemId, command.sourceLocalRow, out Vector2 start)) {
+                return;
+            }
+
+            ensureDefenseLayerOverlayView(getItemsLayerTransform());
+            if (defenseLayerOverlayView == null) {
+                return;
+            }
+
+            defenseLayerOverlayView.showStabilityGeneratedVisual(command.stabilityPower);
+            if (!defenseLayerOverlayView.tryGetStabilityCenterInParent(out Vector2 end)) {
+                end = start + new Vector2(0f, 80f);
+            }
+
+            ensureActionBeamOverlayView(getItemsLayerTransform());
+            actionBeamOverlayView?.showBeam(start, end, new Color(0.36f, 0.86f, 1f, 1f));
+        }
+
+        public void showStabilityAbsorbedVisual(
+            ICombatInventoryItemsPanel.UiShowStabilityAbsorbedVisualCommand command) {
+            ensureDefenseLayerOverlayView(getItemsLayerTransform());
+            defenseLayerOverlayView?.showStabilityAbsorbedVisual(
+                command.reducedDamage,
+                command.stabilityStrain,
+                command.remainingDamage);
+        }
+
+        public void showHpChangedVisual(ICombatInventoryItemsPanel.UiShowHpChangedVisualCommand command) {
+            ensureDefenseLayerOverlayView(getItemsLayerTransform());
+            defenseLayerOverlayView?.showHpChangedVisual(command.hpDelta);
         }
 
         public void showFlowNoOutput(ICombatInventoryItemsPanel.UiShowFlowNoOutputCommand command) {
@@ -790,6 +918,14 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
 
             preparedGuardOverlayView = PreparedGuardOverlayView.create(parent);
+        }
+
+        private void ensureDefenseLayerOverlayView(Transform parent) {
+            if (defenseLayerOverlayView != null || parent == null) {
+                return;
+            }
+
+            defenseLayerOverlayView = DefenseLayerOverlayView.create(parent);
         }
 
         private void ensureActionBeamOverlayView(Transform parent) {

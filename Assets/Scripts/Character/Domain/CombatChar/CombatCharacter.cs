@@ -29,6 +29,7 @@ namespace MageFactory.Character.Domain.CombatChar {
         private readonly Dictionary<Id<ItemId>, CombatPlacedItemRuntimeState> runtimeStateByItemId = new();
         private readonly Dictionary<Id<ItemId>, IFlowItem> flowItemByItemId = new();
         private readonly CombatTickPlan combatTickPlan = new();
+        private readonly CombatStabilityState stabilityState = new();
         private readonly CombatGuardState guardState = new();
         private int createdFlowCount;
         private int nextEventTriggeredDefensiveEntryPointIndex;
@@ -55,6 +56,8 @@ namespace MageFactory.Character.Domain.CombatChar {
         }
 
         public void combatTick(CombatTicks combatTicks, ICombatCapabilities combatCapabilities) {
+            stabilityState.applyOverBaselineDecay(combatTicks);
+
             combatTickPlan.executeCharacterTick(
                 activeFlows,
                 characterAggregate.getInventoryAggregate().getTickableItems(),
@@ -80,15 +83,26 @@ namespace MageFactory.Character.Domain.CombatChar {
         }
 
         public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {
+            ResolvedDamage damageAfterStability = stabilityState.applyTo(
+                resolvedDamage,
+                out StabilityDamageApplicationResult stabilityDamageApplicationResult);
+            characterAggregate.publishStabilityAbsorbedDamage(stabilityDamageApplicationResult);
+
             if (guardState.getPreparedGuardCount() == 0) {
-                return takeDamage(resolvedDamage);
+                return takeDamage(damageAfterStability);
             }
 
             ResolvedDamage damageAfterGuard = guardState.applyTo(
-                resolvedDamage,
+                damageAfterStability,
                 out GuardDamageApplicationResult guardDamageApplicationResult);
             characterAggregate.publishGuardAbsorbedDamage(guardDamageApplicationResult);
             return takeDamage(damageAfterGuard);
+        }
+
+        public bool tryAddStabilityPower(
+            StabilityPower stabilityPower,
+            out StabilityPowerAddResult stabilityAddResult) {
+            return stabilityState.tryAddStability(stabilityPower, out stabilityAddResult);
         }
 
         public bool tryAddGuardPower(GuardPower guardPower, out PreparedGuardAddResult guardAddResult) {
@@ -257,6 +271,14 @@ namespace MageFactory.Character.Domain.CombatChar {
 
         public long getTotalPreparedGuardPower() {
             return guardState.getTotalPreparedGuardPower();
+        }
+
+        public long getCurrentStability() {
+            return stabilityState.getCurrentStability();
+        }
+
+        public long getBaselineStability() {
+            return stabilityState.getBaselineStability();
         }
 
         public int getActiveFlowCountOnItem(Id<ItemId> itemId) {

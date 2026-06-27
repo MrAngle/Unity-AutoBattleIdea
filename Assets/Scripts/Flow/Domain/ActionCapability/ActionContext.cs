@@ -33,5 +33,9 @@ namespace MageFactory.Flow.Domain.ActionCapability {
         internal void addGuardPower(PowerAmount guardPowerAmount) {
             flowContext.changeGuardPower(guardPowerAmount);
         }
+
+        internal void addStabilityPower(PowerAmount stabilityPowerAmount) {
+            flowContext.changeStabilityPower(stabilityPowerAmount);
+        }
     }
 }

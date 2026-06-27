@@ -22,6 +22,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         private const float IconHeight = 62f;
         private const float IconSpacing = 6f;
         private const float RootPadding = 4f;
+        internal const float ReservedHeight = MaxRows * IconHeight + (MaxRows - 1) * IconSpacing;
 
         private readonly List<PreparedGuardIconView> iconViews = new();
         private PreparedGuardTooltipView tooltipView;
@@ -147,10 +148,10 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
             rectTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Vertical,
-                MaxRows * IconHeight + (MaxRows - 1) * IconSpacing);
+                ReservedHeight);
             rectTransform.anchoredPosition = new Vector2(
                 RootPadding,
-                rectTransform.rect.height + RootPadding);
+                rectTransform.rect.height + DefenseLayerOverlayView.GuardBottomOffset);
         }
 
         private static float calculateInventoryWidth(ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {

@@ -27,6 +27,10 @@ namespace MageFactory.Flow.Domain.ActionCapability {
             actionContext.addGuardPower(guardPowerAmount);
         }
 
+        public void addStabilityPower(PowerAmount stabilityPowerAmount) {
+            actionContext.addStabilityPower(stabilityPowerAmount);
+        }
+
         public void pushRightAdjacentItemRight() {
             flowCapabilities.command().tryMoveRightAdjacentItemToRight(actionContext.getActionItemInvoker());
         }

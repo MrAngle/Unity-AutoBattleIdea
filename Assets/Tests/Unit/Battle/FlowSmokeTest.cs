@@ -253,7 +253,8 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // then
             Assert.AreEqual(
-                hpBefore - ShapeCastEntryDamage - ShapeCastWideItemDamage,
+                hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                    ShapeCastEntryDamage + ShapeCastWideItemDamage),
                 TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, attacker.query().getActiveFlowCount());
         }
@@ -332,7 +333,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 combatContext.getCombatCapabilities());
 
             // then
-            long expectedHp = hpBefore - CarryTestEntryDamage - CarryTestNextItemDamage;
+            long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                CarryTestEntryDamage + CarryTestNextItemDamage);
             Assert.AreEqual(expectedHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, attacker.query().getActiveFlowCount());
         }
@@ -359,7 +361,9 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // then
             long singleFlowDamage = CarryTestEntryDamage + CarryTestNextItemDamage;
-            Assert.AreEqual(hpBefore - singleFlowDamage * 2, TestHelpers.getTeamHp(combatContext, Team.TeamB));
+            Assert.AreEqual(
+                hpBefore - TestHelpers.getDamageAfterDefaultStability(new[] { singleFlowDamage, singleFlowDamage }),
+                TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, attacker.query().getActiveFlowCount());
             Assert.AreEqual(0, attacker.query().getActiveFlowCountOnItem(nextItem.getId()));
         }
@@ -441,7 +445,8 @@ namespace MageFactory.Tests.Unit.Battle {
             session.tickOnce();
 
             // then
-            long expectedHp = hpBefore - TestHelpers.getDamage(new[] { entry });
+            long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                TestHelpers.getDamage(new[] { entry }));
             Assert.AreEqual(expectedHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
         }
 
@@ -458,7 +463,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 combatContext.getCombatCapabilities());
 
             // then
-            long expectedHp = hpBefore - CarryTestEntryDamage - CarryTestNextItemDamage;
+            long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                CarryTestEntryDamage + CarryTestNextItemDamage);
             Assert.AreEqual(expectedHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, attacker.query().getActiveFlowCount());
         }
@@ -485,7 +491,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 combatContext.getCombatCapabilities());
 
             // then
-            long expectedHp = hpBefore - CarryTestEntryDamage - CarryTestNextItemDamage;
+            long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                CarryTestEntryDamage + CarryTestNextItemDamage);
             Assert.AreEqual(expectedHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(0, attacker.query().getActiveFlowCount());
         }
@@ -592,7 +599,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 entry, sword, hammer
             };
 
-            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                TestHelpers.getDamage(expectedDamageSources));
             var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             Assert.AreEqual(expectedHp, hpAfter);
@@ -628,7 +636,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 entry, sword, shield, hammer
             };
 
-            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                TestHelpers.getDamage(expectedDamageSources));
             var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             Assert.AreEqual(expectedHp, hpAfter);
@@ -660,7 +669,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 entry1, entry2
             };
 
-            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                expectedDamageSources.Select(item => TestHelpers.getDamage(new[] { item })));
             var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             Assert.AreEqual(expectedHp, hpAfter);
@@ -694,7 +704,8 @@ namespace MageFactory.Tests.Unit.Battle {
                 entry, shield, sword
             };
 
-            var expectedHp = hpBefore - TestHelpers.getDamage(expectedDamageSources);
+            var expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
+                TestHelpers.getDamage(expectedDamageSources));
             var hpAfter = TestHelpers.getTeamHp(combatContext, Team.TeamB);
 
             Assert.AreEqual(expectedHp, hpAfter);

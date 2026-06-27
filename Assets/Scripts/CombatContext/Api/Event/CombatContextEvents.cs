@@ -65,6 +65,38 @@ namespace MageFactory.CombatContext.Api.Event {
         : IDomainEventListener<FlowGuardCreatedDtoEvent> {
     }
 
+    public readonly struct FlowStabilityCreatedDtoEvent : IDomainEvent {
+        public readonly Id<CharacterId> characterId;
+        public readonly long stabilityPower;
+        public readonly long stabilityBefore;
+        public readonly long stabilityAfter;
+        public readonly long baselineStability;
+        public readonly ItemFlowProcessingSlot sourceProcessingSlot;
+
+        public FlowStabilityCreatedDtoEvent(
+            Id<CharacterId> characterId,
+            long stabilityPower,
+            long stabilityBefore,
+            long stabilityAfter,
+            long baselineStability,
+            ItemFlowProcessingSlot sourceProcessingSlot) {
+            this.characterId = characterId;
+            this.stabilityPower = stabilityPower;
+            this.stabilityBefore = stabilityBefore;
+            this.stabilityAfter = stabilityAfter;
+            this.baselineStability = baselineStability;
+            this.sourceProcessingSlot = sourceProcessingSlot;
+        }
+
+        public bool hasSourceProcessingSlot() {
+            return sourceProcessingSlot != null;
+        }
+    }
+
+    public interface IFlowStabilityCreatedEventListener
+        : IDomainEventListener<FlowStabilityCreatedDtoEvent> {
+    }
+
     public readonly struct FlowInputStartedDtoEvent : IDomainEvent {
         public readonly Id<CharacterId> characterId;
         public readonly Id<ItemId> inputItemId;
@@ -85,16 +117,19 @@ namespace MageFactory.CombatContext.Api.Event {
         public readonly Id<CharacterId> characterId;
         public readonly long attackPower;
         public readonly long guardPower;
+        public readonly long stabilityPower;
         public readonly ItemFlowProcessingSlot outputProcessingSlot;
 
         public FlowOutputReachedDtoEvent(
             Id<CharacterId> characterId,
             long attackPower,
             long guardPower,
+            long stabilityPower,
             ItemFlowProcessingSlot outputProcessingSlot) {
             this.characterId = characterId;
             this.attackPower = attackPower;
             this.guardPower = guardPower;
+            this.stabilityPower = stabilityPower;
             this.outputProcessingSlot = outputProcessingSlot;
         }
 
@@ -111,6 +146,7 @@ namespace MageFactory.CombatContext.Api.Event {
         public readonly Id<CharacterId> characterId;
         public readonly long attackPower;
         public readonly long guardPower;
+        public readonly long stabilityPower;
         public readonly ItemFlowProcessingSlot finalProcessingSlot;
         public readonly bool wasCommittedByLegacyRule;
 
@@ -118,11 +154,13 @@ namespace MageFactory.CombatContext.Api.Event {
             Id<CharacterId> characterId,
             long attackPower,
             long guardPower,
+            long stabilityPower,
             ItemFlowProcessingSlot finalProcessingSlot,
             bool wasCommittedByLegacyRule) {
             this.characterId = characterId;
             this.attackPower = attackPower;
             this.guardPower = guardPower;
+            this.stabilityPower = stabilityPower;
             this.finalProcessingSlot = finalProcessingSlot;
             this.wasCommittedByLegacyRule = wasCommittedByLegacyRule;
         }

@@ -48,6 +48,14 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return combatCharacter.getTotalPreparedGuardPower();
         }
 
+        public long getCurrentStability() {
+            return combatCharacter.getCurrentStability();
+        }
+
+        public long getBaselineStability() {
+            return combatCharacter.getBaselineStability();
+        }
+
         public void collectActiveFlowStates(IActiveFlowStateCollector collector) {
             combatCharacter.collectActiveFlowStates(collector);
         }

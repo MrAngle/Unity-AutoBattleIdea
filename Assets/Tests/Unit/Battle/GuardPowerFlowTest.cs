@@ -95,7 +95,9 @@ namespace MageFactory.Tests.Unit.Battle {
             ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
             ICombatCharacterFacade defender = getCharacterByTeam(combatContext, Team.TeamB);
             long defenderInitialHp = defender.query().getCharacterInfo().getCurrentHp();
-            long expectedBlockedDamage = GuardMitigationCalculator.calculateBlockedDamage(guardPower, incomingDamage);
+            long damageAfterStability = TestHelpers.getDamageAfterDefaultStability(incomingDamage);
+            long expectedBlockedDamage =
+                GuardMitigationCalculator.calculateBlockedDamage(guardPower, damageAfterStability);
 
             addGuardOrFail(defender, guardPower);
 
@@ -103,7 +105,7 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
 
             Assert.AreEqual(
-                defenderInitialHp - (incomingDamage - expectedBlockedDamage),
+                defenderInitialHp - (damageAfterStability - expectedBlockedDamage),
                 defender.query().getCharacterInfo().getCurrentHp());
             Assert.AreEqual(1, defender.query().getPreparedGuardCount());
             Assert.AreEqual(guardPower - expectedBlockedDamage, defender.query().getTotalPreparedGuardPower());
@@ -111,7 +113,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
         [Test]
         public void should_publish_guard_absorb_event_and_destroy_empty_guard() {
-            const int guardPower = 5;
+            const int guardPower = 3;
             const int incomingDamage = 10;
             var listener = new GuardAbsorbedDamageListener();
 
@@ -128,7 +130,9 @@ namespace MageFactory.Tests.Unit.Battle {
             ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
             ICombatCharacterFacade defender = getCharacterByTeam(combatContext, Team.TeamB);
             long defenderInitialHp = defender.query().getCharacterInfo().getCurrentHp();
-            long expectedBlockedDamage = GuardMitigationCalculator.calculateBlockedDamage(guardPower, incomingDamage);
+            long damageAfterStability = TestHelpers.getDamageAfterDefaultStability(incomingDamage);
+            long expectedBlockedDamage =
+                GuardMitigationCalculator.calculateBlockedDamage(guardPower, damageAfterStability);
 
             addGuardOrFail(defender, guardPower);
 
@@ -137,9 +141,9 @@ namespace MageFactory.Tests.Unit.Battle {
 
             Assert.AreEqual(1, listener.callCount);
             Assert.AreEqual(defender.query().getCharacterInfo().getCharacterId(), listener.latest.characterId);
-            Assert.AreEqual(incomingDamage, listener.latest.incomingDamage);
+            Assert.AreEqual(damageAfterStability, listener.latest.incomingDamage);
             Assert.AreEqual(expectedBlockedDamage, listener.latest.blockedDamage);
-            Assert.AreEqual(incomingDamage - expectedBlockedDamage, listener.latest.remainingDamage);
+            Assert.AreEqual(damageAfterStability - expectedBlockedDamage, listener.latest.remainingDamage);
             Assert.AreEqual(1, listener.latest.destroyedGuardCount);
             Assert.AreEqual(0, listener.latest.remainingGuardPower);
             Assert.AreEqual(0, defender.query().getPreparedGuardCount());
@@ -220,7 +224,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
         [Test]
         public void should_consume_prepared_guards_from_left_to_right() {
-            const int firstGuardPower = 5;
+            const int firstGuardPower = 3;
             const int secondGuardPower = 120;
             const int incomingDamage = 10;
 
@@ -235,9 +239,10 @@ namespace MageFactory.Tests.Unit.Battle {
 
             ICombatCharacterFacade attacker = getCharacterByTeam(combatContext, Team.TeamA);
             ICombatCharacterFacade defender = getCharacterByTeam(combatContext, Team.TeamB);
+            long damageAfterStability = TestHelpers.getDamageAfterDefaultStability(incomingDamage);
             long expectedFirstGuardBlockedDamage =
-                GuardMitigationCalculator.calculateBlockedDamage(firstGuardPower, incomingDamage);
-            long expectedRemainingAfterFirstGuard = incomingDamage - expectedFirstGuardBlockedDamage;
+                GuardMitigationCalculator.calculateBlockedDamage(firstGuardPower, damageAfterStability);
+            long expectedRemainingAfterFirstGuard = damageAfterStability - expectedFirstGuardBlockedDamage;
             long expectedSecondGuardBlockedDamage =
                 GuardMitigationCalculator.calculateBlockedDamage(secondGuardPower, expectedRemainingAfterFirstGuard);
 

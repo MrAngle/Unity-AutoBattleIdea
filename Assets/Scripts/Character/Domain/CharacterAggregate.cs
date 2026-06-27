@@ -73,6 +73,22 @@ namespace MageFactory.Character.Domain {
                 result.getFirstAffectedGuardId()));
         }
 
+        internal void publishStabilityAbsorbedDamage(StabilityDamageApplicationResult result) {
+            if (!result.hasChangedDamageOrStability()) {
+                return;
+            }
+
+            characterEventPublisher.publish(new CharacterStabilityAbsorbedDamageDtoEvent(
+                characterData.getCharacterId(),
+                result.getIncomingDamage(),
+                result.getReducedDamage(),
+                result.getRemainingDamage(),
+                result.getStabilityStrain(),
+                result.getStabilityBefore(),
+                result.getStabilityAfter(),
+                result.getBaselineStability()));
+        }
+
         public bool canPlaceItem(EquipItemQuery equipItemQuery) {
             return characterInventory.canPlace(new PlaceItemQuery(equipItemQuery.itemDefinition,
                 equipItemQuery.origin));

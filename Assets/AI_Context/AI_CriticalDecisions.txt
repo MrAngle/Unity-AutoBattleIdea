@@ -343,6 +343,35 @@ Open guard cautions:
 - heavy guards that should ignore small bait hits still need explicit conditions/tags later
 - future deterministic balance simulations must challenge burst, rapid-small-hit drain, guard overflow, baiting, and late-game guard stacking
 
+## Defense Layer Order And Stability
+
+This area is active design exploration, but the first implementation now exists.
+
+Current design direction after 2026-06-22:
+
+- the global armor/resistance-like layer is currently named `Stability` in code and should be presented to the player as `Stabilnosc`/`Stabilność` unless later naming work changes it
+- each battle currently starts with baseline Stability 100 as the readable early-game reference point
+- baseline Stability is the size/reference of the Stability bar, not a direct percent cap; late-game characters may have a much larger baseline while keeping the same standard mitigation at full bar
+- defensive flows may generate more Stability during combat, so combat becomes a pressure test of whether the build can maintain its defensive baseline while attacks strain it
+- Stability should be one readable global defensive number, not a hidden ARPG-style resistance cap
+- increasing it above the baseline should be rewarded, but with diminishing percentage effectiveness and with pressure/counterplay from armor strain, pierce, break, or ignore-style attack properties
+- focusing only on Stability should not be the automatically best defense because attacks can be designed to drain, pierce, ignore, or break this layer
+- current mitigation formula is `damageAfter = incomingDamage * baselineStability / (baselineStability + currentStability)`, clamped so positive incoming damage still deals at least 1 damage
+- full baseline Stability therefore gives about 50% reduction whether the baseline is 100 in early game or 1000+ in late game
+- ordinary incoming attacks currently strain Stability by roughly one third of their incoming damage and clamp ordinary strain at 0; negative Stability remains a future vulnerability/counterplay concept, not something ordinary attacks create by default
+- Stability can exceed baseline, but over-baseline Stability decays over combat ticks: no decay up to about 110% baseline, then very slow fractional decay that accelerates smoothly as Stability moves farther above the threshold
+- the current over-baseline decay curve is intentionally steerable character/balance space; the current prototype uses a convex "opposite of logarithmic" curve, so near-threshold overcap lasts a while, while large overcap around double the threshold and beyond decays much faster
+- previous incoming damage flow was prepared Guard -> HP; current flow is Stability -> prepared Guard -> HP
+
+Layer presentation direction:
+
+- the inventory/combat UI shows defense layers as ordered rows above the item grid
+- the top row is processed first; lower rows are processed afterward
+- near-term default order is Stability first, prepared Guard second, HP last
+- a later equipment/editing feature may let the player configure the order of defensive layers, for example armor before guard or guard before armor
+- row order must be a visible player-facing rule, not hidden combat pipeline trivia
+- a future barrier layer is planned as generated extra HP or a related buffer, so "Barrier" should not be used as the name for the Stability layer
+
 ## Guard Power Readability
 
 Candidate player-facing names:

@@ -75,7 +75,7 @@ namespace MageFactory.Item.Catalog.Bases {
 
         public string getFlowPortDescription() {
             return
-                "Commits the accumulated flow power. Attack power is fired at a target; guard power creates prepared guards.";
+                "Commits accumulated flow power. Attack power is fired at a target; stability and guard power create defense output.";
         }
 
         private sealed class BasicOutputPortActionDescription : IActionDescription {

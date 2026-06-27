@@ -53,4 +53,34 @@ namespace MageFactory.Character.Api.Event.Dto {
             this.firstAffectedGuardId = firstAffectedGuardId;
         }
     }
+
+    public readonly struct CharacterStabilityAbsorbedDamageDtoEvent : IDomainEvent {
+        public readonly Id<CharacterId> characterId;
+        public readonly long incomingDamage;
+        public readonly long reducedDamage;
+        public readonly long remainingDamage;
+        public readonly long stabilityStrain;
+        public readonly long stabilityBefore;
+        public readonly long stabilityAfter;
+        public readonly long baselineStability;
+
+        public CharacterStabilityAbsorbedDamageDtoEvent(
+            Id<CharacterId> characterId,
+            long incomingDamage,
+            long reducedDamage,
+            long remainingDamage,
+            long stabilityStrain,
+            long stabilityBefore,
+            long stabilityAfter,
+            long baselineStability) {
+            this.characterId = characterId;
+            this.incomingDamage = incomingDamage;
+            this.reducedDamage = reducedDamage;
+            this.remainingDamage = remainingDamage;
+            this.stabilityStrain = stabilityStrain;
+            this.stabilityBefore = stabilityBefore;
+            this.stabilityAfter = stabilityAfter;
+            this.baselineStability = baselineStability;
+        }
+    }
 }

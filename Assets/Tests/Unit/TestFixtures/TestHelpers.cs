@@ -37,6 +37,29 @@ namespace MageFactory.Tests.Unit.TestFixtures {
             return totalDamage;
         }
 
+        public static long getDamageAfterDefaultStability(long rawDamage) {
+            return getDamageAfterDefaultStability(new[] { rawDamage });
+        }
+
+        public static long getDamageAfterDefaultStability(IEnumerable<long> rawDamagePackets) {
+            long stability = StabilityMitigationCalculator.ReferenceStability;
+            long totalDamage = 0;
+
+            foreach (long rawDamage in rawDamagePackets) {
+                if (rawDamage <= 0) {
+                    continue;
+                }
+
+                totalDamage += StabilityMitigationCalculator.calculateDamageAfterStability(stability, rawDamage);
+                long strain = StabilityMitigationCalculator.calculateDefaultStrain(rawDamage);
+                stability = stability > strain
+                    ? stability - strain
+                    : 0;
+            }
+
+            return totalDamage;
+        }
+
         public static long getTeamHp(ICombatContext ctx, Team team) {
             foreach (var ch in ctx.getAllCharacters()) {
                 if (ch.query().getCharacterInfo().getTeam() == team)

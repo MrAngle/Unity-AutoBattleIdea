@@ -8,6 +8,7 @@ namespace MageFactory.Flow.Contract {
         public readonly IFlowOwner flowOwner;
         public readonly PowerAmount attackPower;
         public readonly GuardPower guardPower;
+        public readonly StabilityPower stabilityPower;
         public readonly Id<CharacterId> sourceCharacterId;
         public readonly ItemFlowProcessingSlot finalProcessingSlot;
         public readonly bool reachedOutputPort;
@@ -17,7 +18,8 @@ namespace MageFactory.Flow.Contract {
                                   PowerAmount attackPower,
                                   GuardPower guardPower,
                                   Id<CharacterId> sourceCharacterId)
-            : this(flowKind, flowOwner, attackPower, guardPower, sourceCharacterId, null, false) {
+            : this(flowKind, flowOwner, attackPower, guardPower, StabilityPower.noPower(), sourceCharacterId, null,
+                false) {
         }
 
         public ConsumeFlowCommand(FlowKind flowKind,
@@ -26,19 +28,22 @@ namespace MageFactory.Flow.Contract {
                                   GuardPower guardPower,
                                   Id<CharacterId> sourceCharacterId,
                                   ItemFlowProcessingSlot finalProcessingSlot)
-            : this(flowKind, flowOwner, attackPower, guardPower, sourceCharacterId, finalProcessingSlot, false) {
+            : this(flowKind, flowOwner, attackPower, guardPower, StabilityPower.noPower(), sourceCharacterId,
+                finalProcessingSlot, false) {
         }
 
         public ConsumeFlowCommand(FlowKind flowKind,
                                   IFlowOwner flowOwner,
                                   PowerAmount attackPower,
                                   GuardPower guardPower,
+                                  StabilityPower stabilityPower,
                                   Id<CharacterId> sourceCharacterId,
                                   ItemFlowProcessingSlot finalProcessingSlot,
                                   bool reachedOutputPort) {
             this.flowOwner = NullGuard.NotNullOrThrow(flowOwner);
             this.attackPower = NullGuard.NotNullOrThrow(attackPower);
             this.guardPower = NullGuard.NotNullOrThrow(guardPower);
+            this.stabilityPower = NullGuard.NotNullOrThrow(stabilityPower);
             this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
             this.sourceCharacterId = sourceCharacterId;
             this.finalProcessingSlot = finalProcessingSlot;
@@ -57,6 +62,10 @@ namespace MageFactory.Flow.Contract {
             return guardPower.getPower() > 0;
         }
 
+        public bool hasStabilityPower() {
+            return stabilityPower.getPower() > 0;
+        }
+
         public bool hasFinalProcessingSlot() {
             return finalProcessingSlot != null;
         }
@@ -67,6 +76,7 @@ namespace MageFactory.Flow.Contract {
         public readonly IFlowOwner flowOwner;
         public readonly PowerAmount attackPower;
         public readonly GuardPower guardPower;
+        public readonly StabilityPower stabilityPower;
         public readonly Id<CharacterId> sourceCharacterId;
         public readonly ItemFlowProcessingSlot finalProcessingSlot;
 
@@ -74,11 +84,13 @@ namespace MageFactory.Flow.Contract {
                                   IFlowOwner flowOwner,
                                   PowerAmount attackPower,
                                   GuardPower guardPower,
+                                  StabilityPower stabilityPower,
                                   Id<CharacterId> sourceCharacterId,
                                   ItemFlowProcessingSlot finalProcessingSlot) {
             this.flowOwner = NullGuard.NotNullOrThrow(flowOwner);
             this.attackPower = NullGuard.NotNullOrThrow(attackPower);
             this.guardPower = NullGuard.NotNullOrThrow(guardPower);
+            this.stabilityPower = NullGuard.NotNullOrThrow(stabilityPower);
             this.flowKind = NullGuard.enumDefinedOrThrow(flowKind);
             this.sourceCharacterId = sourceCharacterId;
             this.finalProcessingSlot = finalProcessingSlot;

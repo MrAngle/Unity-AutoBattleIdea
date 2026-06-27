@@ -113,6 +113,7 @@ namespace MageFactory.CombatContext.Domain {
             }
 
             publishFlowCompletionFact(combatCombatCharacter, consumeFlowCommand);
+            processStabilityOutput(combatCombatCharacter, consumeFlowCommand);
             processGuardOutput(combatCombatCharacter, consumeFlowCommand);
 
             switch (consumeFlowCommand.flowKind) {
@@ -144,13 +145,15 @@ namespace MageFactory.CombatContext.Domain {
                 characterId,
                 discardFlowCommand.attackPower.getPower(),
                 discardFlowCommand.guardPower.getPower(),
+                discardFlowCommand.stabilityPower.getPower(),
                 discardFlowCommand.finalProcessingSlot,
                 false));
 
             if (combatRuntimeSettings.shouldLogCombatHotPath()) {
                 Debug.Log(
                     $"[CombatContext] Port-aware flow discarded without output for character={characterId}, " +
-                    $"attackPower={discardFlowCommand.attackPower.getPower()}, guardPower={discardFlowCommand.guardPower.getPower()}");
+                    $"attackPower={discardFlowCommand.attackPower.getPower()}, guardPower={discardFlowCommand.guardPower.getPower()}, " +
+                    $"stabilityPower={discardFlowCommand.stabilityPower.getPower()}");
             }
         }
 
@@ -164,6 +167,7 @@ namespace MageFactory.CombatContext.Domain {
                     characterId,
                     consumeFlowCommand.attackPower.getPower(),
                     consumeFlowCommand.guardPower.getPower(),
+                    consumeFlowCommand.stabilityPower.getPower(),
                     consumeFlowCommand.finalProcessingSlot));
                 return;
             }
@@ -176,8 +180,30 @@ namespace MageFactory.CombatContext.Domain {
                 characterId,
                 consumeFlowCommand.attackPower.getPower(),
                 consumeFlowCommand.guardPower.getPower(),
+                consumeFlowCommand.stabilityPower.getPower(),
                 consumeFlowCommand.finalProcessingSlot,
                 true));
+        }
+
+        private void processStabilityOutput(ICombatCharacterFacade combatCharacterFacade,
+                                            ConsumeFlowCommand consumeFlowCommand) {
+            if (!consumeFlowCommand.hasStabilityPower()) {
+                return;
+            }
+
+            if (!combatCharacterFacade.command()
+                    .tryAddStabilityPower(consumeFlowCommand.stabilityPower,
+                        out StabilityPowerAddResult stabilityAddResult)) {
+                return;
+            }
+
+            combatContextEventPublisher.publish(new FlowStabilityCreatedDtoEvent(
+                combatCharacterFacade.query().getCharacterInfo().getCharacterId(),
+                stabilityAddResult.getAddedStabilityPower(),
+                stabilityAddResult.getStabilityBefore(),
+                stabilityAddResult.getStabilityAfter(),
+                stabilityAddResult.getBaselineStability(),
+                consumeFlowCommand.finalProcessingSlot));
         }
 
         private void processGuardOutput(ICombatCharacterFacade combatCharacterFacade,

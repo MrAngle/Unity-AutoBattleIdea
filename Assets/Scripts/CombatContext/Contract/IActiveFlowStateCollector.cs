@@ -184,4 +184,74 @@ namespace MageFactory.CombatContext.Contract {
             return replacedGuardState;
         }
     }
+
+    public readonly struct StabilityPowerAddResult {
+        private readonly bool stabilityAdded;
+        private readonly long addedStabilityPower;
+        private readonly long stabilityBefore;
+        private readonly long stabilityAfter;
+        private readonly long baselineStability;
+
+        public StabilityPowerAddResult(
+            long addedStabilityPower,
+            long stabilityBefore,
+            long stabilityAfter,
+            long baselineStability) {
+            if (addedStabilityPower <= 0) {
+                throw new ArgumentOutOfRangeException(
+                    nameof(addedStabilityPower),
+                    addedStabilityPower,
+                    "Added stability power must be positive.");
+            }
+
+            if (baselineStability <= 0) {
+                throw new ArgumentOutOfRangeException(
+                    nameof(baselineStability),
+                    baselineStability,
+                    "Baseline stability must be positive.");
+            }
+
+            this.stabilityAdded = true;
+            this.addedStabilityPower = addedStabilityPower;
+            this.stabilityBefore = stabilityBefore;
+            this.stabilityAfter = stabilityAfter;
+            this.baselineStability = baselineStability;
+        }
+
+        public bool hasAddedStability() {
+            return stabilityAdded;
+        }
+
+        public long getAddedStabilityPower() {
+            if (!stabilityAdded) {
+                throw new InvalidOperationException("Stability add result has no added stability.");
+            }
+
+            return addedStabilityPower;
+        }
+
+        public long getStabilityBefore() {
+            if (!stabilityAdded) {
+                throw new InvalidOperationException("Stability add result has no added stability.");
+            }
+
+            return stabilityBefore;
+        }
+
+        public long getStabilityAfter() {
+            if (!stabilityAdded) {
+                throw new InvalidOperationException("Stability add result has no added stability.");
+            }
+
+            return stabilityAfter;
+        }
+
+        public long getBaselineStability() {
+            if (!stabilityAdded) {
+                throw new InvalidOperationException("Stability add result has no added stability.");
+            }
+
+            return baselineStability;
+        }
+    }
 }

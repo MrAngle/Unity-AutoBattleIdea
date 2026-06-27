@@ -87,6 +87,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
                 ItemCatalogButtonKind.EntryPointGem,
                 ItemCatalogButtonKind.DefenseEntryPointGem,
                 ItemCatalogButtonKind.Shield,
+                ItemCatalogButtonKind.StabilityCore,
                 ItemCatalogButtonKind.PulseInputPort,
                 ItemCatalogButtonKind.BasicOutputPort
             };
@@ -99,6 +100,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
                 ItemCatalogButtonKind.EntryPointGem => new EntryPointGem(),
                 ItemCatalogButtonKind.DefenseEntryPointGem => new DefenseEntryPointGem(),
                 ItemCatalogButtonKind.Shield => new Shield(),
+                ItemCatalogButtonKind.StabilityCore => new StabilityCore(),
                 ItemCatalogButtonKind.PulseInputPort => new PulseInputPort(),
                 ItemCatalogButtonKind.BasicOutputPort => new BasicOutputPort(),
                 _ => new RustySword()
@@ -112,6 +114,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
                 ItemCatalogButtonKind.EntryPointGem => "Entry",
                 ItemCatalogButtonKind.DefenseEntryPointGem => "Defense Entry",
                 ItemCatalogButtonKind.Shield => "Shield",
+                ItemCatalogButtonKind.StabilityCore => "Stability",
                 ItemCatalogButtonKind.PulseInputPort => "IN Port",
                 ItemCatalogButtonKind.BasicOutputPort => "OUT Port",
                 _ => "Item"
@@ -124,6 +127,7 @@ namespace MageFactory.UI.Context.Combat.Feature.AddItem {
             EntryPointGem,
             DefenseEntryPointGem,
             Shield,
+            StabilityCore,
             PulseInputPort,
             BasicOutputPort
         }

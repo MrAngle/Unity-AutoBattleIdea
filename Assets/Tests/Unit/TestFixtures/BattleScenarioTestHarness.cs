@@ -73,7 +73,20 @@ namespace MageFactory.Tests.Unit.TestFixtures {
             return this;
         }
 
+        public BattleScenarioTestHarness withStabilityAbsorbedDamageListener(
+            IStabilityAbsorbedDamageEventListener listener) {
+            container.Resolve<ICharacterEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
         public BattleScenarioTestHarness withFlowGuardCreatedListener(IFlowGuardCreatedEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withFlowStabilityCreatedListener(IFlowStabilityCreatedEventListener listener) {
             container.Resolve<ICombatContextEventRegistry>()
                 .subscribe(listener);
             return this;

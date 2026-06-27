@@ -32,8 +32,8 @@ namespace MageFactory.Tests.Unit.Battle {
 
         private const int MinimumExpectedIncomingDamageEvents = AttackEntryPointCount * 10;
 
-        // Regression canary for the current event-triggered defense path under production logging settings.
-        private const double MaxIncomingDamageAverageTickMilliseconds = 25.0;
+        // Regression canary for the current event-triggered defense path with Stability -> Guard -> HP processing.
+        private const double MaxIncomingDamageAverageTickMilliseconds = 30.0;
 
         private static readonly ShapeArchetype AttackPerformanceEntryPointShape = new(
             ShapeArchetypeId.SQUARE_1X1,

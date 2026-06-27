@@ -78,6 +78,19 @@ namespace MageFactory.UI.Component.Inventory {
                     combatInventoryGridPanel.getInventoryGridInfo()));
         }
 
+        public void printDefenseLayers(ICharacterCombatQueries characterCombatQueries) {
+            ICharacterCombatQueries validQueries = NullGuard.NotNullOrThrow(characterCombatQueries);
+            IReadOnlyCombatCharacterData characterInfo = validQueries.getCharacterInfo();
+
+            combatInventoryItemsPanel.printDefenseLayers(
+                new ICombatInventoryItemsPanel.UiPrintDefenseLayersCommand(
+                    validQueries.getCurrentStability(),
+                    validQueries.getBaselineStability(),
+                    characterInfo.getCurrentHp(),
+                    characterInfo.getMaxHp(),
+                    combatInventoryGridPanel.getInventoryGridInfo()));
+        }
+
         public void showFlowInputStarted(Id<ItemId> inputItemId) {
             combatInventoryItemsPanel.showFlowInputStarted(
                 new ICombatInventoryItemsPanel.UiShowFlowInputStartedCommand(inputItemId));
@@ -93,7 +106,23 @@ namespace MageFactory.UI.Component.Inventory {
                     outputItemId,
                     outputLocalRow,
                     attackPower,
-                    guardPower));
+                    guardPower,
+                    0));
+        }
+
+        public void showFlowOutputReached(
+            Id<ItemId> outputItemId,
+            int outputLocalRow,
+            long attackPower,
+            long guardPower,
+            long stabilityPower) {
+            combatInventoryItemsPanel.showFlowOutputReached(
+                new ICombatInventoryItemsPanel.UiShowFlowOutputReachedCommand(
+                    outputItemId,
+                    outputLocalRow,
+                    attackPower,
+                    guardPower,
+                    stabilityPower));
         }
 
         public void showFlowNoOutput(
@@ -134,6 +163,33 @@ namespace MageFactory.UI.Component.Inventory {
                     sourceItemId,
                     sourceLocalRow,
                     guardId));
+        }
+
+        public void showStabilityGeneratedBeam(
+            Id<ItemId> sourceItemId,
+            int sourceLocalRow,
+            long stabilityPower) {
+            combatInventoryItemsPanel.showStabilityGeneratedBeam(
+                new ICombatInventoryItemsPanel.UiShowStabilityGeneratedBeamCommand(
+                    sourceItemId,
+                    sourceLocalRow,
+                    stabilityPower));
+        }
+
+        public void showStabilityAbsorbedVisual(
+            long reducedDamage,
+            long stabilityStrain,
+            long remainingDamage) {
+            combatInventoryItemsPanel.showStabilityAbsorbedVisual(
+                new ICombatInventoryItemsPanel.UiShowStabilityAbsorbedVisualCommand(
+                    reducedDamage,
+                    stabilityStrain,
+                    remainingDamage));
+        }
+
+        public void showHpChangedVisual(long hpDelta) {
+            combatInventoryItemsPanel.showHpChangedVisual(
+                new ICombatInventoryItemsPanel.UiShowHpChangedVisualCommand(hpDelta));
         }
 
         public void showAttackCreatedBeam(

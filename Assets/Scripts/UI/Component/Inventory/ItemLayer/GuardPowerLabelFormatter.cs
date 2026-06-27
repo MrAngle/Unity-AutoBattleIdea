@@ -10,6 +10,18 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                 throw new ArgumentOutOfRangeException(nameof(value));
             }
 
+            return formatNonNegative(value);
+        }
+
+        public static string formatNonNegativeOrSigned(long value) {
+            if (value >= 0) {
+                return formatNonNegative(value);
+            }
+
+            return "-" + formatNonNegative(Math.Abs(value));
+        }
+
+        private static string formatNonNegative(long value) {
             double scaledValue = value;
             int suffixIndex = 0;
 
