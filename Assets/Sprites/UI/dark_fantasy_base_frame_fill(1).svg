@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="720" viewBox="0 0 2100 720">
+
+<defs>
+  <linearGradient id="panelBg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#100C17"/>
+    <stop offset="55%" stop-color="#17101F"/>
+    <stop offset="100%" stop-color="#0C0911"/>
+  </linearGradient>
+
+  <linearGradient id="innerPanelBg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#130E1B"/>
+    <stop offset="50%" stop-color="#100C17"/>
+    <stop offset="100%" stop-color="#0B0810"/>
+  </linearGradient>
+
+  <linearGradient id="goldStroke" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#6F5430"/>
+    <stop offset="50%" stop-color="#D6AD65"/>
+    <stop offset="100%" stop-color="#6F5430"/>
+  </linearGradient>
+
+  <linearGradient id="warmBorder" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8F6E3E"/>
+    <stop offset="100%" stop-color="#4F3920"/>
+  </linearGradient>
+
+  <radialGradient id="purpleGlow" cx="50%" cy="50%" r="70%">
+    <stop offset="0%" stop-color="#A86CFF" stop-opacity="0.95"/>
+    <stop offset="45%" stop-color="#7B3FD3" stop-opacity="0.72"/>
+    <stop offset="100%" stop-color="#3D1D63" stop-opacity="0"/>
+  </radialGradient>
+
+  <radialGradient id="bgBloomLeft" cx="0%" cy="0%" r="68%">
+    <stop offset="0%" stop-color="#2B1544" stop-opacity="0.46"/>
+    <stop offset="100%" stop-color="#100C17" stop-opacity="0"/>
+  </radialGradient>
+
+  <radialGradient id="bgBloomRight" cx="100%" cy="0%" r="68%">
+    <stop offset="0%" stop-color="#2B1544" stop-opacity="0.42"/>
+    <stop offset="100%" stop-color="#100C17" stop-opacity="0"/>
+  </radialGradient>
+
+  <filter id="softShadow" x="-20%" y="-20%" width="140%" height="160%">
+    <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity="0.55"/>
+  </filter>
+
+  <filter id="ornGlow" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur stdDeviation="9" result="blur"/>
+    <feMerge>
+      <feMergeNode in="blur"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+</defs>
+
+
+<!-- Main body -->
+<rect x="24" y="24" width="2052" height="672" rx="28"
+      fill="url(#panelBg)" stroke="url(#goldStroke)" stroke-width="3" filter="url(#softShadow)"/>
+
+<!-- Subtle inner bloom -->
+<rect x="24" y="24" width="2052" height="672" rx="28" fill="url(#bgBloomLeft)"/>
+<rect x="24" y="24" width="2052" height="672" rx="28" fill="url(#bgBloomRight)"/>
+
+<!-- Secondary borders -->
+<rect x="36" y="36" width="2028" height="648" rx="22"
+      fill="none" stroke="#473524" stroke-width="1.5"/>
+<rect x="58" y="58" width="1984" height="604" rx="16"
+      fill="none" stroke="#2C2134" stroke-width="1.3"/>
+
+<!-- Content zone border -->
+<rect x="78" y="142" width="1944" height="506" rx="18"
+      fill="none" stroke="#5A4327" stroke-width="1.7"/>
+<rect x="92" y="156" width="1916" height="478" rx="14"
+      fill="none" stroke="#2B2032" stroke-width="1.2"/>
+
+<!-- Subtle top divider line -->
+<path d="M 610 110 H 1490" fill="none" stroke="#6F5430" stroke-width="1.4" opacity="0.75"/>
+
+<!-- Bottom accent line -->
+<path d="M 120 658 H 1980" fill="none" stroke="#3E2E21" stroke-width="1.4" opacity="0.85"/>
+
+<!-- Corner inner ticks -->
+<path d="M 76 112 H 180" stroke="#2F2340" stroke-width="1"/>
+<path d="M 76 112 V 190" stroke="#2F2340" stroke-width="1"/>
+<path d="M 2024 112 H 1920" stroke="#2F2340" stroke-width="1"/>
+<path d="M 2024 112 V 190" stroke="#2F2340" stroke-width="1"/>
+<path d="M 76 608 H 180" stroke="#2F2340" stroke-width="1"/>
+<path d="M 76 608 V 530" stroke="#2F2340" stroke-width="1"/>
+<path d="M 2024 608 H 1920" stroke="#2F2340" stroke-width="1"/>
+<path d="M 2024 608 V 530" stroke="#2F2340" stroke-width="1"/>
+
+</svg>

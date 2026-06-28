@@ -1,0 +1,197 @@
+﻿Paleta główna
+Tło główne — #100C17
+
+Bardzo ciemny, prawie czarny fiolet.
+
+Zastosowanie:
+
+główne tło ekranu,
+tło sceny UI,
+przestrzenie między panelami,
+najciemniejsza warstwa interfejsu.
+Panel — #1C1426
+
+Ciemny śliwkowo-fioletowy.
+
+Zastosowanie:
+
+główne okna,
+panel ekwipunku,
+sekcje interfejsu,
+tooltipy i większe kontenery.
+Panel podniesiony — #291C38
+
+Jaśniejszy, głęboki fiolet.
+
+Zastosowanie:
+
+elementy leżące nad głównym panelem,
+karty przedmiotów,
+popupy,
+aktywne sekcje,
+elementy wymagające lekkiego odseparowania od tła.
+Aktywne pole — #352642
+
+Przygaszony fiolet o większej jasności.
+
+Zastosowanie:
+
+dostępne pole siatki,
+zaznaczone pole,
+slot pod przedmiot,
+hover na polu,
+podświetlenie obszaru działania przedmiotu.
+Obramowanie — #554165
+
+Zgaszony fioletowo-szary.
+
+Zastosowanie:
+
+ramki paneli,
+podziały sekcji,
+krawędzie pól,
+nieaktywne obramowania,
+delikatne linie pomocnicze.
+Główny akcent
+Stare złoto — #C49A52
+
+Ciepły, przygaszony złoty kolor.
+
+Zastosowanie:
+
+najważniejsze przyciski,
+zaznaczony przedmiot,
+nazwy przedmiotów wysokiej jakości,
+ważne wartości,
+obramowania aktywnych elementów,
+elementy interaktywne.
+
+Nie używaj go na dużych powierzchniach. Ma zwracać uwagę.
+
+Hover / mocne podświetlenie — #E0B968
+
+Jaśniejsza wersja złota.
+
+Zastosowanie:
+
+hover na przyciskach,
+wybrany element,
+aktywne połączenie,
+krótki błysk po poprawnej akcji,
+najważniejsze liczby lub komunikaty.
+Kolory mechaniczne
+Power / atak — #C6535D
+
+Przygaszona, lekko karmazynowa czerwień.
+
+Zastosowanie:
+
+obrażenia,
+power,
+ścieżki ataku,
+wejście ofensywne,
+wzrost wartości ATTACK,
+ikony efektów ofensywnych.
+Defence — #4F78A8
+
+Stalowy, chłodny błękit.
+
+Zastosowanie:
+
+obrona,
+redukcja obrażeń,
+blok,
+tarcza,
+defensywne wejścia i ścieżki.
+Mana — #43A3A6
+
+Magiczny turkus.
+
+Zastosowanie:
+
+przepływ many,
+zasilanie przedmiotów,
+połączenia między elementami,
+aktywne kanały energetyczne,
+koszt many.
+
+To dobry wybór, ponieważ nie myli się z niebieskim używanym dla defence.
+
+Leczenie — #639775
+
+Przygaszona zieleń.
+
+Zastosowanie:
+
+leczenie,
+regeneracja,
+odzyskiwanie zasobów,
+pozytywne efekty biologiczne lub natury.
+Ostrzeżenie — #D18B45
+
+Bursztynowo-pomarańczowy.
+
+Zastosowanie:
+
+brak wystarczającej many,
+ryzykowne połączenie,
+częściowo działający przedmiot,
+przeciążenie,
+komunikaty wymagające uwagi.
+Krytyczne / błąd — #A93644
+
+Ciemna, krwista czerwień.
+
+Zastosowanie:
+
+błąd,
+zerwane połączenie,
+niewłaściwe ułożenie,
+krytyczne zagrożenie,
+przedmiot całkowicie zablokowany.
+
+Nie powinien zastępować zwykłego koloru ataku. To kolor alarmowy.
+
+Kolory tekstu
+Tekst główny — #E9E2EE
+
+Bardzo jasny, lekko fioletowy odcień bieli.
+
+Zastosowanie:
+
+nazwy,
+główne opisy,
+ważne wartości,
+czytelny tekst na ciemnym tle.
+Tekst drugorzędny — #B1A5B7
+
+Przygaszony lawendowo-szary.
+
+Zastosowanie:
+
+dodatkowe opisy,
+statystyki pomocnicze,
+tekst tooltipów,
+mniej ważne informacje.
+Tekst nieaktywny — #756C7B
+
+Ciemny, szaro-fioletowy.
+
+Zastosowanie:
+
+zablokowane opcje,
+wyłączone przyciski,
+niedostępne pola,
+nieaktywne wartości.
+Najważniejszy zestaw bazowy
+
+Do pierwszej wersji UI wystarczy Ci sześć kolorów:
+
+tło: #100C17
+panel: #1C1426
+aktywne pole: #352642
+obramowanie: #554165
+złoty akcent: #C49A52
+tekst główny: #E9E2EE
+
+Kolory mechaniczne dodawaj tylko tam, gdzie przekazują konkretne znaczenie. Dzięki temu interfejs pozostanie mroczny, zamiast stać się kolorową choinką.
