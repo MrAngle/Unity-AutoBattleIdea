@@ -56,6 +56,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(defenderInitialHp - expectedDamage, defender.query().getCharacterInfo().getCurrentHp());
             Assert.AreEqual(

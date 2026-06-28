@@ -17,6 +17,9 @@ namespace MageFactory.CombatContext.Contract {
 
         bool tryAddStabilityPower(StabilityPower stabilityPower, out StabilityPowerAddResult stabilityAddResult);
         bool tryAddGuardPower(GuardPower guardPower, out PreparedGuardAddResult guardAddResult);
+        ResolvedDamage applyStabilityLayer(ResolvedDamage resolvedDamage);
+        ResolvedDamage applyGuardLayer(ResolvedDamage resolvedDamage);
+        DamageTaken applyHpLayer(ResolvedDamage resolvedDamage);
         DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage);
         void cleanup();
 

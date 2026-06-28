@@ -7,6 +7,10 @@ using MageFactory.Shared.Model;
 
 namespace MageFactory.Tests.Unit.TestFixtures {
     public static class TestHelpers {
+        public const int DefaultDamagePacketTicksPerStage = 10;
+        public const int DefaultDamagePacketFullResolutionTicks = DefaultDamagePacketTicksPerStage * 4;
+        public const int DefaultDamagePacketLayerResolutionTicks = DefaultDamagePacketTicksPerStage * 3;
+
         public static long getDamage(IEnumerable<IItemDefinition> itemDefinitions) {
             long totalDamage = 0;
 
@@ -67,6 +71,16 @@ namespace MageFactory.Tests.Unit.TestFixtures {
             }
 
             throw new InvalidOperationException($"No character for team {team}.");
+        }
+
+        public static void tickCombatContext(ICombatContext combatContext, int ticks) {
+            if (ticks < 0) {
+                throw new ArgumentOutOfRangeException(nameof(ticks));
+            }
+
+            for (int i = 0; i < ticks; i++) {
+                combatContext.combatTick(CombatTicks.ONE);
+            }
         }
     }
 }

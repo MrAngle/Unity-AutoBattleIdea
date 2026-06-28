@@ -93,6 +93,9 @@ namespace MageFactory.InjectConfiguration {
 
             Container.Bind<CombatRuntimeSettings>()
                 .FromInstance(CombatRuntimeSettings.developer());
+
+            Container.Bind<DamagePacketProcessingSettings>()
+                .FromInstance(DamagePacketProcessingSettings.defaults());
         }
 
         private void installCombatAndCharacters() {

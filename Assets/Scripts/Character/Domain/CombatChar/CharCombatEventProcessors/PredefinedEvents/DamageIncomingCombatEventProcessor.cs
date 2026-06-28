@@ -40,12 +40,15 @@ namespace MageFactory.Character.Domain.CombatChar.CharCombatEventProcessors.Pred
             }
 
             ResolvedDamage resolvedDamage = ResolvedDamage.fromDamageToReceive(combatEvent.getRawDamageToReceive());
-            DamageTaken damageTaken = combatCharacter.applyResolvedDamage(resolvedDamage);
+            combatCapabilities.command().dispatch(new EnqueueResolvedDamagePacketCombatCommand(
+                combatEvent.getTargetCharacterId(),
+                combatEvent.getSourceCharacterId(),
+                resolvedDamage));
 
             if (combatRuntimeSettings.shouldLogCombatHotPath()) {
                 Debug.Log(
-                    $"[Combat] IncomingAttackDamage resolved directly for character={combatCharacter.getCharacterInfo().getCharacterId()}, " +
-                    $"rawDamage={combatEvent.getRawDamageToReceive()}, finalDamage={damageTaken.getPower()}, damageRole={combatEvent.getDamageRole()}");
+                    $"[Combat] IncomingAttackDamage enqueued resolved damage packet for character={combatCharacter.getCharacterInfo().getCharacterId()}, " +
+                    $"rawDamage={combatEvent.getRawDamageToReceive()}, damageRole={combatEvent.getDamageRole()}");
             }
         }
     }

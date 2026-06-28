@@ -25,6 +25,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         internal const float ReservedHeight = MaxRows * IconHeight + (MaxRows - 1) * IconSpacing;
 
         private readonly List<PreparedGuardIconView> iconViews = new();
+        private GuardLayerFrameView frameView;
         private PreparedGuardTooltipView tooltipView;
         private RectTransform rectTransform;
 
@@ -47,13 +48,14 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
             IReadOnlyList<PreparedGuardState> validGuardStates = NullGuard.NotNullOrThrow(guardStates);
 
-            if (validGuardStates.Count == 0) {
-                hideAll();
-                return;
-            }
-
             gameObject.SetActive(true);
             configureRoot(inventoryGridInfo);
+            frameView.bind(validGuardStates.Count);
+
+            if (validGuardStates.Count == 0) {
+                hideIcons();
+                return;
+            }
 
             int columns = calculateColumns(inventoryGridInfo);
             int visibleSlots = Math.Min(validGuardStates.Count, columns * MaxRows);
@@ -84,6 +86,11 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         }
 
         internal void hideAll() {
+            hideIcons();
+            gameObject.SetActive(false);
+        }
+
+        private void hideIcons() {
             if (tooltipView != null) {
                 tooltipView.hide();
             }
@@ -91,8 +98,6 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             for (int i = 0; i < iconViews.Count; i++) {
                 iconViews[i].hide();
             }
-
-            gameObject.SetActive(false);
         }
 
         internal bool tryGetGuardCenterInParent(Id<GuardId> guardId, out Vector2 center) {
@@ -139,19 +144,23 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             rectTransform.pivot = new Vector2(0f, 1f);
             rectTransform.anchoredPosition = Vector2.zero;
 
+            frameView = GuardLayerFrameView.create(transform);
             tooltipView = PreparedGuardTooltipView.create(transform);
             hideAll();
         }
 
         private void configureRoot(ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
-            float width = calculateInventoryWidth(inventoryGridInfo);
-            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            float width = calculateOverlayWidth(inventoryGridInfo);
+            float layerContentWidth = DefenseLayerOverlayView.calculateLayerContentWidth(width);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, layerContentWidth);
             rectTransform.SetSizeWithCurrentAnchors(
                 RectTransform.Axis.Vertical,
                 ReservedHeight);
             rectTransform.anchoredPosition = new Vector2(
-                RootPadding,
+                RootPadding + DefenseLayerOverlayView.LayerContentOffsetX,
                 rectTransform.rect.height + DefenseLayerOverlayView.GuardBottomOffset);
+            frameView.setSize(layerContentWidth, ReservedHeight);
+            frameView.setAnchoredPosition(Vector2.zero);
         }
 
         private static float calculateInventoryWidth(ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
@@ -160,8 +169,20 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
                    + Math.Max(0, widthCells - 1) * inventoryGridInfo.Spacing.x;
         }
 
-        private static int calculateColumns(ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
+        private float calculateOverlayWidth(ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
             float inventoryWidth = calculateInventoryWidth(inventoryGridInfo);
+            float parentWidth = 0f;
+            if (transform.parent is RectTransform parentRectTransform) {
+                parentWidth = parentRectTransform.rect.width;
+            }
+
+            return Math.Max(DefenseLayerOverlayView.LayerContentOffsetX + 420f, Math.Max(inventoryWidth, parentWidth));
+        }
+
+        private static int calculateColumns(ICombatInventoryGridPanel.InventoryGridInfo inventoryGridInfo) {
+            float inventoryWidth = Math.Max(
+                calculateInventoryWidth(inventoryGridInfo) - DefenseLayerOverlayView.LayerContentOffsetX,
+                80f);
             int columns = Mathf.FloorToInt((inventoryWidth + IconSpacing) / (IconWidth + IconSpacing));
             return Math.Max(1, columns);
         }
@@ -193,6 +214,95 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             iconView.setAnchoredPosition(new Vector2(
                 column * (IconWidth + IconSpacing),
                 -row * (IconHeight + IconSpacing)));
+        }
+
+        private sealed class GuardLayerFrameView : MonoBehaviour {
+            private RectTransform rectTransform;
+            private Image backgroundImage;
+            private TextMeshProUGUI titleText;
+            private TextMeshProUGUI valueText;
+
+            internal static GuardLayerFrameView create(Transform parent) {
+                GameObject root = new GameObject(
+                    "GuardLayerFrame",
+                    typeof(RectTransform),
+                    typeof(Image),
+                    typeof(Outline),
+                    typeof(GuardLayerFrameView));
+                root.transform.SetParent(parent, false);
+
+                GuardLayerFrameView view = root.GetComponent<GuardLayerFrameView>();
+                view.initialize();
+                return view;
+            }
+
+            internal void bind(int guardCount) {
+                bool isEmpty = guardCount <= 0;
+                titleText.gameObject.SetActive(isEmpty);
+                valueText.gameObject.SetActive(isEmpty);
+                valueText.text = "0";
+                backgroundImage.color = isEmpty
+                    ? new Color(0.05f, 0.1f, 0.11f, 0.78f)
+                    : new Color(0.04f, 0.1f, 0.11f, 0.42f);
+                gameObject.SetActive(true);
+            }
+
+            internal void setSize(float width, float height) {
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            }
+
+            internal void setAnchoredPosition(Vector2 anchoredPosition) {
+                rectTransform.anchoredPosition = anchoredPosition;
+            }
+
+            private void initialize() {
+                rectTransform = (RectTransform)transform;
+                rectTransform.anchorMin = new Vector2(0f, 1f);
+                rectTransform.anchorMax = new Vector2(0f, 1f);
+                rectTransform.pivot = new Vector2(0f, 1f);
+
+                backgroundImage = GetComponent<Image>();
+                backgroundImage.raycastTarget = false;
+
+                Outline outline = GetComponent<Outline>();
+                outline.effectColor = new Color(0.38f, 0.95f, 0.82f, 0.2f);
+                outline.effectDistance = new Vector2(1f, -1f);
+
+                titleText = createText("Title", transform, 13f, FontStyles.Bold, TextAlignmentOptions.Left);
+                titleText.text = "Guard";
+                RectTransform titleRect = (RectTransform)titleText.transform;
+                titleRect.anchorMin = new Vector2(0f, 0.5f);
+                titleRect.anchorMax = new Vector2(0.55f, 1f);
+                titleRect.offsetMin = new Vector2(10f, 0f);
+                titleRect.offsetMax = new Vector2(-4f, 0f);
+
+                valueText = createText("Value", transform, 18f, FontStyles.Bold, TextAlignmentOptions.Right);
+                RectTransform valueRect = (RectTransform)valueText.transform;
+                valueRect.anchorMin = new Vector2(0.55f, 0.5f);
+                valueRect.anchorMax = Vector2.one;
+                valueRect.offsetMin = new Vector2(4f, 0f);
+                valueRect.offsetMax = new Vector2(-12f, 0f);
+            }
+
+            private static TextMeshProUGUI createText(
+                string name,
+                Transform parent,
+                float fontSize,
+                FontStyles fontStyle,
+                TextAlignmentOptions alignment) {
+                GameObject textObject = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+                textObject.transform.SetParent(parent, false);
+
+                TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+                text.alignment = alignment;
+                text.fontSize = fontSize;
+                text.fontStyle = fontStyle;
+                text.color = Color.white;
+                text.raycastTarget = false;
+                text.textWrappingMode = TextWrappingModes.NoWrap;
+                return text;
+            }
         }
 
         private sealed class PreparedGuardIconView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {

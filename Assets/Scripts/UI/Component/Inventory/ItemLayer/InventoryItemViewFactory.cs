@@ -33,5 +33,9 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
 
             return createdPlacedItemView;
         }
+
+        public Transform getItemsLayerTransform() {
+            return itemsLayerRectTransform.Get();
+        }
     }
 }

@@ -9,11 +9,14 @@ namespace MageFactory.CombatContext.Domain.CombatCapabilities {
     internal class CombatQueries : ICombatQueries {
         private readonly IReadOnlyDictionary<Id<CharacterId>, ICombatCharacterFacade> characters;
         private readonly IReadOnlyDictionary<CombatEventType, int> combatEventCountsByType;
+        private readonly IReadOnlyCollection<ActiveDamagePacket> activeDamagePackets;
 
         internal CombatQueries(IReadOnlyDictionary<Id<CharacterId>, ICombatCharacterFacade> characters,
-                               IReadOnlyDictionary<CombatEventType, int> combatEventCountsByType) {
+                               IReadOnlyDictionary<CombatEventType, int> combatEventCountsByType,
+                               IReadOnlyCollection<ActiveDamagePacket> activeDamagePackets) {
             this.characters = NullGuard.NotNullOrThrow(characters);
             this.combatEventCountsByType = NullGuard.NotNullOrThrow(combatEventCountsByType);
+            this.activeDamagePackets = NullGuard.NotNullOrThrow(activeDamagePackets);
         }
 
         public int getActiveFlowCount() {
@@ -58,6 +61,10 @@ namespace MageFactory.CombatContext.Domain.CombatCapabilities {
             return combatEventCountsByType.TryGetValue(combatEventType, out int count)
                 ? count
                 : 0;
+        }
+
+        public int getActiveDamagePacketCount() {
+            return activeDamagePackets.Count;
         }
     }
 }

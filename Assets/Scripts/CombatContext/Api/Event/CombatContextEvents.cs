@@ -199,4 +199,65 @@ namespace MageFactory.CombatContext.Api.Event {
     public interface IFlowAttackCreatedEventListener
         : IDomainEventListener<FlowAttackCreatedDtoEvent> {
     }
+
+    public enum DamagePacketLayer {
+        Travel,
+        IncomingHit,
+        Stability,
+        Guard,
+        Hp
+    }
+
+    public readonly struct DamagePacketLayerProcessedDtoEvent : IDomainEvent {
+        public readonly long packetId;
+        public readonly Id<CharacterId> sourceCharacterId;
+        public readonly Id<CharacterId> targetCharacterId;
+        public readonly DamagePacketLayer layer;
+        public readonly long incomingDamage;
+        public readonly long outgoingDamage;
+        public readonly int ticksToNextLayer;
+        public readonly bool completesPacket;
+
+        public DamagePacketLayerProcessedDtoEvent(
+            long packetId,
+            Id<CharacterId> sourceCharacterId,
+            Id<CharacterId> targetCharacterId,
+            DamagePacketLayer layer,
+            long incomingDamage,
+            long outgoingDamage,
+            int ticksToNextLayer)
+            : this(
+                packetId,
+                sourceCharacterId,
+                targetCharacterId,
+                layer,
+                incomingDamage,
+                outgoingDamage,
+                ticksToNextLayer,
+                false) {
+        }
+
+        public DamagePacketLayerProcessedDtoEvent(
+            long packetId,
+            Id<CharacterId> sourceCharacterId,
+            Id<CharacterId> targetCharacterId,
+            DamagePacketLayer layer,
+            long incomingDamage,
+            long outgoingDamage,
+            int ticksToNextLayer,
+            bool completesPacket) {
+            this.packetId = packetId;
+            this.sourceCharacterId = sourceCharacterId;
+            this.targetCharacterId = targetCharacterId;
+            this.layer = layer;
+            this.incomingDamage = incomingDamage;
+            this.outgoingDamage = outgoingDamage;
+            this.ticksToNextLayer = ticksToNextLayer;
+            this.completesPacket = completesPacket;
+        }
+    }
+
+    public interface IDamagePacketLayerProcessedEventListener
+        : IDomainEventListener<DamagePacketLayerProcessedDtoEvent> {
+    }
 }

@@ -250,6 +250,7 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(
                 CombatTicks.ONE,
                 combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             Assert.AreEqual(
@@ -331,6 +332,7 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(
                 CombatTicks.of(CarryTestEntryCastTicks + CarryTestNextItemCastTicks),
                 combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
@@ -358,6 +360,7 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(
                 CombatTicks.of(CarryTestEntryCastTicks + CarryTestNextItemCastTicks),
                 combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             long singleFlowDamage = CarryTestEntryDamage + CarryTestNextItemDamage;
@@ -404,6 +407,7 @@ namespace MageFactory.Tests.Unit.Battle {
             createFlow(combatContext, attacker, delayedEntryPoint);
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(0, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(1, deathListener.getDeathEventCount());
@@ -443,6 +447,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // when
             session.tickOnce();
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
@@ -461,6 +466,7 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(
                 CombatTicks.of(CarryTestEntryCastTicks + CarryTestNextItemCastTicks),
                 combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
@@ -489,6 +495,7 @@ namespace MageFactory.Tests.Unit.Battle {
             attacker.command().combatTick(
                 CombatTicks.ONE,
                 combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             long expectedHp = hpBefore - TestHelpers.getDamageAfterDefaultStability(
@@ -516,6 +523,9 @@ namespace MageFactory.Tests.Unit.Battle {
                     CombatTicks.ONE,
                     splitContext.getCombatCapabilities());
             }
+
+            TestHelpers.tickCombatContext(batchedContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
+            TestHelpers.tickCombatContext(splitContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             Assert.AreEqual(
@@ -593,6 +603,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // when
             session.tickMany(new ManualBattleLoop(), SingleFlowResolutionTicksBeforeNextTrigger);
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             IItemDefinition[] expectedDamageSources = {
@@ -630,6 +641,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // when
             session.tickMany(new ManualBattleLoop(), SingleFlowResolutionTicksBeforeNextTrigger);
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             IItemDefinition[] expectedDamageSources = {
@@ -663,6 +675,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // when
             session.tickMany(new ManualBattleLoop(), 31);
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             IItemDefinition[] expectedDamageSources = {
@@ -698,6 +711,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             // when
             session.tickMany(new ManualBattleLoop(), SingleFlowResolutionTicksBeforeNextTrigger);
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             // then
             IItemDefinition[] expectedDamageSources = {

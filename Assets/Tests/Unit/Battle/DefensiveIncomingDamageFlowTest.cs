@@ -59,6 +59,7 @@ namespace MageFactory.Tests.Unit.Battle {
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketTicksPerStage);
 
             Assert.AreEqual(initialHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(1, defender.query().getActiveFlowCount());
@@ -78,8 +79,10 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketTicksPerStage);
 
             defender.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketLayerResolutionTicks);
 
             int expectedDamage =
                 IncomingAttackDamage +
@@ -112,6 +115,7 @@ namespace MageFactory.Tests.Unit.Battle {
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(
                 initialHp - TestHelpers.getDamageAfterDefaultStability(IncomingAttackDamage),
@@ -135,6 +139,7 @@ namespace MageFactory.Tests.Unit.Battle {
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(
                 initialHp - TestHelpers.getDamageAfterDefaultStability(IncomingAttackDamage),
@@ -176,6 +181,7 @@ namespace MageFactory.Tests.Unit.Battle {
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
 
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketTicksPerStage);
 
             Assert.AreEqual(initialHp, TestHelpers.getTeamHp(combatContext, Team.TeamB));
             Assert.AreEqual(2, defender.query().getActiveFlowCount());
@@ -214,6 +220,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, attackEntryPoint);
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketTicksPerStage);
 
             Assert.AreEqual(1, defender.query().getActiveFlowCountOnItem(firstDefenseEntryPoint.getId()));
             Assert.AreEqual(0, defender.query().getActiveFlowCountOnItem(secondDefenseEntryPoint.getId()));
@@ -221,6 +228,7 @@ namespace MageFactory.Tests.Unit.Battle {
             defender.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
             createFlow(combatContext, attacker, attackEntryPoint);
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketTicksPerStage);
 
             Assert.AreEqual(0, defender.query().getActiveFlowCountOnItem(firstDefenseEntryPoint.getId()));
             Assert.AreEqual(1, defender.query().getActiveFlowCountOnItem(secondDefenseEntryPoint.getId()));
@@ -251,7 +259,9 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketTicksPerStage);
             defender.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketLayerResolutionTicks);
 
             int generatedGuardPower = DefenseEntryPointGemGuardPower + CatalogShieldGuardPower;
             long damageAfterStability = TestHelpers.getDamageAfterDefaultStability(IncomingAttackDamage);

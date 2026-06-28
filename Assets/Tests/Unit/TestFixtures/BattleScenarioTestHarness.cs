@@ -60,6 +60,12 @@ namespace MageFactory.Tests.Unit.TestFixtures {
             return this;
         }
 
+        public BattleScenarioTestHarness withDamagePacketTicksPerStage(int ticksPerStage) {
+            container.Rebind<DamagePacketProcessingSettings>()
+                .FromInstance(new DamagePacketProcessingSettings(CombatTicks.of(ticksPerStage)));
+            return this;
+        }
+
         public BattleScenarioTestHarness withCharacterDeathListener(ICharacterDeathEventListener listener) {
             container.Resolve<ICharacterEventRegistry>()
                 .subscribe(listener);
@@ -111,6 +117,13 @@ namespace MageFactory.Tests.Unit.TestFixtures {
         }
 
         public BattleScenarioTestHarness withFlowAttackCreatedListener(IFlowAttackCreatedEventListener listener) {
+            container.Resolve<ICombatContextEventRegistry>()
+                .subscribe(listener);
+            return this;
+        }
+
+        public BattleScenarioTestHarness withDamagePacketLayerProcessedListener(
+            IDamagePacketLayerProcessedEventListener listener) {
             container.Resolve<ICombatContextEventRegistry>()
                 .subscribe(listener);
             return this;

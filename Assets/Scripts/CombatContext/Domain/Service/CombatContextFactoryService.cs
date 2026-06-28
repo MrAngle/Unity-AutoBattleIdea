@@ -15,14 +15,17 @@ namespace MageFactory.CombatContext.Domain.Service {
         private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
         private readonly CombatRuntimeSettings combatRuntimeSettings;
+        private readonly DamagePacketProcessingSettings damagePacketProcessingSettings;
 
         [Inject]
         public CombatContextFactoryService(ICombatCharacterFactory injectedCharacterFactory,
                                            ICombatContextEventPublisher injectedContextEventPublisher,
-                                           CombatRuntimeSettings injectedCombatRuntimeSettings) {
+                                           CombatRuntimeSettings injectedCombatRuntimeSettings,
+                                           DamagePacketProcessingSettings injectedDamagePacketProcessingSettings) {
             characterFactory = NullGuard.NotNullOrThrow(injectedCharacterFactory);
             combatContextEventPublisher = NullGuard.NotNullOrThrow(injectedContextEventPublisher);
             combatRuntimeSettings = NullGuard.NotNullOrThrow(injectedCombatRuntimeSettings);
+            damagePacketProcessingSettings = NullGuard.NotNullOrThrow(injectedDamagePacketProcessingSettings);
         }
 
         public ICombatContext create(IReadOnlyList<CreateCombatCharacterCommand> createCombatCharacterCommands) {
@@ -30,6 +33,7 @@ namespace MageFactory.CombatContext.Domain.Service {
                 characterFactory,
                 combatContextEventPublisher,
                 combatRuntimeSettings,
+                damagePacketProcessingSettings,
                 createCombatCharacterCommands);
         }
     }

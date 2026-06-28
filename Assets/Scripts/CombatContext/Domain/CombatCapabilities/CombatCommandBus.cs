@@ -18,6 +18,9 @@ namespace MageFactory.CombatContext.Domain.CombatCapabilities {
                 case CreateFlowCombatCommand createFlowCombatCommand:
                     handle(createFlowCombatCommand);
                     break;
+                case EnqueueResolvedDamagePacketCombatCommand enqueueResolvedDamagePacketCombatCommand:
+                    handle(enqueueResolvedDamagePacketCombatCommand);
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException(
@@ -32,6 +35,12 @@ namespace MageFactory.CombatContext.Domain.CombatCapabilities {
             NullGuard.NotNullOrThrow(combatCommand);
 
             combatContext.createFlow(combatCommand);
+        }
+
+        private void handle(EnqueueResolvedDamagePacketCombatCommand combatCommand) {
+            NullGuard.NotNullOrThrow(combatCommand);
+
+            combatContext.enqueueResolvedDamagePacket(combatCommand);
         }
     }
 }

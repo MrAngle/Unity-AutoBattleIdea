@@ -192,6 +192,24 @@ Normal item processing currently uses cast time, not cooldown/recovery.
 
 Entry point trigger timing is a separate concept and may later need its own UI countdown/charge presentation.
 
+Damage packet timing after 2026-06-27:
+
+- offensive flow output no longer applies incoming damage immediately
+- attack output creates a ticked `ActiveDamagePacket`
+- packet timing is combat-domain timing, not only UI animation; offscreen characters process the same packet timing as visible characters
+- current default packet stage duration is 10 combat ticks per stage, matching the current normal speed assumption of about 10 ticks per real second
+- the duration is configurable through `DamagePacketProcessingSettings`
+- current packet order is Travel -> IncomingHit -> Stability -> Guard -> HP
+- `IncomingHit` dispatches `IncomingAttackDamageCombatEvent`, so defensive event flows can still intercept the packet before it becomes resolved layer damage
+- if no defensive flow handles the incoming hit, or once defensive flow output resolves damage, a resolved packet proceeds through Stability -> Guard -> HP over ticks
+- `DamagePacketLayerProcessedDtoEvent.completesPacket` is the domain/presentation fact that a visual packet value should finish; UI must not infer completion only from `DamagePacketLayer.Hp`
+- `IncomingHit` completes the pre-defense incoming packet value, while HP or any future fully absorbing layer completes the resolved layer packet value
+- `ICombatQueries.getActiveDamagePacketCount()` is a primitive query intended for tests/debug assertions that packet queues are fully drained after ticked processing
+- UI may visualize packet layer facts, but domain packet processing must remain deterministic and independent from visible windows, DOTween, frame rate, or active selection
+- damage packet UI should present a single falling damage value moving through the visible layer stack rather than debug text such as `incoming>outgoing`; after each layer, the displayed value is the value continuing to the next layer
+- the selected-character defense overlay may show only the latest 5 visible falling packet values; if more packet values are active, the UI shows a `5+` overflow marker and keeps combat-domain packet processing unchanged
+- even though `IncomingHit` completes the pre-defense domain packet, selected-character UI should hold that incoming value and visually continue it into the next resolved layer packet when Stability/Guard/HP processing begins, so the player does not see the number disappear between stages
+
 ## Inventory, Items, Shape, And Processing Slots
 
 Inventory/item shape is gameplay-relevant.
@@ -368,6 +386,19 @@ Layer presentation direction:
 - the inventory/combat UI shows defense layers as ordered rows above the item grid
 - the top row is processed first; lower rows are processed afterward
 - near-term default order is Stability first, prepared Guard second, HP last
+- each defense layer should read as its own component/section in the stack
+- falling damage packet values should live in a separate left-side packet lane component; Stability, Guard, and HP layer components are laid out to the right of that lane
+- the damage-process lane must be wide enough for five packet values side by side with spacing; do not compress five packets into a narrow single-column lane
+- the damage-process lane should communicate stages through simple aligned bands/separators rather than arrow glyphs; arrows in mockups were only directional annotation, not desired UI chrome
+- layer overlays must be printable for a selected character even when the character has no item views yet; presentation should attach overlays to the item-layer transform, not infer the parent only from existing item instances
+- current BattleScene should keep the separated GUI layout with character panel, item/stash buttons, defense process, and item grid visible together; do not stretch the item grid/inventory panel to the full screen until the whole GUI layout is redesigned around that
+- fullscreen/background UI panel images must not keep `RaycastTarget` enabled unless they intentionally handle pointer input; otherwise they create invisible click-blocking layers over buttons/items
+- HP uses a normal fill bar: full HP is a full bar, half HP is a half bar
+- HP shows current/max HP centered on the HP bar
+- Stability should be a more prominent/taller component than the compact rows, shows current/baseline as the readable value, fills against baseline, and separately shows `Damage Reduction: X%`
+- Stability `Damage Reduction` color should communicate state through a readable gradient: negative values move toward very dark black/burgundy/red, low positive reduction is red, mid-low reduction uses muted amber/orange rather than bright yellow, normal around 45-55% is blue, and high reduction moves toward green
+- near-term defense-layer UI palette is dark fantasy only for these layer components: main background around `#100C17`, panel `#1C1426`, raised panel `#291C38`, border `#554165`, old-gold accent `#C49A52`, main text `#E9E2EE`, secondary text `#B1A5B7`, defense blue `#4F78A8`, healing green `#639775`, warning amber `#D18B45`, power red `#C6535D`, critical red `#A93644`
+- the Guard layer should remain visible as a layer section even when there are no prepared guards, so the processing order does not disappear
 - a later equipment/editing feature may let the player configure the order of defensive layers, for example armor before guard or guard before armor
 - row order must be a visible player-facing rule, not hidden combat pipeline trivia
 - a future barrier layer is planned as generated extra HP or a related buffer, so "Barrier" should not be used as the name for the Stability layer

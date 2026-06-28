@@ -323,3 +323,144 @@ Design reason:
 - small overcap should feel like a useful buffer, not immediately wasted
 - extreme overcap should still be temporary so pure Stability stacking does not become the obvious default
 - fractional decay avoids making low baseline values behave too harshly because of integer rounding
+
+AI COMMIT BOUNDARY 2026-06-27 - after push d1cf3aa (master) - Add `CombatStabilityState`, `DefenseLayerOverlayView`, `StabilityCore`, and related unit tests for stability mechanics.
+
+Everything below this boundary belongs to the next set of changes after the latest push, unless a later boundary appears.
+
+AI 2026-06-27 - Ticked damage packets through defense layers
+
+User wanted damage to be readable as a falling number that travels from the source character and passes through defense layers: incoming value, Stability output, Guard output, then HP. The timing must be real combat timing, not only animation, because offscreen characters and future `OnHit`-style hooks need the same processing delay.
+
+Previous behavior:
+
+- offensive flow output immediately dispatched `IncomingAttackDamageCombatEvent`
+- if no defensive flow intercepted, incoming damage was immediately applied through Stability -> Guard -> HP in one synchronous call
+- defensive flow output also applied resolved damage immediately through all layers
+
+New implemented behavior:
+
+- offensive attack output creates a ticked `ActiveDamagePacket`
+- default packet stage duration is currently 10 combat ticks and is configured through `DamagePacketProcessingSettings`
+- packet stages are Travel -> IncomingHit -> Stability -> Guard -> HP
+- IncomingHit dispatches the existing `IncomingAttackDamageCombatEvent`, preserving event-triggered defensive flow behavior
+- if no defensive flow handles the hit, CombatContext enqueues resolved damage back into the packet pipeline
+- defensive flow output also enqueues resolved damage into the same Stability -> Guard -> HP packet pipeline instead of applying it immediately
+- `CombatContext.combatTick(...)` owns packet progression, so visible and offscreen characters process damage timing identically
+- `BattleRuntime` ticks existing combat-context packets before ticking character flow/item logic for the frame
+- layer processing publishes neutral `DamagePacketLayerProcessedDtoEvent` facts for UI/testing
+- the current UI uses these facts for simple staged popups near the target character; this is a first visualization, not the final polished falling-number path over inventory layer rows
+
+Testing notes:
+
+- added `DamagePacketProcessingTest` covering configurable packet stage duration and Travel -> IncomingHit -> Stability -> Guard -> HP sequencing
+- updated existing damage/guard/stability tests to advance combat-context packet ticks explicitly when they assert final HP or layer absorption
+- verified EditMode tests: 502/502 passing
+
+AI 2026-06-27 - Defense layer component UI and falling packet value
+
+User clarified that popup labels like `4>4` are redundant and hard to read. The desired presentation is a visibly falling damage number that passes through the defense stack: incoming value, Stability, reduced value, Guard, remaining value, HP.
+
+Implemented UI follow-up:
+
+- removed the target-character staged popup text for damage packet layers
+- routed `DamagePacketLayerProcessedDtoEvent` for the selected target character into the inventory defense-layer overlay
+- added a `DamagePacketPathView` under `DefenseLayerOverlayView` that shows one damage value moving down the layer stack
+- packet display now shows a single continuing value at each step, not `incoming>outgoing` debug notation
+- Stability row now reads as a component with `current / baseline`, a baseline-based fill bar, and a clear `Redukcja X%` note
+- HP row uses a normal current/max fill bar, so 50% HP fills half the bar
+- Guard layer now remains visible as an empty component/section even when no prepared guards exist, preserving the visible order Stability -> Guard -> HP
+
+Testing notes:
+
+- added UI tests for Stability fill, HP fill, empty Guard visibility, and packet value text without debug arrows
+- verified EditMode tests: 506/506 passing
+
+AI 2026-06-28 - Thicker Stability component, HP fill fix, and 10 packet value lanes
+
+User liked the falling packet direction but clarified that Stability was too small and should be easier to read. User also noticed that only one attack packet was visible at a time and that the HP fill looked like it was not updating.
+
+Implemented UI follow-up:
+
+- Stability layer is now a taller component than HP
+- Stability displays `current / baseline` prominently and uses `Damage Reduction: X%` as the clear reduction label
+- HP displays `current / max` centered on the HP bar
+- HP and Stability fill visuals now resize the fill rect width directly in addition to updating `Image.fillAmount`, so the visible bar width changes reliably
+- `DamagePacketPathView` now owns a fixed pool of 10 packet value lanes so multiple attacks can be visible at the same time without per-hit object creation
+- packet lane capacity is a selected-character UI readability limit only; combat-domain packet processing remains unchanged
+
+Testing notes:
+
+- added UI tests for Stability labels, centered HP value, rect-based fill width, and 10 visible packet values
+- verified EditMode tests: 509/509 passing
+
+AI 2026-06-28 - Defense layer dark-fantasy frame direction, DR gradient, and 5+ packet overflow
+
+User clarified that the defense layer stack should look more like distinct framed components: Stability row on top, Guard in the middle, and HP at the bottom with a real centered HP bar. User also provided a dark fantasy palette direction for the layer UI and requested that Damage Reduction color communicate state through a gradient, with negative values becoming very dark burgundy/red, low values red, mid-low values muted amber/orange rather than bright yellow, normal around 45-55% blue, and higher values moving toward green.
+
+Previous presentation:
+
+- Stability and HP were still close to thin bar rows
+- damage packet display could show up to 10 lanes, which could overlap and become hard to read
+- UI did not explicitly encode the provided palette direction
+- destroyed character prefabs could still be targeted by presentation callbacks from later combat facts
+
+Implemented follow-up:
+
+- Stability is laid out as a wider framed component with current/baseline, `Damage Reduction: X%`, and current overbaseline decay information
+- HP uses a framed middle fill bar with current/max HP centered on the bar
+- defense layer rows use the initial dark fantasy palette only within this layer stack for now
+- Damage Reduction color is computed from the current percentage using a readable gradient rather than fixed threshold colors
+- falling damage packet presentation now shows at most the latest 5 visible packet values, displays a `5+` overflow marker when more packets are active, and renders packet values above the layer components
+- presentation orchestrator now ignores or removes destroyed character prefabs before showing later HP/guard/stability/attack visuals, so delayed packet facts after death cannot call methods on destroyed UI objects
+
+Testing notes:
+
+- added UI tests for latest-5 packet overflow, packet render order above layer components, Stability decay label, and HP fill within its own bar frame
+- added a combat regression test proving pending damage packets after a target dies do not throw and publish only one death event
+- verified EditMode tests: 511/511 passing
+
+AI 2026-06-28 - Left packet lane and explicit packet completion
+
+User noticed that damage packet values could remain stuck at the top of the defense UI instead of continuing through the layers, and clarified that packet values should live in a separate left-side component/lane beside Stability, Guard, and HP. User also noticed that switching selected characters could leave defense layers hidden until an item was added.
+
+Previous behavior:
+
+- UI inferred visual packet completion mainly from reaching the HP layer
+- incoming attack packets published Travel and IncomingHit, then completed in the domain and spawned/triggered defensive processing separately
+- because IncomingHit did not tell UI to finish the pre-defense packet value, labels could remain visually stuck at the top
+- defense overlays could fail to initialize for an empty selected inventory because the presenter tried to find the overlay parent through existing item views
+
+New implemented behavior:
+
+- `DamagePacketLayerProcessedDtoEvent` now carries `completesPacket`
+- IncomingHit completes the pre-defense incoming packet value
+- HP completes the resolved packet value, and future fully absorbing Stability/Guard-like layers can also complete a packet cleanly
+- `ICombatQueries.getActiveDamagePacketCount()` exposes a primitive test/debug query for verifying that ticked packet queues drain
+- `DamagePacketPathView` is now a dedicated left-side packet lane component with a visible panel, max 5 active visible packet values, and `5+` overflow
+- Stability, Guard, and HP layer components are shifted to the right of the packet lane
+- the inventory item view factory exposes the item-layer transform directly, so defense layers can render immediately after selecting a character even when no item views exist yet
+
+Testing notes:
+
+- added a regression test that sends 50 independent attack packets through 50 defensive input entry points, verifies all packets drain, checks the expected HP result after Stability, and verifies IncomingHit/HP packet completion facts
+- added UI coverage for the left packet lane and right-shifted Stability/Guard/HP layer layout
+- verified EditMode tests: 513/513 passing
+
+AI 2026-06-28 - Wider damage-process lane, fullscreen panel stretch, and no arrow chrome
+
+User clarified that the left damage-process section was still too narrow and should fit five damage packets side by side with a bit of spare room. User also clarified that the mockup arrows were only indicating flow direction and should not appear as UI elements. Another issue was that incoming damage visually disappeared after the first stage and only reappeared at Stability.
+
+Implemented presentation follow-up:
+
+- damage-process lane width is now derived from five visible packet values, fixed gaps, and horizontal padding instead of a narrow 74px strip
+- the lane now uses simple background stage bands aligned with the damage process instead of arrow text/glyphs
+- when an `IncomingHit` completes the pre-defense domain packet, UI keeps that value visible as an awaiting visual packet and reuses it when the next resolved layer packet appears, preserving visual continuity into Stability
+- reverted follow-up: the attempted full-canvas `InventoryPanel` layout hid the rest of the GUI and made the game feel like only the item grid remained visible
+- `BattleScene` is back to the previous separated GUI layout for now; fullscreen inventory/grid layout should wait until the whole GUI is redesigned around it
+
+Testing notes:
+
+- added UI coverage for incoming packet continuity and no connector/arrow child
+- updated layout coverage for the wider damage-process lane
+- verified EditMode tests: 514/514 passing before the fullscreen scene revert; scene diff after the revert is clean for the attempted fullscreen changes

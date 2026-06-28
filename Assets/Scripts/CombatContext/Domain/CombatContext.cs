@@ -21,19 +21,24 @@ namespace MageFactory.CombatContext.Domain {
         private readonly Dictionary<Id<CharacterId>, ICombatCharacterFacade> characters = new();
         private readonly Dictionary<CombatEventType, int> combatEventCountsByType = new();
         private readonly List<ICombatCharacterFacade> enemyCandidates = new();
+        private readonly List<ActiveDamagePacket> activeDamagePackets = new();
 
         private readonly ICombatCharacterFactory characterFactory;
         private readonly ICombatContextEventPublisher combatContextEventPublisher;
         private readonly CombatRuntimeSettings combatRuntimeSettings;
+        private readonly DamagePacketProcessingSettings damagePacketProcessingSettings;
         private readonly Random random = new();
         private ICombatCapabilities combatCapabilities;
+        private long nextDamagePacketId;
 
         private CombatContext(ICombatCharacterFactory characterFactory,
                               ICombatContextEventPublisher combatContextEventPublisher,
-                              CombatRuntimeSettings combatRuntimeSettings) {
+                              CombatRuntimeSettings combatRuntimeSettings,
+                              DamagePacketProcessingSettings damagePacketProcessingSettings) {
             this.characterFactory = NullGuard.NotNullOrThrow(characterFactory);
             this.combatContextEventPublisher = NullGuard.NotNullOrThrow(combatContextEventPublisher);
             this.combatRuntimeSettings = NullGuard.NotNullOrThrow(combatRuntimeSettings);
+            this.damagePacketProcessingSettings = NullGuard.NotNullOrThrow(damagePacketProcessingSettings);
             NullGuard.NotNullOrThrow(characters);
         }
 
@@ -43,7 +48,10 @@ namespace MageFactory.CombatContext.Domain {
             }
 
             CombatCommandBus combatCommandBus = new CombatCommandBus(this);
-            CombatQueries combatQueries = new CombatQueries(characters, combatEventCountsByType);
+            CombatQueries combatQueries = new CombatQueries(
+                characters,
+                combatEventCountsByType,
+                activeDamagePackets);
 
             combatCapabilities = new CombatCapabilitiesContainer(combatCommandBus, combatQueries);
         }
@@ -51,11 +59,13 @@ namespace MageFactory.CombatContext.Domain {
         internal static CombatContext create(ICombatCharacterFactory paramCharacterFactory,
                                              ICombatContextEventPublisher combatContextEventPublisher,
                                              CombatRuntimeSettings combatRuntimeSettings,
+                                             DamagePacketProcessingSettings damagePacketProcessingSettings,
                                              IReadOnlyList<CreateCombatCharacterCommand> charactersToCreate) {
             CombatContext combatContext = new CombatContext(
                 paramCharacterFactory,
                 combatContextEventPublisher,
-                combatRuntimeSettings);
+                combatRuntimeSettings,
+                damagePacketProcessingSettings);
             combatContext.initializeCapabilities();
 
             foreach (CreateCombatCharacterCommand createCombatCharacterCommand in charactersToCreate) {
@@ -84,6 +94,23 @@ namespace MageFactory.CombatContext.Domain {
 
         public ICombatCapabilities getCombatCapabilities() {
             return combatCapabilities;
+        }
+
+        public void combatTick(CombatTicks combatTicks) {
+            if (!combatTicks.isPositive()) {
+                return;
+            }
+
+            int packetsToTick = activeDamagePackets.Count;
+            for (int i = 0; i < packetsToTick; i++) {
+                activeDamagePackets[i].tick(combatTicks, this);
+            }
+
+            for (int i = activeDamagePackets.Count - 1; i >= 0; i--) {
+                if (activeDamagePackets[i].isCompleted()) {
+                    activeDamagePackets.RemoveAt(i);
+                }
+            }
         }
 
         private void registerCharacter(CreateCombatCharacterCommand createCombatCharacterCommand) {
@@ -236,12 +263,18 @@ namespace MageFactory.CombatContext.Domain {
         private void processDefensiveFlow(ICombatCharacterFacade combatCharacterFacade,
                                           ConsumeFlowCommand consumeFlowCommand) {
             ResolvedDamage resolvedDamage = ResolvedDamage.fromPowerAmount(consumeFlowCommand.attackPower);
-            DamageTaken damageTaken = combatCharacterFacade.command().applyResolvedDamage(resolvedDamage);
+            Id<CharacterId> sourceCharacterId = consumeFlowCommand.hasSourceCharacterId()
+                ? consumeFlowCommand.sourceCharacterId
+                : combatCharacterFacade.query().getCharacterInfo().getCharacterId();
+            enqueueResolvedDamagePacket(
+                combatCharacterFacade.query().getCharacterInfo().getCharacterId(),
+                sourceCharacterId,
+                resolvedDamage);
 
             if (combatRuntimeSettings.shouldLogCombatHotPath()) {
                 Debug.Log(
                     $"[CombatContext] Defensive flow resolved for character={combatCharacterFacade.query().getCharacterInfo().getCharacterId()}, " +
-                    $"resolvedDamage={resolvedDamage.getPower()}, damageTaken={damageTaken.getPower()}");
+                    $"resolvedDamage={resolvedDamage.getPower()}");
             }
         }
 
@@ -259,12 +292,10 @@ namespace MageFactory.CombatContext.Domain {
                     consumeFlowCommand.attackPower.getPower(),
                     consumeFlowCommand.finalProcessingSlot));
 
-                IncomingAttackDamageCombatEvent damageIncomingCombatEvent = new IncomingAttackDamageCombatEvent(
-                    enemy.query().getCharacterInfo().getCharacterId(),
+                enqueueIncomingAttackDamagePacket(
                     consumeFlowCommand.flowOwner.getFlowOwnerCharacterId(),
+                    enemy.query().getCharacterInfo().getCharacterId(),
                     DamageToDeal.fromPowerAmount(consumeFlowCommand.attackPower));
-
-                dispatchCombatEvent(damageIncomingCombatEvent);
             }
         }
 
@@ -332,7 +363,47 @@ namespace MageFactory.CombatContext.Domain {
             return created;
         }
 
-        private void dispatchCombatEvent(CombatEvent combatEvent) {
+        internal void enqueueResolvedDamagePacket(EnqueueResolvedDamagePacketCombatCommand command) {
+            NullGuard.NotNullOrThrow(command);
+            enqueueResolvedDamagePacket(
+                command.targetCharacterId,
+                command.sourceCharacterId,
+                command.resolvedDamage);
+        }
+
+        private void enqueueIncomingAttackDamagePacket(
+            Id<CharacterId> sourceCharacterId,
+            Id<CharacterId> targetCharacterId,
+            DamageToDeal damageToDeal) {
+            activeDamagePackets.Add(ActiveDamagePacket.incomingAttack(
+                nextDamagePacketId++,
+                sourceCharacterId,
+                targetCharacterId,
+                damageToDeal,
+                damagePacketProcessingSettings));
+        }
+
+        private void enqueueResolvedDamagePacket(
+            Id<CharacterId> targetCharacterId,
+            Id<CharacterId> sourceCharacterId,
+            ResolvedDamage resolvedDamage) {
+            if (resolvedDamage.getPower() <= 0) {
+                return;
+            }
+
+            activeDamagePackets.Add(ActiveDamagePacket.resolvedDamage(
+                nextDamagePacketId++,
+                sourceCharacterId,
+                targetCharacterId,
+                resolvedDamage,
+                damagePacketProcessingSettings));
+        }
+
+        internal void publishDamagePacketLayerProcessed(DamagePacketLayerProcessedDtoEvent ev) {
+            combatContextEventPublisher.publish(in ev);
+        }
+
+        internal void dispatchCombatEvent(CombatEvent combatEvent) {
             if (combatEvent == null) {
                 throw new ArgumentNullException(nameof(combatEvent));
             }

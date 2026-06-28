@@ -46,6 +46,18 @@ namespace MageFactory.Character.Domain.CharacterCapability {
             return combatCharacter.applyResolvedDamage(resolvedDamage);
         }
 
+        public ResolvedDamage applyStabilityLayer(ResolvedDamage resolvedDamage) {
+            return combatCharacter.applyStabilityLayer(resolvedDamage);
+        }
+
+        public ResolvedDamage applyGuardLayer(ResolvedDamage resolvedDamage) {
+            return combatCharacter.applyGuardLayer(resolvedDamage);
+        }
+
+        public DamageTaken applyHpLayer(ResolvedDamage resolvedDamage) {
+            return combatCharacter.applyHpLayer(resolvedDamage);
+        }
+
         public void consumeCombatEvent(CombatEvent combatEvent,
                                        IFlowConsumer flowConsumer,
                                        ICombatCapabilities combatCapabilities) {

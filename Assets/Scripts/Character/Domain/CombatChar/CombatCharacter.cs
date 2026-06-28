@@ -83,20 +83,33 @@ namespace MageFactory.Character.Domain.CombatChar {
         }
 
         public DamageTaken applyResolvedDamage(ResolvedDamage resolvedDamage) {
+            ResolvedDamage damageAfterStability = applyStabilityLayer(resolvedDamage);
+            ResolvedDamage damageAfterGuard = applyGuardLayer(damageAfterStability);
+            return applyHpLayer(damageAfterGuard);
+        }
+
+        public ResolvedDamage applyStabilityLayer(ResolvedDamage resolvedDamage) {
             ResolvedDamage damageAfterStability = stabilityState.applyTo(
                 resolvedDamage,
                 out StabilityDamageApplicationResult stabilityDamageApplicationResult);
             characterAggregate.publishStabilityAbsorbedDamage(stabilityDamageApplicationResult);
+            return damageAfterStability;
+        }
 
+        public ResolvedDamage applyGuardLayer(ResolvedDamage resolvedDamage) {
             if (guardState.getPreparedGuardCount() == 0) {
-                return takeDamage(damageAfterStability);
+                return resolvedDamage;
             }
 
             ResolvedDamage damageAfterGuard = guardState.applyTo(
-                damageAfterStability,
+                resolvedDamage,
                 out GuardDamageApplicationResult guardDamageApplicationResult);
             characterAggregate.publishGuardAbsorbedDamage(guardDamageApplicationResult);
-            return takeDamage(damageAfterGuard);
+            return damageAfterGuard;
+        }
+
+        public DamageTaken applyHpLayer(ResolvedDamage resolvedDamage) {
+            return takeDamage(resolvedDamage);
         }
 
         public bool tryAddStabilityPower(

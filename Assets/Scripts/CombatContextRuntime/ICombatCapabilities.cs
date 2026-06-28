@@ -18,5 +18,6 @@ namespace MageFactory.CombatContextRuntime {
         int getCreatedFlowCount();
         int getCreatedFlowCountForCharacter(Id<CharacterId> characterId);
         int getCombatEventCount(CombatEventType combatEventType);
+        int getActiveDamagePacketCount();
     }
 }

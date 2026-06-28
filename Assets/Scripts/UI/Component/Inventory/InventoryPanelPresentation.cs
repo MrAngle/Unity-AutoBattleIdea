@@ -192,6 +192,19 @@ namespace MageFactory.UI.Component.Inventory {
                 new ICombatInventoryItemsPanel.UiShowHpChangedVisualCommand(hpDelta));
         }
 
+        public void showDamagePacketLayer(
+            long packetId,
+            int layerIndex,
+            long damageValue,
+            bool completesPacket) {
+            combatInventoryItemsPanel.showDamagePacketLayer(
+                new ICombatInventoryItemsPanel.UiShowDamagePacketLayerCommand(
+                    packetId,
+                    layerIndex,
+                    damageValue,
+                    completesPacket));
+        }
+
         public void showAttackCreatedBeam(
             Id<ItemId> sourceItemId,
             int sourceLocalRow,

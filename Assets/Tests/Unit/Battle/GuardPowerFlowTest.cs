@@ -103,6 +103,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(
                 defenderInitialHp - (damageAfterStability - expectedBlockedDamage),
@@ -138,6 +139,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(1, listener.callCount);
             Assert.AreEqual(defender.query().getCharacterInfo().getCharacterId(), listener.latest.characterId);
@@ -251,6 +253,7 @@ namespace MageFactory.Tests.Unit.Battle {
 
             createFlow(combatContext, attacker, getPlacedItemAt(attacker, new Vector2Int(0, 0)));
             attacker.command().combatTick(CombatTicks.ONE, combatContext.getCombatCapabilities());
+            TestHelpers.tickCombatContext(combatContext, TestHelpers.DefaultDamagePacketFullResolutionTicks);
 
             Assert.AreEqual(1, defender.query().getPreparedGuardCount());
             Assert.AreEqual(firstGuardPower, expectedFirstGuardBlockedDamage);

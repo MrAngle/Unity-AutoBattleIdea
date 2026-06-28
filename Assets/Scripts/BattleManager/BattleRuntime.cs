@@ -6,6 +6,8 @@ using MageFactory.Shared.Model;
 namespace MageFactory.BattleManager {
     public class BattleRuntime {
         public void tick(ICombatContext combatContext) {
+            combatContext.combatTick(CombatTicks.ONE);
+
             IReadOnlyCollection<ICombatCharacterFacade> combatCharacters = combatContext.getAllCharacters();
 
             foreach (ICombatCharacterFacade character in combatCharacters) {

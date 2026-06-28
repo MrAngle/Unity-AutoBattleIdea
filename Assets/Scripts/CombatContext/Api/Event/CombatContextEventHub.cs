@@ -8,6 +8,7 @@
         void publish(in FlowOutputReachedDtoEvent ev);
         void publish(in FlowNoOutputDtoEvent ev);
         void publish(in FlowAttackCreatedDtoEvent ev);
+        void publish(in DamagePacketLayerProcessedDtoEvent ev);
     }
 
     public interface ICombatContextEventRegistry {
@@ -34,5 +35,8 @@
 
         void subscribe(IFlowAttackCreatedEventListener eventListener);
         void unsubscribe(IFlowAttackCreatedEventListener eventListener);
+
+        void subscribe(IDamagePacketLayerProcessedEventListener eventListener);
+        void unsubscribe(IDamagePacketLayerProcessedEventListener eventListener);
     }
 }

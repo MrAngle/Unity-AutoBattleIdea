@@ -32,6 +32,10 @@ namespace MageFactory.CombatContext.Domain.Service {
         private readonly DomainEventChannel<FlowAttackCreatedDtoEvent, IFlowAttackCreatedEventListener>
             flowAttackCreatedChannel = new();
 
+        private readonly DomainEventChannel<DamagePacketLayerProcessedDtoEvent,
+                IDamagePacketLayerProcessedEventListener>
+            damagePacketLayerProcessedChannel = new();
+
         public void subscribe(ICombatCharacterCreatedEventListener eventListener) {
             combatCharacterCreatedChannel.subscribe(eventListener);
         }
@@ -96,6 +100,14 @@ namespace MageFactory.CombatContext.Domain.Service {
             flowAttackCreatedChannel.unsubscribe(eventListener);
         }
 
+        public void subscribe(IDamagePacketLayerProcessedEventListener eventListener) {
+            damagePacketLayerProcessedChannel.subscribe(eventListener);
+        }
+
+        public void unsubscribe(IDamagePacketLayerProcessedEventListener eventListener) {
+            damagePacketLayerProcessedChannel.unsubscribe(eventListener);
+        }
+
         public void publish(in CombatCharacterCreatedDtoEvent ev) {
             combatCharacterCreatedChannel.publish(in ev);
         }
@@ -126,6 +138,10 @@ namespace MageFactory.CombatContext.Domain.Service {
 
         public void publish(in FlowAttackCreatedDtoEvent ev) {
             flowAttackCreatedChannel.publish(in ev);
+        }
+
+        public void publish(in DamagePacketLayerProcessedDtoEvent ev) {
+            damagePacketLayerProcessedChannel.publish(in ev);
         }
     }
 }

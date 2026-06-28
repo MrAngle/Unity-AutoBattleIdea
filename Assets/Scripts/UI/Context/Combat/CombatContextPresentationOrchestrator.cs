@@ -33,7 +33,8 @@ namespace MageFactory.UI.Context.Combat {
         IFlowInputStartedEventListener,
         IFlowOutputReachedEventListener,
         IFlowNoOutputEventListener,
-        IFlowAttackCreatedEventListener {
+        IFlowAttackCreatedEventListener,
+        IDamagePacketLayerProcessedEventListener {
         private ICombatContext combatContext;
         private ICombatCharacterFacade selectedCombatCharacter;
         private readonly ICombatContextEventRegistry combatContextEventRegistry;
@@ -79,6 +80,8 @@ namespace MageFactory.UI.Context.Combat {
                 .subscribe((IFlowNoOutputEventListener)this);
             this.combatContextEventRegistry
                 .subscribe((IFlowAttackCreatedEventListener)this);
+            this.combatContextEventRegistry
+                .subscribe((IDamagePacketLayerProcessedEventListener)this);
             this.uiCombatContextEventRegistry
                 .subscribe(this);
             this.characterEventRegistry
@@ -140,6 +143,8 @@ namespace MageFactory.UI.Context.Combat {
                 .unsubscribe((IFlowNoOutputEventListener)this);
             this.combatContextEventRegistry
                 .unsubscribe((IFlowAttackCreatedEventListener)this);
+            this.combatContextEventRegistry
+                .unsubscribe((IDamagePacketLayerProcessedEventListener)this);
             this.uiCombatContextEventRegistry
                 .unsubscribe((IUiCombatCharacterSelectedEventListener)this);
             this.inventoryEventRegistry.unsubscribe((IItemPlacedEventEventListener)this);
@@ -190,7 +195,7 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         public void onEvent(in CharacterHpChangedDtoEvent ev) {
-            if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
+            if (tryGetLiveCharacterPrefab(ev.characterId, out CharacterPrefabAggregate prefab)) {
                 prefab.hpChange(ev);
             }
 
@@ -201,13 +206,15 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         public void onEvent(in CharacterDeathDtoEvent ev) {
-            if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
+            if (tryGetLiveCharacterPrefab(ev.characterId, out CharacterPrefabAggregate prefab)) {
                 prefab.destroy(ev);
             }
+
+            characterPrefabs.Remove(ev.characterId);
         }
 
         public void onEvent(in CharacterGuardAbsorbedDamageDtoEvent ev) {
-            if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
+            if (tryGetLiveCharacterPrefab(ev.characterId, out CharacterPrefabAggregate prefab)) {
                 prefab.guardAbsorbedDamage(ev);
             }
 
@@ -223,7 +230,7 @@ namespace MageFactory.UI.Context.Combat {
         }
 
         public void onEvent(in CharacterStabilityAbsorbedDamageDtoEvent ev) {
-            if (characterPrefabs.TryGetValue(ev.characterId, out var prefab)) {
+            if (tryGetLiveCharacterPrefab(ev.characterId, out CharacterPrefabAggregate prefab)) {
                 prefab.stabilityAbsorbedDamage(ev);
             }
 
@@ -311,7 +318,7 @@ namespace MageFactory.UI.Context.Combat {
         public void onEvent(in FlowAttackCreatedDtoEvent ev) {
             if (!isSelectedCharacter(ev.sourceCharacterId)
                 || !ev.hasSourceProcessingSlot()
-                || !characterPrefabs.TryGetValue(ev.targetCharacterId, out CharacterPrefabAggregate targetPrefab)) {
+                || !tryGetLiveCharacterPrefab(ev.targetCharacterId, out CharacterPrefabAggregate targetPrefab)) {
                 return;
             }
 
@@ -321,9 +328,56 @@ namespace MageFactory.UI.Context.Combat {
                 targetPrefab.getCenterWorldPosition());
         }
 
+        public void onEvent(in DamagePacketLayerProcessedDtoEvent ev) {
+            if (!isSelectedCharacter(ev.targetCharacterId)) {
+                return;
+            }
+
+            inventoryPanelPresentation.showDamagePacketLayer(
+                ev.packetId,
+                getDamagePacketLayerIndex(ev.layer),
+                getDamagePacketVisualValue(ev),
+                ev.completesPacket);
+        }
+
+        private static int getDamagePacketLayerIndex(DamagePacketLayer layer) {
+            switch (layer) {
+                case DamagePacketLayer.Travel:
+                case DamagePacketLayer.IncomingHit:
+                    return 0;
+                case DamagePacketLayer.Stability:
+                    return 1;
+                case DamagePacketLayer.Guard:
+                    return 2;
+                case DamagePacketLayer.Hp:
+                    return 3;
+                default:
+                    return 0;
+            }
+        }
+
+        private static long getDamagePacketVisualValue(DamagePacketLayerProcessedDtoEvent ev) {
+            return ev.layer == DamagePacketLayer.Travel
+                   || ev.layer == DamagePacketLayer.IncomingHit
+                   || ev.layer == DamagePacketLayer.Hp
+                ? ev.incomingDamage
+                : ev.outgoingDamage;
+        }
+
         private bool isSelectedCharacter(Id<CharacterId> characterId) {
             return selectedCombatCharacter != null
                    && selectedCombatCharacter.query().getCharacterInfo().getCharacterId() == characterId;
+        }
+
+        private bool tryGetLiveCharacterPrefab(
+            Id<CharacterId> characterId,
+            out CharacterPrefabAggregate characterPrefab) {
+            if (!characterPrefabs.TryGetValue(characterId, out characterPrefab) || characterPrefab == null) {
+                characterPrefab = null;
+                return false;
+            }
+
+            return true;
         }
     }
 }

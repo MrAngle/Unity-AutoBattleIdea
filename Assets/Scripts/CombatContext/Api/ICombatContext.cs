@@ -3,6 +3,7 @@ using MageFactory.CombatContext.Contract;
 using MageFactory.CombatContextRuntime;
 using MageFactory.Flow.Contract;
 using MageFactory.Shared.Id;
+using MageFactory.Shared.Model;
 
 namespace MageFactory.CombatContext.Api {
     public interface ICombatContext {
@@ -11,5 +12,6 @@ namespace MageFactory.CombatContext.Api {
         public ICombatCharacterFacade getCombatCharacterById(Id<CharacterId> id);
         public IFlowConsumer getFlowConsumer();
         public ICombatCapabilities getCombatCapabilities();
+        public void combatTick(CombatTicks combatTicks);
     }
 }

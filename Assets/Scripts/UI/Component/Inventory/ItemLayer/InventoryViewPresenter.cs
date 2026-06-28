@@ -162,6 +162,24 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
             }
         }
 
+        public readonly struct UiShowDamagePacketLayerCommand {
+            public readonly long packetId;
+            public readonly int layerIndex;
+            public readonly long damageValue;
+            public readonly bool completesPacket;
+
+            public UiShowDamagePacketLayerCommand(
+                long packetId,
+                int layerIndex,
+                long damageValue,
+                bool completesPacket) {
+                this.packetId = packetId;
+                this.layerIndex = layerIndex;
+                this.damageValue = damageValue;
+                this.completesPacket = completesPacket;
+            }
+        }
+
         public readonly struct UiShowGuardCreatedBeamCommand {
             public readonly Id<ItemId> sourceItemId;
             public readonly int sourceLocalRow;
@@ -271,6 +289,7 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         public void showStabilityGeneratedBeam(UiShowStabilityGeneratedBeamCommand command);
         public void showStabilityAbsorbedVisual(UiShowStabilityAbsorbedVisualCommand command);
         public void showHpChangedVisual(UiShowHpChangedVisualCommand command);
+        public void showDamagePacketLayer(UiShowDamagePacketLayerCommand command);
         public void showGuardAbsorbedVisual(UiShowGuardAbsorbedVisualCommand command);
         public void showGuardReplacedVisual(UiShowGuardReplacedVisualCommand command);
         public void showGuardCreatedBeam(UiShowGuardCreatedBeamCommand command);
@@ -552,6 +571,15 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         public void showHpChangedVisual(ICombatInventoryItemsPanel.UiShowHpChangedVisualCommand command) {
             ensureDefenseLayerOverlayView(getItemsLayerTransform());
             defenseLayerOverlayView?.showHpChangedVisual(command.hpDelta);
+        }
+
+        public void showDamagePacketLayer(ICombatInventoryItemsPanel.UiShowDamagePacketLayerCommand command) {
+            ensureDefenseLayerOverlayView(getItemsLayerTransform());
+            defenseLayerOverlayView?.showDamagePacketLayer(
+                command.packetId,
+                command.layerIndex,
+                command.damageValue,
+                command.completesPacket);
         }
 
         public void showFlowNoOutput(ICombatInventoryItemsPanel.UiShowFlowNoOutputCommand command) {
@@ -954,6 +982,11 @@ namespace MageFactory.UI.Component.Inventory.ItemLayer {
         }
 
         private Transform getItemsLayerTransform() {
+            Transform factoryItemsLayerTransform = inventoryItemViewFactory.getItemsLayerTransform();
+            if (factoryItemsLayerTransform != null) {
+                return factoryItemsLayerTransform;
+            }
+
             foreach (KeyValuePair<Id<ItemId>, PlacedItemView> itemView in itemIdToItemView) {
                 if (itemView.Value != null) {
                     return itemView.Value.transform.parent;
